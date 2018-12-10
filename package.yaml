@@ -1,0 +1,138 @@
+name:                aoc-dev
+version:             0.1.0.0
+github:              "mstksg/advent-of-code-dev"
+license:             BSD3
+author:              "Justin Le"
+maintainer:          "justin@jle.im"
+copyright:           "(c) Justin Le 2018"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+synopsis:            "Development environment for Advent of Code challenges"
+category:            Web
+
+description: |
+  Scaffolding for an integrated development environment for Advent of Code
+  challenges.  Includes auto-runner, prompt displays and countdowns, and
+  integrated submissions.
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Wno-partial-type-signatures
+- -Wredundant-constraints
+
+default-extensions:
+- AllowAmbiguousTypes
+- ApplicativeDo
+- BangPatterns
+- BlockArguments
+- DataKinds
+- DeriveFoldable
+- DeriveFunctor
+- DeriveGeneric
+- DeriveTraversable
+- EmptyCase
+- FlexibleContexts
+- FlexibleInstances
+- FunctionalDependencies
+- GADTs
+- GeneralizedNewtypeDeriving
+- ImplicitParams
+- KindSignatures
+- LambdaCase
+- MonadComprehensions
+- MonoLocalBinds
+- MultiParamTypeClasses
+- MultiWayIf
+- NumDecimals
+- PartialTypeSignatures
+- PatternGuards
+- PatternSynonyms
+- PolyKinds
+- RankNTypes
+- RecordWildCards
+- ScopedTypeVariables
+- TemplateHaskell
+- TupleSections
+- TypeApplications
+- TypeInType
+- TypeOperators
+- ViewPatterns
+
+dependencies:
+- base >= 4.7 && < 5
+- mtl
+
+library:
+  source-dirs: src
+  dependencies:
+  - advent-of-code-api >= 0.1.2.3
+  - aeson
+  - ansi-terminal
+  - bytestring
+  - containers
+  - criterion
+  - data-default-class
+  - deepseq
+  - directory
+  - filepath
+  - finite-typelits
+  - haskeline
+  - haskell-names
+  - haskell-src-exts
+  - hpack
+  - megaparsec
+  - microlens-th
+  - mtl
+  - pandoc
+  - parser-combinators
+  - profunctors
+  - template-haskell
+  - text
+  - time
+  - transformers
+  - yaml
+
+executables:
+  aoc-dev:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - ansi-terminal
+    - aoc-dev
+    - containers
+    - deepseq
+    - finite-typelits
+    - microlens
+    - optparse-applicative
+
+tests:
+  aoc-dev-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - aoc-dev
+    - ansi-terminal
+
+benchmarks:
+  aoc-dev-bench:
+    main: Bench.hs
+    source-dirs: bench
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -O2
+    dependencies:
+    - aoc-dev
