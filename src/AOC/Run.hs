@@ -174,7 +174,7 @@ mainView Cfg{..} MVO{..} = do
       pure pmpt
   where
     waitFunc d
-      | _mvoWait  = countdownConsole d . (liftIO (threadDelay 500000) *>)
+      | _mvoWait  = countdownConsole _cfgYear d . (liftIO (threadDelay 500000) *>)
       | otherwise = id
     singleTest = case _mvoSpec of
       TSAll        -> Nothing
@@ -194,7 +194,7 @@ mainSubmit Cfg{..} MSO{..} = do
     c         <- maybeToEither [printf "Part not found: %c" (partChar _csPart)] $
                    M.lookup _csPart dMap
     inp       <- liftEither . first ("[PROMPT ERROR]":) $ _cdInput
-    opts      <- defaultAoCOpts 2018 <$>
+    opts      <- defaultAoCOpts _cfgYear <$>
                     maybeToEither ["ERROR: Session Key Required to Submit"]
                       _cfgSession
 

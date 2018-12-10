@@ -158,7 +158,7 @@ challengeData sess yr spec = do
         liftIO $ T.writeFile _cpPrompt prompt
         pure prompt
       where
-        opts = defaultAoCOpts 2018 $ fold sess
+        opts = defaultAoCOpts yr $ fold sess
         a = AoCPrompt $ _csDay spec
         e = case sess of
           Just _  -> "Part not yet released"
@@ -201,10 +201,11 @@ showNominalDiffTime (round @Double @Int . realToFrac -> rawSecs) =
 -- | Run a countdown on the console.
 countdownConsole
     :: MonadIO m
-    => Finite 25        -- ^ day to count down to
+    => Integer          -- ^ year of challenge
+    -> Finite 25        -- ^ day to count down to
     -> m a              -- ^ callback on release
     -> m a
-countdownConsole d = countdownWith d 250000 $ \ttr -> liftIO $ do
+countdownConsole yr d = countdownWith yr d 250000 $ \ttr -> liftIO $ do
     ANSI.clearFromCursorToScreenEnd
     printf "> Day %d release in: %s" (dayToInt d) (showNominalDiffTime ttr)
     ANSI.setCursorColumn 0
@@ -213,15 +214,16 @@ countdownConsole d = countdownWith d 250000 $ \ttr -> liftIO $ do
 -- | Run a countdown with a given callback on each tick.
 countdownWith
     :: MonadIO m
-    => Finite 25                    -- ^ day to count down to
+    => Integer                      -- ^ year of challenge
+    -> Finite 25                    -- ^ day to count down to
     -> Int                          -- ^ interval (milliseconds)
     -> (NominalDiffTime -> m ())    -- ^ callback on each tick
     -> m a                          -- ^ callback on release
     -> m a
-countdownWith d delay callback release = go
+countdownWith yr d delay callback release = go
   where
     go = do
-      ttr <- liftIO $ timeToRelease 2018 d
+      ttr <- liftIO $ timeToRelease yr d
       if ttr <= 0
         then release
         else do
