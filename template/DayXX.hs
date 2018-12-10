@@ -8,7 +8,7 @@
 -- Stability   : experimental
 -- Portability : non-portable
 --
--- Day ${day_short}.  See "AOC.Challenge" for the types used in this module!
+-- Day ${day_short}.  See "AOC.Solver" for the types used in this module!
 --
 -- After completing the challenge, it is recommended to:
 --
