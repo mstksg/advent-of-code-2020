@@ -234,7 +234,7 @@ mainSubmit Cfg{..} MSO{..} = do
     pure output
   where
     CS{..} = _msoSpec
-    CP{..} = challengePaths _msoSpec
+    CP{..} = challengePaths _cfgYear _msoSpec
     d' = dayToInt _csDay
     formatResp = T.unpack . T.intercalate "\n" . map ("> " <>)
     logFmt = unlines [ "[%s]"
@@ -282,7 +282,7 @@ runAll
     -> IO (Map (Finite 25) (Map Part a))
 runAll sess yr lock rep cm f = flip M.traverseWithKey cm $ \d ->
                                M.traverseWithKey $ \p c -> do
-    let CP{..} = challengePaths (CS d p)
+    let CP{..} = challengePaths yr (CS d p)
     inp0 <- rep d p
     withColor ANSI.Dull ANSI.Blue $
       printf ">> Day %02d%c\n" (dayToInt d) (partChar p)

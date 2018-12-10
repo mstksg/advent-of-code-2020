@@ -80,12 +80,12 @@ data ChallengeData = CD { _cdPrompt :: !(Either [String] Text  )
                         }
 
 -- | Generate a 'ChallengePaths' from a specification of a challenge.
-challengePaths :: ChallengeSpec -> ChallengePaths
-challengePaths (CS d p) = CP
+challengePaths :: Integer -> ChallengeSpec -> ChallengePaths
+challengePaths y (CS d p) = CP
     { _cpPrompt    = "prompt"          </> printf "%02d%c" d' p' <.> "md"
     , _cpInput     = "data"            </> printf "%02d" d'      <.> "txt"
     , _cpAnswer    = "data/ans"        </> printf "%02d%c" d' p' <.> "txt"
-    , _cpTests     = "test-data"       </> printf "%02d%c" d' p' <.> "txt"
+    , _cpTests     = "test-data"       </> printf "%04d/%02d%c" y d' p' <.> "txt"
     , _cpLog       = "logs/submission" </> printf "%02d%c" d' p' <.> "txt"
     }
   where
@@ -130,7 +130,7 @@ challengeData sess yr spec = do
       , _cdTests  = ts
       }
   where
-    ps@CP{..} = challengePaths spec
+    ps@CP{..} = challengePaths yr spec
     readFileMaybe :: FilePath -> IO (Maybe String)
     readFileMaybe =
         (traverse (evaluate . force) . eitherToMaybe =<<)

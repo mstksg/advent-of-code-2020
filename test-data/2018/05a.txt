@@ -1,0 +1,10 @@
+aA
+>>> 0
+abBA
+>>> 0
+abAB
+>>> 4
+aabAAB
+>>> 6
+dabAcCaCBAcCcaDA
+>>> 10
