@@ -51,7 +51,7 @@ runSolution MkSol{..} s = do
 In the actual library, I have `runSolution` return an `Either` so I can debug
 which stage the error happened in.
 
-`sShow` also supports `dyno_ :: Typeable a => String -> a -> a`, which is how
+`sSolve` also supports `dyno_ :: Typeable a => String -> a -> a`, which is how
 *special test parameters* are implemented.  For example, 2018 Day 6 involves
 finding points that had a total distance of less than 10000, but for the test
 input, we found the points that had a total distance of less than 32.  So,
