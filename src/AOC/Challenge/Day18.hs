@@ -8,7 +8,7 @@
 -- Stability   : experimental
 -- Portability : non-portable
 --
--- Day 18.  See "AOC.Challenge" for the types used in this module!
+-- Day 18.  See "AOC.Solver" for the types used in this module!
 --
 -- After completing the challenge, it is recommended to:
 --
