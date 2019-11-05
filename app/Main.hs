@@ -8,7 +8,6 @@ import           Control.Exception
 import           Control.Monad
 import           Control.Monad.Except
 import           Data.Char
-import           Data.Finite
 import           Data.Foldable
 import           Data.IORef
 import           Data.List
@@ -48,7 +47,7 @@ main = do
       mapM_ putStrLn e
   where
     availableDays = intercalate ", "
-                  . map (show . dayToInt)
+                  . map (show . dayInt)
                   . M.keys
                   $ challengeMap
 
@@ -57,10 +56,10 @@ main = do
 -- | Parsers
 -- ---------
 
-readFinite :: ReadM (Finite 25)
-readFinite = eitherReader $ \s -> do
+readDay :: ReadM Day
+readDay = eitherReader $ \s -> do
     n <- maybe (Left "Invalid day") Right $ readMaybe s
-    maybe (Left "Day out of range") Right $ packFinite (n - 1)
+    maybe (Left "Day out of range") Right $ mkDay n
 
 readPart :: ReadM Part
 readPart = eitherReader $ \case
@@ -79,7 +78,7 @@ parseChallengeSpec = do
                         )
     pure $ CS d p
   where
-    pDay  = readFinite
+    pDay  = readDay
     pPart = readPart
 
 parseTestSpec :: Parser TestSpec
@@ -97,12 +96,12 @@ parseTestSpec = do
       Nothing -> TSAll
   where
     pDay = asum [ Nothing <$ maybeReader (guard . (== "all") . map toLower)
-                , Just <$> readFinite
+                , Just <$> readDay
                 ]
     pPart = readPart
 
 parseOpts
-    :: IORef (Maybe (Maybe (Finite 25, String)))
+    :: IORef (Maybe (Maybe (Day, String)))
     -> Parser Opts
 parseOpts inputCache = do
     _oConfig <- optional . strOption . mconcat $
@@ -188,8 +187,8 @@ parseOpts inputCache = do
     parseCountdown = parseView & mapped . mvoWait .~ True
 
 pullStdin
-    :: IORef (Maybe (Maybe (Finite 25, String)))  -- ^ Nothing: first time; Just Nothing: failed forever.
-    -> Finite 25
+    :: IORef (Maybe (Maybe (Day, String)))  -- ^ Nothing: first time; Just Nothing: failed forever.
+    -> Day
     -> IO (Maybe String)
 pullStdin inputCache d = readIORef inputCache >>= \case
     Nothing -> do

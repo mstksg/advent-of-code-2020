@@ -16,12 +16,14 @@
 module AOC.Run.Load (
     ChallengePaths(..), challengePaths
   , ChallengeData(..), challengeData
+  , Day(..)
   , countdownConsole
   , timeToRelease
   , showNominalDiffTime
   , charPart
   , showAoCError
   , htmlToMarkdown
+  , mkDay, mkDay_, dayInt
   , TestMeta(..)
   -- * Parsers
   , parseMeta
@@ -40,12 +42,11 @@ import           Control.Monad.Except
 import           Data.Bifunctor
 import           Data.Char
 import           Data.Dynamic
-import           Data.Finite
 import           Data.Foldable
 import           Data.Map                  (Map)
 import           Data.Maybe
 import           Data.Text                 (Text)
-import           Data.Time
+import           Data.Time hiding          (Day)
 import           Data.Void
 import           System.Console.ANSI       as ANSI
 import           System.Directory
@@ -89,7 +90,7 @@ challengePaths y (CS d p) = CP
     , _cpLog       = "logs/submission" </> printf "%02d%c" d' p' <.> "txt"
     }
   where
-    d' = dayToInt d
+    d' = dayInt d
     p' = partChar p
 
 makeChallengeDirs :: ChallengePaths -> IO ()
@@ -180,9 +181,9 @@ challengeData sess yr spec = do
 
 showAoCError :: AoCError -> [String]
 showAoCError = \case
-    AoCCurlError _ r -> [ "Error contacting Advent of Code server to fetch input"
+    AoCClientError e -> [ "Error contacting Advent of Code server to fetch input"
                         , "Possible invalid session key"
-                        , printf "Server response: %s" r
+                        , printf "Server response: %s" (show e)
                         ]
     AoCReleaseError t -> [ "Challenge not yet released!"
                          , printf "Please wait %s" (showNominalDiffTime t)
@@ -202,12 +203,12 @@ showNominalDiffTime (round @Double @Int . realToFrac -> rawSecs) =
 countdownConsole
     :: MonadIO m
     => Integer          -- ^ year of challenge
-    -> Finite 25        -- ^ day to count down to
+    -> Day              -- ^ day to count down to
     -> m a              -- ^ callback on release
     -> m a
 countdownConsole yr d = countdownWith yr d 250000 $ \ttr -> liftIO $ do
     ANSI.clearFromCursorToScreenEnd
-    printf "> Day %d release in: %s" (dayToInt d) (showNominalDiffTime ttr)
+    printf "> Day %d release in: %s" (dayInt d) (showNominalDiffTime ttr)
     ANSI.setCursorColumn 0
     hFlush stdout
 
@@ -215,7 +216,7 @@ countdownConsole yr d = countdownWith yr d 250000 $ \ttr -> liftIO $ do
 countdownWith
     :: MonadIO m
     => Integer                      -- ^ year of challenge
-    -> Finite 25                    -- ^ day to count down to
+    -> Day                          -- ^ day to count down to
     -> Int                          -- ^ interval (milliseconds)
     -> (NominalDiffTime -> m ())    -- ^ callback on each tick
     -> m a                          -- ^ callback on release

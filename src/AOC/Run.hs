@@ -31,7 +31,6 @@ module AOC.Run (
   ) where
 
 import           AOC.Challenge
-import           Lens.Micro.TH
 import           AOC.Run.Config
 import           AOC.Run.Load
 import           AOC.Solver
@@ -46,11 +45,11 @@ import           Control.Monad.Except
 import           Criterion
 import           Data.Bifunctor
 import           Data.Char
-import           Data.Finite
 import           Data.Map                 (Map)
 import           Data.Maybe
 import           Data.Text                (Text)
-import           Data.Time
+import           Data.Time hiding         (Day)
+import           Lens.Micro.TH
 import           Text.Printf
 import qualified Data.Map                 as M
 import qualified Data.Set                 as S
@@ -61,7 +60,7 @@ import qualified System.Console.Haskeline as H
 
 -- | Specification of parts to test and run
 data TestSpec = TSAll
-              | TSDayAll  { _tsDay  :: Finite 25     }
+              | TSDayAll  { _tsDay  :: Day           }
               | TSDayPart { _tsSpec :: ChallengeSpec }
   deriving Show
 
@@ -70,7 +69,7 @@ data MainRunOpts = MRO { _mroSpec  :: !TestSpec
                        , _mroTest  :: !Bool     -- ^ Run tests?  (Default: False)
                        , _mroBench :: !Bool     -- ^ Benchmark?  (Default: False)
                        , _mroLock  :: !Bool     -- ^ Lock in answer as correct?  (Default: False)
-                       , _mroInput :: !(Finite 25 -> Part -> IO (Maybe String))   -- ^ Manually supply input (Default: always return Nothing)
+                       , _mroInput :: !(Day -> Part -> IO (Maybe String))   -- ^ Manually supply input (Default: always return Nothing)
                        }
 
 makeClassy ''MainRunOpts
@@ -119,10 +118,10 @@ defaultMSO cs = MSO { _msoSpec  = cs
 filterChallengeMap :: TestSpec -> Either String ChallengeMap
 filterChallengeMap = \case
     TSAll      -> pure challengeMap
-    TSDayAll d -> maybeToEither (printf "Day not yet avaiable: %d" (dayToInt d)) $
+    TSDayAll d -> maybeToEither (printf "Day not yet avaiable: %d" (dayInt d)) $
                      M.singleton d <$> M.lookup d challengeMap
     TSDayPart (CS d p) -> do
-      ps <- maybeToEither (printf "Day not yet available: %d" (dayToInt d)) $
+      ps <- maybeToEither (printf "Day not yet available: %d" (dayInt d)) $
               M.lookup d challengeMap
       c  <- maybeToEither (printf "Part not found: %c" (partChar p)) $
               M.lookup p ps
@@ -133,7 +132,7 @@ mainRun
     :: (MonadIO m, MonadError [String] m)
     => Config
     -> MainRunOpts
-    -> m (Map (Finite 25) (Map Part (Maybe Bool, Either [String] String)))  -- whether or not passed tests, and result
+    -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))  -- whether or not passed tests, and result
 mainRun Cfg{..} MRO{..} =  do
     toRun <- liftEither . first (:[]) . filterChallengeMap $ _mroSpec
     liftIO . runAll _cfgSession _cfgYear _mroLock _mroInput toRun $ \c inp0 cd@CD{..} -> do
@@ -155,7 +154,7 @@ mainView
     :: (MonadIO m, MonadError [String] m)
     => Config
     -> MainViewOpts
-    -> m (Map (Finite 25) (Map Part Text))
+    -> m (Map Day (Map Part Text))
 mainView Cfg{..} MVO{..} = do
     let toRun = maybe S.empty (M.keysSet . pullMap)
               . eitherToMaybe
@@ -168,7 +167,7 @@ mainView Cfg{..} MVO{..} = do
         liftEither . first ("[PROMPT ERROR]":) $ _cdPrompt
       liftIO $ do
         withColor ANSI.Dull ANSI.Blue $
-          printf ">> Day %02d%c\n" (dayToInt d) (partChar p)
+          printf ">> Day %02d%c\n" (dayInt d) (partChar p)
         T.putStrLn pmpt
         putStrLn ""
       pure pmpt
@@ -235,7 +234,7 @@ mainSubmit Cfg{..} MSO{..} = do
   where
     CS{..} = _msoSpec
     CP{..} = challengePaths _cfgYear _msoSpec
-    d' = dayToInt _csDay
+    d' = dayInt _csDay
     formatResp = T.unpack . T.intercalate "\n" . map ("> " <>)
     logFmt = unlines [ "[%s]"
                      , "Submission: %s"
@@ -276,16 +275,16 @@ runAll
     :: Maybe String                             -- ^ session key
     -> Integer                                  -- ^ year
     -> Bool                                     -- ^ run and lock answer
-    -> (Finite 25 -> Part -> IO (Maybe String))   -- ^ replacements
+    -> (Day -> Part -> IO (Maybe String))   -- ^ replacements
     -> ChallengeMap
     -> (SomeSolution -> Maybe String -> ChallengeData -> IO a)  -- ^ callback. given solution, "replacement" input, and data
-    -> IO (Map (Finite 25) (Map Part a))
+    -> IO (Map Day (Map Part a))
 runAll sess yr lock rep cm f = flip M.traverseWithKey cm $ \d ->
                                M.traverseWithKey $ \p c -> do
     let CP{..} = challengePaths yr (CS d p)
     inp0 <- rep d p
     withColor ANSI.Dull ANSI.Blue $
-      printf ">> Day %02d%c\n" (dayToInt d) (partChar p)
+      printf ">> Day %02d%c\n" (dayInt d) (partChar p)
     when lock $ do
       CD{..} <- challengeData sess yr (CS d p)
       forM_ (inp0 <|> eitherToMaybe _cdInput) $ \inp ->

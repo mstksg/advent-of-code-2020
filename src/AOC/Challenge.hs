@@ -20,7 +20,7 @@ module AOC.Challenge (
   , ChallengeSpec(..), Part(..)
   , challengeMap
   , lookupSolution
-  , dayToInt
+  , Day(..), dayInt, mkDay, mkDay_
   , solSpec
   , charPart
   ) where
@@ -64,5 +64,5 @@ challengeMap :: ChallengeMap
 challengeMap = mkChallengeMap $$(solutionList "src/AOC/Challenge")
 
 -- | Lookup up a solution from a 'ChallengeMap'
-lookupSolution :: ChallengeSpec -> Map (Finite 25) (Map Part a) -> Maybe a
+lookupSolution :: ChallengeSpec -> Map Day (Map Part a) -> Maybe a
 lookupSolution CS{..} = M.lookup _csPart <=< M.lookup _csDay

@@ -43,7 +43,7 @@ import           Data.Ord                  as P
 import           Data.Profunctor           as P (Profunctor(..))
 import           Data.Semigroup            as P
 import           Data.Set                  as P (Set)
-import           Data.Time                 as P
+import           Data.Time                 as P hiding (Day)
 import           Data.Traversable          as P
 import           Data.Tuple                as P
 import           Data.Void                 as P

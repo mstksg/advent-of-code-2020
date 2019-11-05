@@ -40,9 +40,7 @@ import           AOC.Run.Load
 import           AOC.Util
 import           Advent
 import           Control.Monad.Except
-import           Data.Finite
 import           Data.Text            (Text)
-import           Text.Printf
 
 -- | Run the solution indicated by the challenge spec on the official
 -- puzzle input.  Get answer as result.
@@ -153,9 +151,7 @@ loadTests cs = do
 --
 -- Is undefined if given a day number out of range (1-25).
 mkSpec :: Integer -> Part -> ChallengeSpec
-mkSpec i c = maybe e (`CS` c) . packFinite $ i - 1
-  where
-    e = errorWithoutStackTrace $ printf "Day out of range: %d" i
+mkSpec i = CS (mkDay_ i)
 
 eitherIO :: ExceptT [String] IO a -> IO a
 eitherIO act = runExceptT act >>= \case
