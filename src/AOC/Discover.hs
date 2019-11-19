@@ -67,7 +67,7 @@ solSpec n = either error id $ do
     (d0, p') <- case nameBase n of
       'd':'a':'y':d1:d2:p:_ -> pure ([d1,d2], p)
       _                     -> Left "Function name doesn't fit naming convention."
-    d1 <- subtract 1 <$> maybeToEither "Could not parse day" (readMaybe d0)
+    d1 <- maybeToEither "Could not parse day" (readMaybe d0)
     d2 <- maybeToEither "Day out of range" (mkDay d1)
     p  <- maybeToEither "Could not parse part" . charPart $ p'
     pure $ CS d2 p
@@ -150,7 +150,7 @@ challengeName :: Parser ChallengeSpec
 challengeName = do
     _    <- P.string "day"
     dStr <- P.many P.numberChar
-    dInt <- maybe (fail "Failed parsing integer") (pure . subtract 1) $
+    dInt <- maybe (fail "Failed parsing integer") pure $
                 readMaybe dStr
     dFin <- maybe (fail $ "Day not in range: " ++ show dInt) pure $
                 mkDay dInt
