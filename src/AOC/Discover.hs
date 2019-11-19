@@ -99,7 +99,7 @@ mkChallengeMap = M.unionsWith M.union
 
 specExp :: ChallengeSpec -> TExp (Day, (Part, SomeSolution))
 specExp s@(CS (Day d) p) = TExp $ TupE
-    [ VarE 'mkDay_ `AppE` LitE (IntegerL (getFinite d))
+    [ VarE 'mkDay_ `AppE` LitE (IntegerL (getFinite d + 1))
     , TupE
         [ ConE (partCon p)
         , ConE 'MkSomeSol `AppE` VarE (mkName (specName s))
