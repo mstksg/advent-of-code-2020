@@ -19,7 +19,10 @@ module AOC.Discover (
   , ChallengeMap
   , ChallengeSpec(..)
   , solSpec
+  , solSpecStr
+  , solSpecStr_
   , charPart
+  , challengeName
   ) where
 
 import           AOC.Solver
@@ -32,6 +35,7 @@ import           Data.Map                   (Map)
 import           Data.Maybe
 import           Data.Traversable
 import           Data.Void
+import           GHC.Exts
 import           Language.Haskell.Exts      as E
 import           Language.Haskell.Names
 import           Language.Haskell.TH        as TH
@@ -63,14 +67,16 @@ type ChallengeMap = Map Day (Map Part SomeSolution)
 -- @
 --
 solSpec :: TH.Name -> ChallengeSpec
-solSpec n = either error id $ do
-    (d0, p') <- case nameBase n of
-      'd':'a':'y':d1:d2:p:_ -> pure ([d1,d2], p)
-      _                     -> Left "Function name doesn't fit naming convention."
-    d1 <- maybeToEither "Could not parse day" (readMaybe d0)
-    d2 <- maybeToEither "Day out of range" (mkDay d1)
-    p  <- maybeToEither "Could not parse part" . charPart $ p'
-    pure $ CS d2 p
+solSpec = solSpecStr_ . nameBase
+
+solSpecStr :: String -> Either (P.ParseErrorBundle String Void) ChallengeSpec
+solSpecStr = P.runParser challengeName ""
+
+solSpecStr_ :: String -> ChallengeSpec
+solSpecStr_ = either (error . P.errorBundlePretty) id . solSpecStr
+
+instance IsString ChallengeSpec where
+    fromString = solSpecStr_
 
 type Parser = P.Parsec Void String
 
