@@ -17,7 +17,7 @@ module AOC.Common (
   -- * Loops and searches
     iterateMaybe
   , loopMaybe
-  , firstJust
+  , findJust
   , (!!!)
   , dup
   , scanlT
@@ -84,6 +84,7 @@ import           Data.List
 import           Data.List.NonEmpty                 (NonEmpty)
 import           Data.Map                           (Map)
 import           Data.Map.NonEmpty                  (NEMap)
+import           Data.Maybe
 import           Data.MemoCombinators               (Memo)
 import           Data.Monoid                        (Ap(..))
 import           Data.Ord
@@ -129,8 +130,8 @@ loopMaybe f = go
       Just !y -> go y
 
 -- | Find the first value where the function is 'Just'.
-firstJust :: Foldable f => (a -> Maybe b) -> f a -> Maybe b
-firstJust f = fmap getFirst . foldMap (fmap First . f)
+findJust :: Foldable f => (a -> Maybe b) -> f a -> Maybe b
+findJust f = listToMaybe . mapMaybe f . toList
 
 -- | A tuple of the same item twice
 dup :: a -> (a, a)
