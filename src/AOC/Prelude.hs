@@ -50,6 +50,8 @@ import           Data.Profunctor           as P (Profunctor(..))
 import           Data.Semigroup            as P
 import           Data.Set                  as P (Set)
 import           Data.Set.NonEmpty         as P (NESet)
+import           Data.Text                 as P (Text)
+import           Data.Text.Encoding        as P (encodeUtf8, decodeUtf8)
 import           Data.Time                 as P hiding (Day)
 import           Data.Traversable          as P
 import           Data.Tuple                as P
