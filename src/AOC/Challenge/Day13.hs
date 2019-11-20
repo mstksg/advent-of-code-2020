@@ -31,13 +31,13 @@ import           AOC.Prelude
 day13a :: _ :~> _
 day13a = MkSol
     { sParse = Just
-    , sShow  = id
+    , sShow  = show
     , sSolve = Just
     }
 
 day13b :: _ :~> _
 day13b = MkSol
     { sParse = Just
-    , sShow  = id
+    , sShow  = show
     , sSolve = Just
     }

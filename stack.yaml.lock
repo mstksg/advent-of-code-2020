@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: advent-of-code-api-0.2.1.0@sha256:b6faf929af0f2cbdccfe4f5bf8da62a23fffb2c380649259ecabf4b870c04a56,2286
+    hackage: advent-of-code-api-0.2.2.1@sha256:b35377e84ed918b2adbec6d4963814bd9f2bcc73765c09db19538218950223de,2290
     pantry-tree:
       size: 1124
-      sha256: bed11884d641cc8af7d14d46b6d482935e6116c59dc30ed6ad733367a91d8cdc
+      sha256: 2fbbff0c049e4c96d50bc160e45a1127b2e0bec243eaa7d8e0297c27ccae7229
   original:
-    hackage: advent-of-code-api-0.2.1.0
+    hackage: advent-of-code-api-0.2.2.1
 snapshots:
 - completed:
     size: 525876
