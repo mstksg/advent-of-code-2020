@@ -26,7 +26,6 @@ module AOC.Discover (
   ) where
 
 import           AOC.Solver
-import           AOC.Util
 import           Advent
 import           Data.Bifunctor
 import           Data.Data

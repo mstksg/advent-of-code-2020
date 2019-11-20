@@ -76,24 +76,35 @@ library:
   - containers
   - criterion
   - data-default-class
+  - data-memocombinators
   - deepseq
   - directory
   - filepath
   - finite-typelits
+  - foldl
+  - groups
+  - hashable
   - haskeline
   - haskell-names
   - haskell-src-exts
   - hpack
+  - lens
+  - linear
   - megaparsec
-  - microlens-th
   - mtl
+  - nonempty-containers
   - pandoc
+  - parallel
   - parser-combinators
   - profunctors
+  - psqueues
+  - semigroupoids
+  - split
   - template-haskell
   - text
   - time
   - transformers
+  - vector-sized
   - yaml
 
 executables:
@@ -110,7 +121,7 @@ executables:
     - containers
     - deepseq
     - finite-typelits
-    - microlens
+    - lens
     - optparse-applicative
 
 tests:
