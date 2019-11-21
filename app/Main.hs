@@ -5,7 +5,7 @@ import           AOC
 import           Control.Applicative
 import           Control.DeepSeq
 import           Control.Exception
-import           Control.Lens hiding  (argument)
+import           Control.Lens hiding (argument)
 import           Control.Monad
 import           Control.Monad.Except
 import           Data.Char
