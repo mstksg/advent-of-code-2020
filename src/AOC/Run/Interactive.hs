@@ -28,7 +28,9 @@ module AOC.Run.Interactive (
   , submitSolution_
   -- * Load Inputs
   , loadInput
+  , loadParseInput
   , loadTests
+  , loadParseTests
   -- * Util
   , mkSpec
   ) where
@@ -37,9 +39,11 @@ import           AOC.Challenge
 import           AOC.Run
 import           AOC.Run.Config
 import           AOC.Run.Load
+import           AOC.Solver
 import           AOC.Util
 import           Advent
 import           Control.Monad.Except
+import           Data.Bifunctor
 import           Data.Text            (Text)
 
 -- | Run the solution indicated by the challenge spec on the official
@@ -132,6 +136,24 @@ waitForPrompt_ = void . waitForPrompt
 -- | Result-suppressing version of 'submitSolution'.
 submitSolution_ :: ChallengeSpec -> IO ()
 submitSolution_ = void . submitSolution
+
+-- | Run the parser of a solution, given its 'ChallengeSpec'.
+--
+-- @
+-- 'loadParseInput' (solSpec 'day01a) day01a
+-- @
+loadParseInput :: ChallengeSpec -> a :~> b -> IO a
+loadParseInput cs s = eitherIO $ do
+    i <- liftIO $ loadInput cs
+    maybeToEither ["No parse"] $ sParse s i
+
+-- | Run the parser of a solution on test data, given its 'ChallengeSpec'.
+--
+-- @
+-- 'loadParseTests' (solSpec 'day01a) day01a
+-- @
+loadParseTests :: ChallengeSpec -> a :~> b -> IO [(Maybe a, TestMeta)]
+loadParseTests cs s = (map . first) (sParse s) <$> loadTests cs
 
 -- | Load input for a given challenge
 loadInput :: ChallengeSpec -> IO String
