@@ -11,9 +11,23 @@ packages:
       sha256: 2fbbff0c049e4c96d50bc160e45a1127b2e0bec243eaa7d8e0297c27ccae7229
   original:
     hackage: advent-of-code-api-0.2.2.1
+- completed:
+    hackage: megaparsec-8.0.0@sha256:362f85e243ecbcb550e1de6e5c74ba5a50c09edaa1208c99bc5b9fd242227fc6,3808
+    pantry-tree:
+      size: 1446
+      sha256: 955117c00a86970f2d0c215f33cf5293b16589c04678a0a790c03368ab6fd0aa
+  original:
+    hackage: megaparsec-8.0.0
+- completed:
+    hackage: parser-combinators-1.2.1@sha256:16c3490e007ec10b1255a2b36fb483d000156d555269107131241d9e0fa96412,1788
+    pantry-tree:
+      size: 725
+      sha256: 7b7cc6bb088f536691c4088ac6abe9f4dd0399feffc26bdb2cbec695f7259737
+  original:
+    hackage: parser-combinators-1.2.1
 snapshots:
 - completed:
-    size: 525876
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/13.yaml
-    sha256: 4a0e79eb194c937cc2a1852ff84d983c63ac348dc6bad5f38d20cab697036eef
-  original: lts-14.13
+    size: 524804
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/16.yaml
+    sha256: 4d1519a4372d051d47a5eae2241cf3fb54e113d7475f89707ddb6ec06add2888
+  original: lts-14.16

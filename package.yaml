@@ -90,12 +90,12 @@ library:
   - hpack
   - lens
   - linear
-  - megaparsec
+  - megaparsec >= 8.0
   - mtl
   - nonempty-containers
   - pandoc
   - parallel
-  - parser-combinators
+  - parser-combinators >= 1.2.0
   - profunctors
   - psqueues
   - semigroupoids
