@@ -14,10 +14,11 @@
 module AOC.Solver (
     (:~>)(..)
   , withSolver, withSolver'
-  , SomeSolution(..)
+  , SomeSolution(.., MkSomeSol)
   , SolutionError(..)
   , runSolution
   , runSomeSolution
+  , ssIsNF
   -- * 'DynoMap'
   , runSolutionWith
   , runSomeSolutionWith
@@ -51,7 +52,30 @@ data a :~> b = MkSol
 -- | Wrap an @a ':~>' b@ and hide the type variables so we can put
 -- different solutions in a container.
 data SomeSolution where
-    MkSomeSol :: a :~> b -> SomeSolution
+    MkSomeSolWH :: a :~> b -> SomeSolution
+    MkSomeSolNF :: (NFData a, NFData b) => a :~> b -> SomeSolution
+
+-- | Check if a 'SomeSolution' is equipped with an 'NFData' instance on the
+-- types
+ssIsNF :: SomeSolution -> Bool
+ssIsNF = \case
+    MkSomeSolWH _ -> False
+    MkSomeSolNF _ -> True
+
+data SomeSolHelp where
+    SSH :: a :~> b -> SomeSolHelp
+
+toHelp :: SomeSolution -> SomeSolHelp
+toHelp (MkSomeSolWH x) = SSH x
+toHelp (MkSomeSolNF x) = SSH x
+
+-- | Handy pattern to work with both 'MkSomeSolWH' and 'MkSomeSolNF'.  As
+-- a constructor, just uses 'MkSomeSolWH', so might not be desirable.
+pattern MkSomeSol :: () => forall a b. () => a :~> b -> SomeSolution
+pattern MkSomeSol s <- (toHelp->SSH s)
+  where
+    MkSomeSol x = MkSomeSolWH x
+{-# COMPLETE MkSomeSol #-}
 
 -- | Errors that might happen when running a ':~>' on some input.
 data SolutionError = SEParse
@@ -84,7 +108,7 @@ runSolutionWith
     -> a :~> b
     -> String
     -> Either SolutionError String
-runSolutionWith dm MkSol{..} (strip->s) = do
+runSolutionWith dm MkSol{..} (stripNewline->s) = do
     x <- maybeToEither SEParse . sParse $ s
     y <- maybeToEither SESolve . sSolve $ x
     pure $ sShow y

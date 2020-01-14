@@ -1,0 +1,6 @@
+    <item>
+      <title>Day ${day}</title>
+      <description>${body}</description>
+      <link>https://github.com/${github}/advent-of-code-${year}/blob/master/reflections.md#day-${day}</link>
+      <pubDate>${time}</pubDate>
+    </item>

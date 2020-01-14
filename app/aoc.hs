@@ -128,6 +128,11 @@ parseOpts inputCache = do
     parseRun    :: Parser MainRunOpts
     parseRun = do
         _mroSpec <- parseTestSpec
+        _mroActual <- fmap not . switch . mconcat $
+          [ long "skip"
+          , short 's'
+          , help "Do not run the actual input, but still run tests or benchmarks"
+          ]
         _mroTest <- switch . mconcat $
           [ long "test"
           , short 't'
@@ -196,4 +201,4 @@ pullStdin inputCache d = readIORef inputCache >>= \case
                   evaluate . force =<< getContents
       writeIORef inputCache . Just $ (d,) <$> out
       pure out
-    Just old -> pure . findMaybe (\(d',o) -> o <$ guard (d == d')) $ old
+    Just old -> pure . firstJust (\(d',o) -> o <$ guard (d == d')) $ old
