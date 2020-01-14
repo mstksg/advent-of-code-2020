@@ -1,5 +1,6 @@
-{-# LANGUAGE TypeFamilies    #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE NoDeriveAnyClass #-}
+{-# LANGUAGE TypeFamilies     #-}
+{-# OPTIONS_GHC -Wno-orphans  #-}
 
 -- |
 -- Module      : AOC.Common
@@ -17,16 +18,23 @@ module AOC.Common (
   -- * Loops and searches
     iterateMaybe
   , loopMaybe
-  , findJust
+  , loopMaybeM
+  , loopEither
+  , firstJust
   , (!!!)
+  , (!?)
+  , drop'
   , dup
   , scanlT
   , scanrT
   , firstRepeated
   , fixedPoint
   , floodFill
+  , floodFillCount
+  , countTrue
   -- * Lists
   , freqs
+  , lookupFreq
   , freqList
   , revFreq
   , perturbations
@@ -42,13 +50,19 @@ module AOC.Common (
   , maximumValByNE
   , minimumValNE
   , minimumValByNE
+  , listTup
+  , listTup3
+  , listTup4
   -- * Simple type util
   , deleteFinite
+  , Letter
   , charFinite
   , _CharFinite
+  , digitToIntSafe
   , caeser
   , eitherItem
   , getDown
+  , toNatural
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -59,13 +73,17 @@ module AOC.Common (
   -- * Points
   , Point
   , cardinalNeighbs
+  , cardinalNeighbsSet
   , fullNeighbs
+  , fullNeighbsSet
   , mannDist
   , mulPoint
+  , lineTo
   -- * Directions
   , Dir(..)
   , parseDir
   , dirPoint
+  , dirPoint'
   , mulDir
   -- * 2D Maps
   , memoPoint
@@ -95,7 +113,6 @@ import           Data.List
 import           Data.List.NonEmpty                 (NonEmpty)
 import           Data.Map                           (Map)
 import           Data.Map.NonEmpty                  (NEMap)
-import           Data.Maybe
 import           Data.MemoCombinators               (Memo)
 import           Data.Monoid                        (Ap(..))
 import           Data.Ord
@@ -108,6 +125,8 @@ import           Data.Tuple
 import           GHC.Generics                       (Generic)
 import           GHC.TypeNats
 import           Linear                             (V2(..), _x, _y)
+import           Linear.Vector
+import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
 import qualified Data.IntMap                        as IM
@@ -128,9 +147,20 @@ import qualified Text.Megaparsec                    as P
 (x:_ ) !!! 0 = x
 (x:xs) !!! n = x `seq` (xs !!! (n - 1))
 
+-- | Strict drop
+drop' :: Int -> [a] -> [a]
+drop' 0 xs     = xs
+drop' _ []     = []
+drop' n (x:xs) = x `seq` drop' (n - 1) xs
+
 -- | Iterate until a 'Nothing' is produced
 iterateMaybe :: (a -> Maybe a) -> a -> [a]
 iterateMaybe f x0 = x0 : unfoldr (fmap dup . f) x0
+
+(!?) :: [a] -> Int -> Maybe a
+[]     !? _ = Nothing
+(x:_ ) !? 0 = Just x
+(_:xs) !? n = xs !? (n - 1)
 
 -- | Apply function until 'Nothing' is produced, and return last produced
 -- value.
@@ -144,9 +174,30 @@ loopMaybe f = go
       Nothing -> x
       Just !y -> go y
 
--- | Find the first value where the function is 'Just'.
-findJust :: Foldable f => (a -> Maybe b) -> f a -> Maybe b
-findJust f = listToMaybe . mapMaybe f . toList
+-- | Apply function until a 'Left'.
+loopEither
+    :: (a -> Either r a)
+    -> a
+    -> r
+loopEither f = go
+  where
+    go !x = case f x of
+      Left  r  -> r
+      Right !y -> go y
+
+
+-- | Apply monadic function until 'Nothing' is produced, and return last produced
+-- value.
+loopMaybeM
+    :: Monad m
+    => (a -> m (Maybe a))
+    -> a
+    -> m a
+loopMaybeM f = go
+  where
+    go !x = f x >>= \case
+      Nothing -> pure x
+      Just !y -> go y
 
 -- | A tuple of the same item twice
 dup :: a -> (a, a)
@@ -179,9 +230,18 @@ fixedPoint f = go
       where
         y = f x
 
+-- | Count the number of items in a container where the predicate is true.
+countTrue :: Foldable f => (a -> Bool) -> f a -> Int
+countTrue p = length . filter p . toList
+
 -- | Build a frequency map
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
 freqs = M.fromListWith (+) . map (,1) . toList
+
+-- | Look up a count from a frequency map, defaulting to zero if item is
+-- not foudn
+lookupFreq :: Ord a => a -> Map a Int -> Int
+lookupFreq = M.findWithDefault 0
 
 -- | Build a reverse frequency map
 revFreq :: (Foldable f, Ord a) => f a -> IntMap (NESet a)
@@ -201,6 +261,8 @@ eitherItem f (Right x) = Right <$> f x
 getDown :: Down a -> a
 getDown (Down x) = x
 
+type Letter = Finite 26
+
 -- | Parse a letter into a number 0 to 25.  Returns 'False' if lowercase
 -- and 'True' if uppercase.
 charFinite :: Char -> Maybe (Bool, Finite 26)
@@ -208,6 +270,9 @@ charFinite (ord->c) = asum
     [ (False,) <$> packFinite (fromIntegral (c - ord 'a'))
     , (True ,) <$> packFinite (fromIntegral (c - ord 'A'))
     ]
+
+digitToIntSafe :: Char -> Maybe Int
+digitToIntSafe c = digitToInt c <$ guard (isDigit c)
 
 -- | Prism for a 'Char' as @('Bool', 'Finite' 26)@, where the 'Finite' is
 -- the letter parsed as a number from 0 to 25, and the 'Bool' is lowercase
@@ -294,6 +359,19 @@ minimumValByNE c = minimumBy (c `on` snd)
 minimumValNE :: Ord b => NEMap a b -> (a, b)
 minimumValNE = minimumValByNE compare
 
+listTup :: [a] -> Maybe (a,a)
+listTup (x:y:_) = Just (x,y)
+listTup _       = Nothing
+
+
+listTup3 :: [a] -> Maybe (a,a,a)
+listTup3 (x:y:z:_) = Just (x,y,z)
+listTup3 _         = Nothing
+
+listTup4 :: [a] -> Maybe (a,a,a,a)
+listTup4 (x:y:z:k:_) = Just (x,y,z,k)
+listTup4 _           = Nothing
+
 -- | Delete a potential value from a 'Finite'.
 deleteFinite
     :: KnownNat n
@@ -329,14 +407,23 @@ floodFill
     => (a -> Set a)     -- ^ Expansion (be sure to limit allowed points)
     -> Set a            -- ^ Start points
     -> Set a            -- ^ Flood filled
-floodFill f = go S.empty
+floodFill f = snd . floodFillCount f
+
+-- | Flood fill from a starting set, counting the number of steps
+floodFillCount
+    :: Ord a
+    => (a -> Set a)     -- ^ Expansion (be sure to limit allowed points)
+    -> Set a            -- ^ Start points
+    -> (Int, Set a)     -- ^ Flood filled, with count of number of steps
+floodFillCount f = go 0 S.empty
   where
-    go !inner !outer
-        | S.null outer' = inner'
-        | otherwise     = go inner' outer'
+    go !n !innr !outr
+        | S.null outr' = (n, innr')
+        | otherwise    = go (n + 1) innr' outr'
       where
-        inner' = S.union inner outer
-        outer' = foldMap f outer `S.difference` inner'
+        innr' = S.union innr outr
+        outr' = foldMap f outr `S.difference` innr'
+
 
 
 -- | 2D Coordinate
@@ -356,11 +443,22 @@ boundingBox' = fmap boundingBox . NE.nonEmpty . toList
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbs p = (p +) <$> [ V2 0 (-1), V2 1 0, V2 0 1, V2 (-1) 0 ]
 
+cardinalNeighbsSet :: Point -> Set Point
+cardinalNeighbsSet p = S.fromAscList . map (p +) $
+  [ V2 (-1)   0
+  , V2   0  (-1)
+  , V2   0    1
+  , V2   1    0
+  ]
+
 fullNeighbs :: Point -> [Point]
 fullNeighbs p = [ p + V2 dx dy
                 | dx <- [-1 .. 1]
                 , dy <- if dx == 0 then [-1,1] else [-1..1]
                 ]
+
+fullNeighbsSet :: Point -> Set Point
+fullNeighbsSet = S.fromList . fullNeighbs
 
 memoPoint :: Memo Point
 memoPoint = Memo.wrap (uncurry V2) (\(V2 x y) -> (x, y)) $
@@ -374,13 +472,24 @@ mulPoint :: Point -> Point -> Point
 mulPoint (V2 x y) (V2 u v) = V2 (x*u - y*v) (x*v + y*u)
 
 data Dir = North | East | South | West
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, Enum)
+
+instance Hashable Dir
+instance NFData Dir
 
 dirPoint :: Dir -> Point
 dirPoint = \case
     North -> V2   0   1
     East  -> V2   1   0
     South -> V2   0 (-1)
+    West  -> V2 (-1)  0
+
+-- | 'dirPoint' but with inverted y axis
+dirPoint' :: Dir -> Point
+dirPoint' = \case
+    North -> V2   0 (-1)
+    East  -> V2   1   0
+    South -> V2   0   1
     West  -> V2 (-1)  0
 
 parseDir :: Char -> Maybe Dir
@@ -434,6 +543,7 @@ newtype ScanPoint = SP { _getSP :: Point }
   deriving (Eq, Show, Num, Generic)
 
 instance Hashable ScanPoint
+instance NFData ScanPoint
 
 instance Ord ScanPoint where
     compare = comparing (view _y . _getSP)
@@ -485,6 +595,7 @@ newtype TokStream a = TokStream { getTokStream :: [a] }
   deriving (Ord, Eq, Show, Generic, Functor)
 
 instance Hashable a => Hashable (TokStream a)
+instance NFData a => NFData (TokStream a)
 
 instance (Ord a, Show a) => P.Stream (TokStream a) where
     type Token  (TokStream a) = a
@@ -545,3 +656,21 @@ parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
 -- | Skip every result until this token matches
 nextMatch :: P.MonadParsec e s m => m a -> m a
 nextMatch = P.try . fmap snd . P.manyTill_ (P.try P.anySingle)
+
+toNatural :: Integral a => a -> Maybe Natural
+toNatural x = fromIntegral x <$ guard (x >= 0)
+
+-- | Lattice points for line between points, not including endpoints
+lineTo :: Point -> Point -> [Point]
+lineTo p0 p1 = [ p0 + t *^ step | t <- [1 .. gcf  - 1] ]
+  where
+    d@(V2 dx dy) = p1 - p0
+    gcf          = gcd dx dy
+    step         = (`div` gcf) <$> d
+
+instance FunctorWithIndex k (NEMap k) where
+    imap = NEM.mapWithKey
+instance FoldableWithIndex k (NEMap k) where
+    ifoldMap = NEM.foldMapWithKey
+instance TraversableWithIndex k (NEMap k) where
+    itraverse = NEM.traverseWithKey

@@ -89,6 +89,7 @@ library:
   - haskeline
   - haskell-names
   - haskell-src-exts
+  - heredoc
   - hpack
   - lens
   - linear
