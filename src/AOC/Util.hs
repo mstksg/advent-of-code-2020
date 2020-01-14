@@ -12,19 +12,28 @@
 
 module AOC.Util (
     strip
+  , stripNewline
   , eitherToMaybe
-  , findMaybe
+  , firstJust
   , maybeToEither
+  , maybeAlt
+  , traceShowIdMsg
+  , traceShowMsg
   ) where
 
 import           Control.Applicative
 import           Control.Monad.Except
 import           Data.Foldable
-import qualified Data.Text             as T
+import           Debug.Trace
+import qualified Data.Text            as T
 
 -- | Strip trailing and leading whitespace.
 strip :: String -> String
 strip = T.unpack . T.strip . T.pack
+
+-- | Strip trailing newline
+stripNewline :: String -> String
+stripNewline = reverse . dropWhile (== '\n') . reverse
 
 -- | Convert an 'Either' into a 'Maybe', or any 'Alternative' instance,
 -- forgetting the error value.
@@ -38,9 +47,21 @@ maybeToEither e = maybe (throwError e) pure
 
 -- | Like 'find', but instead of taking an @a -> Bool@, takes an @a ->
 -- Maybe b@ and returns the first success.
-findMaybe
+firstJust
     :: Foldable t
     => (a -> Maybe b)
     -> t a
     -> Maybe b
-findMaybe p = asum . map p . toList
+firstJust p = asum . map p . toList
+
+-- | Generalize a 'Maybe' to any 'Alternative'
+maybeAlt :: Alternative m => Maybe a -> m a
+maybeAlt = maybe empty pure
+
+-- | Like 'traceShowId' but with an extra message
+traceShowIdMsg :: Show a => String -> a -> a
+traceShowIdMsg msg x = trace (msg ++ show x) x
+
+-- | Like 'traceShow' but with an extra message
+traceShowMsg :: Show a => String -> a -> b -> b
+traceShowMsg msg x = trace (msg ++ show x)

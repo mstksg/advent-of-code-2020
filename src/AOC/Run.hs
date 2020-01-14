@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitParams    #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 
@@ -65,11 +66,12 @@ data TestSpec = TSAll
   deriving Show
 
 -- | Options for 'mainRun'.
-data MainRunOpts = MRO { _mroSpec  :: !TestSpec
-                       , _mroTest  :: !Bool     -- ^ Run tests?  (Default: False)
-                       , _mroBench :: !Bool     -- ^ Benchmark?  (Default: False)
-                       , _mroLock  :: !Bool     -- ^ Lock in answer as correct?  (Default: False)
-                       , _mroInput :: !(Day -> Part -> IO (Maybe String))   -- ^ Manually supply input (Default: always return Nothing)
+data MainRunOpts = MRO { _mroSpec   :: !TestSpec
+                       , _mroActual :: !Bool     -- ^ Run input?  (Defualt: True
+                       , _mroTest   :: !Bool     -- ^ Run tests?  (Default: False)
+                       , _mroBench  :: !Bool     -- ^ Benchmark?  (Default: False)
+                       , _mroLock   :: !Bool     -- ^ Lock in answer as correct?  (Default: False)
+                       , _mroInput  :: !(Day -> Part -> IO (Maybe String))   -- ^ Manually supply input (Default: always return Nothing)
                        }
 
 makeClassy ''MainRunOpts
@@ -94,11 +96,12 @@ makeClassy ''MainSubmitOpts
 
 -- | Default options for 'mainRun'.
 defaultMRO :: TestSpec -> MainRunOpts
-defaultMRO ts = MRO { _mroSpec  = ts
-                    , _mroTest  = False
-                    , _mroBench = False
-                    , _mroLock  = False
-                    , _mroInput = \_ _ -> pure Nothing
+defaultMRO ts = MRO { _mroSpec   = ts
+                    , _mroActual = True
+                    , _mroTest   = False
+                    , _mroBench  = False
+                    , _mroLock   = False
+                    , _mroInput  = \_ _ -> pure Nothing
                     }
 
 -- | Default options for 'mainView'.
@@ -143,8 +146,22 @@ mainRun Cfg{..} MRO{..} =  do
           ans1 = maybe _cdAnswer (const Nothing) inp0
       case inp1 of
         Right inp
-          | _mroBench -> (testRes, Left ["Ran benchmark, so no result"]) <$ benchmark (nf (runSomeSolution c) inp)
-          | otherwise -> (second . first) ((:[]) . show) <$> testCase False c inp (TM ans1 M.empty)
+          | _mroBench -> do
+              _ <- evaluate (force inp)
+              let res    = (testRes, Left ["Ran benchmark, so no result"])
+              res <$ case c of
+                MkSomeSolWH _         ->
+                      benchmark (nf (runSomeSolution c) inp)
+                MkSomeSolNF MkSol{..}
+                  | Just x <- sParse inp -> do
+                      _ <- evaluate (force x)
+                      benchmark (nf (let ?dyno = mempty in sSolve) x)
+                      putStrLn "* parsing and formatting times excluded"
+                      putStrLn ""
+                  | otherwise            ->
+                      putStrLn "(No parse)"
+          | _mroActual -> (second . first) ((:[]) . show) <$> testCase False c inp (TM ans1 M.empty)
+          | otherwise   -> pure (testRes, Left ["Actual input skipped"])
         Left e
           | _mroTest  -> pure (testRes, Left ["Ran tests, so no result"])
           | otherwise -> (testRes, Left e) <$ putStrLn "[INPUT ERROR]" <* mapM_ putStrLn e
@@ -272,9 +289,9 @@ displayStatus = \case
           Just s  -> printf "  Hint: Answer was %s." s
 
 runAll
-    :: Maybe String                             -- ^ session key
-    -> Integer                                  -- ^ year
-    -> Bool                                     -- ^ run and lock answer
+    :: Maybe String                         -- ^ session key
+    -> Integer                              -- ^ year
+    -> Bool                                 -- ^ run and lock answer
     -> (Day -> Part -> IO (Maybe String))   -- ^ replacements
     -> ChallengeMap
     -> (SomeSolution -> Maybe String -> ChallengeData -> IO a)  -- ^ callback. given solution, "replacement" input, and data

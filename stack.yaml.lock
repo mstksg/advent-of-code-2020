@@ -5,15 +5,15 @@
 
 packages:
 - completed:
-    hackage: advent-of-code-api-0.2.2.1@sha256:b35377e84ed918b2adbec6d4963814bd9f2bcc73765c09db19538218950223de,2290
+    hackage: advent-of-code-api-0.2.7.0@sha256:d16c39e5f149bb046b05adf94ba2c3232a24d21587cb75b3c4c4480f1e270564,2351
     pantry-tree:
-      size: 1124
-      sha256: 2fbbff0c049e4c96d50bc160e45a1127b2e0bec243eaa7d8e0297c27ccae7229
+      size: 1185
+      sha256: 1688c03a530c5eaf1581e1d5104e8481d3b2199ce973eb8599eb64168edc3908
   original:
-    hackage: advent-of-code-api-0.2.2.1
+    hackage: advent-of-code-api-0.2.7.0
 snapshots:
 - completed:
-    size: 525876
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/13.yaml
-    sha256: 4a0e79eb194c937cc2a1852ff84d983c63ac348dc6bad5f38d20cab697036eef
-  original: lts-14.13
+    size: 524154
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/20.yaml
+    sha256: 2f5099f69ddb6abfe64400fe1e6a604e8e628f55e6837211cd70a81eb0a8fa4d
+  original: lts-14.20
