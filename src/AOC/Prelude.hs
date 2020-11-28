@@ -46,7 +46,6 @@ import           Data.Map                  as P (Map)
 import           Data.Map.NonEmpty         as P (NEMap)
 import           Data.Maybe                as P
 import           Data.Ord                  as P
-import           Data.Profunctor           as P (Profunctor(..))
 import           Data.Semigroup            as P
 import           Data.Set                  as P (Set)
 import           Data.Set.NonEmpty         as P (NESet)

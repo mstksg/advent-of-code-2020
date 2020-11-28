@@ -47,6 +47,7 @@ default-extensions:
 - MultiParamTypeClasses
 - MultiWayIf
 - NumDecimals
+- NumericUnderscores
 - OverloadedLabels
 - PartialTypeSignatures
 - PatternGuards
