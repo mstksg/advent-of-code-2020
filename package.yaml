@@ -82,6 +82,7 @@ library:
   - deepseq
   - directory
   - filepath
+  - finitary
   - finite-typelits
   - foldl
   - groups

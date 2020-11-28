@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-14.20
+resolver: lts-16.23
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -41,6 +41,10 @@ extra-deps:
 - advent-of-code-api-0.2.7.0
 - megaparsec-8.0.0
 - parser-combinators-1.2.1
+- finitary-2.0.0.0
+- typelits-witnesses-0.4.0.0
+- dependent-sum-0.7.1.0
+- constraints-extras-0.3.0.2
 
 allow-newer: true
 

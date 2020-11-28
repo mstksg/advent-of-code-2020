@@ -41,6 +41,7 @@ module AOC.Common (
   , clearOut
   , foldMapPar
   , foldMapPar1
+  , foldMapParChunk
   , meanVar
   , maximumVal
   , maximumValBy
@@ -51,13 +52,18 @@ module AOC.Common (
   , minimumValNE
   , minimumValByNE
   , listTup
+  , _ListTup
   , listTup3
+  , _ListTup3
   , listTup4
+  , _ListTup4
   -- * Simple type util
   , deleteFinite
   , Letter
   , charFinite
   , _CharFinite
+  , hexDigit
+  , splitWord
   , digitToIntSafe
   , caeser
   , eitherItem
@@ -104,6 +110,7 @@ import           Data.Bifunctor
 import           Data.Char
 import           Data.Coerce
 import           Data.Finite
+import           Data.Finite.Internal
 import           Data.Foldable
 import           Data.Function
 import           Data.Group
@@ -111,6 +118,7 @@ import           Data.Hashable
 import           Data.IntMap                        (IntMap)
 import           Data.List
 import           Data.List.NonEmpty                 (NonEmpty)
+import           Data.List.Split
 import           Data.Map                           (Map)
 import           Data.Map.NonEmpty                  (NEMap)
 import           Data.MemoCombinators               (Memo)
@@ -122,6 +130,7 @@ import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.NonEmpty                  (NESet)
 import           Data.Tuple
+import           Data.Word
 import           GHC.Generics                       (Generic)
 import           GHC.TypeNats
 import           Linear                             (V2(..), _x, _y)
@@ -129,6 +138,7 @@ import           Linear.Vector
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
+import qualified Data.Finitary                      as F
 import qualified Data.IntMap                        as IM
 import qualified Data.List.NonEmpty                 as NE
 import qualified Data.Map                           as M
@@ -261,6 +271,12 @@ eitherItem f (Right x) = Right <$> f x
 getDown :: Down a -> a
 getDown (Down x) = x
 
+splitWord :: Word8 -> (Finite 16, Finite 16)
+splitWord = swap . separateProduct . F.toFinite
+
+hexDigit :: Iso' Char (Finite 16)
+hexDigit = iso (Finite . fromIntegral . digitToInt) (intToDigit . fromIntegral)
+
 type Letter = Finite 26
 
 -- | Parse a letter into a number 0 to 25.  Returns 'False' if lowercase
@@ -359,18 +375,41 @@ minimumValByNE c = minimumBy (c `on` snd)
 minimumValNE :: Ord b => NEMap a b -> (a, b)
 minimumValNE = minimumValByNE compare
 
+foldMapParChunk
+    :: (NFData m, Monoid m)
+    => Int      -- ^ chunk size
+    -> (a -> m)
+    -> [a]
+    -> m
+foldMapParChunk n f xs = fold $
+  parMap rdeepseq (foldMap f) (chunksOf n xs)
+
 listTup :: [a] -> Maybe (a,a)
 listTup (x:y:_) = Just (x,y)
 listTup _       = Nothing
 
+_ListTup :: Prism' [a] (a, a)
+_ListTup = prism' (\(x,y) -> [x,y]) $ \case
+    [x,y] -> Just (x,y)
+    _     -> Nothing
 
 listTup3 :: [a] -> Maybe (a,a,a)
 listTup3 (x:y:z:_) = Just (x,y,z)
 listTup3 _         = Nothing
 
+_ListTup3 :: Prism' [a] (a, a, a)
+_ListTup3 = prism' (\(x,y,z) -> [x,y,z]) $ \case
+    [x,y,z] -> Just (x,y,z)
+    _       -> Nothing
+
 listTup4 :: [a] -> Maybe (a,a,a,a)
 listTup4 (x:y:z:k:_) = Just (x,y,z,k)
 listTup4 _           = Nothing
+
+_ListTup4 :: Prism' [a] (a, a, a, a)
+_ListTup4 = prism' (\(x,y,z,k) -> [x,y,z,k]) $ \case
+    [x,y,z,k] -> Just (x,y,z,k)
+    _         -> Nothing
 
 -- | Delete a potential value from a 'Finite'.
 deleteFinite
