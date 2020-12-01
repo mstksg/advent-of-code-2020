@@ -45,6 +45,10 @@ extra-deps:
 - typelits-witnesses-0.4.0.0
 - dependent-sum-0.7.1.0
 - constraints-extras-0.3.0.2
+- github: mstksg/vec
+  commit: d2dedab44fa49b4ed903fac6b9189c4d62835e1b
+  subdirs:
+  - vec
 
 allow-newer: true
 

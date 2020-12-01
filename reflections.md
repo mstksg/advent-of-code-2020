@@ -132,7 +132,10 @@ part2 :: [Int] -> Maybe Int
 part2 = knapsack 3 2020 . S.fromList
 ```
 
-And we could go on, and on, and on! :)
+And we could go on, and on, and on!
+
+Definitely very unnecessary, but it does shave my time on Part 2 down from
+around 2ms to around 30μs :)
 
 
 ### Day 1 Benchmarks
@@ -140,21 +143,21 @@ And we could go on, and on, and on! :)
 ```
 >> Day 01a
 benchmarking...
-time                 18.74 μs   (17.78 μs .. 19.71 μs)
-                     0.985 R²   (0.970 R² .. 0.998 R²)
-mean                 19.16 μs   (18.83 μs .. 19.79 μs)
-std dev              1.587 μs   (793.8 ns .. 2.803 μs)
-variance introduced by outliers: 80% (severely inflated)
+time                 19.38 μs   (18.93 μs .. 20.07 μs)
+                     0.995 R²   (0.991 R² .. 0.998 R²)
+mean                 19.95 μs   (19.44 μs .. 20.84 μs)
+std dev              2.055 μs   (1.251 μs .. 3.404 μs)
+variance introduced by outliers: 86% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 01b
 benchmarking...
-time                 138.1 μs   (133.3 μs .. 142.5 μs)
-                     0.991 R²   (0.985 R² .. 0.995 R²)
-mean                 136.9 μs   (133.3 μs .. 140.9 μs)
-std dev              12.84 μs   (10.42 μs .. 16.65 μs)
-variance introduced by outliers: 79% (severely inflated)
+time                 141.4 μs   (138.0 μs .. 144.9 μs)
+                     0.988 R²   (0.971 R² .. 0.998 R²)
+mean                 141.0 μs   (137.8 μs .. 146.4 μs)
+std dev              14.23 μs   (8.710 μs .. 23.51 μs)
+variance introduced by outliers: 81% (severely inflated)
 
 * parsing and formatting times excluded
 ```

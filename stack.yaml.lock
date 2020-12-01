@@ -53,6 +53,19 @@ packages:
       sha256: 3ce1012bfb02e4d7def9df19ce80b8cd2b472c691b25b181d9960638673fecd1
   original:
     hackage: constraints-extras-0.3.0.2
+- completed:
+    size: 406938
+    subdir: vec
+    url: https://github.com/mstksg/vec/archive/d2dedab44fa49b4ed903fac6b9189c4d62835e1b.tar.gz
+    name: vec
+    version: 0.3.0.1
+    sha256: 360668791000dcd26c0772254dd5ebeb7b1d0532f49292fa027d64d33da58329
+    pantry-tree:
+      size: 1051
+      sha256: ee421cc8c2b557a77348532108a3c8b7868250534c8fb53b45ce0ea6df9c2de4
+  original:
+    subdir: vec
+    url: https://github.com/mstksg/vec/archive/d2dedab44fa49b4ed903fac6b9189c4d62835e1b.tar.gz
 snapshots:
 - completed:
     size: 532832

@@ -93,4 +93,7 @@ part2 :: [Int] -> Maybe Int
 part2 = knapsack 3 2020 . S.fromList
 ```
 
-And we could go on, and on, and on! :)
+And we could go on, and on, and on!
+
+Definitely very unnecessary, but it does shave my time on Part 2 down from
+around 2ms to around 30μs :)
