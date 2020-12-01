@@ -12,15 +12,13 @@ module AOC.Challenge.Day01 (
   , day01b
   ) where
 
-import           AOC.Common    (firstJust)
-import           AOC.Solver    ((:~>)(..))
-import           Control.Monad (guard)
-import           Data.Set      (Set)
-import           Data.Type.Nat
-import           Debug.Trace
-import           Text.Read     (readMaybe)
-import qualified Data.Set      as S
-import qualified Data.Vec.Lazy as Vec
+import           AOC.Common       (firstJust)
+import           AOC.Solver       ((:~>)(..))
+import           Data.IntSet      (IntSet)
+import           Data.Type.Nat    (Nat(..), Nat1, Nat2, SNat(..), SNatI(..))
+import           Text.Read        (readMaybe)
+import qualified Data.IntSet      as IS
+import qualified Data.Vec.Lazy    as Vec
 
 -- | Given a goal sum and a set of numbers to pick from, finds the @n@
 -- numbers in the set that add to the goal sum.  The number of items
@@ -28,28 +26,28 @@ import qualified Data.Vec.Lazy as Vec
 knapsack
     :: forall n. SNatI n
     => Int              -- ^ goal sum
-    -> Set Int          -- ^ set of options
+    -> IntSet          -- ^ set of options
     -> Maybe (Vec.Vec ('S n) Int)      -- ^ resulting n items that sum to the goal
 knapsack = case snat :: SNat n of
     SZ -> \goal xs ->
-      if goal `S.member` xs
+      if goal `IS.member` xs
         then Just $ Vec.singleton goal
         else Nothing
-    SS -> \goal xs -> flip firstJust (S.toList xs) $ \x ->
+    SS -> \goal xs -> flip firstJust (IS.toList xs) $ \x ->
       let goal'   = goal - x
-          (_, ys) = S.split x xs
+          (_, ys) = IS.split x xs
       in  (x Vec.:::) <$> knapsack goal' ys
 
 day01a :: [Int] :~> Int
 day01a = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
-    , sSolve = fmap product . knapsack @Nat1 2020 . S.fromList
+    , sSolve = fmap product . knapsack @Nat1 2020 . IS.fromList
     }
 
 day01b :: [Int] :~> Int
 day01b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
-    , sSolve = fmap product . knapsack @Nat2 2020 . S.fromList
+    , sSolve = fmap product . knapsack @Nat2 2020 . IS.fromList
     }

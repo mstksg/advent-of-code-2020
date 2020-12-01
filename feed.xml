@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Tue,  1 Dec 2020 02:32:09 EST</lastBuildDate>
+    <lastBuildDate>Tue,  1 Dec 2020 13:38:08 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Tue,  1 Dec 2020 02:32:09 EST</pubDate>
+    <pubDate>Tue,  1 Dec 2020 13:38:08 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -41,20 +41,20 @@ that file instead!
 &lt;span id=&quot;cb2-14&quot;&gt;&lt;a href=&quot;#cb2-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (x&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;y&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;z)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;But this method is a little bit “extra”, since we actually don’t need to search all of &lt;code&gt;ys&lt;/code&gt; for the proper sum…if we pick &lt;code&gt;x&lt;/code&gt; as &lt;code&gt;500&lt;/code&gt;, then we really only need to check if &lt;code&gt;1520&lt;/code&gt; is a part of &lt;code&gt;ys&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;So we really only need to check for set inclusion:&lt;/p&gt;
-&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.Set&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;S&lt;/span&gt;&lt;/span&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.IntSet&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IS&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findPair ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findPair ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IS.IntSet&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findPair goal xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; S.toList xs&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; IS.toList xs&lt;/span&gt;
 &lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; y &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; goal &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; x&lt;/span&gt;
-&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    guard (y &lt;span class=&quot;ot&quot;&gt;`S.member`&lt;/span&gt; xs)&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    guard (y &lt;span class=&quot;ot&quot;&gt;`IS.member`&lt;/span&gt; xs)&lt;/span&gt;
 &lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (x &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; y)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And our first part will be &lt;code&gt;findPair 2020&lt;/code&gt;!&lt;/p&gt;
-&lt;p&gt;You could even implement &lt;code&gt;findTriple&lt;/code&gt; in terms of &lt;code&gt;findPair&lt;/code&gt;, using &lt;code&gt;S.split&lt;/code&gt; to partition a set into all items smaller than and larger than a number. Splitting is a very efficient operation on a binary search tree like &lt;code&gt;Set&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findTriple ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;p&gt;You could even implement &lt;code&gt;findTriple&lt;/code&gt; in terms of &lt;code&gt;findPair&lt;/code&gt;, using &lt;code&gt;IS.split&lt;/code&gt; to partition a set into all items smaller than and larger than a number. Splitting is a very efficient operation on a binary search tree like &lt;code&gt;IntSet&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findTriple ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IS.IntSet&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findTriple goal xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; S.toList xs&lt;/span&gt;
-&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; (_, ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; S.split x xs&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; IS.toList xs&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; (_, ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; IS.split x xs&lt;/span&gt;
 &lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        goal&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; goal &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; x&lt;/span&gt;
 &lt;span id=&quot;cb4-6&quot;&gt;&lt;a href=&quot;#cb4-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;case&lt;/span&gt; findPair goal&amp;#39; ys &lt;span class=&quot;kw&quot;&gt;of&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-7&quot;&gt;&lt;a href=&quot;#cb4-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;dt&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; empty&lt;/span&gt;
@@ -65,45 +65,45 @@ that file instead!
 &lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;knapsack&lt;/span&gt;
 &lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;              &lt;span class=&quot;co&quot;&gt;-- ^ number of items n to pick&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-5&quot;&gt;&lt;a href=&quot;#cb5-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;              &lt;span class=&quot;co&quot;&gt;-- ^ goal sum&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;          &lt;span class=&quot;co&quot;&gt;-- ^ set of options&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IS.IntSet&lt;/span&gt;        &lt;span class=&quot;co&quot;&gt;-- ^ set of options&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-7&quot;&gt;&lt;a href=&quot;#cb5-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;]      &lt;span class=&quot;co&quot;&gt;-- ^ resulting n items that sum to the goal&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-8&quot;&gt;&lt;a href=&quot;#cb5-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;knapsack &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; _    _  &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Nothing&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-9&quot;&gt;&lt;a href=&quot;#cb5-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;knapsack &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; goal xs&lt;/span&gt;
-&lt;span id=&quot;cb5-10&quot;&gt;&lt;a href=&quot;#cb5-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; goal &lt;span class=&quot;ot&quot;&gt;`S.member`&lt;/span&gt; xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; [goal]&lt;/span&gt;
+&lt;span id=&quot;cb5-10&quot;&gt;&lt;a href=&quot;#cb5-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; goal &lt;span class=&quot;ot&quot;&gt;`IS.member`&lt;/span&gt; xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; [goal]&lt;/span&gt;
 &lt;span id=&quot;cb5-11&quot;&gt;&lt;a href=&quot;#cb5-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;otherwise&lt;/span&gt;          &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Nothing&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-12&quot;&gt;&lt;a href=&quot;#cb5-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;knapsack n goal xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb5-13&quot;&gt;&lt;a href=&quot;#cb5-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; S.toList xs&lt;/span&gt;
+&lt;span id=&quot;cb5-13&quot;&gt;&lt;a href=&quot;#cb5-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; IS.toList xs&lt;/span&gt;
 &lt;span id=&quot;cb5-14&quot;&gt;&lt;a href=&quot;#cb5-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; goal&amp;#39;   &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; goal &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; x&lt;/span&gt;
-&lt;span id=&quot;cb5-15&quot;&gt;&lt;a href=&quot;#cb5-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        (_, ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; S.split x xs&lt;/span&gt;
+&lt;span id=&quot;cb5-15&quot;&gt;&lt;a href=&quot;#cb5-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        (_, ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; IS.split x xs&lt;/span&gt;
 &lt;span id=&quot;cb5-16&quot;&gt;&lt;a href=&quot;#cb5-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;case&lt;/span&gt; knapsack (n &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) goal&amp;#39; ys &lt;span class=&quot;kw&quot;&gt;of&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-17&quot;&gt;&lt;a href=&quot;#cb5-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;dt&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; empty&lt;/span&gt;
 &lt;span id=&quot;cb5-18&quot;&gt;&lt;a href=&quot;#cb5-18&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; rs &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (x&lt;span class=&quot;op&quot;&gt;:&lt;/span&gt;rs)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And so we have:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb6&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb6-1&quot;&gt;&lt;a href=&quot;#cb6-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; knapsack &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; S.fromList&lt;/span&gt;
+&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; knapsack &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; IS.fromList&lt;/span&gt;
 &lt;span id=&quot;cb6-3&quot;&gt;&lt;a href=&quot;#cb6-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb6-4&quot;&gt;&lt;a href=&quot;#cb6-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb6-5&quot;&gt;&lt;a href=&quot;#cb6-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; knapsack &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; S.fromList&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span id=&quot;cb6-5&quot;&gt;&lt;a href=&quot;#cb6-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; knapsack &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; IS.fromList&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And we could go on, and on, and on!&lt;/p&gt;
-&lt;p&gt;Definitely very unnecessary, but it does shave my time on Part 2 down from around 2ms to around 30μs :)&lt;/p&gt;
+&lt;p&gt;Definitely very unnecessary, but it does shave my time on Part 2 down from around 2ms to around 20μs :)&lt;/p&gt;
 &lt;h3 id=&quot;day-1-benchmarks&quot;&gt;Day 1 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 01a
 benchmarking...
-time                 19.38 μs   (18.93 μs .. 20.07 μs)
-                     0.995 R²   (0.991 R² .. 0.998 R²)
-mean                 19.95 μs   (19.44 μs .. 20.84 μs)
-std dev              2.055 μs   (1.251 μs .. 3.404 μs)
-variance introduced by outliers: 86% (severely inflated)
+time                 6.513 μs   (6.106 μs .. 6.965 μs)
+                     0.971 R²   (0.965 R² .. 0.981 R²)
+mean                 6.893 μs   (6.539 μs .. 7.138 μs)
+std dev              1.093 μs   (965.5 ns .. 1.197 μs)
+variance introduced by outliers: 94% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 01b
 benchmarking...
-time                 141.4 μs   (138.0 μs .. 144.9 μs)
-                     0.988 R²   (0.971 R² .. 0.998 R²)
-mean                 141.0 μs   (137.8 μs .. 146.4 μs)
-std dev              14.23 μs   (8.710 μs .. 23.51 μs)
-variance introduced by outliers: 81% (severely inflated)
+time                 57.16 μs   (54.29 μs .. 59.82 μs)
+                     0.982 R²   (0.975 R² .. 0.989 R²)
+mean                 62.17 μs   (60.35 μs .. 64.08 μs)
+std dev              6.463 μs   (5.113 μs .. 9.358 μs)
+variance introduced by outliers: 84% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>

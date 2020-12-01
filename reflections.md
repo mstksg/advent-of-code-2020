@@ -71,27 +71,27 @@ need to check if `1520` is a part of `ys`.
 So we really only need to check for set inclusion:
 
 ```haskell
-import qualified Data.Set as S
+import qualified Data.IntSet as IS
 
-findPair :: Int -> Set Int -> Maybe Int
+findPair :: Int -> IS.IntSet -> Maybe Int
 findPair goal xs = listToMaybe $ do
-    x <- S.toList xs
+    x <- IS.toList xs
     let y = goal - x
-    guard (y `S.member` xs)
+    guard (y `IS.member` xs)
     pure (x * y)
 ```
 
 And our first part will be `findPair 2020`!
 
-You could even implement `findTriple` in terms of `findPair`, using `S.split`
+You could even implement `findTriple` in terms of `findPair`, using `IS.split`
 to partition a set into all items smaller than and larger than a number.
-Splitting is a very efficient operation on a binary search tree like `Set`:
+Splitting is a very efficient operation on a binary search tree like `IntSet`:
 
 ```haskell
-findTriple :: Int -> Set Int -> Maybe Int
+findTriple :: Int -> IS.IntSet -> Maybe Int
 findTriple goal xs = listToMaybe $ do
-    x <- S.toList xs
-    let (_, ys) = S.split x xs
+    x <- IS.toList xs
+    let (_, ys) = IS.split x xs
         goal' = goal - x
     case findPair goal' ys of
       Nothing -> empty
@@ -107,16 +107,16 @@ function to find any goal in any number of items!
 knapsack
     :: Int              -- ^ number of items n to pick
     -> Int              -- ^ goal sum
-    -> Set Int          -- ^ set of options
+    -> IS.IntSet        -- ^ set of options
     -> Maybe [Int]      -- ^ resulting n items that sum to the goal
 knapsack 0 _    _  = Nothing
 knapsack 1 goal xs
-    | goal `S.member` xs = Just [goal]
+    | goal `IS.member` xs = Just [goal]
     | otherwise          = Nothing
 knapsack n goal xs = listToMaybe $ do
-    x <- S.toList xs
+    x <- IS.toList xs
     let goal'   = goal - x
-        (_, ys) = S.split x xs
+        (_, ys) = IS.split x xs
     case knapsack (n - 1) goal' ys of
       Nothing -> empty
       Just rs -> pure (x:rs)
@@ -126,16 +126,16 @@ And so we have:
 
 ```haskell
 part1 :: [Int] -> Maybe Int
-part1 = knapsack 2 2020 . S.fromList
+part1 = knapsack 2 2020 . IS.fromList
 
 part2 :: [Int] -> Maybe Int
-part2 = knapsack 3 2020 . S.fromList
+part2 = knapsack 3 2020 . IS.fromList
 ```
 
 And we could go on, and on, and on!
 
 Definitely very unnecessary, but it does shave my time on Part 2 down from
-around 2ms to around 30μs :)
+around 2ms to around 20μs :)
 
 
 ### Day 1 Benchmarks
@@ -143,21 +143,21 @@ around 2ms to around 30μs :)
 ```
 >> Day 01a
 benchmarking...
-time                 19.38 μs   (18.93 μs .. 20.07 μs)
-                     0.995 R²   (0.991 R² .. 0.998 R²)
-mean                 19.95 μs   (19.44 μs .. 20.84 μs)
-std dev              2.055 μs   (1.251 μs .. 3.404 μs)
-variance introduced by outliers: 86% (severely inflated)
+time                 6.513 μs   (6.106 μs .. 6.965 μs)
+                     0.971 R²   (0.965 R² .. 0.981 R²)
+mean                 6.893 μs   (6.539 μs .. 7.138 μs)
+std dev              1.093 μs   (965.5 ns .. 1.197 μs)
+variance introduced by outliers: 94% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 01b
 benchmarking...
-time                 141.4 μs   (138.0 μs .. 144.9 μs)
-                     0.988 R²   (0.971 R² .. 0.998 R²)
-mean                 141.0 μs   (137.8 μs .. 146.4 μs)
-std dev              14.23 μs   (8.710 μs .. 23.51 μs)
-variance introduced by outliers: 81% (severely inflated)
+time                 57.16 μs   (54.29 μs .. 59.82 μs)
+                     0.982 R²   (0.975 R² .. 0.989 R²)
+mean                 62.17 μs   (60.35 μs .. 64.08 μs)
+std dev              6.463 μs   (5.113 μs .. 9.358 μs)
+variance introduced by outliers: 84% (severely inflated)
 
 * parsing and formatting times excluded
 ```
