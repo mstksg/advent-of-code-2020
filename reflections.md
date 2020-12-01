@@ -37,36 +37,24 @@ that file instead!
 [d01g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs
 [d01h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html
 
-Day 1 is usually a fun one to do in Haskell! :D  Today I used one of my more
-favorite little list utility functions, `select`:
+Day 1 is usually a fun one to do in Haskell! :D  Today we can do something nice
+with `tails`:
 
 ```haskell
-select :: [a] -> [(a,[a])]
-select = go []
-  where
-    go _  [] = []
-    go xs (y:ys) = (y,xs++ys) : go (y:xs) ys
+ghci> tails [1,2,3,4]
+[1:[2,3,4], 2:[3,4], 3:[4], 4:[]]
 ```
 
-Not strictly necessary to solve this, but it returns a list of every element in
-a list paired with the list *excluding* that element.  (I used it in a [blog
-post][sendmoremoney] in the past).
-
-[sendmoremoney]: https://blog.jle.im/entry/unique-sample-drawing-searches-with-list-and-statet.html
-
-```haskell
-ghci> select [1,2,3]
-[(1,[2,3]),(2,[1,3]),(3,[2,1])]
-```
+It lets you separate out each item in a list with the list of items after it.
 
 Part 1 then becomes, with the list monad to simulate searches:
 
 ```haskell
 findPair :: [Int] -> Maybe Int
 findPair xs = listToMaybe $ do
-    (x, ys) <- select xs
-    y       <- ys
-    guard $ x + y == 2020
+    x:ys <- tails xs
+    y    <- ys
+    guard (x + y == 2020)
     pure (x*y)
 ```
 
@@ -75,10 +63,10 @@ And Part 2 is not much more complicated:
 ```haskell
 findTriple :: [Int] -> Maybe Int
 findTriple xs = listToMaybe $ do
-    (x, ys) <- select xs
-    (y, zs) <- select ys
-    z       <- zs
-    guard $ x + y + z == 2020
+    x:ys <- tails xs
+    y:zs <- tails ys
+    z    <- zs
+    guard (x + y + z == 2020)
     pure (x*y*z)
 ```
 
@@ -93,21 +81,19 @@ searches when you have the opportunity :D
 ```
 >> Day 01a
 benchmarking...
-time                 150.4 μs   (142.9 μs .. 159.9 μs)
-                     0.961 R²   (0.925 R² .. 0.992 R²)
-mean                 148.0 μs   (138.9 μs .. 175.3 μs)
-std dev              51.41 μs   (18.38 μs .. 101.9 μs)
-variance introduced by outliers: 98% (severely inflated)
+time                 35.01 μs   (35.00 μs .. 35.02 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 35.04 μs   (35.03 μs .. 35.05 μs)
+std dev              18.87 ns   (14.79 ns .. 27.67 ns)
 
 * parsing and formatting times excluded
 
 >> Day 01b
 benchmarking...
-time                 11.42 ms   (10.81 ms .. 12.10 ms)
-                     0.965 R²   (0.930 R² .. 0.988 R²)
-mean                 11.28 ms   (10.79 ms .. 11.67 ms)
-std dev              1.220 ms   (983.2 μs .. 1.652 ms)
-variance introduced by outliers: 56% (severely inflated)
+time                 1.771 ms   (1.767 ms .. 1.775 ms)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 1.752 ms   (1.748 ms .. 1.758 ms)
+std dev              16.20 μs   (15.16 μs .. 17.06 μs)
 
 * parsing and formatting times excluded
 ```

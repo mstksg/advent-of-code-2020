@@ -12,9 +12,9 @@ module AOC.Challenge.Day01 (
   , day01b
   ) where
 
-import           AOC.Common    (select)
 import           AOC.Solver    ((:~>)(..))
 import           Control.Monad (guard)
+import           Data.List     (tails)
 import           Data.Maybe    (listToMaybe)
 import           Text.Read     (readMaybe)
 
@@ -23,8 +23,8 @@ day01a = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
     , sSolve = \xs -> listToMaybe do
-        (x, ys) <- select xs
-        y <- ys
+        x:ys <- tails xs
+        y    <- ys
         guard (x + y == 2020)
         pure (x*y)
     }
@@ -34,9 +34,9 @@ day01b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
     , sSolve = \xs -> listToMaybe do
-        (x, ys) <- select xs
-        (y, zs) <- select ys
-        z <- zs
-        guard (x + y + z== 2020)
+        x:ys <- tails xs
+        y:zs <- tails ys
+        z    <- zs
+        guard (x + y + z == 2020)
         pure (x*y*z)
     }

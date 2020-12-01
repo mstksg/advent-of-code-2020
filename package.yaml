@@ -114,7 +114,7 @@ library:
   - yaml
 
 executables:
-  aoc-dev:
+  aoc2020:
     main:                aoc.hs
     source-dirs:         app
     ghc-options:
@@ -123,7 +123,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - ansi-terminal
-    - aoc-dev
+    - aoc2020
     - containers
     - deepseq
     - finite-typelits
@@ -131,7 +131,7 @@ executables:
     - optparse-applicative
 
 tests:
-  aoc-dev-test:
+  aoc2020-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -139,11 +139,11 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - aoc-dev
+    - aoc2020
     - ansi-terminal
 
 benchmarks:
-  aoc-dev-bench:
+  aoc2020-bench:
     main: Bench.hs
     source-dirs: bench
     ghc-options:
@@ -152,4 +152,4 @@ benchmarks:
     - -with-rtsopts=-N
     - -O2
     dependencies:
-    - aoc-dev
+    - aoc2020

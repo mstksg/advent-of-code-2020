@@ -1,33 +1,21 @@
-Day 1 is usually a fun one to do in Haskell! :D  Today I used one of my more
-favorite little list utility functions, `select`:
+Day 1 is usually a fun one to do in Haskell! :D  Today we can do something nice
+with `tails`:
 
 ```haskell
-select :: [a] -> [(a,[a])]
-select = go []
-  where
-    go _  [] = []
-    go xs (y:ys) = (y,xs++ys) : go (y:xs) ys
+ghci> tails [1,2,3,4]
+[1:[2,3,4], 2:[3,4], 3:[4], 4:[]]
 ```
 
-Not strictly necessary to solve this, but it returns a list of every element in
-a list paired with the list *excluding* that element.  (I used it in a [blog
-post][sendmoremoney] in the past).
-
-[sendmoremoney]: https://blog.jle.im/entry/unique-sample-drawing-searches-with-list-and-statet.html
-
-```haskell
-ghci> select [1,2,3]
-[(1,[2,3]),(2,[1,3]),(3,[2,1])]
-```
+It lets you separate out each item in a list with the list of items after it.
 
 Part 1 then becomes, with the list monad to simulate searches:
 
 ```haskell
 findPair :: [Int] -> Maybe Int
 findPair xs = listToMaybe $ do
-    (x, ys) <- select xs
-    y       <- ys
-    guard $ x + y == 2020
+    x:ys <- tails xs
+    y    <- ys
+    guard (x + y == 2020)
     pure (x*y)
 ```
 
@@ -36,10 +24,10 @@ And Part 2 is not much more complicated:
 ```haskell
 findTriple :: [Int] -> Maybe Int
 findTriple xs = listToMaybe $ do
-    (x, ys) <- select xs
-    (y, zs) <- select ys
-    z       <- zs
-    guard $ x + y + z == 2020
+    x:ys <- tails xs
+    y:zs <- tails ys
+    z    <- zs
+    guard (x + y + z == 2020)
     pure (x*y*z)
 ```
 
