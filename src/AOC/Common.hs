@@ -38,6 +38,7 @@ module AOC.Common (
   , freqList
   , revFreq
   , perturbations
+  , select
   , clearOut
   , foldMapPar
   , foldMapPar1
@@ -247,6 +248,13 @@ countTrue p = length . filter p . toList
 -- | Build a frequency map
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
 freqs = M.fromListWith (+) . map (,1) . toList
+
+-- | each item paired with the list not including that item
+select :: [a] -> [(a,[a])]
+select = go []
+  where
+    go _  [] = []
+    go xs (y:ys) = (y,xs++ys) : go (y:xs) ys
 
 -- | Look up a count from a frequency map, defaulting to zero if item is
 -- not foudn

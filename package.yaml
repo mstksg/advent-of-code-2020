@@ -1,6 +1,6 @@
-name:                aoc-dev
+name:                aoc2020
 version:             0.1.0.0
-github:              "mstksg/advent-of-code-dev"
+github:              "mstksg/advent-of-code-2020"
 license:             BSD3
 author:              "Justin Le"
 maintainer:          "justin@jle.im"

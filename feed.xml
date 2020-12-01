@@ -7,11 +7,69 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Nov 2020 20:39:45 EST</lastBuildDate>
+    <lastBuildDate>Tue,  1 Dec 2020 00:25:01 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Fri, 27 Nov 2020 20:39:45 EST</pubDate>
+    <pubDate>Tue,  1 Dec 2020 00:25:01 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 1</title>
+      <description>&lt;h2 id=&quot;day-1&quot;&gt;Day 1&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day01.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/1&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Day 1 is usually a fun one to do in Haskell! :D Today I used one of my more favorite little list utility functions, &lt;code&gt;select&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;select ::&lt;/span&gt; [a] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [(a,[a])]&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;select &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; go []&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go _  [] &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; []&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go xs (y&lt;span class=&quot;op&quot;&gt;:&lt;/span&gt;ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (y,xs&lt;span class=&quot;op&quot;&gt;++&lt;/span&gt;ys) &lt;span class=&quot;op&quot;&gt;:&lt;/span&gt; go (y&lt;span class=&quot;op&quot;&gt;:&lt;/span&gt;xs) ys&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Not strictly necessary to solve this, but it returns a list of every element in a list paired with the list &lt;em&gt;excluding&lt;/em&gt; that element. (I used it in a &lt;a href=&quot;https://blog.jle.im/entry/unique-sample-drawing-searches-with-list-and-statet.html&quot;&gt;blog post&lt;/a&gt; in the past).&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; select [&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;[(&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,[&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]),(&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,[&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]),(&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;,[&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;])]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Part 1 then becomes, with the list monad to simulate searches:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findPair ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findPair xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (x, ys) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; select xs&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    y       &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; ys&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    guard &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; x &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; y &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (x&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;y)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And Part 2 is not much more complicated:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findTriple ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findTriple xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (x, ys) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; select xs&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (y, zs) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; select ys&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    z       &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; zs&lt;/span&gt;
+&lt;span id=&quot;cb4-6&quot;&gt;&lt;a href=&quot;#cb4-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    guard &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; x &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; y &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; z &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-7&quot;&gt;&lt;a href=&quot;#cb4-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (x&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;y&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;z)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The simpler way would be to just &lt;code&gt;do x &amp;lt;- xs; y &amp;lt;- xs; z &amp;lt;- xs; ...&lt;/code&gt;, and either hope that you don’t accidentally select a duplicate, or validate that you didn’t draw any duplicates. But it’s always fun to do selecty constrainty searches when you have the opportunity :D&lt;/p&gt;
+&lt;h3 id=&quot;day-1-benchmarks&quot;&gt;Day 1 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 01a
+benchmarking...
+time                 150.4 μs   (142.9 μs .. 159.9 μs)
+                     0.961 R²   (0.925 R² .. 0.992 R²)
+mean                 148.0 μs   (138.9 μs .. 175.3 μs)
+std dev              51.41 μs   (18.38 μs .. 101.9 μs)
+variance introduced by outliers: 98% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 01b
+benchmarking...
+time                 11.42 ms   (10.81 ms .. 12.10 ms)
+                     0.965 R²   (0.930 R² .. 0.988 R²)
+mean                 11.28 ms   (10.79 ms .. 11.67 ms)
+std dev              1.220 ms   (983.2 μs .. 1.652 ms)
+variance introduced by outliers: 56% (severely inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-1</link>
+      <pubDate>Tue,  1 Dec 2020 01:00:00 EST</pubDate>
+    </item>
 
   </channel>
 </rss>
