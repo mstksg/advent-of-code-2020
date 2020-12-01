@@ -37,17 +37,15 @@ that file instead!
 [d01g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs
 [d01h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html
 
-Day 1 is usually a fun one to do in Haskell! :D  Today we can do something nice
-with `tails`:
+So there's a simple-ish Haskell solution for these problems,
+
+`tails` lets you separate out each item in a list with the list of items after
+it:
 
 ```haskell
 ghci> tails [1,2,3,4]
 [1:[2,3,4], 2:[3,4], 3:[4], 4:[]]
 ```
-
-It lets you separate out each item in a list with the list of items after it.
-
-Part 1 then becomes, with the list monad to simulate searches:
 
 ```haskell
 findPair :: [Int] -> Maybe Int
@@ -56,11 +54,7 @@ findPair xs = listToMaybe $ do
     y    <- ys
     guard (x + y == 2020)
     pure (x*y)
-```
 
-And Part 2 is not much more complicated:
-
-```haskell
 findTriple :: [Int] -> Maybe Int
 findTriple xs = listToMaybe $ do
     x:ys <- tails xs
@@ -70,10 +64,75 @@ findTriple xs = listToMaybe $ do
     pure (x*y*z)
 ```
 
-The simpler way would be to just `do x <- xs; y <- xs; z <- xs; ...`, and
-either hope that you don't accidentally select a duplicate, or validate that
-you didn't draw any duplicates.  But it's always fun to do selecty constrainty
-searches when you have the opportunity :D
+But this method is a little bit "extra", since we actually don't need to search
+all of `ys` for the proper sum...if we pick `x` as `500`, then we really only
+need to check if `1520` is a part of `ys`.
+
+So we really only need to check for set inclusion:
+
+```haskell
+import qualified Data.Set as S
+
+findPair :: Int -> Set Int -> Maybe Int
+findPair goal xs = listToMaybe $ do
+    x <- S.toList xs
+    let y = goal - x
+    guard (y `S.member` xs)
+    pure (x * y)
+```
+
+And our first part will be `findPair 2020`!
+
+You could even implement `findTriple` in terms of `findPair`, using `S.split`
+to partition a set into all items smaller than and larger than a number.
+Splitting is a very efficient operation on a binary search tree like `Set`:
+
+```haskell
+findTriple :: Int -> Set Int -> Maybe Int
+findTriple goal xs = listToMaybe $ do
+    x <- S.toList xs
+    let (_, ys) = S.split x xs
+        goal' = goal - x
+    case findPair goal' ys of
+      Nothing -> empty
+      Just yz -> pure (x*yz)
+```
+
+But hey...this recursive descent is kind of neat.  We could write a general
+function to find any goal in any number of items!
+
+```haskell
+-- | Given a number n of items and a goal sum and a set of numbers to
+-- pick from, finds the n numbers in the set that add to the goal sum.
+knapsack
+    :: Int              -- ^ number of items n to pick
+    -> Int              -- ^ goal sum
+    -> Set Int          -- ^ set of options
+    -> Maybe [Int]      -- ^ resulting n items that sum to the goal
+knapsack 0 _    _  = Nothing
+knapsack 1 goal xs
+    | goal `S.member` xs = Just [goal]
+    | otherwise          = Nothing
+knapsack n goal xs = listToMaybe $ do
+    x <- S.toList xs
+    let goal'   = goal - x
+        (_, ys) = S.split x xs
+    case knapsack (n - 1) goal' ys of
+      Nothing -> empty
+      Just rs -> pure (x:rs)
+```
+
+And so we have:
+
+```haskell
+part1 :: [Int] -> Maybe Int
+part1 = knapsack 2 2020 . S.fromList
+
+part2 :: [Int] -> Maybe Int
+part2 = knapsack 3 2020 . S.fromList
+```
+
+And we could go on, and on, and on! :)
 
 
 ### Day 1 Benchmarks
@@ -81,19 +140,21 @@ searches when you have the opportunity :D
 ```
 >> Day 01a
 benchmarking...
-time                 35.01 μs   (35.00 μs .. 35.02 μs)
-                     1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 35.04 μs   (35.03 μs .. 35.05 μs)
-std dev              18.87 ns   (14.79 ns .. 27.67 ns)
+time                 18.74 μs   (17.78 μs .. 19.71 μs)
+                     0.985 R²   (0.970 R² .. 0.998 R²)
+mean                 19.16 μs   (18.83 μs .. 19.79 μs)
+std dev              1.587 μs   (793.8 ns .. 2.803 μs)
+variance introduced by outliers: 80% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 01b
 benchmarking...
-time                 1.771 ms   (1.767 ms .. 1.775 ms)
-                     1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 1.752 ms   (1.748 ms .. 1.758 ms)
-std dev              16.20 μs   (15.16 μs .. 17.06 μs)
+time                 138.1 μs   (133.3 μs .. 142.5 μs)
+                     0.991 R²   (0.985 R² .. 0.995 R²)
+mean                 136.9 μs   (133.3 μs .. 140.9 μs)
+std dev              12.84 μs   (10.42 μs .. 16.65 μs)
+variance introduced by outliers: 79% (severely inflated)
 
 * parsing and formatting times excluded
 ```
