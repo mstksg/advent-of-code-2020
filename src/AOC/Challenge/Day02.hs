@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day02
 -- License     : BSD3
@@ -9,35 +6,58 @@
 -- Portability : non-portable
 --
 -- Day 2.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day02 (
-    -- day02a
-  -- , day02b
+    day02a
+  , day02b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common      (countTrue, clearOut)
+import           AOC.Solver      ((:~>)(..))
+import           Control.DeepSeq (NFData)
+import           Data.Char       (isDigit)
+import           GHC.Generics    (Generic)
+import           Text.Read       (readMaybe)
 
-day02a :: _ :~> _
+data Policy = P 
+    { pIx1  :: Int
+    , pIx2  :: Int
+    , pChar :: Char
+    , pPass :: String
+    }
+  deriving (Show, Eq, Ord, Generic)
+
+instance NFData Policy
+
+parsePolicy :: String -> Maybe Policy
+parsePolicy str = do
+    [ixes,c:_,pwd] <- pure $ words str
+    [ix1,ix2]      <- pure $ words (clearOut (not . isDigit) ixes)
+    P <$> readMaybe ix1
+      <*> readMaybe ix2
+      <*> pure c
+      <*> pure pwd
+
+validate1 :: Policy -> Bool
+validate1 P{..} = n >= pIx1 && n <= pIx2
+  where
+    n = countTrue (== pChar) pPass
+
+validate2 :: Policy -> Bool
+validate2 P{..} = n == 1
+  where
+    n = countTrue (== pChar) [pPass !! (pIx1 - 1), pPass !! (pIx2 - 1)]
+
+day02a :: [Policy] :~> Int
 day02a = MkSol
-    { sParse = Just
+    { sParse = traverse parsePolicy . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . countTrue validate1
     }
 
-day02b :: _ :~> _
+day02b :: [Policy] :~> Int
 day02b = MkSol
-    { sParse = Just
+    { sParse = traverse parsePolicy . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . countTrue validate2
     }

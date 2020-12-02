@@ -53,7 +53,7 @@ findTriple :: Int -> IS.IntSet -> Maybe Int
 findTriple goal xs = listToMaybe $ do
     x <- IS.toList xs
     let (_, ys) = IS.split x xs
-        goal' = goal - x
+        goal'   = goal - x
     case findPair goal' ys of
       Nothing -> empty
       Just yz -> pure (x*yz)
@@ -73,7 +73,7 @@ knapsack
 knapsack 0 _    _  = Nothing
 knapsack 1 goal xs
     | goal `IS.member` xs = Just [goal]
-    | otherwise          = Nothing
+    | otherwise           = Nothing
 knapsack n goal xs = listToMaybe $ do
     x <- IS.toList xs
     let goal'   = goal - x

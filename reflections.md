@@ -21,6 +21,7 @@ Table of Contents
 -----------------
 
 * [Day 1](#day-1)
+* [Day 2](#day-2) *(no reflection yet)*
 
 Day 1
 ------
@@ -92,7 +93,7 @@ findTriple :: Int -> IS.IntSet -> Maybe Int
 findTriple goal xs = listToMaybe $ do
     x <- IS.toList xs
     let (_, ys) = IS.split x xs
-        goal' = goal - x
+        goal'   = goal - x
     case findPair goal' ys of
       Nothing -> empty
       Just yz -> pure (x*yz)
@@ -112,7 +113,7 @@ knapsack
 knapsack 0 _    _  = Nothing
 knapsack 1 goal xs
     | goal `IS.member` xs = Just [goal]
-    | otherwise          = Nothing
+    | otherwise           = Nothing
 knapsack n goal xs = listToMaybe $ do
     x <- IS.toList xs
     let goal'   = goal - x
@@ -158,6 +159,48 @@ time                 57.16 μs   (54.29 μs .. 59.82 μs)
 mean                 62.17 μs   (60.35 μs .. 64.08 μs)
 std dev              6.463 μs   (5.113 μs .. 9.358 μs)
 variance introduced by outliers: 84% (severely inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 2
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day02.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d02p]* / *[Code][d02g]* / *[Rendered][d02h]*
+
+[d02p]: https://adventofcode.com/2020/day/2
+[d02g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day02.hs
+[d02h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day02.html
+
+*Reflection not yet written -- please check back later!*
+
+### Day 2 Benchmarks
+
+```
+>> Day 02a
+benchmarking...
+time                 64.39 μs   (64.30 μs .. 64.56 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 64.49 μs   (64.39 μs .. 64.65 μs)
+std dev              419.1 ns   (229.4 ns .. 624.1 ns)
+
+* parsing and formatting times excluded
+
+>> Day 02b
+benchmarking...
+time                 78.82 μs   (77.60 μs .. 79.77 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 79.02 μs   (78.43 μs .. 79.62 μs)
+std dev              2.188 μs   (1.643 μs .. 2.975 μs)
+variance introduced by outliers: 26% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

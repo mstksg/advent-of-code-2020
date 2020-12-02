@@ -10,6 +10,7 @@
 module AOC.Challenge.Day01 (
     day01a
   , day01b
+  , knapsack
   ) where
 
 import           AOC.Common       (firstJust)
@@ -25,8 +26,8 @@ import qualified Data.Vec.Lazy    as Vec
 -- desired is inferred from the desired length of the return type.
 knapsack
     :: forall n. SNatI n
-    => Int              -- ^ goal sum
-    -> IntSet          -- ^ set of options
+    => Int                             -- ^ goal sum
+    -> IntSet                          -- ^ set of options
     -> Maybe (Vec.Vec ('S n) Int)      -- ^ resulting n items that sum to the goal
 knapsack = case snat :: SNat n of
     SZ -> \goal xs ->
