@@ -12,27 +12,27 @@ module AOC.Challenge.Day02 (
   , day02b
   ) where
 
-import           AOC.Common      (countTrue, clearOut)
+import           AOC.Common      (countTrue)
 import           AOC.Solver      ((:~>)(..))
 import           Control.DeepSeq (NFData)
 import           Data.Char       (isDigit)
+import           Data.List.Split (splitOn)
 import           GHC.Generics    (Generic)
 import           Text.Read       (readMaybe)
 
-data Policy = P 
+data Policy = P
     { pIx1  :: Int
     , pIx2  :: Int
     , pChar :: Char
     , pPass :: String
     }
   deriving (Show, Eq, Ord, Generic)
-
 instance NFData Policy
 
 parsePolicy :: String -> Maybe Policy
 parsePolicy str = do
     [ixes,c:_,pwd] <- pure $ words str
-    [ix1,ix2]      <- pure $ words (clearOut (not . isDigit) ixes)
+    [ix1,ix2]      <- pure $ splitOn "-" ixes
     P <$> readMaybe ix1
       <*> readMaybe ix2
       <*> pure c
