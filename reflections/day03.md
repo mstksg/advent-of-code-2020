@@ -25,6 +25,13 @@ at that index.  We accumulate with a monoid, so we can use a `Set (Int, Int)`
 to collect the coordinates where the character is `'#'` and ignore all other
 coordinates.
 
+Admittedly, `Set (Int, Int)` is sliiiightly overkill, since you could probably
+use `Vector (Vector Bool)` or something with `V.fromList . map (V.fromList .
+(== '#')) . lines`, and check for membership with double-indexing.  But I was
+bracing for something a little more demanding, like having to iterate over all
+the trees or something.  Still, sparse grids are usually my go-to data
+structure for Advent of Code ASCII maps.
+
 Anyway, now we need to be able to traverse the ray.  We can write a function to
 check all points in our line, given the slope (delta x and delta y):
 
