@@ -77,6 +77,10 @@ module AOC.Common (
   , parseTokStreamT
   , parseTokStreamT_
   , nextMatch
+  , parseMaybeLenient
+  , parseOrFail
+  , CharParser
+  , parseLines
   -- * Points
   , Point
   , cardinalNeighbs
@@ -131,6 +135,7 @@ import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.NonEmpty                  (NESet)
 import           Data.Tuple
+import           Data.Void
 import           Data.Word
 import           GHC.Generics                       (Generic)
 import           GHC.TypeNats
@@ -138,6 +143,7 @@ import           Linear                             (V2(..), _x, _y)
 import           Linear.Vector
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
+import qualified Control.Monad.Combinators          as P
 import qualified Control.Monad.Combinators          as P
 import qualified Data.Finitary                      as F
 import qualified Data.IntMap                        as IM
@@ -151,6 +157,7 @@ import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
+import qualified Text.Megaparsec.Char               as P
 
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a
@@ -699,6 +706,17 @@ parseTokStreamT_
     -> t s
     -> m (f a)
 parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
+
+parseMaybeLenient :: P.Parsec e s a -> s -> Maybe a
+parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
+
+parseOrFail :: (P.Stream s, P.ShowErrorComponent e) => P.Parsec e s a -> s -> a
+parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeLenient"
+
+parseLines :: P.Parsec e String a -> String -> Maybe [a]
+parseLines p = traverse (parseMaybeLenient p) . lines
+
+type CharParser = P.Parsec Void String
 
 -- | Skip every result until this token matches
 nextMatch :: P.MonadParsec e s m => m a -> m a

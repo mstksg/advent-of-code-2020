@@ -15,9 +15,9 @@ module AOC.Challenge.Day02 (
 import           AOC.Common      (countTrue)
 import           AOC.Solver      ((:~>)(..))
 import           Control.DeepSeq (NFData)
-import           Data.Char       (isDigit)
 import           Data.List.Split (splitOn)
 import           GHC.Generics    (Generic)
+import           AOC.Prelude
 import           Text.Read       (readMaybe)
 
 data Policy = P
@@ -29,14 +29,11 @@ data Policy = P
   deriving (Show, Eq, Ord, Generic)
 instance NFData Policy
 
-parsePolicy :: String -> Maybe Policy
-parsePolicy str = do
-    [ixes,c:_,pwd] <- pure $ words str
-    [ix1,ix2]      <- pure $ splitOn "-" ixes
-    P <$> readMaybe ix1
-      <*> readMaybe ix2
-      <*> pure c
-      <*> pure pwd
+policy :: CharParser Policy
+policy = P <$> decimal
+           <*> (char '-' *> decimal)
+           <*> (space *> anySingle)
+           <*> (char ':' *> space *> some anySingle)
 
 validate1 :: Policy -> Bool
 validate1 P{..} = n >= pIx1 && n <= pIx2
@@ -50,14 +47,14 @@ validate2 P{..} = n == 1
 
 day02a :: [Policy] :~> Int
 day02a = MkSol
-    { sParse = traverse parsePolicy . lines
+    { sParse = parseLines policy
     , sShow  = show
     , sSolve = Just . countTrue validate1
     }
 
 day02b :: [Policy] :~> Int
 day02b = MkSol
-    { sParse = traverse parsePolicy . lines
+    { sParse = parseLines policy
     , sShow  = show
     , sSolve = Just . countTrue validate2
     }
