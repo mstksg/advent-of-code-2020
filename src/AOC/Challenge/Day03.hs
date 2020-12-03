@@ -1,43 +1,53 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day03
 -- License     : BSD3
 --
 -- Stability   : experimental
 -- Portability : non-portable
---
--- Day 3.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day03 (
-    -- day03a
-  -- , day03b
+    day03a
+  , day03b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common  (parseAsciiMap, countTrue)
+import           AOC.Solver  ((:~>)(..))
+import           Data.Finite (Finite, modulo)
+import           Data.Set    (Set)
+import           Linear      (V2(..))
+import qualified Data.Map    as M
+import qualified Data.Set    as S
 
-day03a :: _ :~> _
+maxY :: Int
+maxY = 322
+
+type Coord = (Finite 31, Int)
+
+parseCoords :: String -> Set Coord
+parseCoords = S.mapMonotonic (\(V2 x y) -> (fromIntegral x, y))
+            . M.keysSet
+            . parseAsciiMap (\case '#' -> Just (); _ -> Nothing)
+
+countLine :: Finite 31 -> Int -> Set Coord -> Int
+countLine dx dy s = flip countTrue [0..maxY] $ \i ->
+    (modulo (fromIntegral i) * dx, i * dy) `S.member` s
+
+day03a :: Set Coord :~> Int
 day03a = MkSol
-    { sParse = Just
+    { sParse = Just . parseCoords
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . countLine 3 1
     }
 
-day03b :: _ :~> _
+day03b :: Set Coord :~> Int
 day03b = MkSol
-    { sParse = Just
+    { sParse = Just . parseCoords
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \s -> Just . product $
+        [ countLine 1 1
+        , countLine 3 1
+        , countLine 5 1
+        , countLine 7 1
+        , countLine 1 2
+        ] <*> [s]
     }

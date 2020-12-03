@@ -144,7 +144,6 @@ import           Linear.Vector
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
-import qualified Control.Monad.Combinators          as P
 import qualified Data.Finitary                      as F
 import qualified Data.IntMap                        as IM
 import qualified Data.List.NonEmpty                 as NE
@@ -157,7 +156,6 @@ import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
-import qualified Text.Megaparsec.Char               as P
 
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a

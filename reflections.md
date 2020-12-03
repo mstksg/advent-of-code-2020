@@ -22,6 +22,7 @@ Table of Contents
 
 * [Day 1](#day-1)
 * [Day 2](#day-2)
+* [Day 3](#day-3)
 
 Day 1
 ------
@@ -255,6 +256,111 @@ time                 78.82 μs   (77.60 μs .. 79.77 μs)
 mean                 79.02 μs   (78.43 μs .. 79.62 μs)
 std dev              2.188 μs   (1.643 μs .. 2.975 μs)
 variance introduced by outliers: 26% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 3
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day03.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d03p]* / *[Code][d03g]* / *[Rendered][d03h]*
+
+[d03p]: https://adventofcode.com/2020/day/3
+[d03g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs
+[d03h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html
+
+
+I'm going to reveal one of my secrets for parsing 2D ASCII maps!
+
+```haskell
+asciiGrid :: IndexedFold (Int, Int) String Char
+asciiGrid = reindexed swap (lined <.> folded)
+```
+
+This gives you an indexed fold (from the *[lens][]* package) iterating over
+each character in a string, indexed by `(x,y)`!
+
+[lens]: https://hackage.haskell.org/package/lens
+
+This lets us parse today's ASCII forest pretty easily into a `Set (Int, Int)`:
+
+```haskell
+parseForest :: String -> Set (Int, Int)
+parseForest = ifoldMapOf asciiGrid $ \xy c -> case c of
+    '#' -> S.singleton xy
+    _   -> S.empty
+```
+
+This folds over the input string, giving us the `(x,y)` index and the character
+at that index.  We accumulate with a monoid, so we can use a `Set (Int, Int)`
+to collect the coordinates where the character is `'#'` and ignore all other
+coordinates.
+
+Anyway, now we need to be able to traverse the ray.  We can write a function to
+check all points in our line, given the slope (delta x and delta y):
+
+```haskell
+countLine :: Int -> Int -> Set (Int, Int) -> Int
+countLine dx dy pts = length
+    [ ()
+    | i <- [0..322]
+    , let x = (i * dx) `mod` 31
+          y = i * dy
+    , (x, y) `S.member` pts
+    ]
+```
+
+And there we go :)
+
+```haskell
+part1 :: Set (Int, Int) -> Int
+part1 = countLine 1 3
+
+part2 :: Set (Int, Int) -> Int
+part2 pts = product $
+    [ countLine 1 1
+    , countLine 3 1
+    , countLine 5 1
+    , countLine 7 1
+    , countLine 1 2
+    ] <*> [pts]
+```
+
+Note that this checks a lot of points we wouldn't normally need to check: any y
+points out of range (322) for `dy > 1`.  We could add a minor optimization to
+only check for membership if `y` is in range, but because our check is a set
+lookup, it isn't too inefficient and it always returns `False` anyway.  So a
+small price to pay for slightly more clean code :)
+
+
+### Day 3 Benchmarks
+
+```
+>> Day 03a
+benchmarking...
+time                 67.54 μs   (67.06 μs .. 68.26 μs)
+                     0.999 R²   (0.998 R² .. 0.999 R²)
+mean                 67.93 μs   (67.25 μs .. 68.70 μs)
+std dev              2.551 μs   (1.895 μs .. 3.385 μs)
+variance introduced by outliers: 39% (moderately inflated)
+
+* parsing and formatting times excluded
+
+>> Day 03b
+benchmarking...
+time                 330.9 μs   (328.3 μs .. 332.9 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 332.8 μs   (331.2 μs .. 335.8 μs)
+std dev              8.496 μs   (5.780 μs .. 13.09 μs)
+variance introduced by outliers: 19% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

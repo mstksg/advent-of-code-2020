@@ -12,13 +12,14 @@ module AOC.Challenge.Day02 (
   , day02b
   ) where
 
-import           AOC.Common      (countTrue)
-import           AOC.Solver      ((:~>)(..))
-import           Control.DeepSeq (NFData)
-import           Data.List.Split (splitOn)
-import           GHC.Generics    (Generic)
-import           AOC.Prelude
-import           Text.Read       (readMaybe)
+import           AOC.Common                 (countTrue, CharParser, parseLines)
+import           AOC.Solver                 ((:~>)(..))
+import           Control.DeepSeq            (NFData)
+import           Control.Monad.Combinators  (some)
+import           GHC.Generics               (Generic)
+import           Text.Megaparsec            (anySingle)
+import           Text.Megaparsec.Char       (char, space)
+import           Text.Megaparsec.Char.Lexer (decimal)
 
 data Policy = P
     { pIx1  :: Int
