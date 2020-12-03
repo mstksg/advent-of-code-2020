@@ -24,10 +24,12 @@ import           Control.Applicative        as P
 import           Control.DeepSeq            as P
 import           Control.Lens               as P hiding (uncons, noneOf)
 import           Control.Monad              as P
+import           Control.Monad.Combinators  as P hiding (endBy, option, many, some)
 import           Control.Monad.Except       as P
 import           Control.Monad.State        as P
 import           Data.Bifunctor             as P
 import           Data.Char                  as P
+import           Data.Coerce                as P
 import           Data.Containers.ListUtils  as P
 import           Data.Either                as P
 import           Data.Finite                as P (Finite, packFinite, getFinite, modulo, finites)
@@ -57,10 +59,12 @@ import           Data.Tuple                 as P
 import           Data.Void                  as P
 import           Debug.Trace                as P
 import           GHC.Generics               as P (Generic)
+import           Linear                     as P (V1(..), V2(..), V3(..), V4(..), R1(..), R2(..), R3(..), R4(..))
 import           Numeric.Natural            as P
-import           Text.Printf                as P
-import           Text.Read                  as P (readMaybe)
+import           System.IO.Unsafe           as P
 import           Text.Megaparsec            as P (try, eof, Parsec, oneOf, satisfy, anySingleBut, noneOf, anySingle)
 import           Text.Megaparsec.Char       as P (newline, space, space1, digitChar, binDigitChar, octDigitChar, hexDigitChar, asciiChar, char, string, string')
 import           Text.Megaparsec.Char.Lexer as P (decimal, binary, octal, hexadecimal, scientific, float, signed)
-import           Control.Monad.Combinators  as P hiding (endBy, option, many, some)
+import           Text.Printf                as P
+import           Text.Read                  as P (readMaybe)
+import           Unsafe.Coerce              as P

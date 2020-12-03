@@ -101,6 +101,7 @@ module AOC.Common (
   , boundingBox
   , boundingBox'
   , parseAsciiMap
+  , parseAsciiSet
   , asciiGrid
   , ScanPoint(..)
   , displayAsciiMap
@@ -125,6 +126,7 @@ import           Data.List
 import           Data.List.NonEmpty                 (NonEmpty)
 import           Data.List.Split
 import           Data.Map                           (Map)
+import           Data.Map.Lens
 import           Data.Map.NonEmpty                  (NEMap)
 import           Data.MemoCombinators               (Memo)
 import           Data.Monoid                        (Ap(..))
@@ -133,6 +135,7 @@ import           Data.Semigroup
 import           Data.Semigroup.Foldable
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
+import           Data.Set.Lens
 import           Data.Set.NonEmpty                  (NESet)
 import           Data.Tuple
 import           Data.Void
@@ -605,7 +608,13 @@ parseAsciiMap
     :: (Char -> Maybe a)
     -> String
     -> Map Point a
-parseAsciiMap f = ifoldMapOf (asciiGrid <. folding f) M.singleton
+parseAsciiMap f = toMapOf (asciiGrid <. folding f)
+
+parseAsciiSet
+    :: (Char -> Bool)
+    -> String
+    -> Set Point
+parseAsciiSet f = setOf (asciiGrid . filtered f . asIndex)
 
 asciiGrid :: IndexedFold Point String Char
 asciiGrid = reindexed (uncurry (flip V2)) (lined <.> folded)

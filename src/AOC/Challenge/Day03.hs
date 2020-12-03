@@ -11,15 +11,10 @@ module AOC.Challenge.Day03 (
   , validCoord
   ) where
 
-import           AOC.Common   (asciiGrid, countTrue)
-import           AOC.Solver   ((:~>)(..))
-import           Control.Lens
-import           Data.Char    (isSpace)
-import           Data.Finite  (Finite, modulo)
-import           Data.Functor
-import           Data.Set     (Set)
-import           Linear       (V2(..))
-import qualified Data.Set     as S
+import           AOC.Common  (countTrue)
+import           AOC.Solver  ((:~>)(..))
+import           Data.Char   (isSpace)
+import           Data.Finite (Finite, modulo)
 
 type Coord = (Finite 31, Int)
 

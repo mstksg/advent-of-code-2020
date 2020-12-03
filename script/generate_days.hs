@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --install-ghc runghc --resolver nightly-2018-11-30 --package template --package text --package filepath --package directory -- -Wall
+-- stack --install-ghc runghc --resolver lts-16 --package template --package text --package filepath --package directory -- -Wall
 
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}

@@ -83,6 +83,7 @@ library:
   - deepseq
   - directory
   - filepath
+  - fin
   - finitary
   - finite-typelits
   - foldl
@@ -100,9 +101,8 @@ library:
   - nonempty-containers
   - pandoc
   - parallel
-  - vec
-  - fin
   - parser-combinators >= 1.2.0
+  - pointedlist
   - profunctors
   - psqueues
   - semigroupoids
@@ -112,6 +112,8 @@ library:
   - th-abstraction
   - time
   - transformers
+  - vec
+  - vector
   - vector-sized
   - yaml
 
