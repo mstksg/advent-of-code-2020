@@ -35,7 +35,6 @@ validCoord dx dy = \(x,y) ->
 countLine :: Finite 31 -> Int -> String -> Int
 countLine dx dy = countTrue (uncurry tree)
                 . zip (splitOut <$> [0..])
-                . filter (not . isSpace)
   where
     checkCoord = validCoord dx dy
     tree xy c  = c == '#' && checkCoord xy
@@ -45,14 +44,14 @@ countLine dx dy = countTrue (uncurry tree)
 
 day03a :: String :~> Int
 day03a = MkSol
-    { sParse = Just
+    { sParse = Just . filter (not . isSpace)
     , sShow  = show
     , sSolve = Just . countLine 3 1
     }
 
 day03b :: String :~> Int
 day03b = MkSol
-    { sParse = Just
+    { sParse = Just . filter (not . isSpace)
     , sShow  = show
     , sSolve = \s -> Just . product $
         [ countLine 1 1
