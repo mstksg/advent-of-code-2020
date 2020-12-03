@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu,  3 Dec 2020 01:12:27 EST</lastBuildDate>
+    <lastBuildDate>Thu,  3 Dec 2020 03:01:43 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu,  3 Dec 2020 01:12:27 EST</pubDate>
+    <pubDate>Thu,  3 Dec 2020 03:01:43 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -31,15 +31,18 @@ that file instead!
 &lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ch&quot;&gt;&amp;#39;#&amp;#39;&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; S.singleton xy&lt;/span&gt;
 &lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    _   &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; S.empty&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This folds over the input string, giving us the &lt;code&gt;(x,y)&lt;/code&gt; index and the character at that index. We accumulate with a monoid, so we can use a &lt;code&gt;Set (Int, Int)&lt;/code&gt; to collect the coordinates where the character is &lt;code&gt;&#39;#&#39;&lt;/code&gt; and ignore all other coordinates.&lt;/p&gt;
+&lt;p&gt;Admittedly, &lt;code&gt;Set (Int, Int)&lt;/code&gt; is sliiiightly overkill, since you could probably use &lt;code&gt;Vector (Vector Bool)&lt;/code&gt; or something with &lt;code&gt;V.fromList . map (V.fromList . (== &#39;#&#39;)) . lines&lt;/code&gt;, and check for membership with double-indexing. But I was bracing for something a little more demanding, like having to iterate over all the trees or something. Still, sparse grids are usually my go-to data structure for Advent of Code ASCII maps.&lt;/p&gt;
 &lt;p&gt;Anyway, now we need to be able to traverse the ray. We can write a function to check all points in our line, given the slope (delta x and delta y):&lt;/p&gt;
-&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;countLine ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;countLine dx dy pts &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;length&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ ()&lt;/span&gt;
-&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; i &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; [&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;322&lt;/span&gt;]&lt;/span&gt;
-&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; x &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (i &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; dx) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;31&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          y &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; dy&lt;/span&gt;
-&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , (x, y) &lt;span class=&quot;ot&quot;&gt;`S.member`&lt;/span&gt; pts&lt;/span&gt;
-&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;countTrue ::&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Bool&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [a] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;countTrue p &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;filter&lt;/span&gt; p&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;countLine ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;countLine dx dy pts &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; countTrue valid [&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;322&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    valid i &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (x, y) &lt;span class=&quot;ot&quot;&gt;`S.member`&lt;/span&gt; pts&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-9&quot;&gt;&lt;a href=&quot;#cb3-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        x &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (i &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; dx) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;31&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-10&quot;&gt;&lt;a href=&quot;#cb3-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        y &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; dy&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And there we go :)&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; countLine &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;&lt;/span&gt;
@@ -53,24 +56,56 @@ that file instead!
 &lt;span id=&quot;cb4-10&quot;&gt;&lt;a href=&quot;#cb4-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLine &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-11&quot;&gt;&lt;a href=&quot;#cb4-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ] &lt;span class=&quot;op&quot;&gt;&amp;lt;*&amp;gt;&lt;/span&gt; [pts]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Note that this checks a lot of points we wouldn’t normally need to check: any y points out of range (322) for &lt;code&gt;dy &amp;gt; 1&lt;/code&gt;. We could add a minor optimization to only check for membership if &lt;code&gt;y&lt;/code&gt; is in range, but because our check is a set lookup, it isn’t too inefficient and it always returns &lt;code&gt;False&lt;/code&gt; anyway. So a small price to pay for slightly more clean code :)&lt;/p&gt;
+&lt;p&gt;So this was the solution I used to submit my original answers, but I started thinking the possible optimizations. I realized that we could actually do the whole thing in a single traversal…since we could associate each of the points with coordinates as we go along, and reject any coordinates that would not be on the line!&lt;/p&gt;
+&lt;p&gt;We can write a function to check if a coordinate is on a line:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;validCoord&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;      &lt;span class=&quot;co&quot;&gt;-- ^ dx&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;      &lt;span class=&quot;co&quot;&gt;-- ^ dy&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb5-5&quot;&gt;&lt;a href=&quot;#cb5-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Bool&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;validCoord dx dy &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; \(x,y) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-7&quot;&gt;&lt;a href=&quot;#cb5-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; (i,r) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; y &lt;span class=&quot;ot&quot;&gt;`divMod`&lt;/span&gt; dy&lt;/span&gt;
+&lt;span id=&quot;cb5-8&quot;&gt;&lt;a href=&quot;#cb5-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;in&lt;/span&gt;  r &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; (dx &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; i) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;31&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; x&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now we can use &lt;code&gt;lengthOf&lt;/code&gt; with the coordinate fold up there, which counts how many traversed items match our fold:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb6&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb6-1&quot;&gt;&lt;a href=&quot;#cb6-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;countLineDirect ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;countLineDirect dx dy &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; lengthOf (asciiGrid &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; ifiltered tree)&lt;/span&gt;
+&lt;span id=&quot;cb6-3&quot;&gt;&lt;a href=&quot;#cb6-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-4&quot;&gt;&lt;a href=&quot;#cb6-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    checkCoord &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; validCoord dx dy&lt;/span&gt;
+&lt;span id=&quot;cb6-5&quot;&gt;&lt;a href=&quot;#cb6-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    tree pt c &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; c &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;ch&quot;&gt;&amp;#39;#&amp;#39;&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; checkCoord pt&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And this gives the same answer, with the same interface!&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb7&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb7-1&quot;&gt;&lt;a href=&quot;#cb7-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-2&quot;&gt;&lt;a href=&quot;#cb7-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; countLineDirect &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-3&quot;&gt;&lt;a href=&quot;#cb7-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-4&quot;&gt;&lt;a href=&quot;#cb7-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-5&quot;&gt;&lt;a href=&quot;#cb7-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 pts &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;product&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-6&quot;&gt;&lt;a href=&quot;#cb7-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ countLineDirect &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-7&quot;&gt;&lt;a href=&quot;#cb7-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLineDirect &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-8&quot;&gt;&lt;a href=&quot;#cb7-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLineDirect &lt;span class=&quot;dv&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-9&quot;&gt;&lt;a href=&quot;#cb7-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLineDirect &lt;span class=&quot;dv&quot;&gt;7&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-10&quot;&gt;&lt;a href=&quot;#cb7-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLineDirect &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-11&quot;&gt;&lt;a href=&quot;#cb7-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ] &lt;span class=&quot;op&quot;&gt;&amp;lt;*&amp;gt;&lt;/span&gt; [pts]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Is the direct single-traversal method any faster?&lt;/p&gt;
+&lt;p&gt;Well, it’s complicated, slightly. There’s a clear benefit for part 2, since we essentially build up an efficient structure (&lt;code&gt;Set&lt;/code&gt;) that we re-use for all five lines. So the build-a-set method is O(1) on the number of lines we want to check, while the direct traversal method is O(n) on the number of lines we want to check.&lt;/p&gt;
+&lt;p&gt;So, directly comparing the two methods, we see the single-traversal as faster for part 1 and slower for part 2.&lt;/p&gt;
+&lt;p&gt;However, we can do a little better for the single-traversal method. As it turns out, the lens indexed fold is kind of slow. I was able to write the single-traversal one a much faster way by directly just using &lt;code&gt;zip [0..]&lt;/code&gt;, without losing too much readability. And with this &lt;em&gt;direct&lt;/em&gt; single traversal and computing the indices manually, we get a much faster time for part 1 (about ten times faster!) and a slightly faster time for part 2 (about 5 times faster). The benchmarks for this optimized version are what is presented below.&lt;/p&gt;
 &lt;h3 id=&quot;day-3-benchmarks&quot;&gt;Day 3 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 03a
 benchmarking...
-time                 67.54 μs   (67.06 μs .. 68.26 μs)
-                     0.999 R²   (0.998 R² .. 0.999 R²)
-mean                 67.93 μs   (67.25 μs .. 68.70 μs)
-std dev              2.551 μs   (1.895 μs .. 3.385 μs)
-variance introduced by outliers: 39% (moderately inflated)
+time                 448.3 μs   (427.3 μs .. 464.3 μs)
+                     0.984 R²   (0.971 R² .. 0.994 R²)
+mean                 452.6 μs   (440.6 μs .. 463.2 μs)
+std dev              37.15 μs   (27.61 μs .. 52.08 μs)
+variance introduced by outliers: 68% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 03b
 benchmarking...
-time                 330.9 μs   (328.3 μs .. 332.9 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 332.8 μs   (331.2 μs .. 335.8 μs)
-std dev              8.496 μs   (5.780 μs .. 13.09 μs)
-variance introduced by outliers: 19% (moderately inflated)
+time                 2.018 ms   (1.793 ms .. 2.169 ms)
+                     0.960 R²   (0.946 R² .. 0.976 R²)
+mean                 1.996 ms   (1.920 ms .. 2.074 ms)
+std dev              259.7 μs   (234.6 μs .. 293.6 μs)
+variance introduced by outliers: 80% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>

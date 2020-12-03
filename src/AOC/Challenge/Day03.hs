@@ -8,40 +8,51 @@
 module AOC.Challenge.Day03 (
     day03a
   , day03b
+  , validCoord
   ) where
 
-import           AOC.Common  (parseAsciiMap, countTrue)
-import           AOC.Solver  ((:~>)(..))
-import           Data.Finite (Finite, modulo)
-import           Data.Set    (Set)
-import           Linear      (V2(..))
-import qualified Data.Map    as M
-import qualified Data.Set    as S
-
-maxY :: Int
-maxY = 322
+import           AOC.Common   (asciiGrid, countTrue)
+import           AOC.Solver   ((:~>)(..))
+import           Control.Lens
+import           Data.Char    (isSpace)
+import           Data.Finite  (Finite, modulo)
+import           Data.Functor
+import           Data.Set     (Set)
+import           Linear       (V2(..))
+import qualified Data.Set     as S
 
 type Coord = (Finite 31, Int)
 
-parseCoords :: String -> Set Coord
-parseCoords = S.mapMonotonic (\(V2 x y) -> (fromIntegral x, y))
-            . M.keysSet
-            . parseAsciiMap (\case '#' -> Just (); _ -> Nothing)
+validCoord
+    :: Finite 31        -- ^ dx
+    -> Int              -- ^ dy
+    -> Coord
+    -> Bool
+validCoord dx dy = \(x,y) ->
+    let (i,r) = y `divMod` dy
+    in  r == 0 && dx * modulo (fromIntegral i) == x
 
-countLine :: Finite 31 -> Int -> Set Coord -> Int
-countLine dx dy s = flip countTrue [0..maxY] $ \i ->
-    (modulo (fromIntegral i) * dx, i * dy) `S.member` s
+countLine :: Finite 31 -> Int -> String -> Int
+countLine dx dy = countTrue (uncurry tree)
+                . zip (splitOut <$> [0..])
+                . filter (not . isSpace)
+  where
+    checkCoord = validCoord dx dy
+    tree xy c  = c == '#' && checkCoord xy
+    splitOut i = (fromIntegral x, y)
+      where
+        (!y, !x) = i `divMod` 31
 
-day03a :: Set Coord :~> Int
+day03a :: String :~> Int
 day03a = MkSol
-    { sParse = Just . parseCoords
+    { sParse = Just
     , sShow  = show
     , sSolve = Just . countLine 3 1
     }
 
-day03b :: Set Coord :~> Int
+day03b :: String :~> Int
 day03b = MkSol
-    { sParse = Just . parseCoords
+    { sParse = Just
     , sShow  = show
     , sSolve = \s -> Just . product $
         [ countLine 1 1

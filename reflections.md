@@ -304,18 +304,27 @@ at that index.  We accumulate with a monoid, so we can use a `Set (Int, Int)`
 to collect the coordinates where the character is `'#'` and ignore all other
 coordinates.
 
+Admittedly, `Set (Int, Int)` is sliiiightly overkill, since you could probably
+use `Vector (Vector Bool)` or something with `V.fromList . map (V.fromList .
+(== '#')) . lines`, and check for membership with double-indexing.  But I was
+bracing for something a little more demanding, like having to iterate over all
+the trees or something.  Still, sparse grids are usually my go-to data
+structure for Advent of Code ASCII maps.
+
 Anyway, now we need to be able to traverse the ray.  We can write a function to
 check all points in our line, given the slope (delta x and delta y):
 
 ```haskell
+countTrue :: (a -> Bool) -> [a] -> Int
+countTrue p = length . filter p
+
 countLine :: Int -> Int -> Set (Int, Int) -> Int
-countLine dx dy pts = length
-    [ ()
-    | i <- [0..322]
-    , let x = (i * dx) `mod` 31
-          y = i * dy
-    , (x, y) `S.member` pts
-    ]
+countLine dx dy pts = countTrue valid [0..322]
+  where
+    valid i = (x, y) `S.member` pts
+      where
+        x = (i * dx) `mod` 31
+        y = i * dy
 ```
 
 And there we go :)
@@ -340,27 +349,93 @@ only check for membership if `y` is in range, but because our check is a set
 lookup, it isn't too inefficient and it always returns `False` anyway.  So a
 small price to pay for slightly more clean code :)
 
+So this was the solution I used to submit my original answers, but I started
+thinking the possible optimizations.  I realized that we could actually do the
+whole thing in a single traversal...since we could associate each of the points
+with coordinates as we go along, and reject any coordinates that would not be
+on the line!
+
+We can write a function to check if a coordinate is on a line:
+
+```haskell
+validCoord
+    :: Int      -- ^ dx
+    -> Int      -- ^ dy
+    -> (Int, Int)
+    -> Bool
+validCoord dx dy = \(x,y) ->
+    let (i,r) = y `divMod` dy
+    in  r == 0 && (dx * i) `mod` 31 == x
+```
+
+And now we can use `lengthOf` with the coordinate fold up there, which counts
+how many traversed items match our fold:
+
+```haskell
+countLineDirect :: Int -> Int -> String -> Int
+countLineDirect dx dy = lengthOf (asciiGrid . ifiltered tree)
+  where
+    checkCoord = validCoord dx dy
+    tree pt c = c == '#' && checkCoord pt
+```
+
+And this gives the same answer, with the same interface!
+
+```haskell
+part1 :: String -> Int
+part1 = countLineDirect 1 3
+
+part2 :: String -> Int
+part2 pts = product $
+    [ countLineDirect 1 1
+    , countLineDirect 3 1
+    , countLineDirect 5 1
+    , countLineDirect 7 1
+    , countLineDirect 1 2
+    ] <*> [pts]
+```
+
+Is the direct single-traversal method any faster?
+
+Well, it's complicated, slightly.  There's a clear benefit for part 2, since
+we essentially build up an efficient structure (`Set`) that we re-use for all
+five lines.  So the build-a-set method is O(1) on the number of lines we want
+to check, while the direct traversal method is O(n) on the number of lines we
+want to check.
+
+So, directly comparing the two methods, we see the single-traversal as
+faster for part 1 and slower for part 2.
+
+However, we can do a little better for the single-traversal method.  As it
+turns out, the lens indexed fold is kind of slow.  I was able to write the
+single-traversal one a much faster way by directly just using `zip [0..]`,
+without losing too much readability.  And with this *direct* single traversal
+and computing the indices manually, we get a much faster time for part 1 (about
+ten times faster!) and a slightly faster time for part 2 (about 5 times
+faster).  The benchmarks for this optimized version are what is presented
+below.
+
 
 ### Day 3 Benchmarks
 
 ```
 >> Day 03a
 benchmarking...
-time                 67.54 μs   (67.06 μs .. 68.26 μs)
-                     0.999 R²   (0.998 R² .. 0.999 R²)
-mean                 67.93 μs   (67.25 μs .. 68.70 μs)
-std dev              2.551 μs   (1.895 μs .. 3.385 μs)
-variance introduced by outliers: 39% (moderately inflated)
+time                 448.3 μs   (427.3 μs .. 464.3 μs)
+                     0.984 R²   (0.971 R² .. 0.994 R²)
+mean                 452.6 μs   (440.6 μs .. 463.2 μs)
+std dev              37.15 μs   (27.61 μs .. 52.08 μs)
+variance introduced by outliers: 68% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 03b
 benchmarking...
-time                 330.9 μs   (328.3 μs .. 332.9 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 332.8 μs   (331.2 μs .. 335.8 μs)
-std dev              8.496 μs   (5.780 μs .. 13.09 μs)
-variance introduced by outliers: 19% (moderately inflated)
+time                 2.018 ms   (1.793 ms .. 2.169 ms)
+                     0.960 R²   (0.946 R² .. 0.976 R²)
+mean                 1.996 ms   (1.920 ms .. 2.074 ms)
+std dev              259.7 μs   (234.6 μs .. 293.6 μs)
+variance introduced by outliers: 80% (severely inflated)
 
 * parsing and formatting times excluded
 ```
