@@ -277,8 +277,12 @@ that file instead!
 [d03g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs
 [d03h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html
 
+Here I'm going to list two methods --- one that involves pre-building a set to
+check if a tree is at a given point, and the other involves just a single
+direct traversal checking all valid points for trees!
 
-I'm going to reveal one of my secrets for parsing 2D ASCII maps!
+First of all, I'm going to reveal one of my favorite secrets for parsing 2D
+ASCII maps!
 
 ```haskell
 asciiGrid :: IndexedFold (Int, Int) String Char

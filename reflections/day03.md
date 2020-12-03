@@ -1,5 +1,9 @@
+Here I'm going to list two methods --- one that involves pre-building a set to
+check if a tree is at a given point, and the other involves just a single
+direct traversal checking all valid points for trees!
 
-I'm going to reveal one of my secrets for parsing 2D ASCII maps!
+First of all, I'm going to reveal one of my favorite secrets for parsing 2D
+ASCII maps!
 
 ```haskell
 asciiGrid :: IndexedFold (Int, Int) String Char

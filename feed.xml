@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu,  3 Dec 2020 03:01:43 EST</lastBuildDate>
+    <lastBuildDate>Thu,  3 Dec 2020 03:06:01 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu,  3 Dec 2020 03:01:43 EST</pubDate>
+    <pubDate>Thu,  3 Dec 2020 03:06:01 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -21,7 +21,8 @@ the file `./reflections/day03.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
 &lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/3&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;I’m going to reveal one of my secrets for parsing 2D ASCII maps!&lt;/p&gt;
+&lt;p&gt;Here I’m going to list two methods — one that involves pre-building a set to check if a tree is at a given point, and the other involves just a single direct traversal checking all valid points for trees!&lt;/p&gt;
+&lt;p&gt;First of all, I’m going to reveal one of my favorite secrets for parsing 2D ASCII maps!&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;asciiGrid ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IndexedFold&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Char&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;asciiGrid &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; reindexed swap (lined &lt;span class=&quot;op&quot;&gt;&amp;lt;.&amp;gt;&lt;/span&gt; folded)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;This gives you an indexed fold (from the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/lens&quot;&gt;lens&lt;/a&gt;&lt;/em&gt; package) iterating over each character in a string, indexed by &lt;code&gt;(x,y)&lt;/code&gt;!&lt;/p&gt;
