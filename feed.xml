@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu,  3 Dec 2020 03:15:28 EST</lastBuildDate>
+    <lastBuildDate>Thu,  3 Dec 2020 12:55:51 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu,  3 Dec 2020 03:15:28 EST</pubDate>
+    <pubDate>Thu,  3 Dec 2020 12:55:51 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -86,7 +86,7 @@ that file instead!
 &lt;span id=&quot;cb7-10&quot;&gt;&lt;a href=&quot;#cb7-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , countLineDirect &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb7-11&quot;&gt;&lt;a href=&quot;#cb7-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ] &lt;span class=&quot;op&quot;&gt;&amp;lt;*&amp;gt;&lt;/span&gt; [pts]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Is the direct single-traversal method any faster?&lt;/p&gt;
-&lt;p&gt;Well, it’s complicated, slightly. There’s a clear benefit in the pre-built set method for part 2, since we essentially build up an efficient structure (&lt;code&gt;Set&lt;/code&gt;) that we re-use for all five lines. So the build-a-set method is O(1) on the number of lines we want to check, while the direct traversal method is O(n) on the number of lines we want to check.&lt;/p&gt;
+&lt;p&gt;Well, it’s complicated, slightly. There’s a clear benefit in the pre-built set method for part 2, since we essentially build up an efficient structure (&lt;code&gt;Set&lt;/code&gt;) that we re-use for all five lines. We get the most benefit if we build the set once and re-use it many times, since we only have to do the actual coordinate folding once.&lt;/p&gt;
 &lt;p&gt;So, directly comparing the two methods, we see the single-traversal as faster for part 1 and slower for part 2.&lt;/p&gt;
 &lt;p&gt;However, we can do a little better for the single-traversal method. As it turns out, the lens indexed fold is kind of slow. I was able to write the single-traversal one a much faster way by directly just using &lt;code&gt;zip [0..]&lt;/code&gt;, without losing too much readability. And with this &lt;em&gt;direct&lt;/em&gt; single traversal and computing the indices manually, we get a much faster time for part 1 (about ten times faster!) and a slightly faster time for part 2 (about 5 times faster). The benchmarks for this optimized version are what is presented below.&lt;/p&gt;
 &lt;h3 id=&quot;day-3-benchmarks&quot;&gt;Day 3 Benchmarks&lt;/h3&gt;

@@ -403,9 +403,9 @@ Is the direct single-traversal method any faster?
 
 Well, it's complicated, slightly.  There's a clear benefit in the pre-built set
 method for part 2, since we essentially build up an efficient structure (`Set`)
-that we re-use for all five lines.  So the build-a-set method is O(1) on the
-number of lines we want to check, while the direct traversal method is O(n) on
-the number of lines we want to check.
+that we re-use for all five lines.  We get the most benefit if we build the set
+once and re-use it many times, since we only have to do the actual coordinate
+folding once.
 
 So, directly comparing the two methods, we see the single-traversal as
 faster for part 1 and slower for part 2.
