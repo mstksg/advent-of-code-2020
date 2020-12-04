@@ -34,11 +34,12 @@ the file `./reflections/day01.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[Prompt][d01p]* / *[Code][d01g]* / *[Rendered][d01h]*
+*[Prompt][d01p]* / *[Code][d01g]* / *[Rendered][d01h]* / *[Standalone Reflection Page][d01r]*
 
 [d01p]: https://adventofcode.com/2020/day/1
 [d01g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs
 [d01h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html
+[d01r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
 
 So there's a simple-ish Haskell solution for these problems,
 
@@ -146,21 +147,21 @@ around 2ms to around 20μs :)
 ```
 >> Day 01a
 benchmarking...
-time                 6.513 μs   (6.106 μs .. 6.965 μs)
-                     0.971 R²   (0.965 R² .. 0.981 R²)
-mean                 6.893 μs   (6.539 μs .. 7.138 μs)
-std dev              1.093 μs   (965.5 ns .. 1.197 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 7.177 μs   (6.720 μs .. 7.594 μs)
+                     0.976 R²   (0.963 R² .. 0.990 R²)
+mean                 7.740 μs   (7.492 μs .. 7.876 μs)
+std dev              729.0 ns   (502.0 ns .. 944.4 ns)
+variance introduced by outliers: 85% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 01b
 benchmarking...
-time                 57.16 μs   (54.29 μs .. 59.82 μs)
-                     0.982 R²   (0.975 R² .. 0.989 R²)
-mean                 62.17 μs   (60.35 μs .. 64.08 μs)
-std dev              6.463 μs   (5.113 μs .. 9.358 μs)
-variance introduced by outliers: 84% (severely inflated)
+time                 56.23 μs   (52.94 μs .. 59.21 μs)
+                     0.975 R²   (0.969 R² .. 0.982 R²)
+mean                 59.67 μs   (57.03 μs .. 61.53 μs)
+std dev              7.328 μs   (6.564 μs .. 8.193 μs)
+variance introduced by outliers: 88% (severely inflated)
 
 * parsing and formatting times excluded
 ```
@@ -176,11 +177,12 @@ the file `./reflections/day02.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[Prompt][d02p]* / *[Code][d02g]* / *[Rendered][d02h]*
+*[Prompt][d02p]* / *[Code][d02g]* / *[Rendered][d02h]* / *[Standalone Reflection Page][d02r]*
 
 [d02p]: https://adventofcode.com/2020/day/2
 [d02g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day02.hs
 [d02h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day02.html
+[d02r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md
 
 Day 2, not too bad for Haskell either :)
 
@@ -243,20 +245,20 @@ part2 = countTrue validate2
 ```
 >> Day 02a
 benchmarking...
-time                 64.39 μs   (64.30 μs .. 64.56 μs)
+time                 67.91 μs   (67.76 μs .. 68.04 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 64.49 μs   (64.39 μs .. 64.65 μs)
-std dev              419.1 ns   (229.4 ns .. 624.1 ns)
+mean                 68.07 μs   (68.04 μs .. 68.14 μs)
+std dev              138.2 ns   (75.99 ns .. 232.7 ns)
 
 * parsing and formatting times excluded
 
 >> Day 02b
 benchmarking...
-time                 78.82 μs   (77.60 μs .. 79.77 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 79.02 μs   (78.43 μs .. 79.62 μs)
-std dev              2.188 μs   (1.643 μs .. 2.975 μs)
-variance introduced by outliers: 26% (moderately inflated)
+time                 82.17 μs   (80.65 μs .. 83.32 μs)
+                     0.997 R²   (0.992 R² .. 0.999 R²)
+mean                 81.85 μs   (80.70 μs .. 83.46 μs)
+std dev              5.091 μs   (2.562 μs .. 8.513 μs)
+variance introduced by outliers: 64% (severely inflated)
 
 * parsing and formatting times excluded
 ```
@@ -272,11 +274,12 @@ the file `./reflections/day03.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[Prompt][d03p]* / *[Code][d03g]* / *[Rendered][d03h]*
+*[Prompt][d03p]* / *[Code][d03g]* / *[Rendered][d03h]* / *[Standalone Reflection Page][d03r]*
 
 [d03p]: https://adventofcode.com/2020/day/3
 [d03g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs
 [d03h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html
+[d03r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md
 
 Here I'm going to list two methods --- one that involves pre-building a set to
 check if a tree is at a given point, and the other involves just a single
@@ -426,21 +429,21 @@ below.
 ```
 >> Day 03a
 benchmarking...
-time                 334.7 μs   (320.0 μs .. 349.5 μs)
-                     0.981 R²   (0.963 R² .. 0.991 R²)
-mean                 335.4 μs   (321.5 μs .. 383.8 μs)
-std dev              80.45 μs   (29.40 μs .. 163.8 μs)
-variance introduced by outliers: 95% (severely inflated)
+time                 318.4 μs   (300.7 μs .. 333.9 μs)
+                     0.984 R²   (0.979 R² .. 0.992 R²)
+mean                 325.0 μs   (315.0 μs .. 331.6 μs)
+std dev              28.88 μs   (24.75 μs .. 32.97 μs)
+variance introduced by outliers: 74% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 03b
 benchmarking...
-time                 1.611 ms   (1.590 ms .. 1.627 ms)
-                     0.995 R²   (0.989 R² .. 0.998 R²)
-mean                 1.567 ms   (1.529 ms .. 1.597 ms)
-std dev              117.2 μs   (83.71 μs .. 167.7 μs)
-variance introduced by outliers: 57% (severely inflated)
+time                 1.589 ms   (1.472 ms .. 1.692 ms)
+                     0.971 R²   (0.955 R² .. 0.986 R²)
+mean                 1.572 ms   (1.521 ms .. 1.612 ms)
+std dev              153.5 μs   (124.2 μs .. 197.6 μs)
+variance introduced by outliers: 70% (severely inflated)
 
 * parsing and formatting times excluded
 ```
@@ -456,11 +459,12 @@ the file `./reflections/day04.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[Prompt][d04p]* / *[Code][d04g]* / *[Rendered][d04h]*
+*[Prompt][d04p]* / *[Code][d04g]* / *[Rendered][d04h]* / *[Standalone Reflection Page][d04r]*
 
 [d04p]: https://adventofcode.com/2020/day/4
 [d04g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs
 [d04h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html
+[d04r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md
 
 I almost hit the leaderboard today, but hit the 1 minute timeout because I
 didn't read carefully enough to treat `cid` as optional ;\_;
@@ -834,21 +838,21 @@ part2 = mapMaybe loadPassport . splitOn "\n\n"
 ```
 >> Day 04a
 benchmarking...
-time                 62.34 μs   (56.91 μs .. 66.65 μs)
-                     0.971 R²   (0.955 R² .. 0.991 R²)
-mean                 62.00 μs   (60.08 μs .. 67.57 μs)
-std dev              11.38 μs   (5.975 μs .. 19.65 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 1.718 ms   (1.670 ms .. 1.769 ms)
+                     0.996 R²   (0.992 R² .. 0.999 R²)
+mean                 1.774 ms   (1.744 ms .. 1.812 ms)
+std dev              124.2 μs   (47.91 μs .. 189.7 μs)
+variance introduced by outliers: 53% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 04b
 benchmarking...
-time                 1.353 ms   (1.268 ms .. 1.426 ms)
-                     0.972 R²   (0.959 R² .. 0.984 R²)
-mean                 1.293 ms   (1.247 ms .. 1.341 ms)
-std dev              160.4 μs   (144.1 μs .. 182.0 μs)
-variance introduced by outliers: 79% (severely inflated)
+time                 4.531 ms   (4.218 ms .. 4.829 ms)
+                     0.973 R²   (0.959 R² .. 0.988 R²)
+mean                 4.773 ms   (4.638 ms .. 4.931 ms)
+std dev              425.8 μs   (346.9 μs .. 577.5 μs)
+variance introduced by outliers: 56% (severely inflated)
 
 * parsing and formatting times excluded
 ```

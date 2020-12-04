@@ -115,7 +115,6 @@ main = shakeArgs opts $ do
               T.pack
                 (printf "[day%02d]: https://github.com/%s/advent-of-code-%04d/blob/master/%s" od github year (standaloneReflectionPath od))
                   <$ guard (od /= d)
-            reflectionLink = T.pack $ printf "https://github.com/%s/advent-of-code-%04d/blob/master/reflections.md" github year
             ctx = ctx0 <> M.fromList
               [ ("daylong"   , T.pack $ printf "%02d" d)
               , ("dayshort"  , T.pack $ printf "%d" d  )
@@ -123,7 +122,6 @@ main = shakeArgs opts $ do
               , ("benchmarks", bench                   )
               , ("other_links", dayLinks               )
               , ("other_days" , otherDays              )
-              , ("reflection_link" , reflectionLink    )
               ]
         writeTemplate fp ctx "template/standalone-reflection.md.template"
 
@@ -207,6 +205,8 @@ main = shakeArgs opts $ do
       removeFilesAfter "_reflections" ["//*"]
       -- removeFilesAfter "bench-out" ["//*"]
       removeFilesAfter "_build" ["//*"]
+      removeFilesAfter "reflections-out" ["//*"]
+      removeFilesAfter "/" ["README.md", "reflections.md"]
   where
     reflectionDays = S.fromList . mapMaybe parseDayFp <$> getDirectoryFiles "reflections" ["*.md"]
     codedDays      = do

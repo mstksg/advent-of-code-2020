@@ -9,7 +9,7 @@ that file instead!
 
 *[All reflections for ${year}][reflections]*
 
-[reflections]: ${reflection_link}
+[reflections]: https://github.com/${github}/advent-of-code-${year}/blob/master/reflections.md
 
 ${other_days}
 

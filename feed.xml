@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Fri,  4 Dec 2020 12:27:16 EST</lastBuildDate>
+    <lastBuildDate>Fri,  4 Dec 2020 13:05:39 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Fri,  4 Dec 2020 12:27:16 EST</pubDate>
+    <pubDate>Fri,  4 Dec 2020 13:05:39 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -20,7 +20,7 @@ This section is generated and compiled by the build script at ./Build.hs from
 the file `./reflections/day04.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/4&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/4&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;I almost hit the leaderboard today, but hit the 1 minute timeout because I didn’t read carefully enough to treat &lt;code&gt;cid&lt;/code&gt; as optional ;_;&lt;/p&gt;
 &lt;p&gt;Ah, that’s life!&lt;/p&gt;
 &lt;p&gt;Anyway, there are a lot of great Haskell solutions out there involving parser combinators and validation of different fields, stuff like that. My original solution parsed a map of fields to values, and then validated those values according to their keys.&lt;/p&gt;
@@ -246,21 +246,21 @@ that file instead!
 &lt;h3 id=&quot;day-4-benchmarks&quot;&gt;Day 4 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 04a
 benchmarking...
-time                 62.34 μs   (56.91 μs .. 66.65 μs)
-                     0.971 R²   (0.955 R² .. 0.991 R²)
-mean                 62.00 μs   (60.08 μs .. 67.57 μs)
-std dev              11.38 μs   (5.975 μs .. 19.65 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 1.718 ms   (1.670 ms .. 1.769 ms)
+                     0.996 R²   (0.992 R² .. 0.999 R²)
+mean                 1.774 ms   (1.744 ms .. 1.812 ms)
+std dev              124.2 μs   (47.91 μs .. 189.7 μs)
+variance introduced by outliers: 53% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 04b
 benchmarking...
-time                 1.353 ms   (1.268 ms .. 1.426 ms)
-                     0.972 R²   (0.959 R² .. 0.984 R²)
-mean                 1.293 ms   (1.247 ms .. 1.341 ms)
-std dev              160.4 μs   (144.1 μs .. 182.0 μs)
-variance introduced by outliers: 79% (severely inflated)
+time                 4.531 ms   (4.218 ms .. 4.829 ms)
+                     0.973 R²   (0.959 R² .. 0.988 R²)
+mean                 4.773 ms   (4.638 ms .. 4.931 ms)
+std dev              425.8 μs   (346.9 μs .. 577.5 μs)
+variance introduced by outliers: 56% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -276,7 +276,7 @@ This section is generated and compiled by the build script at ./Build.hs from
 the file `./reflections/day03.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/3&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/3&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day03.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day03.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Here I’m going to list two methods — one that involves pre-building a set to check if a tree is at a given point, and the other involves just a single direct traversal checking all valid points for trees!&lt;/p&gt;
 &lt;p&gt;First of all, I’m going to reveal one of my favorite secrets for parsing 2D ASCII maps!&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;asciiGrid ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IndexedFold&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Char&lt;/span&gt;&lt;/span&gt;
@@ -348,21 +348,21 @@ that file instead!
 &lt;h3 id=&quot;day-3-benchmarks&quot;&gt;Day 3 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 03a
 benchmarking...
-time                 334.7 μs   (320.0 μs .. 349.5 μs)
-                     0.981 R²   (0.963 R² .. 0.991 R²)
-mean                 335.4 μs   (321.5 μs .. 383.8 μs)
-std dev              80.45 μs   (29.40 μs .. 163.8 μs)
-variance introduced by outliers: 95% (severely inflated)
+time                 318.4 μs   (300.7 μs .. 333.9 μs)
+                     0.984 R²   (0.979 R² .. 0.992 R²)
+mean                 325.0 μs   (315.0 μs .. 331.6 μs)
+std dev              28.88 μs   (24.75 μs .. 32.97 μs)
+variance introduced by outliers: 74% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 03b
 benchmarking...
-time                 1.611 ms   (1.590 ms .. 1.627 ms)
-                     0.995 R²   (0.989 R² .. 0.998 R²)
-mean                 1.567 ms   (1.529 ms .. 1.597 ms)
-std dev              117.2 μs   (83.71 μs .. 167.7 μs)
-variance introduced by outliers: 57% (severely inflated)
+time                 1.589 ms   (1.472 ms .. 1.692 ms)
+                     0.971 R²   (0.955 R² .. 0.986 R²)
+mean                 1.572 ms   (1.521 ms .. 1.612 ms)
+std dev              153.5 μs   (124.2 μs .. 197.6 μs)
+variance introduced by outliers: 70% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -378,7 +378,7 @@ This section is generated and compiled by the build script at ./Build.hs from
 the file `./reflections/day02.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/2&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day02.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day02.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/2&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day02.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day02.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Day 2, not too bad for Haskell either :)&lt;/p&gt;
 &lt;p&gt;There is some fun in parsing here:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Policy&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;P&lt;/span&gt;&lt;/span&gt;
@@ -419,20 +419,20 @@ that file instead!
 &lt;h3 id=&quot;day-2-benchmarks&quot;&gt;Day 2 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 02a
 benchmarking...
-time                 64.39 μs   (64.30 μs .. 64.56 μs)
+time                 67.91 μs   (67.76 μs .. 68.04 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 64.49 μs   (64.39 μs .. 64.65 μs)
-std dev              419.1 ns   (229.4 ns .. 624.1 ns)
+mean                 68.07 μs   (68.04 μs .. 68.14 μs)
+std dev              138.2 ns   (75.99 ns .. 232.7 ns)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 02b
 benchmarking...
-time                 78.82 μs   (77.60 μs .. 79.77 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 79.02 μs   (78.43 μs .. 79.62 μs)
-std dev              2.188 μs   (1.643 μs .. 2.975 μs)
-variance introduced by outliers: 26% (moderately inflated)
+time                 82.17 μs   (80.65 μs .. 83.32 μs)
+                     0.997 R²   (0.992 R² .. 0.999 R²)
+mean                 81.85 μs   (80.70 μs .. 83.46 μs)
+std dev              5.091 μs   (2.562 μs .. 8.513 μs)
+variance introduced by outliers: 64% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -448,7 +448,7 @@ This section is generated and compiled by the build script at ./Build.hs from
 the file `./reflections/day01.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/1&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/1&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day01.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day01.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;So there’s a simple-ish Haskell solution for these problems,&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;tails&lt;/code&gt; lets you separate out each item in a list with the list of items after it:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; tails [&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;4&lt;/span&gt;]&lt;/span&gt;
@@ -517,21 +517,21 @@ that file instead!
 &lt;h3 id=&quot;day-1-benchmarks&quot;&gt;Day 1 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 01a
 benchmarking...
-time                 6.513 μs   (6.106 μs .. 6.965 μs)
-                     0.971 R²   (0.965 R² .. 0.981 R²)
-mean                 6.893 μs   (6.539 μs .. 7.138 μs)
-std dev              1.093 μs   (965.5 ns .. 1.197 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 7.177 μs   (6.720 μs .. 7.594 μs)
+                     0.976 R²   (0.963 R² .. 0.990 R²)
+mean                 7.740 μs   (7.492 μs .. 7.876 μs)
+std dev              729.0 ns   (502.0 ns .. 944.4 ns)
+variance introduced by outliers: 85% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 01b
 benchmarking...
-time                 57.16 μs   (54.29 μs .. 59.82 μs)
-                     0.982 R²   (0.975 R² .. 0.989 R²)
-mean                 62.17 μs   (60.35 μs .. 64.08 μs)
-std dev              6.463 μs   (5.113 μs .. 9.358 μs)
-variance introduced by outliers: 84% (severely inflated)
+time                 56.23 μs   (52.94 μs .. 59.21 μs)
+                     0.975 R²   (0.969 R² .. 0.982 R²)
+mean                 59.67 μs   (57.03 μs .. 61.53 μs)
+std dev              7.328 μs   (6.564 μs .. 8.193 μs)
+variance introduced by outliers: 88% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
