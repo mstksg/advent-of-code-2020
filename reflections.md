@@ -524,9 +524,9 @@ data Passport = Passport
     , pIyr :: 2010 <-> 2020
     , pEyr :: 2020 <-> 2030
     , pHgt :: Height
-    , pHcl :: 6 ** (0 <~> 15)
+    , pHcl :: 6 ** (0 <-> 15)
     , pEcl :: Eye
-    , pPid :: 9 ** (0 <~> 9)
+    , pPid :: 9 ** (0 <-> 9)
     }
 ```
 
@@ -547,9 +547,9 @@ data PassportMaybe = PassportMaybe
     , pIyrMaybe :: Maybe (2010 <-> 2020)
     , pEyrMaybe :: Maybe (2020 <-> 2030)
     , pHgtMaybe :: Maybe Height
-    , pHclMaybe :: Maybe (6 ** (0 <~> 15))
+    , pHclMaybe :: Maybe (6 ** (0 <-> 15))
     , pEclMaybe :: Maybe Eye
-    , pPidMaybe :: Maybe (9 ** (0 <~> 9))
+    , pPidMaybe :: Maybe (9 ** (0 <-> 9))
     }
 ```
 
@@ -571,9 +571,9 @@ data PassportParser = PassportParser
     , pIyrParser :: String -> Maybe (2010 <-> 2020)
     , pEyrParser :: String -> Maybe (2020 <-> 2030)
     , pHgtParser :: String -> Maybe Height
-    , pHclParser :: String -> Maybe (6 ** (0 <~> 15))
+    , pHclParser :: String -> Maybe (6 ** (0 <-> 15))
     , pEclParser :: String -> Maybe Eye
-    , pPidParser :: String -> Maybe (9 ** (0 <~> 9))
+    , pPidParser :: String -> Maybe (9 ** (0 <-> 9))
     }
 ```
 
@@ -616,9 +616,9 @@ data Passport f = Passport
     , pIyr :: f (2010 <-> 2020)
     , pEyr :: f (2020 <-> 2030)
     , pHgt :: f Height
-    , pHcl :: f (6 ** (0 <~> 15))
+    , pHcl :: f (6 ** (0 <-> 15))
     , pEcl :: f Eye
-    , pPid :: f (9 ** (0 <~> 9))
+    , pPid :: f (9 ** (0 <-> 9))
     }
   deriving (Generic)
 ```
