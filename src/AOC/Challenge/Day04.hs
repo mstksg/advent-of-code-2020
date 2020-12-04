@@ -1,5 +1,3 @@
-{-# LANGUAGE DerivingVia #-}
-
 -- |
 -- Module      : AOC.Challenge.Day04
 -- License     : BSD3
@@ -101,12 +99,15 @@ loadPassport = B.btraverse (\(Const (First x)) -> Const <$> x)
              . foldMap loadPassportField
              . words
 
-parsePassport :: String -> Maybe (Passport Identity)
-parsePassport = B.btraverse (fmap Identity)
-              . B.bzipWith go passportParser
-            <=< loadPassport
+parsePassportField :: String -> Passport First
+parsePassportField = B.bzipWith go passportParser . loadPassportField
   where
-    go p (Const x) = runParser p x
+    go p (Const (First x)) = First $ runParser p =<< x
+
+parsePassport :: String -> Maybe (Passport Identity)
+parsePassport = B.btraverse (fmap Identity . getFirst)
+              . foldMap parsePassportField
+              . words
 
 day04a :: [String] :~> Int
 day04a = MkSol
