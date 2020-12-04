@@ -66,10 +66,15 @@ reflXmlPath :: Int -> FilePath
 reflXmlPath d = "_reflections" </> printf "day%02d.xml" d
 benchPath :: Int -> FilePath
 benchPath d = "bench-out" </> printf "day%02d.txt" d
+standaloneReflectionPath :: Int -> FilePath
+standaloneReflectionPath d = "reflections-out" </> printf "day%02d.md" d
 
 main :: IO ()
 main = shakeArgs opts $ do
-    want ["README.md", "reflections.md", "feed.xml"]
+    action $ do
+      rd <- S.toList <$> reflectionDays
+      need $ ["README.md", "reflections.md", "feed.xml"]
+          ++ map standaloneReflectionPath rd
 
     "reflections.md" %> \fp -> do
         days   <- getDays
@@ -77,21 +82,51 @@ main = shakeArgs opts $ do
           if hasRefl
             then T.pack <$> readFile' (reflOutPath d)
             else T.pack <$> readFile' (reflOutCodedPath d)
-        let yearUrls   = tUnlines' . flip foldMap otherYears $ \oy ->
-              T.pack
-                (printf "[%04d]: https://github.com/%s/advent-of-code-%04d/blob/master/reflections.md" oy github oy)
-                    <$ guard (oy /= year)
-            toc = flip map (M.toList days) $ \(d, hasRefl) ->
+        let toc = flip map (M.toList days) $ \(d, hasRefl) ->
               if hasRefl
                 then printf "* [Day %d](#day-%d)" d d
                 else printf "* [Day %d](#day-%d) *(no reflection yet)*" d d
+            yearUrls = tUnlines' . flip foldMap otherYears $ \oy ->
+              T.pack (printf "[%04d]: https://github.com/%s/advent-of-code-%04d/blob/master/reflections.md" oy github oy)
+                 <$ guard (oy /= year)
 
             ctx = ctx0 <> M.fromList
-              [ ("toc" , T.pack $ unlines' toc         )
+              [ ("toc" , T.pack $ unlines' toc        )
               , ("body", T.intercalate "\n\n\n" bodies)
-              , ("other_links", yearUrls    )
+              , ("other_links", yearUrls              )
               ]
         writeTemplate fp ctx "template/reflections.md.template"
+
+    "reflections-out/*.md" %> \fp -> do
+        rDays <- S.toList <$> reflectionDays
+        let Just d  = parseDayFp fp
+            hasRefl = not $ "coded" `isInfixOf` fp
+        refl   <- if hasRefl
+          then T.pack <$> readFile' (reflPath  d)
+          else pure "*Reflection not yet written -- please check back later!*"
+        bench  <- T.pack <$> readFile' (benchPath d)
+        let otherDays = T.intercalate " / " . flip map rDays $ \od ->
+                let linker :: String
+                    linker
+                      | od == d   = printf "%d" od
+                      | otherwise = printf "[%d][day%02d]" od od
+                in  T.pack $ printf "*%s*" linker
+            dayLinks = tUnlines' . flip mapMaybe rDays $ \od ->
+              T.pack
+                (printf "[day%02d]: https://github.com/%s/advent-of-code-%04d/blob/master/%s" od github year (standaloneReflectionPath od))
+                  <$ guard (od /= d)
+            reflectionLink = T.pack $ printf "https://github.com/%s/advent-of-code-%04d/blob/master/reflections.md" github year
+            ctx = ctx0 <> M.fromList
+              [ ("daylong"   , T.pack $ printf "%02d" d)
+              , ("dayshort"  , T.pack $ printf "%d" d  )
+              , ("body"      , refl                    )
+              , ("benchmarks", bench                   )
+              , ("other_links", dayLinks               )
+              , ("other_days" , otherDays              )
+              , ("reflection_link" , reflectionLink    )
+              ]
+        writeTemplate fp ctx "template/standalone-reflection.md.template"
+
 
     "README.md" %> \fp -> do
         days <- getDays

@@ -1,3 +1,32 @@
+Day 4
+===
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day04.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[All reflections for 2020][reflections]*
+
+[reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
+
+*[1][day01]* / *[2][day02]* / *[3][day03]* / *4*
+
+[day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
+[day02]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md
+[day03]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md
+
+[Available as an RSS Feed][rss]
+
+[rss]: http://feeds.feedburner.com/jle-advent-of-code-2020
+
+*[Prompt][d04p]* / *[Code][d04g]* / *[Rendered][d04h]*
+
+[d04p]: https://adventofcode.com/2020/day/4
+[d04g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs
+[d04h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html
+
 I almost hit the leaderboard today, but hit the 1 minute timeout because I
 didn't read carefully enough to treat `cid` as optional ;\_;
 
@@ -361,5 +390,33 @@ Anyway, here's wonderwall.
 -- | Get a list of all passports field string values.
 part2 :: String -> [Passport (Const String)]
 part2 = mapMaybe loadPassport . splitOn "\n\n"
+```
+
+
+
+*[Back to all reflections for 2020][reflections]*
+
+## Day 4 Benchmarks
+
+```
+>> Day 04a
+benchmarking...
+time                 62.34 μs   (56.91 μs .. 66.65 μs)
+                     0.971 R²   (0.955 R² .. 0.991 R²)
+mean                 62.00 μs   (60.08 μs .. 67.57 μs)
+std dev              11.38 μs   (5.975 μs .. 19.65 μs)
+variance introduced by outliers: 94% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 04b
+benchmarking...
+time                 1.353 ms   (1.268 ms .. 1.426 ms)
+                     0.972 R²   (0.959 R² .. 0.984 R²)
+mean                 1.293 ms   (1.247 ms .. 1.341 ms)
+std dev              160.4 μs   (144.1 μs .. 182.0 μs)
+variance introduced by outliers: 79% (severely inflated)
+
+* parsing and formatting times excluded
 ```
 
