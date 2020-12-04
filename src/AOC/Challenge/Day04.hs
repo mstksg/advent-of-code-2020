@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 -- |
 -- Module      : AOC.Challenge.Day04
 -- License     : BSD3
@@ -12,87 +14,129 @@ module AOC.Challenge.Day04 (
   , day04b
   ) where
 
-import           AOC.Common      (countTrue)
-import           AOC.Solver      ((:~>)(..))
-import           Control.DeepSeq (NFData)
-import           Data.Char       (isDigit, isHexDigit, toUpper)
-import           Data.Foldable   (toList)
-import           Data.Ix         (inRange)
-import           Data.List.Split (splitOn)
-import           Data.Map        (Map)
-import           Data.Set        (Set)
-import           GHC.Generics    (Generic)
-import           Text.Read       (readMaybe)
-import qualified Control.Foldl   as F
-import qualified Data.Map        as M
-import qualified Data.Set        as S
+import           AOC.Common           (countTrue, hexDigit, decimalDigit)
+import           AOC.Solver           ((:~>)(..))
+import           Control.Applicative
+import           Control.DeepSeq      (NFData)
+import           Control.Lens
+import           Control.Monad
+import           Data.Char            (isDigit, isHexDigit, toUpper)
+import           Data.Finite
+import           Data.Foldable        (toList)
+import           Data.Ix              (inRange)
+import           Data.Kind
+import           Data.List.Split      (splitOn, chunksOf)
+import           Data.Map             (Map)
+import           Data.Maybe           (mapMaybe)
+import           Data.Monoid.OneLiner
+import           Data.Proxy
+import           Data.Set             (Set)
+import           Data.Vinyl
+import           Data.Word
+import           Debug.Trace
+import           GHC.Generics         (Generic)
+import           GHC.TypeLits
+import           Linear               (V3(..))
+import           Refined
+import           Text.Read            (readMaybe)
+import qualified Barbies              as B
+import qualified Control.Foldl        as F
+import qualified Data.Map             as M
+import qualified Data.Monoid          as Monoid
+import qualified Data.Set             as S
 
-data Field =
-      BYR
-    | IYR
-    | EYR
-    | HGT
-    | HCL
-    | ECL
-    | PID
-    | CID
-  deriving (Show, Read, Eq, Ord, Generic, Enum)
-instance NFData Field
+type a <-> b = Refined (FromTo a b) Int
+type n ** a  = Refined (SizeEqualTo n) [a]
 
-parseField :: String -> Maybe Field
-parseField = readMaybe . map toUpper
+data Height =
+    HCm (150 <-> 193)
+  | HIn ( 59 <->  76)
+  deriving (Show, Read, Eq, Ord)
 
-requiredFields :: Set Field
-requiredFields = S.fromList [BYR .. PID]
+data Eye =
+    AMB
+  | BLU
+  | BRN
+  | GRY
+  | GRN
+  | HZL
+  | OTH
+  deriving (Show, Read, Eq, Ord, Enum)
 
--- | Check if all the items match a predicate and that the collection is of
--- the given length.  Done using 'F.Fold' to do it all in one traversal.
-allWithLength :: (a -> Bool) -> Int -> F.Fold a Bool
-allWithLength p expected = do
-    allTrue <- F.all p
-    len     <- F.length
-    pure (allTrue && len == expected)
+data Passport f = Passport
+    { pByr :: f (1920 <-> 2002)
+    , pIyr :: f (2010 <-> 2020)
+    , pEyr :: f (2020 <-> 2030)
+    , pHgt :: f Height
+    , pHcl :: f (6 ** Finite 16)
+    , pEcl :: f Eye
+    , pPid :: f (9 ** Finite 10)
+    }
+  deriving (Generic)
 
-validateField :: Field -> String -> Bool
-validateField = \case
-    BYR -> any (inRange (1920, 2002)) . readMaybe @Int
-    IYR -> any (inRange (2010, 2020)) . readMaybe @Int
-    EYR -> any (inRange (2020, 2030)) . readMaybe @Int
-    HGT -> \str ->
-        let (x, u) = span isDigit str
-            cond   = case u of
-             "cm" -> inRange (150, 193)
-             "in" -> inRange (59, 76)
-             _    -> const False
-        in any cond (readMaybe @Int x)
-    HCL -> \case
-        '#':ns -> F.fold (allWithLength isHexDigit 6) ns
-        _      -> False
-    ECL -> flip S.member $ S.fromList
-        ["amb","blu","brn","gry","grn","hzl","oth"]
-    PID -> F.fold (allWithLength isDigit 9)
-    CID -> const True
+instance B.FunctorB Passport
+instance B.ApplicativeB Passport
+instance B.TraversableB Passport
+instance B.ConstraintsB Passport
+deriving instance B.AllBF Show f Passport => Show (Passport f)
+deriving via GMonoid (Passport f) instance B.AllBF Semigroup f Passport => Semigroup (Passport f)
+deriving via GMonoid (Passport f) instance B.AllBF Monoid f Passport => Monoid (Passport f)
 
-buildPassport :: String -> Map Field String
-buildPassport str = M.fromList
-    [ (fld, v)
-    | [k,v] <- splitOn ":" <$> words str
-    , fld   <- toList $ parseField k
-    ]
+newtype Parser a = Parser { runParser :: String -> Maybe a }
 
-validate :: Map Field a -> Bool
-validate = S.null . (requiredFields S.\\) . M.keysSet
-
-day04a :: [Map Field String] :~> Int
-day04a = MkSol
-    { sParse = Just . map buildPassport . splitOn "\n\n"
-    , sShow  = show
-    , sSolve = Just . countTrue validate
+passportParser :: Passport Parser
+passportParser = Passport
+    { pByr = Parser $ refineThrow <=< readMaybe
+    , pIyr = Parser $ refineThrow <=< readMaybe
+    , pEyr = Parser $ refineThrow <=< readMaybe
+    , pHgt = Parser $ \str ->
+                let (x, u) = span isDigit str
+                in  case u of
+                      "cm" -> fmap HCm . refineThrow =<< readMaybe x
+                      "in" -> fmap HIn . refineThrow =<< readMaybe x
+                      _    -> Nothing
+    , pHcl = Parser $ \case
+                '#':n -> refineThrow =<< traverse (preview hexDigit) n
+                _     -> Nothing
+    , pEcl = Parser $ readMaybe . map toUpper
+    , pPid = Parser $ refineThrow <=< traverse (preview decimalDigit)
     }
 
-day04b :: [Map Field String] :~> Int
-day04b = MkSol
-    { sParse = Just . map buildPassport . splitOn "\n\n"
+loadPassportField :: String -> Passport (Const (Monoid.First String))
+loadPassportField str = case splitOn ":" str of
+    [k,v] -> case k of
+      "byr" -> mempty { pByr = Const (pure v) }
+      "iyr" -> mempty { pIyr = Const (pure v) }
+      "eyr" -> mempty { pEyr = Const (pure v) }
+      "hgt" -> mempty { pHgt = Const (pure v) }
+      "hcl" -> mempty { pHcl = Const (pure v) }
+      "ecl" -> mempty { pEcl = Const (pure v) }
+      "pid" -> mempty { pPid = Const (pure v) }
+      _     -> mempty
+    _     -> mempty
+
+loadPassport :: String -> Maybe (Passport (Const String))
+loadPassport = B.btraverse (\(Const (Monoid.First x)) -> Const <$> x)
+             . foldMap loadPassportField
+             . words
+
+parsePassport :: String -> Maybe (Passport Identity)
+parsePassport = B.btraverse (fmap Identity)
+              . B.bzipWith go passportParser
+            <=< loadPassport
+  where
+    go p (Const x) = runParser p x
+
+day04a :: [String] :~> Int
+day04a = MkSol
+    { sParse = Just . splitOn "\n\n"
     , sShow  = show
-    , sSolve = Just . countTrue (validate . M.filterWithKey validateField)
+    , sSolve = Just . length . mapMaybe loadPassport
+    }
+
+day04b :: [String] :~> Int
+day04b = MkSol
+    { sParse = Just . splitOn "\n\n"
+    , sShow  = show
+    , sSolve = Just . length . mapMaybe parsePassport
     }

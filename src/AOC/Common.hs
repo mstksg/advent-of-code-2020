@@ -64,6 +64,7 @@ module AOC.Common (
   , charFinite
   , _CharFinite
   , hexDigit
+  , decimalDigit
   , splitWord
   , digitToIntSafe
   , caeser
@@ -289,8 +290,22 @@ getDown (Down x) = x
 splitWord :: Word8 -> (Finite 16, Finite 16)
 splitWord = swap . separateProduct . F.toFinite
 
-hexDigit :: Iso' Char (Finite 16)
-hexDigit = iso (Finite . fromIntegral . digitToInt) (intToDigit . fromIntegral)
+decimalDigit :: Prism' Char (Finite 10)
+decimalDigit = prism' _to _from
+  where
+    _to           = intToDigit . fromIntegral
+    _from c
+      | isDigit c = Just (Finite (fromIntegral (digitToInt c)))
+      | otherwise = Nothing
+
+
+hexDigit :: Prism' Char (Finite 16)
+hexDigit = prism' _to _from
+  where
+    _to              = intToDigit . fromIntegral
+    _from c
+      | isHexDigit c = Just (Finite (fromIntegral (digitToInt c)))
+      | otherwise    = Nothing
 
 type Letter = Finite 26
 

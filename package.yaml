@@ -75,6 +75,7 @@ library:
   - advent-of-code-api >= 0.2.7
   - aeson
   - ansi-terminal
+  - barbies
   - bytestring
   - containers
   - criterion
@@ -99,12 +100,14 @@ library:
   - megaparsec >= 8.0
   - mtl
   - nonempty-containers
+  - one-liner-instances
   - pandoc
   - parallel
   - parser-combinators >= 1.2.0
   - pointedlist
   - profunctors
   - psqueues
+  - refined
   - semigroupoids
   - split
   - template-haskell
@@ -115,6 +118,7 @@ library:
   - vec
   - vector
   - vector-sized
+  - vinyl
   - yaml
 
 executables:
