@@ -14,53 +14,34 @@ module AOC.Challenge.Day04 (
   , day04b
   ) where
 
-import           AOC.Common           (countTrue, hexDigit, decimalDigit)
-import           AOC.Solver           ((:~>)(..))
-import           Control.Applicative
-import           Control.DeepSeq      (NFData)
-import           Control.Lens
-import           Control.Monad
-import           Data.Char            (isDigit, isHexDigit, toUpper)
-import           Data.Finite
-import           Data.Foldable        (toList)
-import           Data.Ix              (inRange)
-import           Data.Kind
-import           Data.List.Split      (splitOn, chunksOf)
-import           Data.Map             (Map)
-import           Data.Maybe           (mapMaybe)
-import           Data.Monoid.OneLiner
-import           Data.Proxy
-import           Data.Set             (Set)
-import           Data.Vinyl
-import           Data.Word
-import           Debug.Trace
-import           GHC.Generics         (Generic)
-import           GHC.TypeLits
-import           Linear               (V3(..))
-import           Refined
-import           Text.Read            (readMaybe)
-import qualified Barbies              as B
-import qualified Control.Foldl        as F
-import qualified Data.Map             as M
-import qualified Data.Monoid          as Monoid
-import qualified Data.Set             as S
+import           AOC.Common            (hexDigit, decimalDigit)
+import           AOC.Solver            ((:~>)(..))
+import           Control.Applicative   (Const(..))
+import           Control.Lens          (preview)
+import           Control.Monad         ((<=<))
+import           Data.Char             (isDigit, toUpper)
+import           Data.Finite           (Finite)
+import           Data.Functor.Identity (Identity(..))
+import           Data.List.Split       (splitOn)
+import           Data.Maybe            (mapMaybe)
+import           Data.Monoid           (First(..))
+import           Data.Monoid.OneLiner  (GMonoid(..))
+import           GHC.Generics          (Generic)
+import           Refined               (Refined, FromTo, SizeEqualTo, refineThrow)
+import           Text.Read             (readMaybe)
+import qualified Barbies               as B
 
-type a <-> b = Refined (FromTo a b) Int
-type n ** a  = Refined (SizeEqualTo n) [a]
+type a <-> b  = Refined (FromTo a b) Int
+type n ** a   = Refined (SizeEqualTo n) [a]
+type FirstRaw = Const (First String)
+type Raw      = Const String
 
 data Height =
     HCm (150 <-> 193)
   | HIn ( 59 <->  76)
   deriving (Show, Read, Eq, Ord)
 
-data Eye =
-    AMB
-  | BLU
-  | BRN
-  | GRY
-  | GRN
-  | HZL
-  | OTH
+data Eye = AMB | BLU | BRN | GRY | GRN | HZL | OTH
   deriving (Show, Read, Eq, Ord, Enum)
 
 data Passport f = Passport
@@ -102,7 +83,7 @@ passportParser = Passport
     , pPid = Parser $ refineThrow <=< traverse (preview decimalDigit)
     }
 
-loadPassportField :: String -> Passport (Const (Monoid.First String))
+loadPassportField :: String -> Passport FirstRaw
 loadPassportField str = case splitOn ":" str of
     [k,v] -> case k of
       "byr" -> mempty { pByr = Const (pure v) }
@@ -115,8 +96,8 @@ loadPassportField str = case splitOn ":" str of
       _     -> mempty
     _     -> mempty
 
-loadPassport :: String -> Maybe (Passport (Const String))
-loadPassport = B.btraverse (\(Const (Monoid.First x)) -> Const <$> x)
+loadPassport :: String -> Maybe (Passport Raw)
+loadPassport = B.btraverse (\(Const (First x)) -> Const <$> x)
              . foldMap loadPassportField
              . words
 
