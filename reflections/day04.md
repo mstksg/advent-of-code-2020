@@ -85,7 +85,7 @@ data PassportMaybe = PassportMaybe
     }
 ```
 
-With an appropriate `Monoid` instance that merges known fields together, and a
+with an appropriate `Monoid` instance that merges known fields together, and a
 function like
 
 ```haskell
@@ -271,7 +271,7 @@ parsePassportField = bzipWith go passportParser . loadPassportField
     go p (Const x) = runParser p =<< x
 ```
 
-In the below, `go` is run between each matching field in the `Passport Parser`
+In the above, `go` is run between each matching field in the `Passport Parser`
 and the `Passport (Const (Maybe String))`, and the overall effect is that each
 string is run with the appropriate parser for its field.
 
@@ -324,7 +324,7 @@ parsePassport = btraverse (fmap Identity)
               . words
 ```
 
-The result of `foldMap parsePassportField . words` is a `PassportMaybe`, and
+The result of `foldMap parsePassportField . words` is a `Passport Maybe`, and
 `btraverse` "pulls out" all of the `Just` fields and returns a `Passport
 Identity` if all of the fields are `Just`, failing with `Nothing` if any of the
 fields are `Nothing`.
@@ -337,6 +337,10 @@ part2 :: String -> [Passport Identity]
 part2 = mapMaybe parsePassport . splitOn "\n\n"
 ```
 
+This works because we know that if we have a `Passport Identity`, we *know* it
+has to be a valid passport.  It's physically impossible to create one that
+isn't valid!
+
 **All hail "Parse, Don't Validate"!**
 
 And part 1 is a fun diversion: instead of a `Passport Identity`, we want to
@@ -345,7 +349,7 @@ the same:
 
 ```haskell
 loadPassport :: String -> Maybe (Passport (Const String))
-loadPassport = btraverse getConst
+loadPassport = btraverse (\(Const x) -> Const <$> x)
              . foldMap loadPassportField
              . words
 ```
@@ -360,7 +364,7 @@ present than the actual contents of the string.
 Anyway, here's wonderwall.
 
 ```haskell
--- | Get a list of all passports field string values.
-part2 :: String -> [Passport (Const String)]
-part2 = mapMaybe loadPassport . splitOn "\n\n"
+-- | Get a list of all complete passports field string values.
+part1 :: String -> [Passport (Const String)]
+part1 = mapMaybe loadPassport . splitOn "\n\n"
 ```
