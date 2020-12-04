@@ -102,7 +102,6 @@ module AOC.Common (
   , boundingBox'
   , parseAsciiMap
   , parseAsciiSet
-  , asciiGrid
   , ScanPoint(..)
   , displayAsciiMap
   ) where
@@ -616,8 +615,12 @@ parseAsciiSet
     -> Set Point
 parseAsciiSet f = setOf (asciiGrid . filtered f . asIndex)
 
-asciiGrid :: IndexedFold Point String Char
-asciiGrid = reindexed (uncurry (flip V2)) (lined <.> folded)
+asciiGrid :: IndexedTraversal Point String [a] Char a
+asciiGrid = conjoined traverse $ \pcfa ->
+      sequenceA
+    . concat
+    . zipWith (\y -> zipWith (\x -> indexed pcfa (V2 x y :: Point)) [0..]) [0..]
+    . lines
 
 displayAsciiMap
     :: Char             -- ^ default tile
