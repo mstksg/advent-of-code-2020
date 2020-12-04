@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day04
 -- License     : BSD3
@@ -9,89 +6,93 @@
 -- Portability : non-portable
 --
 -- Day 4.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day04 (
     day04a
   , day04b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common      (countTrue)
+import           AOC.Solver      ((:~>)(..))
+import           Control.DeepSeq (NFData)
+import           Data.Char       (isDigit, isHexDigit, toUpper)
+import           Data.Foldable   (toList)
+import           Data.Ix         (inRange)
+import           Data.List.Split (splitOn)
+import           Data.Map        (Map)
+import           Data.Set        (Set)
+import           GHC.Generics    (Generic)
+import           Text.Read       (readMaybe)
+import qualified Control.Foldl   as F
+import qualified Data.Map        as M
+import qualified Data.Set        as S
 
-import qualified Data.Graph                     as G
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Data.Set as S
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+data Field =
+      BYR
+    | IYR
+    | EYR
+    | HGT
+    | HCL
+    | ECL
+    | PID
+    | CID
+  deriving (Show, Read, Eq, Ord, Generic, Enum)
+instance NFData Field
 
-type Validator = Map String (String -> Bool)
+parseField :: String -> Maybe Field
+parseField = readMaybe . map toUpper
 
-validator1 :: Validator
-validator1 = const True <$ validator2
+requiredFields :: Set Field
+requiredFields = S.fromList [BYR .. PID]
 
-validator2 :: Validator
-validator2 = M.fromList
-    [ ("byr", \str -> isJust $ mfilter (\n -> n >= 1920 && n <= 2002) (readMaybe str))
-    , ("iyr", \str -> isJust $ mfilter (\n -> n >= 2010 && n <= 2020) (readMaybe str))
-    , ("eyr", \str -> isJust $ mfilter (\n -> n >= 2020 && n <= 2030) (readMaybe str))
-    , ("hgt", \str ->
-        let (x,u) = span isDigit str
-            cond = case u of
-              "cm" -> \n -> n >= 150 && n <= 193
-              "in" -> \n -> n >= 59 && n <= 76
-              _    -> const False
-        in  isJust $ mfilter cond (readMaybe x)
-      )
-    , ("hcl", \str -> case str of
-                '#':ns -> all isHexDigit ns && length ns == 6
-                _ -> False
-      )
-    , ("ecl", \str -> str `S.member` S.fromList
-            ["amb","blu","brn","gry","grn","hzl","oth"]
-      )
-    , ("pid", \str -> all isDigit str && length str == 9
-      )
+-- | Check if all the items match a predicate and that the collection is of
+-- the given length.  Done using 'F.Fold' to do it all in one traversal.
+allWithLength :: (a -> Bool) -> Int -> F.Fold a Bool
+allWithLength p expected = do
+    allTrue <- F.all p
+    len     <- F.length
+    pure (allTrue && len == expected)
+
+validateField :: Field -> String -> Bool
+validateField = \case
+    BYR -> any (inRange (1920, 2002)) . readMaybe @Int
+    IYR -> any (inRange (2010, 2020)) . readMaybe @Int
+    EYR -> any (inRange (2020, 2030)) . readMaybe @Int
+    HGT -> \str ->
+        let (x, u) = span isDigit str
+            cond   = case u of
+             "cm" -> inRange (150, 193)
+             "in" -> inRange (59, 76)
+             _    -> const False
+        in any cond (readMaybe @Int x)
+    HCL -> \case
+        '#':ns -> F.fold (allWithLength isHexDigit 6) ns
+        _      -> False
+    ECL -> flip S.member $ S.fromList
+        ["amb","blu","brn","gry","grn","hzl","oth"]
+    PID -> F.fold (allWithLength isDigit 9)
+    CID -> const True
+
+buildPassport :: String -> Map Field String
+buildPassport str = M.fromList
+    [ (fld, v)
+    | [k,v] <- splitOn ":" <$> words str
+    , fld   <- toList $ parseField k
     ]
 
-validate :: Validator -> Map String String -> Bool
-validate vld = (== 7) . M.size . M.filter id . M.intersectionWith ($) vld
+validate :: Map Field a -> Bool
+validate = S.null . (requiredFields S.\\) . M.keysSet
 
-tokenMap :: String -> Map String String
-tokenMap = M.fromList . mapMaybe (go . splitOn ":") . words
-  where
-    go [x,y] = Just (x, y)
-    go _     = Nothing
-
-day04a :: _ :~> _
+day04a :: [Map Field String] :~> Int
 day04a = MkSol
-    { sParse = Just . map tokenMap . splitOn "\n\n"
+    { sParse = Just . map buildPassport . splitOn "\n\n"
     , sShow  = show
-    , sSolve = Just . countTrue (validate validator1)
+    , sSolve = Just . countTrue validate
     }
 
-day04b :: _ :~> _
+day04b :: [Map Field String] :~> Int
 day04b = MkSol
-    { sParse = Just . map tokenMap . splitOn "\n\n"
+    { sParse = Just . map buildPassport . splitOn "\n\n"
     , sShow  = show
-    , sSolve = Just . countTrue (validate validator2)
+    , sSolve = Just . countTrue (validate . M.filterWithKey validateField)
     }
