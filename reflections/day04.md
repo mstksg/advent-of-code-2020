@@ -15,7 +15,7 @@ types with the *[refined][]* library, and also and the [higher-kinded
 data][hkd] pattern, supported by  the *[barbies][]* library.
 
 [pdv]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
-[hkd][]: https://reasonablypolymorphic.com/blog/higher-kinded-data/
+[hkd]: https://reasonablypolymorphic.com/blog/higher-kinded-data/
 [barbies]: https://hackage.haskell.org/package/barbies
 [refined]: https://hackage.haskell.org/package/refined
 

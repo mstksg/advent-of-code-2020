@@ -7,12 +7,9 @@ the file `./reflections/day04.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[All reflections for 2020][reflections]*
+*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *4*
 
 [reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
-
-*[1][day01]* / *[2][day02]* / *[3][day03]* / *4*
-
 [day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
 [day02]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day02.md
 [day03]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day03.md
@@ -44,7 +41,7 @@ types with the *[refined][]* library, and also and the [higher-kinded
 data][hkd] pattern, supported by  the *[barbies][]* library.
 
 [pdv]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/
-[hkd][]: https://reasonablypolymorphic.com/blog/higher-kinded-data/
+[hkd]: https://reasonablypolymorphic.com/blog/higher-kinded-data/
 [barbies]: https://hackage.haskell.org/package/barbies
 [refined]: https://hackage.haskell.org/package/refined
 

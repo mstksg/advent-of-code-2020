@@ -7,12 +7,9 @@ the file `./reflections/day${daylong}.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[All reflections for ${year}][reflections]*
+*[all][reflections]* / ${other_days}
 
 [reflections]: https://github.com/${github}/advent-of-code-${year}/blob/master/reflections.md
-
-${other_days}
-
 ${other_links}
 
 [Available as an RSS Feed][rss]
