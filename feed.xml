@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Fri,  4 Dec 2020 13:13:01 EST</lastBuildDate>
+    <lastBuildDate>Fri,  4 Dec 2020 13:14:11 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Fri,  4 Dec 2020 13:13:01 EST</pubDate>
+    <pubDate>Fri,  4 Dec 2020 13:14:11 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -22,7 +22,7 @@ that file instead!
 --&gt;
 &lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/4&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day04.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day04.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day04.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;I almost hit the leaderboard today, but hit the 1 minute timeout because I didn’t read carefully enough to treat &lt;code&gt;cid&lt;/code&gt; as optional ;_;&lt;/p&gt;
-&lt;p&gt;Ah, that’s life!&lt;/p&gt;
+&lt;p&gt;Ah well, that’s life!&lt;/p&gt;
 &lt;p&gt;Anyway, there are a lot of great Haskell solutions out there involving parser combinators and validation of different fields, stuff like that. My original solution parsed a map of fields to values, and then validated those values according to their keys.&lt;/p&gt;
 &lt;p&gt;But taking a step back from it all, I thought it would be a nice opportunity to try out the principal of &lt;a href=&quot;https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/&quot;&gt;Parse, Don’t Validate&lt;/a&gt; and see if I can take it its extremes! And implementing this in a nice way lead me also to refinement types with the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/refined&quot;&gt;refined&lt;/a&gt;&lt;/em&gt; library, and also and the &lt;a href=&quot;https://reasonablypolymorphic.com/blog/higher-kinded-data/&quot;&gt;higher-kinded data&lt;/a&gt; pattern, supported by the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/barbies&quot;&gt;barbies&lt;/a&gt;&lt;/em&gt; library.&lt;/p&gt;
 &lt;p&gt;So, what is “Parse, Don’t Validate”? It means: instead of parsing your data into some structure and then checking if the structure is valid (like my original parse-a-map-then-check-it), try instead to represent your data in a structure where it is &lt;em&gt;imposssible&lt;/em&gt; to represent or create an invalid instance in the first place. And so what was originally “validation” is now simply parsing your data into that correct-by-construction structure.&lt;/p&gt;
@@ -232,6 +232,7 @@ that file instead!
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb18&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb18-1&quot;&gt;&lt;a href=&quot;#cb18-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | Get a list of all valid passports.&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb18-2&quot;&gt;&lt;a href=&quot;#cb18-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Identity&lt;/span&gt;]&lt;/span&gt;
 &lt;span id=&quot;cb18-3&quot;&gt;&lt;a href=&quot;#cb18-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; mapMaybe parsePassport &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; splitOn &lt;span class=&quot;st&quot;&gt;&amp;quot;\n\n&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;All hail “Parse, Don’t Validate”!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;And part 1 is a fun diversion: instead of a &lt;code&gt;Passport Identity&lt;/code&gt;, we want to parse into a &lt;code&gt;Passport (Const String)&lt;/code&gt; instead. The mechanics are pretty much the same:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb19&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb19-1&quot;&gt;&lt;a href=&quot;#cb19-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;loadPassport ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Const&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;))&lt;/span&gt;
 &lt;span id=&quot;cb19-2&quot;&gt;&lt;a href=&quot;#cb19-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;loadPassport &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; btraverse getConst&lt;/span&gt;

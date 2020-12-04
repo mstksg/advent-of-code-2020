@@ -1,7 +1,7 @@
 I almost hit the leaderboard today, but hit the 1 minute timeout because I
 didn't read carefully enough to treat `cid` as optional ;\_;
 
-Ah, that's life!
+Ah well, that's life!
 
 Anyway, there are a lot of great Haskell solutions out there involving parser
 combinators and validation of different fields, stuff like that.  My original
@@ -337,6 +337,8 @@ part2 :: String -> [Passport Identity]
 part2 = mapMaybe parsePassport . splitOn "\n\n"
 ```
 
+**All hail "Parse, Don't Validate"!**
+
 And part 1 is a fun diversion: instead of a `Passport Identity`, we want to
 parse into a `Passport (Const String)` instead.  The mechanics are pretty much
 the same:
@@ -362,4 +364,3 @@ Anyway, here's wonderwall.
 part2 :: String -> [Passport (Const String)]
 part2 = mapMaybe loadPassport . splitOn "\n\n"
 ```
-
