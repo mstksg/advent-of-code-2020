@@ -7,11 +7,80 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Fri,  4 Dec 2020 19:54:51 EST</lastBuildDate>
+    <lastBuildDate>Sat,  5 Dec 2020 01:46:06 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Fri,  4 Dec 2020 19:54:51 EST</pubDate>
+    <pubDate>Sat,  5 Dec 2020 01:46:06 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 5</title>
+      <description>&lt;h2 id=&quot;day-5&quot;&gt;Day 5&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day05.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/5&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day05.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day05.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;So, compared to yesterday’s, this was decently chill :)&lt;/p&gt;
+&lt;p&gt;The main insight here probably is that the puzzle is just describing that the seat ID’s are straight up binary notation for numerals, with F/L representing what is traditionally 0, and B/R representing what si traditionally 1. So we can use any of our binary parsers from the standard libraries, or we can just directly pull it into binary.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;seatId ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;seatId &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldl&amp;#39; iGuessWe&amp;#39;reDoingThis &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    iGuessWe&amp;#39;reDoingThis n &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; \&lt;span class=&quot;kw&quot;&gt;case&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;ch&quot;&gt;&amp;#39;B&amp;#39;&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;n&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;ch&quot;&gt;&amp;#39;R&amp;#39;&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;n&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      _   &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;n&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A nice one-pass way to find the missing seat ID is to realize that if we sum all the numbers from min to max, and sum all of our lists’s seat id’s, then the difference is the missing number. Luckily there’s a nice closed-form solution for the sum of all numbers in a given range (the sum of numbers from &lt;code&gt;a&lt;/code&gt; to &lt;code&gt;b&lt;/code&gt; is &lt;code&gt;b*(b+1)`div`2 - a*(a-1)`div`2&lt;/code&gt;), so we can do all of this in a single pass using the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/foldl&quot;&gt;foldl&lt;/a&gt;&lt;/em&gt; library&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;{-# LANGUAGE ApplicativeDo #-}&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Control.Foldl&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findHole ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F.Fold&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findHole &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    mn &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; F.minimum&lt;/span&gt;
+&lt;span id=&quot;cb2-7&quot;&gt;&lt;a href=&quot;#cb2-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    mx &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; F.maximum&lt;/span&gt;
+&lt;span id=&quot;cb2-8&quot;&gt;&lt;a href=&quot;#cb2-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    sm &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; F.sum&lt;/span&gt;
+&lt;span id=&quot;cb2-9&quot;&gt;&lt;a href=&quot;#cb2-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-10&quot;&gt;&lt;a href=&quot;#cb2-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      missingItem &lt;span class=&quot;op&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; mn &lt;span class=&quot;op&quot;&gt;&amp;lt;*&amp;gt;&lt;/span&gt; mx &lt;span class=&quot;op&quot;&gt;&amp;lt;*&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; sm&lt;/span&gt;
+&lt;span id=&quot;cb2-11&quot;&gt;&lt;a href=&quot;#cb2-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-12&quot;&gt;&lt;a href=&quot;#cb2-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    missingItem mn mx sm &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; totalSum &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; sm&lt;/span&gt;
+&lt;span id=&quot;cb2-13&quot;&gt;&lt;a href=&quot;#cb2-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-14&quot;&gt;&lt;a href=&quot;#cb2-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        totalSum &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; mx&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;(mx&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;)&lt;span class=&quot;ot&quot;&gt;`div`&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; mn&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;(mn&lt;span class=&quot;op&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;)&lt;span class=&quot;ot&quot;&gt;`div`&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A &lt;code&gt;F.Fold Int (Maybe Int)&lt;/code&gt; folds a list of &lt;code&gt;Int&lt;/code&gt;s into a &lt;code&gt;Maybe Int&lt;/code&gt;. You can run it with &lt;code&gt;F.fold :: F.Fold a b -&amp;gt; [a] -&amp;gt; b&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I really like the &lt;em&gt;foldl&lt;/em&gt; library because it lets you build a complex single-pass fold by combining multiple simple single-pass folds (like &lt;code&gt;F.minimum&lt;/code&gt;, &lt;code&gt;F.maximum&lt;/code&gt;, &lt;code&gt;F.sum&lt;/code&gt;) using an Applicative interface. We need to do a bit of wrangling with the &lt;code&gt;Maybe&lt;/code&gt;s because &lt;code&gt;F.minimum&lt;/code&gt; and &lt;code&gt;F.maximum&lt;/code&gt; each return &lt;code&gt;Maybe Int&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;And that’s more or less it! We can actually represent the entire thing as a fold if we use &lt;code&gt;F.premap&lt;/code&gt;, to pre-map a fold…&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;F.premap&lt;span class=&quot;ot&quot;&gt;                 ::&lt;/span&gt; (c &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; a) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F.Fold&lt;/span&gt; a b &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F.Fold&lt;/span&gt; c b&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- &amp;quot;pre-apply&amp;quot; `setId` so we fold over a string instead&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;F.premap seatId&lt;span class=&quot;ot&quot;&gt; findHole ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F.Fold&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And…that’s enough to do it!&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; F.fold &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; F.premap seatId F.maximum&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; F.fold &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; F.premap seatId findHole&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;day-5-benchmarks&quot;&gt;Day 5 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 05a
+benchmarking...
+time                 48.72 μs   (48.68 μs .. 48.76 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 48.77 μs   (48.75 μs .. 48.79 μs)
+std dev              58.85 ns   (47.64 ns .. 78.82 ns)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 05b
+benchmarking...
+time                 53.45 μs   (53.40 μs .. 53.51 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 53.60 μs   (53.48 μs .. 53.79 μs)
+std dev              474.4 ns   (389.6 ns .. 574.7 ns)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-5</link>
+      <pubDate>Sat,  5 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 4</title>
       <description>&lt;h2 id=&quot;day-4&quot;&gt;Day 4&lt;/h2&gt;
