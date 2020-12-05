@@ -24,6 +24,7 @@ Table of Contents
 * [Day 2](#day-2)
 * [Day 3](#day-3)
 * [Day 4](#day-4)
+* [Day 5](#day-5) *(no reflection yet)*
 
 Day 1
 ------
@@ -858,6 +859,50 @@ time                 4.531 ms   (4.218 ms .. 4.829 ms)
 mean                 4.773 ms   (4.638 ms .. 4.931 ms)
 std dev              425.8 μs   (346.9 μs .. 577.5 μs)
 variance introduced by outliers: 56% (severely inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 5
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day05.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d05p]* / *[Code][d05g]* / *[Rendered][d05h]* / *[Standalone Reflection Page][d05r]*
+
+[d05p]: https://adventofcode.com/2020/day/5
+[d05g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day05.hs
+[d05h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day05.html
+[d05r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 5 Benchmarks
+
+```
+>> Day 05a
+benchmarking...
+time                 1.887 ms   (1.825 ms .. 1.975 ms)
+                     0.990 R²   (0.981 R² .. 0.997 R²)
+mean                 1.912 ms   (1.878 ms .. 1.969 ms)
+std dev              149.7 μs   (99.28 μs .. 213.0 μs)
+variance introduced by outliers: 57% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 05b
+benchmarking...
+time                 1.111 ms   (1.059 ms .. 1.172 ms)
+                     0.981 R²   (0.962 R² .. 0.995 R²)
+mean                 1.105 ms   (1.080 ms .. 1.126 ms)
+std dev              82.29 μs   (53.48 μs .. 136.0 μs)
+variance introduced by outliers: 59% (severely inflated)
 
 * parsing and formatting times excluded
 ```
