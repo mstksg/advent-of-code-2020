@@ -684,7 +684,7 @@ passportParser = Passport
                 '#':n -> refineThrow =<< traverse readHex n
                 _     -> Nothing
     , pEcl = Parser $ readMaybe . map toUpper
-    , pPid = Parser $ refineThrow <=< traverse (refineThrow <=< readMaybe)
+    , pPid = Parser $ refineThrow <=< traverse (refineThrow <=< readMaybe . (:[]))
     }
   where
     readHex c
