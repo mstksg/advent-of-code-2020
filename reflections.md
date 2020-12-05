@@ -885,7 +885,7 @@ So, compared to yesterday's, this was decently chill :)
 
 The main insight here probably is that the puzzle is just describing that the
 seat ID's are straight up binary notation for numerals, with F/L representing
-what is traditionally 0, and B/R representing what si traditionally 1.  So we
+what is traditionally 0, and B/R representing what is traditionally 1.  So we
 can use any of our binary parsers from the standard libraries, or we can just
 directly pull it into binary.
 
@@ -945,7 +945,7 @@ F.premap                 :: (c -> a) -> F.Fold a b -> F.Fold c b
 F.premap seatId findHole :: F.Fold String (Maybe Int)
 ```
 
-And...that's enough to do it!
+And...that's enough to do it all in a single pass!
 
 ```haskell
 part1 :: [String] -> Maybe Int

@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Sat,  5 Dec 2020 01:46:06 EST</lastBuildDate>
+    <lastBuildDate>Sat,  5 Dec 2020 01:54:20 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Sat,  5 Dec 2020 01:46:06 EST</pubDate>
+    <pubDate>Sat,  5 Dec 2020 01:54:20 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -22,7 +22,7 @@ that file instead!
 --&gt;
 &lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/5&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day05.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day05.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day05.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;So, compared to yesterday’s, this was decently chill :)&lt;/p&gt;
-&lt;p&gt;The main insight here probably is that the puzzle is just describing that the seat ID’s are straight up binary notation for numerals, with F/L representing what is traditionally 0, and B/R representing what si traditionally 1. So we can use any of our binary parsers from the standard libraries, or we can just directly pull it into binary.&lt;/p&gt;
+&lt;p&gt;The main insight here probably is that the puzzle is just describing that the seat ID’s are straight up binary notation for numerals, with F/L representing what is traditionally 0, and B/R representing what is traditionally 1. So we can use any of our binary parsers from the standard libraries, or we can just directly pull it into binary.&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;seatId ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;seatId &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldl&amp;#39; iGuessWe&amp;#39;reDoingThis &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
@@ -52,7 +52,7 @@ that file instead!
 &lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- &amp;quot;pre-apply&amp;quot; `setId` so we fold over a string instead&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;F.premap seatId&lt;span class=&quot;ot&quot;&gt; findHole ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;F.Fold&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And…that’s enough to do it!&lt;/p&gt;
+&lt;p&gt;And…that’s enough to do it all in a single pass!&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; F.fold &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; F.premap seatId F.maximum&lt;/span&gt;
 &lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
