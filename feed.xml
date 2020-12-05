@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Sat,  5 Dec 2020 01:54:20 EST</lastBuildDate>
+    <lastBuildDate>Sat,  5 Dec 2020 03:24:13 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Sat,  5 Dec 2020 01:54:20 EST</pubDate>
+    <pubDate>Sat,  5 Dec 2020 03:24:13 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -58,22 +58,34 @@ that file instead!
 &lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; F.fold &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; F.premap seatId findHole&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Bonus: I was tipped off that the 3rd from last digit of F/L are 1, while the same digit of B/R are 0:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; (&lt;span class=&quot;op&quot;&gt;.&amp;amp;.&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; (&lt;span class=&quot;ot&quot;&gt;`shiftR`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;ord&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot;FLBR&amp;quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;[&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So we can actually use this for &lt;code&gt;seatId&lt;/code&gt; to get a slight speed boost and help out the branch predictor maybe:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb6&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb6-1&quot;&gt;&lt;a href=&quot;#cb6-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.Bits&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-3&quot;&gt;&lt;a href=&quot;#cb6-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;seatId ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-4&quot;&gt;&lt;a href=&quot;#cb6-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;seatId &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldl&amp;#39; iGuessWe&amp;#39;reDoingThis &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-5&quot;&gt;&lt;a href=&quot;#cb6-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-6&quot;&gt;&lt;a href=&quot;#cb6-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    iGuessWe&amp;#39;reDoingThis n c &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-7&quot;&gt;&lt;a href=&quot;#cb6-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; n &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; (complement (&lt;span class=&quot;fu&quot;&gt;ord&lt;/span&gt; c) &lt;span class=&quot;ot&quot;&gt;`shiftR`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&amp;amp;.&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3 id=&quot;day-5-benchmarks&quot;&gt;Day 5 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 05a
 benchmarking...
-time                 48.72 μs   (48.68 μs .. 48.76 μs)
+time                 22.87 μs   (22.85 μs .. 22.90 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 48.77 μs   (48.75 μs .. 48.79 μs)
-std dev              58.85 ns   (47.64 ns .. 78.82 ns)
+mean                 22.85 μs   (22.82 μs .. 22.89 μs)
+std dev              118.0 ns   (53.89 ns .. 206.5 ns)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 05b
 benchmarking...
-time                 53.45 μs   (53.40 μs .. 53.51 μs)
-                     1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 53.60 μs   (53.48 μs .. 53.79 μs)
-std dev              474.4 ns   (389.6 ns .. 574.7 ns)
+time                 24.39 μs   (24.17 μs .. 24.56 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 24.53 μs   (24.34 μs .. 24.91 μs)
+std dev              928.0 ns   (403.0 ns .. 1.512 μs)
+variance introduced by outliers: 43% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>

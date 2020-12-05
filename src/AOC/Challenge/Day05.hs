@@ -12,19 +12,18 @@ module AOC.Challenge.Day05 (
   , day05b
   ) where
 
-import           AOC.Solver         ((:~>)(..))
-import           Data.List          (foldl')
-import           Data.Maybe         (mapMaybe)
-import qualified Control.Foldl      as F
-import qualified Data.List.NonEmpty as NE
+import           AOC.Solver    ((:~>)(..))
+import           Data.Bits     (complement, shiftR, (.&.))
+import           Data.Char     (ord)
+import           Data.List     (foldl')
+import qualified Control.Foldl as F
 
 seatId :: String -> Int
 seatId = foldl' iGuessWe'reDoingThis 0
   where
-    iGuessWe'reDoingThis n = \case
-      'B' -> 2*n+1
-      'R' -> 2*n+1
-      _   -> 2*n
+    -- heh
+    iGuessWe'reDoingThis n c =
+      2 * n + (complement (ord c) `shiftR` 2) .&. 1
 
 -- | Find the first missing item in the collection, in a single pass
 findHole :: F.Fold Int (Maybe Int)

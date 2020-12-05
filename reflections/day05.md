@@ -71,3 +71,24 @@ part1 = F.fold $ F.premap seatId F.maximum
 part2 :: [String] -> Maybe Int
 part2 = F.fold $ F.premap seatId findHole
 ```
+
+Bonus: I was tipped off that the 3rd from last digit of F/L are 1, while the
+same digit of B/R are 0:
+
+```haskell
+ghci> (.&. 1) . (`shiftR` 2) . ord <$> "FLBR"
+[1,1,0,0]
+```
+
+So we can actually use this for `seatId` to get a slight speed boost and help
+out the branch predictor maybe:
+
+```haskell
+import Data.Bits
+
+seatId :: String -> Int
+seatId = foldl' iGuessWe'reDoingThis 0
+  where
+    iGuessWe'reDoingThis n c =
+      2 * n + (complement (ord c) `shiftR` 2) .&. 1
+```

@@ -955,25 +955,47 @@ part2 :: [String] -> Maybe Int
 part2 = F.fold $ F.premap seatId findHole
 ```
 
+Bonus: I was tipped off that the 3rd from last digit of F/L are 1, while the
+same digit of B/R are 0:
+
+```haskell
+ghci> (.&. 1) . (`shiftR` 2) . ord <$> "FLBR"
+[1,1,0,0]
+```
+
+So we can actually use this for `seatId` to get a slight speed boost and help
+out the branch predictor maybe:
+
+```haskell
+import Data.Bits
+
+seatId :: String -> Int
+seatId = foldl' iGuessWe'reDoingThis 0
+  where
+    iGuessWe'reDoingThis n c =
+      2 * n + (complement (ord c) `shiftR` 2) .&. 1
+```
+
 
 ### Day 5 Benchmarks
 
 ```
 >> Day 05a
 benchmarking...
-time                 48.72 μs   (48.68 μs .. 48.76 μs)
+time                 22.87 μs   (22.85 μs .. 22.90 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 48.77 μs   (48.75 μs .. 48.79 μs)
-std dev              58.85 ns   (47.64 ns .. 78.82 ns)
+mean                 22.85 μs   (22.82 μs .. 22.89 μs)
+std dev              118.0 ns   (53.89 ns .. 206.5 ns)
 
 * parsing and formatting times excluded
 
 >> Day 05b
 benchmarking...
-time                 53.45 μs   (53.40 μs .. 53.51 μs)
-                     1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 53.60 μs   (53.48 μs .. 53.79 μs)
-std dev              474.4 ns   (389.6 ns .. 574.7 ns)
+time                 24.39 μs   (24.17 μs .. 24.56 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 24.53 μs   (24.34 μs .. 24.91 μs)
+std dev              928.0 ns   (403.0 ns .. 1.512 μs)
+variance introduced by outliers: 43% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
