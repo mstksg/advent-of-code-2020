@@ -1,0 +1,722 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24maxtag_3vhlN0ghkV16OZT2vZYp76"><span id="%24tag2con_3vhlN0ghkV16OZT2vZYp76"><span id="%24con2tag_3vhlN0ghkV16OZT2vZYp76"><span id="%24con2tag_DHnp1rhqHZt5zoyKcAujF1"></span></span></span></span><span class="hs-comment">-- |</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day04</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- License     : BSD3</span><span>
+</span><span id="line-4"></span><span class="hs-comment">--</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Portability : non-portable</span><span>
+</span><span id="line-7"></span><span class="hs-comment">--</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Day 4.  See &quot;AOC.Solver&quot; for the types used in this module!</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Challenge.Day04</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day04.html#day04a"><span class="hs-identifier">day04a</span></a></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#day04b"><span class="hs-identifier">day04b</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>            </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#hexDigit"><span class="hs-identifier">hexDigit</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#decimalDigit"><span class="hs-identifier">decimalDigit</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>            </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>   </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Const</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">preview</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>         </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;=&lt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isDigit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">toUpper</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Finite</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Functor.Identity</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Identity</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List.Split</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">splitOn</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mapMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Monoid</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">First</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Monoid.OneLiner</span></span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">GMonoid</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Refined</span></span><span>               </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Refined</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">FromTo</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">SizeEqualTo</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">refineThrow</span></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Barbies</span></span><span>               </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">B</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">type</span><span> </span><span id="local-6989586621679603642"><span class="annot"><a href="#local-6989586621679603642"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="%3C-%3E"><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-var">&lt;-&gt;</span></a></span></span><span> </span><span id="local-6989586621679603641"><span class="annot"><a href="#local-6989586621679603641"><span class="hs-identifier hs-type">b</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Refined</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FromTo</span></span><span> </span><span class="annot"><a href="#local-6989586621679603642"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603641"><span class="hs-identifier hs-type">b</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-33"></span><span class="hs-keyword">type</span><span> </span><span id="local-6989586621679603640"><span class="annot"><a href="#local-6989586621679603640"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="%2A%2A"><span class="annot"><a href="AOC.Challenge.Day04.html#%2A%2A"><span class="hs-operator hs-var">**</span></a></span></span><span> </span><span id="local-6989586621679603639"><span class="annot"><a href="#local-6989586621679603639"><span class="hs-identifier hs-type">a</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Refined</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SizeEqualTo</span></span><span> </span><span class="annot"><a href="#local-6989586621679603640"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679603639"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-34"></span><span class="hs-keyword">type</span><span> </span><span id="FirstRaw"><span class="annot"><a href="AOC.Challenge.Day04.html#FirstRaw"><span class="hs-identifier hs-var">FirstRaw</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">First</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">type</span><span> </span><span id="Raw"><span class="annot"><a href="AOC.Challenge.Day04.html#Raw"><span class="hs-identifier hs-var">Raw</span></a></span></span><span>      </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Const</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-keyword">data</span><span> </span><span id="Height"><span class="annot"><a href="AOC.Challenge.Day04.html#Height"><span class="hs-identifier hs-var">Height</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-38"></span><span>    </span><span id="HCm"><span class="annot"><a href="AOC.Challenge.Day04.html#HCm"><span class="hs-identifier hs-var">HCm</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">150</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-type">&lt;-&gt;</span></a></span><span> </span><span class="annot"><span class="hs-number">193</span></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="HIn"><span class="annot"><a href="AOC.Challenge.Day04.html#HIn"><span class="hs-identifier hs-var">HIn</span></a></span></span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-number">59</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-type">&lt;-&gt;</span></a></span><span>  </span><span class="annot"><span class="hs-number">76</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679603631"><span id="local-6989586621679603633"><span id="local-6989586621679603635"><span class="annot"><span class="annottext">Int -&gt; Height -&gt; ShowS
+[Height] -&gt; ShowS
+Height -&gt; String
+(Int -&gt; Height -&gt; ShowS)
+-&gt; (Height -&gt; String) -&gt; ([Height] -&gt; ShowS) -&gt; Show Height
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Height] -&gt; ShowS
+$cshowList :: [Height] -&gt; ShowS
+show :: Height -&gt; String
+$cshow :: Height -&gt; String
+showsPrec :: Int -&gt; Height -&gt; ShowS
+$cshowsPrec :: Int -&gt; Height -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603622"><span id="local-6989586621679603624"><span id="local-6989586621679603626"><span id="local-6989586621679603628"><span class="annot"><span class="annottext">ReadPrec [Height]
+ReadPrec Height
+Int -&gt; ReadS Height
+ReadS [Height]
+(Int -&gt; ReadS Height)
+-&gt; ReadS [Height]
+-&gt; ReadPrec Height
+-&gt; ReadPrec [Height]
+-&gt; Read Height
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Height]
+$creadListPrec :: ReadPrec [Height]
+readPrec :: ReadPrec Height
+$creadPrec :: ReadPrec Height
+readList :: ReadS [Height]
+$creadList :: ReadS [Height]
+readsPrec :: Int -&gt; ReadS Height
+$creadsPrec :: Int -&gt; ReadS Height
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603617"><span id="local-6989586621679603619"><span class="annot"><span class="annottext">Height -&gt; Height -&gt; Bool
+(Height -&gt; Height -&gt; Bool)
+-&gt; (Height -&gt; Height -&gt; Bool) -&gt; Eq Height
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Height -&gt; Height -&gt; Bool
+$c/= :: Height -&gt; Height -&gt; Bool
+== :: Height -&gt; Height -&gt; Bool
+$c== :: Height -&gt; Height -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603601"><span id="local-6989586621679603603"><span id="local-6989586621679603605"><span id="local-6989586621679603607"><span id="local-6989586621679603609"><span id="local-6989586621679603611"><span id="local-6989586621679603613"><span class="annot"><span class="annottext">Eq Height
+Eq Height =&gt;
+(Height -&gt; Height -&gt; Ordering)
+-&gt; (Height -&gt; Height -&gt; Bool)
+-&gt; (Height -&gt; Height -&gt; Bool)
+-&gt; (Height -&gt; Height -&gt; Bool)
+-&gt; (Height -&gt; Height -&gt; Bool)
+-&gt; (Height -&gt; Height -&gt; Height)
+-&gt; (Height -&gt; Height -&gt; Height)
+-&gt; Ord Height
+Height -&gt; Height -&gt; Bool
+Height -&gt; Height -&gt; Ordering
+Height -&gt; Height -&gt; Height
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Height -&gt; Height -&gt; Height
+$cmin :: Height -&gt; Height -&gt; Height
+max :: Height -&gt; Height -&gt; Height
+$cmax :: Height -&gt; Height -&gt; Height
+&gt;= :: Height -&gt; Height -&gt; Bool
+$c&gt;= :: Height -&gt; Height -&gt; Bool
+&gt; :: Height -&gt; Height -&gt; Bool
+$c&gt; :: Height -&gt; Height -&gt; Bool
+&lt;= :: Height -&gt; Height -&gt; Bool
+$c&lt;= :: Height -&gt; Height -&gt; Bool
+&lt; :: Height -&gt; Height -&gt; Bool
+$c&lt; :: Height -&gt; Height -&gt; Bool
+compare :: Height -&gt; Height -&gt; Ordering
+$ccompare :: Height -&gt; Height -&gt; Ordering
+$cp1Ord :: Eq Height
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">data</span><span> </span><span id="Eye"><span class="annot"><a href="AOC.Challenge.Day04.html#Eye"><span class="hs-identifier hs-var">Eye</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="AMB"><span class="annot"><a href="AOC.Challenge.Day04.html#AMB"><span class="hs-identifier hs-var">AMB</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="BLU"><span class="annot"><a href="AOC.Challenge.Day04.html#BLU"><span class="hs-identifier hs-var">BLU</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="BRN"><span class="annot"><a href="AOC.Challenge.Day04.html#BRN"><span class="hs-identifier hs-var">BRN</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="GRY"><span class="annot"><a href="AOC.Challenge.Day04.html#GRY"><span class="hs-identifier hs-var">GRY</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="GRN"><span class="annot"><a href="AOC.Challenge.Day04.html#GRN"><span class="hs-identifier hs-var">GRN</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="HZL"><span class="annot"><a href="AOC.Challenge.Day04.html#HZL"><span class="hs-identifier hs-var">HZL</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="OTH"><span class="annot"><a href="AOC.Challenge.Day04.html#OTH"><span class="hs-identifier hs-var">OTH</span></a></span></span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679603587"><span id="local-6989586621679603589"><span id="local-6989586621679603591"><span class="annot"><span class="annottext">Int -&gt; Eye -&gt; ShowS
+[Eye] -&gt; ShowS
+Eye -&gt; String
+(Int -&gt; Eye -&gt; ShowS)
+-&gt; (Eye -&gt; String) -&gt; ([Eye] -&gt; ShowS) -&gt; Show Eye
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Eye] -&gt; ShowS
+$cshowList :: [Eye] -&gt; ShowS
+show :: Eye -&gt; String
+$cshow :: Eye -&gt; String
+showsPrec :: Int -&gt; Eye -&gt; ShowS
+$cshowsPrec :: Int -&gt; Eye -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603579"><span id="local-6989586621679603581"><span id="local-6989586621679603583"><span id="local-6989586621679603585"><span class="annot"><span class="annottext">ReadPrec [Eye]
+ReadPrec Eye
+Int -&gt; ReadS Eye
+ReadS [Eye]
+(Int -&gt; ReadS Eye)
+-&gt; ReadS [Eye] -&gt; ReadPrec Eye -&gt; ReadPrec [Eye] -&gt; Read Eye
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Eye]
+$creadListPrec :: ReadPrec [Eye]
+readPrec :: ReadPrec Eye
+$creadPrec :: ReadPrec Eye
+readList :: ReadS [Eye]
+$creadList :: ReadS [Eye]
+readsPrec :: Int -&gt; ReadS Eye
+$creadsPrec :: Int -&gt; ReadS Eye
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603575"><span id="local-6989586621679603577"><span class="annot"><span class="annottext">Eye -&gt; Eye -&gt; Bool
+(Eye -&gt; Eye -&gt; Bool) -&gt; (Eye -&gt; Eye -&gt; Bool) -&gt; Eq Eye
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Eye -&gt; Eye -&gt; Bool
+$c/= :: Eye -&gt; Eye -&gt; Bool
+== :: Eye -&gt; Eye -&gt; Bool
+$c== :: Eye -&gt; Eye -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603560"><span id="local-6989586621679603562"><span id="local-6989586621679603564"><span id="local-6989586621679603566"><span id="local-6989586621679603568"><span id="local-6989586621679603570"><span id="local-6989586621679603572"><span class="annot"><span class="annottext">Eq Eye
+Eq Eye =&gt;
+(Eye -&gt; Eye -&gt; Ordering)
+-&gt; (Eye -&gt; Eye -&gt; Bool)
+-&gt; (Eye -&gt; Eye -&gt; Bool)
+-&gt; (Eye -&gt; Eye -&gt; Bool)
+-&gt; (Eye -&gt; Eye -&gt; Bool)
+-&gt; (Eye -&gt; Eye -&gt; Eye)
+-&gt; (Eye -&gt; Eye -&gt; Eye)
+-&gt; Ord Eye
+Eye -&gt; Eye -&gt; Bool
+Eye -&gt; Eye -&gt; Ordering
+Eye -&gt; Eye -&gt; Eye
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Eye -&gt; Eye -&gt; Eye
+$cmin :: Eye -&gt; Eye -&gt; Eye
+max :: Eye -&gt; Eye -&gt; Eye
+$cmax :: Eye -&gt; Eye -&gt; Eye
+&gt;= :: Eye -&gt; Eye -&gt; Bool
+$c&gt;= :: Eye -&gt; Eye -&gt; Bool
+&gt; :: Eye -&gt; Eye -&gt; Bool
+$c&gt; :: Eye -&gt; Eye -&gt; Bool
+&lt;= :: Eye -&gt; Eye -&gt; Bool
+$c&lt;= :: Eye -&gt; Eye -&gt; Bool
+&lt; :: Eye -&gt; Eye -&gt; Bool
+$c&lt; :: Eye -&gt; Eye -&gt; Bool
+compare :: Eye -&gt; Eye -&gt; Ordering
+$ccompare :: Eye -&gt; Eye -&gt; Ordering
+$cp1Ord :: Eq Eye
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603544"><span id="local-6989586621679603546"><span id="local-6989586621679603548"><span id="local-6989586621679603550"><span id="local-6989586621679603552"><span id="local-6989586621679603554"><span id="local-6989586621679603556"><span id="local-6989586621679603558"><span class="annot"><span class="annottext">Int -&gt; Eye
+Eye -&gt; Int
+Eye -&gt; [Eye]
+Eye -&gt; Eye
+Eye -&gt; Eye -&gt; [Eye]
+Eye -&gt; Eye -&gt; Eye -&gt; [Eye]
+(Eye -&gt; Eye)
+-&gt; (Eye -&gt; Eye)
+-&gt; (Int -&gt; Eye)
+-&gt; (Eye -&gt; Int)
+-&gt; (Eye -&gt; [Eye])
+-&gt; (Eye -&gt; Eye -&gt; [Eye])
+-&gt; (Eye -&gt; Eye -&gt; [Eye])
+-&gt; (Eye -&gt; Eye -&gt; Eye -&gt; [Eye])
+-&gt; Enum Eye
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: Eye -&gt; Eye -&gt; Eye -&gt; [Eye]
+$cenumFromThenTo :: Eye -&gt; Eye -&gt; Eye -&gt; [Eye]
+enumFromTo :: Eye -&gt; Eye -&gt; [Eye]
+$cenumFromTo :: Eye -&gt; Eye -&gt; [Eye]
+enumFromThen :: Eye -&gt; Eye -&gt; [Eye]
+$cenumFromThen :: Eye -&gt; Eye -&gt; [Eye]
+enumFrom :: Eye -&gt; [Eye]
+$cenumFrom :: Eye -&gt; [Eye]
+fromEnum :: Eye -&gt; Int
+$cfromEnum :: Eye -&gt; Int
+toEnum :: Int -&gt; Eye
+$ctoEnum :: Int -&gt; Eye
+pred :: Eye -&gt; Eye
+$cpred :: Eye -&gt; Eye
+succ :: Eye -&gt; Eye
+$csucc :: Eye -&gt; Eye
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span id="local-6989586621679603541"><span id="local-6989586621679603542"></span></span><span class="hs-keyword">data</span><span> </span><span id="Passport"><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-var">Passport</span></a></span></span><span> </span><span id="local-6989586621679603738"><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Passport"><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-var">Passport</span></a></span></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="pByr"><span class="annot"><span class="annottext">Passport f -&gt; f (1920 &lt;-&gt; 2002)
+</span><a href="AOC.Challenge.Day04.html#pByr"><span class="hs-identifier hs-var hs-var">pByr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">1920</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-type">&lt;-&gt;</span></a></span><span> </span><span class="annot"><span class="hs-number">2002</span></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pIyr"><span class="annot"><span class="annottext">Passport f -&gt; f (2010 &lt;-&gt; 2020)
+</span><a href="AOC.Challenge.Day04.html#pIyr"><span class="hs-identifier hs-var hs-var">pIyr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2010</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-type">&lt;-&gt;</span></a></span><span> </span><span class="annot"><span class="hs-number">2020</span></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pEyr"><span class="annot"><span class="annottext">Passport f -&gt; f (2020 &lt;-&gt; 2030)
+</span><a href="AOC.Challenge.Day04.html#pEyr"><span class="hs-identifier hs-var hs-var">pEyr</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">2020</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%3C-%3E"><span class="hs-operator hs-type">&lt;-&gt;</span></a></span><span> </span><span class="annot"><span class="hs-number">2030</span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pHgt"><span class="annot"><span class="annottext">Passport f -&gt; f Height
+</span><a href="AOC.Challenge.Day04.html#pHgt"><span class="hs-identifier hs-var hs-var">pHgt</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Height"><span class="hs-identifier hs-type">Height</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pHcl"><span class="annot"><span class="annottext">Passport f -&gt; f (6 ** Finite 16)
+</span><a href="AOC.Challenge.Day04.html#pHcl"><span class="hs-identifier hs-var hs-var">pHcl</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">6</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%2A%2A"><span class="hs-operator hs-type">**</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">16</span></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pEcl"><span class="annot"><span class="annottext">Passport f -&gt; f Eye
+</span><a href="AOC.Challenge.Day04.html#pEcl"><span class="hs-identifier hs-var hs-var">pEcl</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Eye"><span class="hs-identifier hs-type">Eye</span></a></span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="pPid"><span class="annot"><span class="annottext">Passport f -&gt; f (9 ** Finite 10)
+</span><a href="AOC.Challenge.Day04.html#pPid"><span class="hs-identifier hs-var hs-var">pPid</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679603738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">9</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#%2A%2A"><span class="hs-operator hs-type">**</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">10</span></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(forall x. Passport f -&gt; Rep (Passport f) x)
+-&gt; (forall x. Rep (Passport f) x -&gt; Passport f)
+-&gt; Generic (Passport f)
+forall x. Rep (Passport f) x -&gt; Passport f
+forall x. Passport f -&gt; Rep (Passport f) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (f :: * -&gt; *) x. Rep (Passport f) x -&gt; Passport f
+forall (f :: * -&gt; *) x. Passport f -&gt; Rep (Passport f) x
+$cto :: forall (f :: * -&gt; *) x. Rep (Passport f) x -&gt; Passport f
+$cfrom :: forall (f :: * -&gt; *) x. Passport f -&gt; Rep (Passport f) x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>
+</span><span id="line-56"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679603528"><span class="annot"><span class="hs-identifier hs-type">B.FunctorB</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span></span><span>
+</span><span id="line-57"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679603522"><span id="local-6989586621679603524"><span class="annot"><span class="hs-identifier hs-type">B.ApplicativeB</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span></span></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679603518"><span class="annot"><span class="hs-identifier hs-type">B.TraversableB</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span></span><span>
+</span><span id="line-59"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679603514"><span class="annot"><span class="hs-identifier hs-type">B.ConstraintsB</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span></span><span>
+</span><span id="line-60"></span><span id="local-6989586621679603506"><span id="local-6989586621679603508"><span id="local-6989586621679603510"><span id="local-6989586621679603512"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.AllBF</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679603512"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603512"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-61"></span><span id="local-6989586621679603499"><span id="local-6989586621679603501"><span id="local-6989586621679603503"><span id="local-6989586621679603505"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">GMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603505"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.AllBF</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="annot"><a href="#local-6989586621679603505"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Semigroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603505"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-62"></span><span id="local-6989586621679603490"><span id="local-6989586621679603492"><span id="local-6989586621679603494"><span id="local-6989586621679603497"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><span class="hs-identifier hs-type">GMonoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603497"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">B.AllBF</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="annot"><a href="#local-6989586621679603497"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Monoid</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679603497"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span></span></span></span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-keyword">newtype</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span id="local-6989586621679603737"><span class="annot"><a href="#local-6989586621679603737"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runParser"><span class="annot"><span class="annottext">Parser a -&gt; String -&gt; Maybe a
+</span><a href="AOC.Challenge.Day04.html#runParser"><span class="hs-identifier hs-var hs-var">runParser</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679603737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span class="annot"><a href="AOC.Challenge.Day04.html#passportParser"><span class="hs-identifier hs-type">passportParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span>
+</span><span id="line-67"></span><span id="passportParser"><span class="annot"><span class="annottext">passportParser :: Passport Parser
+</span><a href="AOC.Challenge.Day04.html#passportParser"><span class="hs-identifier hs-var hs-var">passportParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Passport :: forall (f :: * -&gt; *).
+f (1920 &lt;-&gt; 2002)
+-&gt; f (2010 &lt;-&gt; 2020)
+-&gt; f (2020 &lt;-&gt; 2030)
+-&gt; f Height
+-&gt; f (6 ** Finite 16)
+-&gt; f Eye
+-&gt; f (9 ** Finite 10)
+-&gt; Passport f
+</span><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type hs-type">Passport</span></a></span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pByr :: Parser (1920 &lt;-&gt; 2002)
+</span><a href="AOC.Challenge.Day04.html#pByr"><span class="hs-identifier hs-var">pByr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (1920 &lt;-&gt; 2002)) -&gt; Parser (1920 &lt;-&gt; 2002)
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe (1920 &lt;-&gt; 2002)) -&gt; Parser (1920 &lt;-&gt; 2002))
+-&gt; (String -&gt; Maybe (1920 &lt;-&gt; 2002)) -&gt; Parser (1920 &lt;-&gt; 2002)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe (1920 &lt;-&gt; 2002)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe (1920 &lt;-&gt; 2002))
+-&gt; (String -&gt; Maybe Int) -&gt; String -&gt; Maybe (1920 &lt;-&gt; 2002)
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pIyr :: Parser (2010 &lt;-&gt; 2020)
+</span><a href="AOC.Challenge.Day04.html#pIyr"><span class="hs-identifier hs-var">pIyr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (2010 &lt;-&gt; 2020)) -&gt; Parser (2010 &lt;-&gt; 2020)
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe (2010 &lt;-&gt; 2020)) -&gt; Parser (2010 &lt;-&gt; 2020))
+-&gt; (String -&gt; Maybe (2010 &lt;-&gt; 2020)) -&gt; Parser (2010 &lt;-&gt; 2020)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe (2010 &lt;-&gt; 2020)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe (2010 &lt;-&gt; 2020))
+-&gt; (String -&gt; Maybe Int) -&gt; String -&gt; Maybe (2010 &lt;-&gt; 2020)
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pEyr :: Parser (2020 &lt;-&gt; 2030)
+</span><a href="AOC.Challenge.Day04.html#pEyr"><span class="hs-identifier hs-var">pEyr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (2020 &lt;-&gt; 2030)) -&gt; Parser (2020 &lt;-&gt; 2030)
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe (2020 &lt;-&gt; 2030)) -&gt; Parser (2020 &lt;-&gt; 2030))
+-&gt; (String -&gt; Maybe (2020 &lt;-&gt; 2030)) -&gt; Parser (2020 &lt;-&gt; 2030)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe (2020 &lt;-&gt; 2030)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe (2020 &lt;-&gt; 2030))
+-&gt; (String -&gt; Maybe Int) -&gt; String -&gt; Maybe (2020 &lt;-&gt; 2030)
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pHgt :: Parser Height
+</span><a href="AOC.Challenge.Day04.html#pHgt"><span class="hs-identifier hs-var">pHgt</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe Height) -&gt; Parser Height
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe Height) -&gt; Parser Height)
+-&gt; (String -&gt; Maybe Height) -&gt; Parser Height
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679603484"><span class="annot"><span class="annottext">str :: String
+</span><a href="#local-6989586621679603484"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-72"></span><span>                </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679603483"><span class="annot"><span class="annottext">x :: String
+</span><a href="#local-6989586621679603483"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679603482"><span class="annot"><span class="annottext">u :: String
+</span><a href="#local-6989586621679603482"><span class="hs-identifier hs-var">u</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; (String, String)
+forall a. (a -&gt; Bool) -&gt; [a] -&gt; ([a], [a])
+</span><span class="hs-identifier hs-var">span</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603484"><span class="hs-identifier hs-var">str</span></a></span><span>
+</span><span id="line-73"></span><span>                </span><span class="hs-keyword">in</span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603482"><span class="hs-identifier hs-var">u</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-74"></span><span>                      </span><span class="hs-string">&quot;cm&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((150 &lt;-&gt; 193) -&gt; Height) -&gt; Maybe (150 &lt;-&gt; 193) -&gt; Maybe Height
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">(150 &lt;-&gt; 193) -&gt; Height
+</span><a href="AOC.Challenge.Day04.html#HCm"><span class="hs-identifier hs-var">HCm</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe (150 &lt;-&gt; 193) -&gt; Maybe Height)
+-&gt; (Int -&gt; Maybe (150 &lt;-&gt; 193)) -&gt; Int -&gt; Maybe Height
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe (150 &lt;-&gt; 193)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Height) -&gt; Maybe Int -&gt; Maybe Height
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603483"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-75"></span><span>                      </span><span class="hs-string">&quot;in&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((59 &lt;-&gt; 76) -&gt; Height) -&gt; Maybe (59 &lt;-&gt; 76) -&gt; Maybe Height
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">(59 &lt;-&gt; 76) -&gt; Height
+</span><a href="AOC.Challenge.Day04.html#HIn"><span class="hs-identifier hs-var">HIn</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe (59 &lt;-&gt; 76) -&gt; Maybe Height)
+-&gt; (Int -&gt; Maybe (59 &lt;-&gt; 76)) -&gt; Int -&gt; Maybe Height
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe (59 &lt;-&gt; 76)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Height) -&gt; Maybe Int -&gt; Maybe Height
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603483"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-76"></span><span>                      </span><span class="hs-identifier">_</span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Height
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pHcl :: Parser (6 ** Finite 16)
+</span><a href="AOC.Challenge.Day04.html#pHcl"><span class="hs-identifier hs-var">pHcl</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (6 ** Finite 16)) -&gt; Parser (6 ** Finite 16)
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe (6 ** Finite 16)) -&gt; Parser (6 ** Finite 16))
+-&gt; (String -&gt; Maybe (6 ** Finite 16)) -&gt; Parser (6 ** Finite 16)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-78"></span><span>                </span><span class="hs-char">'#'</span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679603478"><span class="annot"><span class="annottext">n :: String
+</span><a href="#local-6989586621679603478"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Finite 16] -&gt; Maybe (6 ** Finite 16)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">([Finite 16] -&gt; Maybe (6 ** Finite 16))
+-&gt; Maybe [Finite 16] -&gt; Maybe (6 ** Finite 16)
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Maybe (Finite 16)) -&gt; String -&gt; Maybe [Finite 16]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Getting (First (Finite 16)) Char (Finite 16)
+-&gt; Char -&gt; Maybe (Finite 16)
+forall s (m :: * -&gt; *) a.
+MonadReader s m =&gt;
+Getting (First a) s a -&gt; m (Maybe a)
+</span><span class="hs-identifier hs-var">preview</span></span><span> </span><span class="annot"><span class="annottext">Getting (First (Finite 16)) Char (Finite 16)
+Prism' Char (Finite 16)
+</span><a href="AOC.Common.html#hexDigit"><span class="hs-identifier hs-var">hexDigit</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603478"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-79"></span><span>                </span><span class="hs-identifier">_</span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe (6 ** Finite 16)
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-80"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pEcl :: Parser Eye
+</span><a href="AOC.Challenge.Day04.html#pEcl"><span class="hs-identifier hs-var">pEcl</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe Eye) -&gt; Parser Eye
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe Eye) -&gt; Parser Eye)
+-&gt; (String -&gt; Maybe Eye) -&gt; Parser Eye
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Eye
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe Eye) -&gt; ShowS -&gt; String -&gt; Maybe Eye
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Char) -&gt; ShowS
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char
+</span><span class="hs-identifier hs-var">toUpper</span></span><span>
+</span><span id="line-81"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">pPid :: Parser (9 ** Finite 10)
+</span><a href="AOC.Challenge.Day04.html#pPid"><span class="hs-identifier hs-var">pPid</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (9 ** Finite 10)) -&gt; Parser (9 ** Finite 10)
+forall a. (String -&gt; Maybe a) -&gt; Parser a
+</span><a href="AOC.Challenge.Day04.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span><span> </span><span class="annot"><span class="annottext">((String -&gt; Maybe (9 ** Finite 10)) -&gt; Parser (9 ** Finite 10))
+-&gt; (String -&gt; Maybe (9 ** Finite 10)) -&gt; Parser (9 ** Finite 10)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[Finite 10] -&gt; Maybe (9 ** Finite 10)
+forall p x (m :: * -&gt; *).
+(Predicate p x, MonadThrow m) =&gt;
+x -&gt; m (Refined p x)
+</span><span class="hs-identifier hs-var">refineThrow</span></span><span> </span><span class="annot"><span class="annottext">([Finite 10] -&gt; Maybe (9 ** Finite 10))
+-&gt; (String -&gt; Maybe [Finite 10])
+-&gt; String
+-&gt; Maybe (9 ** Finite 10)
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Maybe (Finite 10)) -&gt; String -&gt; Maybe [Finite 10]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Getting (First (Finite 10)) Char (Finite 10)
+-&gt; Char -&gt; Maybe (Finite 10)
+forall s (m :: * -&gt; *) a.
+MonadReader s m =&gt;
+Getting (First a) s a -&gt; m (Maybe a)
+</span><span class="hs-identifier hs-var">preview</span></span><span> </span><span class="annot"><span class="annottext">Getting (First (Finite 10)) Char (Finite 10)
+Prism' Char (Finite 10)
+</span><a href="AOC.Common.html#decimalDigit"><span class="hs-identifier hs-var">decimalDigit</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="annot"><a href="AOC.Challenge.Day04.html#loadPassportField"><span class="hs-identifier hs-type">loadPassportField</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#FirstRaw"><span class="hs-identifier hs-type">FirstRaw</span></a></span><span>
+</span><span id="line-85"></span><span id="loadPassportField"><span class="annot"><span class="annottext">loadPassportField :: String -&gt; Passport FirstRaw
+</span><a href="AOC.Challenge.Day04.html#loadPassportField"><span class="hs-identifier hs-var hs-var">loadPassportField</span></a></span></span><span> </span><span id="local-6989586621679603475"><span class="annot"><span class="annottext">str :: String
+</span><a href="#local-6989586621679603475"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; [String]
+forall a. Eq a =&gt; [a] -&gt; [a] -&gt; [[a]]
+</span><span class="hs-identifier hs-var">splitOn</span></span><span> </span><span class="annot"><span class="hs-string">&quot;:&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603475"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-special">[</span><span id="local-6989586621679603474"><span class="annot"><span class="annottext">k :: String
+</span><a href="#local-6989586621679603474"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679603473"><span class="annot"><span class="annottext">v :: String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603474"><span class="hs-identifier hs-var">k</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-87"></span><span>      </span><span class="hs-string">&quot;byr&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pByr :: FirstRaw (1920 &lt;-&gt; 2002)
+</span><a href="AOC.Challenge.Day04.html#pByr"><span class="hs-identifier hs-var">pByr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw (1920 &lt;-&gt; 2002)
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-88"></span><span>      </span><span class="hs-string">&quot;iyr&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pIyr :: FirstRaw (2010 &lt;-&gt; 2020)
+</span><a href="AOC.Challenge.Day04.html#pIyr"><span class="hs-identifier hs-var">pIyr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw (2010 &lt;-&gt; 2020)
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-89"></span><span>      </span><span class="hs-string">&quot;eyr&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pEyr :: FirstRaw (2020 &lt;-&gt; 2030)
+</span><a href="AOC.Challenge.Day04.html#pEyr"><span class="hs-identifier hs-var">pEyr</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw (2020 &lt;-&gt; 2030)
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-90"></span><span>      </span><span class="hs-string">&quot;hgt&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pHgt :: FirstRaw Height
+</span><a href="AOC.Challenge.Day04.html#pHgt"><span class="hs-identifier hs-var">pHgt</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw Height
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-91"></span><span>      </span><span class="hs-string">&quot;hcl&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pHcl :: FirstRaw (6 ** Finite 16)
+</span><a href="AOC.Challenge.Day04.html#pHcl"><span class="hs-identifier hs-var">pHcl</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw (6 ** Finite 16)
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-92"></span><span>      </span><span class="hs-string">&quot;ecl&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pEcl :: FirstRaw Eye
+</span><a href="AOC.Challenge.Day04.html#pEcl"><span class="hs-identifier hs-var">pEcl</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw Eye
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-93"></span><span>      </span><span class="hs-string">&quot;pid&quot;</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pPid :: FirstRaw (9 ** Finite 10)
+</span><a href="AOC.Challenge.Day04.html#pPid"><span class="hs-identifier hs-var">pPid</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">First String -&gt; FirstRaw (9 ** Finite 10)
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; First String
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679603473"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-94"></span><span>      </span><span class="hs-identifier">_</span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-95"></span><span>    </span><span class="hs-identifier">_</span><span>     </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Passport FirstRaw
+forall a. Monoid a =&gt; a
+</span><span class="hs-identifier hs-var">mempty</span></span><span>
+</span><span id="line-96"></span><span>
+</span><span id="line-97"></span><span class="annot"><a href="AOC.Challenge.Day04.html#loadPassport"><span class="hs-identifier hs-type">loadPassport</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Raw"><span class="hs-identifier hs-type">Raw</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-98"></span><span id="loadPassport"><span class="annot"><span class="annottext">loadPassport :: String -&gt; Maybe (Passport Raw)
+</span><a href="AOC.Challenge.Day04.html#loadPassport"><span class="hs-identifier hs-var hs-var">loadPassport</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. FirstRaw a -&gt; Maybe (Raw a))
+-&gt; Passport FirstRaw -&gt; Maybe (Passport Raw)
+forall k (b :: (k -&gt; *) -&gt; *) (e :: * -&gt; *) (f :: k -&gt; *)
+       (g :: k -&gt; *).
+(TraversableB b, Applicative e) =&gt;
+(forall (a :: k). f a -&gt; e (g a)) -&gt; b f -&gt; e (b g)
+</span><span class="hs-identifier hs-var">B.btraverse</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">First</span></span><span> </span><span id="local-6989586621679603468"><span class="annot"><a href="#local-6989586621679603468"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; Const String a
+forall k a (b :: k). a -&gt; Const a b
+</span><span class="hs-identifier hs-var">Const</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Const String a)
+-&gt; Maybe String -&gt; Maybe (Const String a)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679603468"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-99"></span><span>             </span><span class="annot"><span class="annottext">(Passport FirstRaw -&gt; Maybe (Passport Raw))
+-&gt; (String -&gt; Passport FirstRaw) -&gt; String -&gt; Maybe (Passport Raw)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Passport FirstRaw) -&gt; [String] -&gt; Passport FirstRaw
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Passport FirstRaw
+</span><a href="AOC.Challenge.Day04.html#loadPassportField"><span class="hs-identifier hs-var">loadPassportField</span></a></span><span>
+</span><span id="line-100"></span><span>             </span><span class="annot"><span class="annottext">([String] -&gt; Passport FirstRaw)
+-&gt; (String -&gt; [String]) -&gt; String -&gt; Passport FirstRaw
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String]
+</span><span class="hs-identifier hs-var">words</span></span><span>
+</span><span id="line-101"></span><span>
+</span><span id="line-102"></span><span class="annot"><a href="AOC.Challenge.Day04.html#parsePassportField"><span class="hs-identifier hs-type">parsePassportField</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">First</span></span><span>
+</span><span id="line-103"></span><span id="parsePassportField"><span class="annot"><span class="annottext">parsePassportField :: String -&gt; Passport First
+</span><a href="AOC.Challenge.Day04.html#parsePassportField"><span class="hs-identifier hs-var hs-var">parsePassportField</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. Parser a -&gt; FirstRaw a -&gt; First a)
+-&gt; Passport Parser -&gt; Passport FirstRaw -&gt; Passport First
+forall k (b :: (k -&gt; *) -&gt; *) (f :: k -&gt; *) (g :: k -&gt; *)
+       (h :: k -&gt; *).
+ApplicativeB b =&gt;
+(forall (a :: k). f a -&gt; g a -&gt; h a) -&gt; b f -&gt; b g -&gt; b h
+</span><span class="hs-identifier hs-var">B.bzipWith</span></span><span> </span><span class="annot"><span class="annottext">forall a. Parser a -&gt; FirstRaw a -&gt; First a
+forall k a (b :: k). Parser a -&gt; Const (First String) b -&gt; First a
+</span><a href="#local-6989586621679603462"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Passport Parser
+</span><a href="AOC.Challenge.Day04.html#passportParser"><span class="hs-identifier hs-var">passportParser</span></a></span><span> </span><span class="annot"><span class="annottext">(Passport FirstRaw -&gt; Passport First)
+-&gt; (String -&gt; Passport FirstRaw) -&gt; String -&gt; Passport First
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Passport FirstRaw
+</span><a href="AOC.Challenge.Day04.html#loadPassportField"><span class="hs-identifier hs-var">loadPassportField</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-105"></span><span>    </span><span id="local-6989586621679603462"><span class="annot"><span class="annottext">go :: Parser a -&gt; Const (First String) b -&gt; First a
+</span><a href="#local-6989586621679603462"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679603461"><span class="annot"><span class="annottext">p :: Parser a
+</span><a href="#local-6989586621679603461"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Const</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">First</span></span><span> </span><span id="local-6989586621679603460"><span class="annot"><span class="annottext">x :: Maybe String
+</span><a href="#local-6989586621679603460"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe a -&gt; First a
+forall a. Maybe a -&gt; First a
+</span><span class="hs-identifier hs-var">First</span></span><span> </span><span class="annot"><span class="annottext">(Maybe a -&gt; First a) -&gt; Maybe a -&gt; First a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Parser a -&gt; String -&gt; Maybe a
+forall a. Parser a -&gt; String -&gt; Maybe a
+</span><a href="AOC.Challenge.Day04.html#runParser"><span class="hs-identifier hs-var hs-var">runParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser a
+</span><a href="#local-6989586621679603461"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe a) -&gt; Maybe String -&gt; Maybe a
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679603460"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="annot"><a href="AOC.Challenge.Day04.html#parsePassport"><span class="hs-identifier hs-type">parsePassport</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day04.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Identity</span></span><span class="hs-special">)</span><span>
+</span><span id="line-108"></span><span id="parsePassport"><span class="annot"><span class="annottext">parsePassport :: String -&gt; Maybe (Passport Identity)
+</span><a href="AOC.Challenge.Day04.html#parsePassport"><span class="hs-identifier hs-var hs-var">parsePassport</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall a. First a -&gt; Maybe (Identity a))
+-&gt; Passport First -&gt; Maybe (Passport Identity)
+forall k (b :: (k -&gt; *) -&gt; *) (e :: * -&gt; *) (f :: k -&gt; *)
+       (g :: k -&gt; *).
+(TraversableB b, Applicative e) =&gt;
+(forall (a :: k). f a -&gt; e (g a)) -&gt; b f -&gt; e (b g)
+</span><span class="hs-identifier hs-var">B.btraverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a -&gt; Identity a) -&gt; Maybe a -&gt; Maybe (Identity a)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Identity a
+forall a. a -&gt; Identity a
+</span><span class="hs-identifier hs-var">Identity</span></span><span> </span><span class="annot"><span class="annottext">(Maybe a -&gt; Maybe (Identity a))
+-&gt; (First a -&gt; Maybe a) -&gt; First a -&gt; Maybe (Identity a)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">First a -&gt; Maybe a
+forall a. First a -&gt; Maybe a
+</span><span class="hs-identifier hs-var hs-var">getFirst</span></span><span class="hs-special">)</span><span>
+</span><span id="line-109"></span><span>              </span><span class="annot"><span class="annottext">(Passport First -&gt; Maybe (Passport Identity))
+-&gt; (String -&gt; Passport First)
+-&gt; String
+-&gt; Maybe (Passport Identity)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Passport First) -&gt; [String] -&gt; Passport First
+forall (t :: * -&gt; *) m a.
+(Foldable t, Monoid m) =&gt;
+(a -&gt; m) -&gt; t a -&gt; m
+</span><span class="hs-identifier hs-var">foldMap</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Passport First
+</span><a href="AOC.Challenge.Day04.html#parsePassportField"><span class="hs-identifier hs-var">parsePassportField</span></a></span><span>
+</span><span id="line-110"></span><span>              </span><span class="annot"><span class="annottext">([String] -&gt; Passport First)
+-&gt; (String -&gt; [String]) -&gt; String -&gt; Passport First
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String]
+</span><span class="hs-identifier hs-var">words</span></span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span class="annot"><a href="AOC.Challenge.Day04.html#day04a"><span class="hs-identifier hs-type">day04a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-113"></span><span id="day04a"><span class="annot"><span class="annottext">day04a :: [String] :~&gt; Int
+</span><a href="AOC.Challenge.Day04.html#day04a"><span class="hs-identifier hs-var hs-var">day04a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
+(String -&gt; Maybe a)
+-&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
+</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
+</span><span id="line-114"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [String]
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Maybe [String]
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; Maybe [String])
+-&gt; (String -&gt; [String]) -&gt; String -&gt; Maybe [String]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; [String]
+forall a. Eq a =&gt; [a] -&gt; [a] -&gt; [[a]]
+</span><span class="hs-identifier hs-var">splitOn</span></span><span> </span><span class="annot"><span class="hs-string">&quot;\n\n&quot;</span></span><span>
+</span><span id="line-115"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span>
+</span><span id="line-116"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [String] -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; ([String] -&gt; Int) -&gt; [String] -&gt; Maybe Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Passport Raw] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">([Passport Raw] -&gt; Int)
+-&gt; ([String] -&gt; [Passport Raw]) -&gt; [String] -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (Passport Raw)) -&gt; [String] -&gt; [Passport Raw]
+forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe (Passport Raw)
+</span><a href="AOC.Challenge.Day04.html#loadPassport"><span class="hs-identifier hs-var">loadPassport</span></a></span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-118"></span><span>
+</span><span id="line-119"></span><span class="annot"><a href="AOC.Challenge.Day04.html#day04b"><span class="hs-identifier hs-type">day04b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-120"></span><span id="day04b"><span class="annot"><span class="annottext">day04b :: [String] :~&gt; Int
+</span><a href="AOC.Challenge.Day04.html#day04b"><span class="hs-identifier hs-var hs-var">day04b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
+(String -&gt; Maybe a)
+-&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
+</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [String]
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[String] -&gt; Maybe [String]
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; Maybe [String])
+-&gt; (String -&gt; [String]) -&gt; String -&gt; Maybe [String]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; [String]
+forall a. Eq a =&gt; [a] -&gt; [a] -&gt; [[a]]
+</span><span class="hs-identifier hs-var">splitOn</span></span><span> </span><span class="annot"><span class="hs-string">&quot;\n\n&quot;</span></span><span>
+</span><span id="line-122"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [String] -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; ([String] -&gt; Int) -&gt; [String] -&gt; Maybe Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Passport Identity] -&gt; Int
+forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
+</span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">([Passport Identity] -&gt; Int)
+-&gt; ([String] -&gt; [Passport Identity]) -&gt; [String] -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe (Passport Identity))
+-&gt; [String] -&gt; [Passport Identity]
+forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe (Passport Identity)
+</span><a href="AOC.Challenge.Day04.html#parsePassport"><span class="hs-identifier hs-var">parsePassport</span></a></span><span>
+</span><span id="line-124"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-125"></span></pre></body></html>

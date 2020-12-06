@@ -1,0 +1,662 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- |</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- Module      : AOC.Run.Interactive</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- Copyright   : (c) Justin Le 2018</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- License     : BSD3</span><span>
+</span><span id="line-5"></span><span class="hs-comment">--</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Maintainer  : justin@jle.im</span><span>
+</span><span id="line-7"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Portability : non-portable</span><span>
+</span><span id="line-9"></span><span class="hs-comment">--</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- Versions of loaders and runners meant to be used in GHCI.</span><span>
+</span><span id="line-11"></span><span class="hs-comment">--</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Run.Interactive</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Fetch and Run</span></span><span>
+</span><span id="line-15"></span><span>  </span><span class="annot"><span class="hs-comment">-- ** Return Answers</span></span><span>
+</span><span id="line-16"></span><span>    </span><span class="annot"><a href="AOC.Run.Interactive.html#execSolution"><span class="hs-identifier">execSolution</span></a></span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#execSolutionWith"><span class="hs-identifier">execSolutionWith</span></a></span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#testSolution"><span class="hs-identifier">testSolution</span></a></span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#viewPrompt"><span class="hs-identifier">viewPrompt</span></a></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#waitForPrompt"><span class="hs-identifier">waitForPrompt</span></a></span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#submitSolution"><span class="hs-identifier">submitSolution</span></a></span><span>
+</span><span id="line-22"></span><span>  </span><span class="annot"><span class="hs-comment">-- ** No Answers</span></span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#execSolution_"><span class="hs-identifier">execSolution_</span></a></span><span>
+</span><span id="line-24"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#execSolutionWith_"><span class="hs-identifier">execSolutionWith_</span></a></span><span>
+</span><span id="line-25"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#testSolution_"><span class="hs-identifier">testSolution_</span></a></span><span>
+</span><span id="line-26"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#viewPrompt_"><span class="hs-identifier">viewPrompt_</span></a></span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#waitForPrompt_"><span class="hs-identifier">waitForPrompt_</span></a></span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#submitSolution_"><span class="hs-identifier">submitSolution_</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Load Inputs</span></span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#loadInput"><span class="hs-identifier">loadInput</span></a></span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#loadParseInput"><span class="hs-identifier">loadParseInput</span></a></span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#loadTests"><span class="hs-identifier">loadTests</span></a></span><span>
+</span><span id="line-33"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#loadParseTests"><span class="hs-identifier">loadParseTests</span></a></span><span>
+</span><span id="line-34"></span><span>  </span><span class="annot"><span class="hs-comment">-- * Util</span></span><span>
+</span><span id="line-35"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Interactive.html#mkSpec"><span class="hs-identifier">mkSpec</span></a></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Challenge.html"><span class="hs-identifier">AOC.Challenge</span></a></span><span>
+</span><span id="line-39"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Run.html"><span class="hs-identifier">AOC.Run</span></a></span><span>
+</span><span id="line-40"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Run.Config.html"><span class="hs-identifier">AOC.Run.Config</span></a></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Run.Load.html"><span class="hs-identifier">AOC.Run.Load</span></a></span><span>
+</span><span id="line-42"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>
+</span><span id="line-43"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Util.html"><span class="hs-identifier">AOC.Util</span></a></span><span>
+</span><span id="line-44"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Advent</span></span><span>
+</span><span id="line-45"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.Except</span></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>
+</span><span id="line-47"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Text</span></span><span class="hs-special">)</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- | Run the solution indicated by the challenge spec on the official</span><span>
+</span><span id="line-50"></span><span class="hs-comment">-- puzzle input.  Get answer as result.</span><span>
+</span><span id="line-51"></span><span class="annot"><a href="AOC.Run.Interactive.html#execSolution"><span class="hs-identifier hs-type">execSolution</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-52"></span><span id="execSolution"><span class="annot"><span class="annottext">execSolution :: ChallengeSpec -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#execSolution"><span class="hs-identifier hs-var hs-var">execSolution</span></a></span></span><span> </span><span id="local-6989586621679605306"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605306"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO String -&gt; IO String
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO String -&gt; IO String)
+-&gt; ExceptT [String] IO String -&gt; IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-53"></span><span>    </span><span id="local-6989586621679605304"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605304"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-54"></span><span>    </span><span id="local-6989586621679605300"><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605300"><span class="hs-identifier hs-var">out</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; MainRunOpts
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config
+-&gt; MainRunOpts
+-&gt; m (Map Day (Map Part (Maybe Bool, Either [String] String)))
+</span><a href="AOC.Run.html#mainRun"><span class="hs-identifier hs-var">mainRun</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605304"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainRunOpts
+ -&gt; ExceptT
+      [String]
+      IO
+      (Map Day (Map Part (Maybe Bool, Either [String] String))))
+-&gt; (TestSpec -&gt; MainRunOpts)
+-&gt; TestSpec
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TestSpec -&gt; MainRunOpts
+</span><a href="AOC.Run.html#defaultMRO"><span class="hs-identifier hs-var">defaultMRO</span></a></span><span> </span><span class="annot"><span class="annottext">(TestSpec
+ -&gt; ExceptT
+      [String]
+      IO
+      (Map Day (Map Part (Maybe Bool, Either [String] String))))
+-&gt; TestSpec
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; TestSpec
+</span><a href="AOC.Run.html#TSDayPart"><span class="hs-identifier hs-var">TSDayPart</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605306"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679605295"><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605295"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[String]
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;Result not found in result map (Internal Error)&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe (Maybe Bool, Either [String] String)
+ -&gt; ExceptT [String] IO (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><span class="annottext">ChallengeSpec
+-&gt; Map Day (Map Part (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+forall a. ChallengeSpec -&gt; Map Day (Map Part a) -&gt; Maybe a
+</span><a href="AOC.Challenge.html#lookupSolution"><span class="hs-identifier hs-var">lookupSolution</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605306"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605300"><span class="hs-identifier hs-var">out</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">Either [String] String -&gt; ExceptT [String] IO String
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; Either e a -&gt; m a
+</span><span class="hs-identifier hs-var">liftEither</span></span><span> </span><span class="annot"><span class="annottext">(Either [String] String -&gt; ExceptT [String] IO String)
+-&gt; Either [String] String -&gt; ExceptT [String] IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String) -&gt; Either [String] String
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605295"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- | Run the solution indicated by the challenge spec on a custom input.</span><span>
+</span><span id="line-60"></span><span class="hs-comment">-- Get answer as result.</span><span>
+</span><span id="line-61"></span><span class="annot"><a href="AOC.Run.Interactive.html#execSolutionWith"><span class="hs-identifier hs-type">execSolutionWith</span></a></span><span>
+</span><span id="line-62"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>               </span><span class="hs-comment">-- ^ custom puzzle input</span><span>
+</span><span id="line-64"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-65"></span><span id="execSolutionWith"><span class="annot"><span class="annottext">execSolutionWith :: ChallengeSpec -&gt; String -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#execSolutionWith"><span class="hs-identifier hs-var hs-var">execSolutionWith</span></a></span></span><span> </span><span id="local-6989586621679605291"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605291"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span id="local-6989586621679605290"><span class="annot"><span class="annottext">inp :: String
+</span><a href="#local-6989586621679605290"><span class="hs-identifier hs-var">inp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO String -&gt; IO String
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO String -&gt; IO String)
+-&gt; ExceptT [String] IO String -&gt; IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-66"></span><span>    </span><span id="local-6989586621679605289"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605289"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-67"></span><span>    </span><span id="local-6989586621679605288"><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605288"><span class="hs-identifier hs-var">out</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; MainRunOpts
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config
+-&gt; MainRunOpts
+-&gt; m (Map Day (Map Part (Maybe Bool, Either [String] String)))
+</span><a href="AOC.Run.html#mainRun"><span class="hs-identifier hs-var">mainRun</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605289"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainRunOpts
+ -&gt; ExceptT
+      [String]
+      IO
+      (Map Day (Map Part (Maybe Bool, Either [String] String))))
+-&gt; MainRunOpts
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestSpec -&gt; MainRunOpts
+</span><a href="AOC.Run.html#defaultMRO"><span class="hs-identifier hs-var">defaultMRO</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChallengeSpec -&gt; TestSpec
+</span><a href="AOC.Run.html#TSDayPart"><span class="hs-identifier hs-var">TSDayPart</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605291"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span>      </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_mroInput :: Day -&gt; Part -&gt; IO (Maybe String)
+</span><a href="AOC.Run.html#_mroInput"><span class="hs-identifier hs-var">_mroInput</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe String -&gt; IO (Maybe String)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Maybe String -&gt; IO (Maybe String))
+-&gt; Maybe String -&gt; IO (Maybe String)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
+forall a. a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679605290"><span class="hs-identifier hs-var">inp</span></a></span><span>
+</span><span id="line-69"></span><span>      </span><span class="hs-special">}</span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621679605286"><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605286"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[String]
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;Result not found in result map (Internal Error)&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe (Maybe Bool, Either [String] String)
+ -&gt; ExceptT [String] IO (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><span class="annottext">ChallengeSpec
+-&gt; Map Day (Map Part (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+forall a. ChallengeSpec -&gt; Map Day (Map Part a) -&gt; Maybe a
+</span><a href="AOC.Challenge.html#lookupSolution"><span class="hs-identifier hs-var">lookupSolution</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605291"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605288"><span class="hs-identifier hs-var">out</span></a></span><span>
+</span><span id="line-72"></span><span>    </span><span class="annot"><span class="annottext">Either [String] String -&gt; ExceptT [String] IO String
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; Either e a -&gt; m a
+</span><span class="hs-identifier hs-var">liftEither</span></span><span> </span><span class="annot"><span class="annottext">(Either [String] String -&gt; ExceptT [String] IO String)
+-&gt; Either [String] String -&gt; ExceptT [String] IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String) -&gt; Either [String] String
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605286"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-73"></span><span>
+</span><span id="line-74"></span><span class="hs-comment">-- | Run test suite for a given challenge spec.</span><span>
+</span><span id="line-75"></span><span class="hs-comment">--</span><span>
+</span><span id="line-76"></span><span class="hs-comment">-- Returns 'Just' if any tests were run, with a 'Bool' specifying whether</span><span>
+</span><span id="line-77"></span><span class="hs-comment">-- or not all tests passed.</span><span>
+</span><span id="line-78"></span><span class="annot"><a href="AOC.Run.Interactive.html#testSolution"><span class="hs-identifier hs-type">testSolution</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span id="testSolution"><span class="annot"><span class="annottext">testSolution :: ChallengeSpec -&gt; IO (Maybe Bool)
+</span><a href="AOC.Run.Interactive.html#testSolution"><span class="hs-identifier hs-var hs-var">testSolution</span></a></span></span><span> </span><span id="local-6989586621679605285"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605285"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO (Maybe Bool) -&gt; IO (Maybe Bool)
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO (Maybe Bool) -&gt; IO (Maybe Bool))
+-&gt; ExceptT [String] IO (Maybe Bool) -&gt; IO (Maybe Bool)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-80"></span><span>    </span><span id="local-6989586621679605284"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605284"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679605283"><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605283"><span class="hs-identifier hs-var">out</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; MainRunOpts
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config
+-&gt; MainRunOpts
+-&gt; m (Map Day (Map Part (Maybe Bool, Either [String] String)))
+</span><a href="AOC.Run.html#mainRun"><span class="hs-identifier hs-var">mainRun</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605284"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainRunOpts
+ -&gt; ExceptT
+      [String]
+      IO
+      (Map Day (Map Part (Maybe Bool, Either [String] String))))
+-&gt; MainRunOpts
+-&gt; ExceptT
+     [String]
+     IO
+     (Map Day (Map Part (Maybe Bool, Either [String] String)))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestSpec -&gt; MainRunOpts
+</span><a href="AOC.Run.html#defaultMRO"><span class="hs-identifier hs-var">defaultMRO</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChallengeSpec -&gt; TestSpec
+</span><a href="AOC.Run.html#TSDayPart"><span class="hs-identifier hs-var">TSDayPart</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605285"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>      </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_mroTest :: Bool
+</span><a href="AOC.Run.html#_mroTest"><span class="hs-identifier hs-var">_mroTest</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-83"></span><span>      </span><span class="hs-special">}</span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679605281"><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605281"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[String]
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;Result not found in result map (Internal Error)&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe (Maybe Bool, Either [String] String)
+ -&gt; ExceptT [String] IO (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+-&gt; ExceptT [String] IO (Maybe Bool, Either [String] String)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-85"></span><span>      </span><span class="annot"><span class="annottext">ChallengeSpec
+-&gt; Map Day (Map Part (Maybe Bool, Either [String] String))
+-&gt; Maybe (Maybe Bool, Either [String] String)
+forall a. ChallengeSpec -&gt; Map Day (Map Part a) -&gt; Maybe a
+</span><a href="AOC.Challenge.html#lookupSolution"><span class="hs-identifier hs-var">lookupSolution</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605285"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Map Day (Map Part (Maybe Bool, Either [String] String))
+</span><a href="#local-6989586621679605283"><span class="hs-identifier hs-var">out</span></a></span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String) -&gt; Maybe Bool
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">(Maybe Bool, Either [String] String)
+</span><a href="#local-6989586621679605281"><span class="hs-identifier hs-var">res</span></a></span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span class="hs-comment">-- | View the prompt for a given challenge spec.</span><span>
+</span><span id="line-89"></span><span class="annot"><a href="AOC.Run.Interactive.html#viewPrompt"><span class="hs-identifier hs-type">viewPrompt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-90"></span><span id="viewPrompt"><span class="annot"><span class="annottext">viewPrompt :: ChallengeSpec -&gt; IO Text
+</span><a href="AOC.Run.Interactive.html#viewPrompt"><span class="hs-identifier hs-var hs-var">viewPrompt</span></a></span></span><span> </span><span id="local-6989586621679605280"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605280"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-glyph">@</span><span id="local-6989586621679605278"><span id="local-6989586621679605279"><span class="annot"><a href="AOC.Discover.html#CS"><span class="hs-identifier hs-type">CS</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO Text -&gt; IO Text
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO Text -&gt; IO Text)
+-&gt; ExceptT [String] IO Text -&gt; IO Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-91"></span><span>    </span><span id="local-6989586621679605274"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605274"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-92"></span><span>    </span><span id="local-6989586621679605273"><span class="annot"><span class="annottext">Map Day (Map Part Text)
+</span><a href="#local-6989586621679605273"><span class="hs-identifier hs-var">out</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; MainViewOpts -&gt; ExceptT [String] IO (Map Day (Map Part Text))
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config -&gt; MainViewOpts -&gt; m (Map Day (Map Part Text))
+</span><a href="AOC.Run.html#mainView"><span class="hs-identifier hs-var">mainView</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605274"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainViewOpts -&gt; ExceptT [String] IO (Map Day (Map Part Text)))
+-&gt; (TestSpec -&gt; MainViewOpts)
+-&gt; TestSpec
+-&gt; ExceptT [String] IO (Map Day (Map Part Text))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">TestSpec -&gt; MainViewOpts
+</span><a href="AOC.Run.html#defaultMVO"><span class="hs-identifier hs-var">defaultMVO</span></a></span><span> </span><span class="annot"><span class="annottext">(TestSpec -&gt; ExceptT [String] IO (Map Day (Map Part Text)))
+-&gt; TestSpec -&gt; ExceptT [String] IO (Map Day (Map Part Text))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; TestSpec
+</span><a href="AOC.Run.html#TSDayPart"><span class="hs-identifier hs-var">TSDayPart</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605280"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-93"></span><span>    </span><span class="annot"><span class="annottext">[String] -&gt; Maybe Text -&gt; ExceptT [String] IO Text
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;Prompt not found in result map (Internal Error)&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe Text -&gt; ExceptT [String] IO Text)
+-&gt; Maybe Text -&gt; ExceptT [String] IO Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-94"></span><span>      </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; Map Day (Map Part Text) -&gt; Maybe Text
+forall a. ChallengeSpec -&gt; Map Day (Map Part a) -&gt; Maybe a
+</span><a href="AOC.Challenge.html#lookupSolution"><span class="hs-identifier hs-var">lookupSolution</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605280"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Map Day (Map Part Text)
+</span><a href="#local-6989586621679605273"><span class="hs-identifier hs-var">out</span></a></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- | Countdown to get the prompt for a given challenge spec, if not yet</span><span>
+</span><span id="line-97"></span><span class="hs-comment">-- available.</span><span>
+</span><span id="line-98"></span><span class="annot"><a href="AOC.Run.Interactive.html#waitForPrompt"><span class="hs-identifier hs-type">waitForPrompt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-99"></span><span id="waitForPrompt"><span class="annot"><span class="annottext">waitForPrompt :: ChallengeSpec -&gt; IO Text
+</span><a href="AOC.Run.Interactive.html#waitForPrompt"><span class="hs-identifier hs-var hs-var">waitForPrompt</span></a></span></span><span> </span><span id="local-6989586621679605270"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605270"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-glyph">@</span><span id="local-6989586621679605268"><span id="local-6989586621679605269"><span class="annot"><a href="AOC.Discover.html#CS"><span class="hs-identifier hs-type">CS</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO Text -&gt; IO Text
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO Text -&gt; IO Text)
+-&gt; ExceptT [String] IO Text -&gt; IO Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-100"></span><span>    </span><span id="local-6989586621679605267"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605267"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-101"></span><span>    </span><span id="local-6989586621679605266"><span class="annot"><span class="annottext">Map Day (Map Part Text)
+</span><a href="#local-6989586621679605266"><span class="hs-identifier hs-var">out</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Config
+-&gt; MainViewOpts -&gt; ExceptT [String] IO (Map Day (Map Part Text))
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config -&gt; MainViewOpts -&gt; m (Map Day (Map Part Text))
+</span><a href="AOC.Run.html#mainView"><span class="hs-identifier hs-var">mainView</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605267"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainViewOpts -&gt; ExceptT [String] IO (Map Day (Map Part Text)))
+-&gt; MainViewOpts -&gt; ExceptT [String] IO (Map Day (Map Part Text))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">TestSpec -&gt; MainViewOpts
+</span><a href="AOC.Run.html#defaultMVO"><span class="hs-identifier hs-var">defaultMVO</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChallengeSpec -&gt; TestSpec
+</span><a href="AOC.Run.html#TSDayPart"><span class="hs-identifier hs-var">TSDayPart</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605270"><span class="hs-identifier hs-var">cs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-102"></span><span>      </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_mvoWait :: Bool
+</span><a href="AOC.Run.html#_mvoWait"><span class="hs-identifier hs-var">_mvoWait</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-103"></span><span>      </span><span class="hs-special">}</span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><span class="annottext">[String] -&gt; Maybe Text -&gt; ExceptT [String] IO Text
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;Prompt not found in result map (Internal Error)&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe Text -&gt; ExceptT [String] IO Text)
+-&gt; Maybe Text -&gt; ExceptT [String] IO Text
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-105"></span><span>      </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; Map Day (Map Part Text) -&gt; Maybe Text
+forall a. ChallengeSpec -&gt; Map Day (Map Part a) -&gt; Maybe a
+</span><a href="AOC.Challenge.html#lookupSolution"><span class="hs-identifier hs-var">lookupSolution</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605270"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Map Day (Map Part Text)
+</span><a href="#local-6989586621679605266"><span class="hs-identifier hs-var">out</span></a></span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="hs-comment">-- | Submit solution for a given challenge spec, and lock if correct.</span><span>
+</span><span id="line-108"></span><span class="annot"><a href="AOC.Run.Interactive.html#submitSolution"><span class="hs-identifier hs-type">submitSolution</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SubmitRes</span></span><span class="hs-special">)</span><span>
+</span><span id="line-109"></span><span id="submitSolution"><span class="annot"><span class="annottext">submitSolution :: ChallengeSpec -&gt; IO (Text, SubmitRes)
+</span><a href="AOC.Run.Interactive.html#submitSolution"><span class="hs-identifier hs-var hs-var">submitSolution</span></a></span></span><span> </span><span id="local-6989586621679605264"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605264"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO (Text, SubmitRes) -&gt; IO (Text, SubmitRes)
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO (Text, SubmitRes) -&gt; IO (Text, SubmitRes))
+-&gt; ExceptT [String] IO (Text, SubmitRes) -&gt; IO (Text, SubmitRes)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-110"></span><span>    </span><span id="local-6989586621679605263"><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605263"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO Config -&gt; ExceptT [String] IO Config
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO Config -&gt; ExceptT [String] IO Config)
+-&gt; IO Config -&gt; ExceptT [String] IO Config
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-111"></span><span>    </span><span class="annot"><span class="annottext">Config -&gt; MainSubmitOpts -&gt; ExceptT [String] IO (Text, SubmitRes)
+forall (m :: * -&gt; *).
+(MonadIO m, MonadError [String] m) =&gt;
+Config -&gt; MainSubmitOpts -&gt; m (Text, SubmitRes)
+</span><a href="AOC.Run.html#mainSubmit"><span class="hs-identifier hs-var">mainSubmit</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679605263"><span class="hs-identifier hs-var">cfg</span></a></span><span> </span><span class="annot"><span class="annottext">(MainSubmitOpts -&gt; ExceptT [String] IO (Text, SubmitRes))
+-&gt; (ChallengeSpec -&gt; MainSubmitOpts)
+-&gt; ChallengeSpec
+-&gt; ExceptT [String] IO (Text, SubmitRes)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; MainSubmitOpts
+</span><a href="AOC.Run.html#defaultMSO"><span class="hs-identifier hs-var">defaultMSO</span></a></span><span> </span><span class="annot"><span class="annottext">(ChallengeSpec -&gt; ExceptT [String] IO (Text, SubmitRes))
+-&gt; ChallengeSpec -&gt; ExceptT [String] IO (Text, SubmitRes)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605264"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span class="hs-comment">-- | Result-suppressing version of 'execSolution'.</span><span>
+</span><span id="line-114"></span><span class="annot"><a href="AOC.Run.Interactive.html#execSolution_"><span class="hs-identifier hs-type">execSolution_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-115"></span><span id="execSolution_"><span class="annot"><span class="annottext">execSolution_ :: ChallengeSpec -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#execSolution_"><span class="hs-identifier hs-var hs-var">execSolution_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO String -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO String -&gt; IO ())
+-&gt; (ChallengeSpec -&gt; IO String) -&gt; ChallengeSpec -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#execSolution"><span class="hs-identifier hs-var">execSolution</span></a></span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span class="hs-comment">-- | Result-suppressing version of 'execSolutionWith'.</span><span>
+</span><span id="line-118"></span><span class="annot"><a href="AOC.Run.Interactive.html#execSolutionWith_"><span class="hs-identifier hs-type">execSolutionWith_</span></a></span><span>
+</span><span id="line-119"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span>
+</span><span id="line-120"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>               </span><span class="hs-comment">-- ^ custom puzzle input</span><span>
+</span><span id="line-121"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-122"></span><span id="execSolutionWith_"><span class="annot"><span class="annottext">execSolutionWith_ :: ChallengeSpec -&gt; String -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#execSolutionWith_"><span class="hs-identifier hs-var hs-var">execSolutionWith_</span></a></span></span><span> </span><span id="local-6989586621679605259"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605259"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO String -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO String -&gt; IO ()) -&gt; (String -&gt; IO String) -&gt; String -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; String -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#execSolutionWith"><span class="hs-identifier hs-var">execSolutionWith</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605259"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-123"></span><span>
+</span><span id="line-124"></span><span class="hs-comment">-- | Result-suppressing version of 'testSolution'.</span><span>
+</span><span id="line-125"></span><span class="annot"><a href="AOC.Run.Interactive.html#testSolution_"><span class="hs-identifier hs-type">testSolution_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span id="testSolution_"><span class="annot"><span class="annottext">testSolution_ :: ChallengeSpec -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#testSolution_"><span class="hs-identifier hs-var hs-var">testSolution_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO (Maybe Bool) -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO (Maybe Bool) -&gt; IO ())
+-&gt; (ChallengeSpec -&gt; IO (Maybe Bool)) -&gt; ChallengeSpec -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO (Maybe Bool)
+</span><a href="AOC.Run.Interactive.html#testSolution"><span class="hs-identifier hs-var">testSolution</span></a></span><span>
+</span><span id="line-127"></span><span>
+</span><span id="line-128"></span><span class="hs-comment">-- | Result-suppressing version of 'viewPrompt'.</span><span>
+</span><span id="line-129"></span><span class="annot"><a href="AOC.Run.Interactive.html#viewPrompt_"><span class="hs-identifier hs-type">viewPrompt_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-130"></span><span id="viewPrompt_"><span class="annot"><span class="annottext">viewPrompt_ :: ChallengeSpec -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#viewPrompt_"><span class="hs-identifier hs-var hs-var">viewPrompt_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO Text -&gt; IO ())
+-&gt; (ChallengeSpec -&gt; IO Text) -&gt; ChallengeSpec -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO Text
+</span><a href="AOC.Run.Interactive.html#viewPrompt"><span class="hs-identifier hs-var">viewPrompt</span></a></span><span>
+</span><span id="line-131"></span><span>
+</span><span id="line-132"></span><span class="hs-comment">-- | Result-suppressing version of 'waitForPrompt'.</span><span>
+</span><span id="line-133"></span><span class="annot"><a href="AOC.Run.Interactive.html#waitForPrompt_"><span class="hs-identifier hs-type">waitForPrompt_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-134"></span><span id="waitForPrompt_"><span class="annot"><span class="annottext">waitForPrompt_ :: ChallengeSpec -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#waitForPrompt_"><span class="hs-identifier hs-var hs-var">waitForPrompt_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO Text -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO Text -&gt; IO ())
+-&gt; (ChallengeSpec -&gt; IO Text) -&gt; ChallengeSpec -&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO Text
+</span><a href="AOC.Run.Interactive.html#waitForPrompt"><span class="hs-identifier hs-var">waitForPrompt</span></a></span><span>
+</span><span id="line-135"></span><span>
+</span><span id="line-136"></span><span class="hs-comment">-- | Result-suppressing version of 'submitSolution'.</span><span>
+</span><span id="line-137"></span><span class="annot"><a href="AOC.Run.Interactive.html#submitSolution_"><span class="hs-identifier hs-type">submitSolution_</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-138"></span><span id="submitSolution_"><span class="annot"><span class="annottext">submitSolution_ :: ChallengeSpec -&gt; IO ()
+</span><a href="AOC.Run.Interactive.html#submitSolution_"><span class="hs-identifier hs-var hs-var">submitSolution_</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IO (Text, SubmitRes) -&gt; IO ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IO (Text, SubmitRes) -&gt; IO ())
+-&gt; (ChallengeSpec -&gt; IO (Text, SubmitRes))
+-&gt; ChallengeSpec
+-&gt; IO ()
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO (Text, SubmitRes)
+</span><a href="AOC.Run.Interactive.html#submitSolution"><span class="hs-identifier hs-var">submitSolution</span></a></span><span>
+</span><span id="line-139"></span><span>
+</span><span id="line-140"></span><span class="hs-comment">-- | Run the parser of a solution, given its 'ChallengeSpec'.</span><span>
+</span><span id="line-141"></span><span class="hs-comment">--</span><span>
+</span><span id="line-142"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-143"></span><span class="hs-comment">-- 'loadParseInput' (solSpec 'day01a) day01a</span><span>
+</span><span id="line-144"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-145"></span><span id="local-6989586621679605257"><span id="local-6989586621679605258"><span class="annot"><a href="AOC.Run.Interactive.html#loadParseInput"><span class="hs-identifier hs-type">loadParseInput</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679605258"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679605257"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679605258"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-146"></span><span id="loadParseInput"><span class="annot"><span class="annottext">loadParseInput :: ChallengeSpec -&gt; (a :~&gt; b) -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#loadParseInput"><span class="hs-identifier hs-var hs-var">loadParseInput</span></a></span></span><span> </span><span id="local-6989586621679605256"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605256"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span id="local-6989586621679605255"><span class="annot"><span class="annottext">s :: a :~&gt; b
+</span><a href="#local-6989586621679605255"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO a -&gt; IO a
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO a -&gt; IO a) -&gt; ExceptT [String] IO a -&gt; IO a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-147"></span><span>    </span><span id="local-6989586621679605254"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679605254"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO String -&gt; ExceptT [String] IO String
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO String -&gt; ExceptT [String] IO String)
+-&gt; IO String -&gt; ExceptT [String] IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#loadInput"><span class="hs-identifier hs-var">loadInput</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605256"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-148"></span><span>    </span><span class="annot"><span class="annottext">[String] -&gt; Maybe a -&gt; ExceptT [String] IO a
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; e -&gt; Maybe a -&gt; m a
+</span><a href="AOC.Util.html#maybeToEither"><span class="hs-identifier hs-var">maybeToEither</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-string">&quot;No parse&quot;</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">(Maybe a -&gt; ExceptT [String] IO a)
+-&gt; Maybe a -&gt; ExceptT [String] IO a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(a :~&gt; b) -&gt; String -&gt; Maybe a
+forall a b. (a :~&gt; b) -&gt; String -&gt; Maybe a
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var hs-var">sParse</span></a></span><span> </span><span class="annot"><span class="annottext">a :~&gt; b
+</span><a href="#local-6989586621679605255"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679605254"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-149"></span><span>
+</span><span id="line-150"></span><span class="hs-comment">-- | Run the parser of a solution on test data, given its 'ChallengeSpec'.</span><span>
+</span><span id="line-151"></span><span class="hs-comment">--</span><span>
+</span><span id="line-152"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-153"></span><span class="hs-comment">-- 'loadParseTests' (solSpec 'day01a) day01a</span><span>
+</span><span id="line-154"></span><span class="hs-comment">-- @</span><span>
+</span><span id="line-155"></span><span id="local-6989586621679605251"><span id="local-6989586621679605252"><span class="annot"><a href="AOC.Run.Interactive.html#loadParseTests"><span class="hs-identifier hs-type">loadParseTests</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679605252"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679605251"><span class="hs-identifier hs-type">b</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679605252"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Load.html#TestMeta"><span class="hs-identifier hs-type">TestMeta</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span></span><span>
+</span><span id="line-156"></span><span id="loadParseTests"><span class="annot"><span class="annottext">loadParseTests :: ChallengeSpec -&gt; (a :~&gt; b) -&gt; IO [(Maybe a, TestMeta)]
+</span><a href="AOC.Run.Interactive.html#loadParseTests"><span class="hs-identifier hs-var hs-var">loadParseTests</span></a></span></span><span> </span><span id="local-6989586621679605250"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605250"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span id="local-6989586621679605249"><span class="annot"><span class="annottext">s :: a :~&gt; b
+</span><a href="#local-6989586621679605249"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((String, TestMeta) -&gt; (Maybe a, TestMeta))
+-&gt; [(String, TestMeta)] -&gt; [(Maybe a, TestMeta)]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">(((String, TestMeta) -&gt; (Maybe a, TestMeta))
+ -&gt; [(String, TestMeta)] -&gt; [(Maybe a, TestMeta)])
+-&gt; ((String -&gt; Maybe a)
+    -&gt; (String, TestMeta) -&gt; (Maybe a, TestMeta))
+-&gt; (String -&gt; Maybe a)
+-&gt; [(String, TestMeta)]
+-&gt; [(Maybe a, TestMeta)]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe a) -&gt; (String, TestMeta) -&gt; (Maybe a, TestMeta)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(a :~&gt; b) -&gt; String -&gt; Maybe a
+forall a b. (a :~&gt; b) -&gt; String -&gt; Maybe a
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var hs-var">sParse</span></a></span><span> </span><span class="annot"><span class="annottext">a :~&gt; b
+</span><a href="#local-6989586621679605249"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([(String, TestMeta)] -&gt; [(Maybe a, TestMeta)])
+-&gt; IO [(String, TestMeta)] -&gt; IO [(Maybe a, TestMeta)]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec -&gt; IO [(String, TestMeta)]
+</span><a href="AOC.Run.Interactive.html#loadTests"><span class="hs-identifier hs-var">loadTests</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605250"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-157"></span><span>
+</span><span id="line-158"></span><span class="hs-comment">-- | Load input for a given challenge</span><span>
+</span><span id="line-159"></span><span class="annot"><a href="AOC.Run.Interactive.html#loadInput"><span class="hs-identifier hs-type">loadInput</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-160"></span><span id="loadInput"><span class="annot"><span class="annottext">loadInput :: ChallengeSpec -&gt; IO String
+</span><a href="AOC.Run.Interactive.html#loadInput"><span class="hs-identifier hs-var hs-var">loadInput</span></a></span></span><span> </span><span id="local-6989586621679605246"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605246"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO String -&gt; IO String
+forall a. ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var">eitherIO</span></a></span><span> </span><span class="annot"><span class="annottext">(ExceptT [String] IO String -&gt; IO String)
+-&gt; ExceptT [String] IO String -&gt; IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-161"></span><span>    </span><span id="local-6989586621679605242"><span id="local-6989586621679605243"><span id="local-6989586621679605244"><span id="local-6989586621679605245"><span class="annot"><a href="AOC.Run.Load.html#CD"><span class="hs-identifier hs-type">CD</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO ChallengeData -&gt; ExceptT [String] IO ChallengeData
+forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
+</span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">(IO ChallengeData -&gt; ExceptT [String] IO ChallengeData)
+-&gt; IO ChallengeData -&gt; ExceptT [String] IO ChallengeData
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-162"></span><span>      </span><span id="local-6989586621679605235"><span id="local-6989586621679605236"><span class="annot"><a href="AOC.Run.Config.html#Cfg"><span class="hs-identifier hs-type">Cfg</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-163"></span><span>      </span><span class="annot"><span class="annottext">Maybe String -&gt; Integer -&gt; ChallengeSpec -&gt; IO ChallengeData
+</span><a href="AOC.Run.Load.html#challengeData"><span class="hs-identifier hs-var">challengeData</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679605236"><span class="hs-identifier hs-var">_cfgSession</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679605235"><span class="hs-identifier hs-var">_cfgYear</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605246"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-164"></span><span>    </span><span class="annot"><span class="annottext">Either [String] String -&gt; ExceptT [String] IO String
+forall e (m :: * -&gt; *) a. MonadError e m =&gt; Either e a -&gt; m a
+</span><span class="hs-identifier hs-var">liftEither</span></span><span> </span><span class="annot"><span class="annottext">Either [String] String
+</span><a href="#local-6989586621679605244"><span class="hs-identifier hs-var">_cdInput</span></a></span><span>
+</span><span id="line-165"></span><span>
+</span><span id="line-166"></span><span class="hs-comment">-- | Load test cases for a given challenge</span><span>
+</span><span id="line-167"></span><span class="annot"><a href="AOC.Run.Interactive.html#loadTests"><span class="hs-identifier hs-type">loadTests</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Run.Load.html#TestMeta"><span class="hs-identifier hs-type">TestMeta</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-168"></span><span id="loadTests"><span class="annot"><span class="annottext">loadTests :: ChallengeSpec -&gt; IO [(String, TestMeta)]
+</span><a href="AOC.Run.Interactive.html#loadTests"><span class="hs-identifier hs-var hs-var">loadTests</span></a></span></span><span> </span><span id="local-6989586621679605230"><span class="annot"><span class="annottext">cs :: ChallengeSpec
+</span><a href="#local-6989586621679605230"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-169"></span><span>    </span><span id="local-6989586621679605228"><span id="local-6989586621679605229"><span class="annot"><a href="AOC.Run.Config.html#Cfg"><span class="hs-identifier hs-type">Cfg</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO Config
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var">configFile</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="AOC.Run.Config.html#defConfPath"><span class="hs-identifier hs-var">defConfPath</span></a></span><span>
+</span><span id="line-170"></span><span>    </span><span class="annot"><span class="annottext">ChallengeData -&gt; [(String, TestMeta)]
+</span><a href="AOC.Run.Load.html#_cdTests"><span class="hs-identifier hs-var hs-var">_cdTests</span></a></span><span> </span><span class="annot"><span class="annottext">(ChallengeData -&gt; [(String, TestMeta)])
+-&gt; IO ChallengeData -&gt; IO [(String, TestMeta)]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe String -&gt; Integer -&gt; ChallengeSpec -&gt; IO ChallengeData
+</span><a href="AOC.Run.Load.html#challengeData"><span class="hs-identifier hs-var">challengeData</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe String
+</span><a href="#local-6989586621679605229"><span class="hs-identifier hs-var">_cfgSession</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679605228"><span class="hs-identifier hs-var">_cfgYear</span></a></span><span> </span><span class="annot"><span class="annottext">ChallengeSpec
+</span><a href="#local-6989586621679605230"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-171"></span><span>
+</span><span id="line-172"></span><span class="hs-comment">-- | Unsafely create a 'ChallengeSpec' from a day number and part.</span><span>
+</span><span id="line-173"></span><span class="hs-comment">--</span><span>
+</span><span id="line-174"></span><span class="hs-comment">-- Is undefined if given a day number out of range (1-25).</span><span>
+</span><span id="line-175"></span><span class="annot"><a href="AOC.Run.Interactive.html#mkSpec"><span class="hs-identifier hs-type">mkSpec</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Part</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Discover.html#ChallengeSpec"><span class="hs-identifier hs-type">ChallengeSpec</span></a></span><span>
+</span><span id="line-176"></span><span id="mkSpec"><span class="annot"><span class="annottext">mkSpec :: Integer -&gt; Part -&gt; ChallengeSpec
+</span><a href="AOC.Run.Interactive.html#mkSpec"><span class="hs-identifier hs-var hs-var">mkSpec</span></a></span></span><span> </span><span id="local-6989586621679605227"><span class="annot"><span class="annottext">i :: Integer
+</span><a href="#local-6989586621679605227"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Day -&gt; Part -&gt; ChallengeSpec
+</span><a href="AOC.Discover.html#CS"><span class="hs-identifier hs-var">CS</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Day
+</span><span class="hs-identifier hs-var">mkDay_</span></span><span> </span><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679605227"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-177"></span><span>
+</span><span id="line-178"></span><span id="local-6989586621679605391"><span class="annot"><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-type">eitherIO</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ExceptT</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679605391"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679605391"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-179"></span><span id="eitherIO"><span class="annot"><span class="annottext">eitherIO :: ExceptT [String] IO a -&gt; IO a
+</span><a href="AOC.Run.Interactive.html#eitherIO"><span class="hs-identifier hs-var hs-var">eitherIO</span></a></span></span><span> </span><span id="local-6989586621679605225"><span class="annot"><span class="annottext">act :: ExceptT [String] IO a
+</span><a href="#local-6989586621679605225"><span class="hs-identifier hs-var">act</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO a -&gt; IO (Either [String] a)
+forall e (m :: * -&gt; *) a. ExceptT e m a -&gt; m (Either e a)
+</span><span class="hs-identifier hs-var">runExceptT</span></span><span> </span><span class="annot"><span class="annottext">ExceptT [String] IO a
+</span><a href="#local-6989586621679605225"><span class="hs-identifier hs-var">act</span></a></span><span> </span><span class="annot"><span class="annottext">IO (Either [String] a) -&gt; (Either [String] a -&gt; IO a) -&gt; IO a
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-180"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679605223"><span class="annot"><span class="annottext">x :: a
+</span><a href="#local-6989586621679605223"><span class="hs-identifier hs-var">x</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; IO a
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679605223"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-181"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span>  </span><span id="local-6989586621679605222"><span class="annot"><span class="annottext">es :: [String]
+</span><a href="#local-6989586621679605222"><span class="hs-identifier hs-var">es</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO a
+forall (m :: * -&gt; *) a. MonadFail m =&gt; String -&gt; m a
+</span><span class="hs-identifier hs-var">fail</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; IO a) -&gt; String -&gt; IO a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[String] -&gt; String
+</span><span class="hs-identifier hs-var">unlines</span></span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679605222"><span class="hs-identifier hs-var">es</span></a></span><span>
+</span><span id="line-182"></span><span>
+</span><span id="line-183"></span></pre></body></html>
