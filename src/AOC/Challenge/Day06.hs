@@ -26,17 +26,17 @@ answers :: String -> [NonEmpty (Set Char)]
 answers = mapMaybe ((fmap . fmap) S.fromList . NE.nonEmpty . lines)
         . splitOn "\n\n"
 
-day06a :: Answers :~> Int
-day06a = MkSol
+day06With 
+    :: (Set Char -> Set Char -> Set Char)
+    -> Answers :~> Int
+day06With f = MkSol
     { sParse = Just . answers
     , sShow  = show
-    , sSolve = Just . sum . map (S.size . foldr1 S.union       )
+    , sSolve = Just . sum . map (S.size . foldr1 f)
     }
+
+day06a :: Answers :~> Int
+day06a = day06With S.union
 
 day06b :: Answers :~> Int
-day06b = MkSol
-    { sParse = Just . answers
-    , sShow  = show
-    , sSolve = Just . sum . map (S.size . foldr1 S.intersection)
-    }
-
+day06b = day06With S.intersection

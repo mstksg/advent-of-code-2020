@@ -7,11 +7,66 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Sat,  5 Dec 2020 03:24:13 EST</lastBuildDate>
+    <lastBuildDate>Sun,  6 Dec 2020 01:13:32 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Sat,  5 Dec 2020 03:24:13 EST</pubDate>
+    <pubDate>Sun,  6 Dec 2020 01:13:32 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 6</title>
+      <description>&lt;h2 id=&quot;day-6&quot;&gt;Day 6&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day06.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/6&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day06.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day06.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Another day that is fairly straightforward in Haskell, I feel! But in other languages that support functional approaches, it should be straightforward as well.&lt;/p&gt;
+&lt;p&gt;The answer involves lists of groups of responses:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.List.NonEmpty&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.Set&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.List.NonEmpty&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;NE&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.Set&lt;/span&gt;           &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;S&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Response&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Char&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Group&lt;/span&gt;    &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;NonEmpty&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Response&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-8&quot;&gt;&lt;a href=&quot;#cb1-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-9&quot;&gt;&lt;a href=&quot;#cb1-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseAnswers ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Char&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Group&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb1-10&quot;&gt;&lt;a href=&quot;#cb1-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseAnswers &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; mapMaybe ((&lt;span class=&quot;fu&quot;&gt;fmap&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;fmap&lt;/span&gt;) S.fromList &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; NE.nonEmpty &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;lines&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb1-11&quot;&gt;&lt;a href=&quot;#cb1-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;             &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; splitOn &lt;span class=&quot;st&quot;&gt;&amp;quot;\n\n&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now we just need to decide how to aggregate each group. For part 1, this requires a set union between every &lt;code&gt;Response&lt;/code&gt; in a &lt;code&gt;Group&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Group&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;map&lt;/span&gt; (S.size &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;foldr1&lt;/span&gt; S.union)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;(&lt;code&gt;foldr1&lt;/code&gt; here is safe because we have a non-empty container)&lt;/p&gt;
+&lt;p&gt;And for part 2, this requires a set intersection between every &lt;code&gt;Response&lt;/code&gt; in a &lt;code&gt;Group&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Group&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;map&lt;/span&gt; (S.size &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;foldr1&lt;/span&gt; S.intersection)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That’s it!&lt;/p&gt;
+&lt;h3 id=&quot;day-6-benchmarks&quot;&gt;Day 6 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 06a
+benchmarking...
+time                 597.0 μs   (572.7 μs .. 614.1 μs)
+                     0.994 R²   (0.990 R² .. 0.997 R²)
+mean                 562.4 μs   (552.4 μs .. 572.2 μs)
+std dev              33.66 μs   (29.09 μs .. 41.46 μs)
+variance introduced by outliers: 52% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 06b
+benchmarking...
+time                 535.8 μs   (526.6 μs .. 550.0 μs)
+                     0.998 R²   (0.997 R² .. 0.999 R²)
+mean                 540.4 μs   (534.7 μs .. 546.6 μs)
+std dev              18.72 μs   (17.27 μs .. 21.42 μs)
+variance introduced by outliers: 27% (moderately inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-6</link>
+      <pubDate>Sun,  6 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 5</title>
       <description>&lt;h2 id=&quot;day-5&quot;&gt;Day 5&lt;/h2&gt;

@@ -25,7 +25,7 @@ Table of Contents
 * [Day 3](#day-3)
 * [Day 4](#day-4)
 * [Day 5](#day-5)
-* [Day 6](#day-6) *(no reflection yet)*
+* [Day 6](#day-6)
 
 Day 1
 ------
@@ -1019,7 +1019,47 @@ that file instead!
 [d06h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day06.html
 [d06r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md
 
-*Reflection not yet written -- please check back later!*
+Another day that is fairly straightforward in Haskell, I feel!  But in other
+languages that support functional approaches, it should be straightforward as
+well.
+
+The answer involves lists of groups of responses:
+
+```haskell
+import           Data.List.NonEmpty
+import           Data.Set
+import qualified Data.List.NonEmpty as NE
+import qualified Data.Set           as S
+
+type Response = Set Char
+type Group    = NonEmpty Response
+
+parseAnswers :: Set Char -> [Group]
+parseAnswers = mapMaybe ((fmap . fmap) S.fromList . NE.nonEmpty . lines)
+             . splitOn "\n\n"
+```
+
+And now we just need to decide how to aggregate each group.  For part 1, this
+requires a set union between every `Response` in a `Group`:
+
+```haskell
+part1 :: [Group] -> Int
+part1 = sum . map (S.size . foldr1 S.union)
+```
+
+(`foldr1` here is safe because we have a non-empty container)
+
+And for part 2, this requires a set intersection between every `Response` in a
+`Group`:
+
+
+```haskell
+part2 :: [Group] -> Int
+part2 = sum . map (S.size . foldr1 S.intersection)
+```
+
+That's it!
+
 
 ### Day 6 Benchmarks
 
