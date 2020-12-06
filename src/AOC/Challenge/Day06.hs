@@ -30,23 +30,20 @@ toCharSet = foldl' insertCharSet 0
       where
         i = ord c - ord 'a'
 
-type Answers = [NonEmpty CharSet]
-
-answers :: String -> [NonEmpty CharSet]
-answers = mapMaybe ((fmap . fmap) toCharSet . NE.nonEmpty . lines)
-        . splitOn "\n\n"
+answers :: [String] -> Maybe (NonEmpty CharSet)
+answers = (fmap . fmap) toCharSet . NE.nonEmpty
 
 day06With
     :: (CharSet -> CharSet -> CharSet)
-    -> Answers :~> Int
+    -> [[String]] :~> Int
 day06With f = MkSol
-    { sParse = Just . answers
+    { sParse = Just . map lines . splitOn "\n\n"
     , sShow  = show
-    , sSolve = Just . sum . map (popCount . foldr1 f)
+    , sSolve = Just . sum . mapMaybe (fmap (popCount . foldr1 f) . answers)
     }
 
-day06a :: Answers :~> Int
+day06a :: [[String]] :~> Int
 day06a = day06With (.|.)
 
-day06b :: Answers :~> Int
+day06b :: [[String]] :~> Int
 day06b = day06With (.&.)
