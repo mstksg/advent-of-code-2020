@@ -13,31 +13,40 @@ module AOC.Challenge.Day06 (
   ) where
 
 import           AOC.Solver         ((:~>)(..))
+import           Data.Bits          (setBit, popCount, (.&.), (.|.))
 import           Data.Char          (ord)
-import           Data.IntSet        (IntSet)
+import           Data.List          (foldl')
 import           Data.List.NonEmpty (NonEmpty)
 import           Data.List.Split    (splitOn)
 import           Data.Maybe         (mapMaybe)
-import qualified Data.IntSet        as IS
 import qualified Data.List.NonEmpty as NE
 
-type Answers = [NonEmpty IntSet]
+type CharSet = Word
 
-answers :: String -> [NonEmpty IntSet]
-answers = mapMaybe ((fmap . fmap) (IS.fromList . map ord) . NE.nonEmpty . lines)
+toCharSet :: [Char] -> CharSet
+toCharSet = foldl' insertCharSet 0
+  where
+    insertCharSet cs c = cs `setBit` i
+      where
+        i = ord c - ord 'a'
+
+type Answers = [NonEmpty CharSet]
+
+answers :: String -> [NonEmpty CharSet]
+answers = mapMaybe ((fmap . fmap) toCharSet . NE.nonEmpty . lines)
         . splitOn "\n\n"
 
 day06With
-    :: (IntSet -> IntSet -> IntSet)
+    :: (CharSet -> CharSet -> CharSet)
     -> Answers :~> Int
 day06With f = MkSol
     { sParse = Just . answers
     , sShow  = show
-    , sSolve = Just . sum . map (IS.size . foldr1 f)
+    , sSolve = Just . sum . map (popCount . foldr1 f)
     }
 
 day06a :: Answers :~> Int
-day06a = day06With IS.union
+day06a = day06With (.|.)
 
 day06b :: Answers :~> Int
-day06b = day06With IS.intersection
+day06b = day06With (.&.)
