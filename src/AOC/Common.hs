@@ -77,6 +77,8 @@ module AOC.Common (
   , parseTokStream_
   , parseTokStreamT
   , parseTokStreamT_
+  , TokParser
+  , parseWords
   , nextMatch
   , parseMaybeLenient
   , parseOrFail
@@ -676,6 +678,8 @@ newtype TokStream a = TokStream { getTokStream :: [a] }
 instance Hashable a => Hashable (TokStream a)
 instance NFData a => NFData (TokStream a)
 
+
+
 instance (Ord a, Show a) => P.Stream (TokStream a) where
     type Token  (TokStream a) = a
     type Tokens (TokStream a) = Seq a
@@ -732,6 +736,8 @@ parseTokStreamT_
     -> m (f a)
 parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
 
+type CharParser = P.Parsec Void String
+
 parseMaybeLenient :: P.Parsec e s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
 
@@ -741,7 +747,10 @@ parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeL
 parseLines :: P.Parsec e String a -> String -> Maybe [a]
 parseLines p = traverse (parseMaybeLenient p) . lines
 
-type CharParser = P.Parsec Void String
+parseWords :: P.Parsec e (TokStream String) a -> String -> Maybe a
+parseWords p = parseMaybeLenient p . TokStream . words 
+
+type TokParser s = P.Parsec Void (TokStream s)
 
 -- | Skip every result until this token matches
 nextMatch :: P.MonadParsec e s m => m a -> m a
