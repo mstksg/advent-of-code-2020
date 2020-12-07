@@ -83,6 +83,8 @@ module AOC.Common (
   , parseMaybeLenient
   , parseOrFail
   , CharParser
+  , pWord
+  , pHWord
   , parseLines
   -- * Points
   , Point
@@ -161,6 +163,7 @@ import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
+import qualified Text.Megaparsec.Char               as P
 
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a
@@ -737,6 +740,12 @@ parseTokStreamT_
 parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
 
 type CharParser = P.Parsec Void String
+
+pWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
+pWord = P.many (P.satisfy (not . isSpace)) <* P.space
+
+pHWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
+pHWord = P.many (P.satisfy (not . isSpace)) <* P.many (P.satisfy (== ' '))
 
 parseMaybeLenient :: P.Parsec e s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"

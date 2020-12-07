@@ -13,16 +13,18 @@ module AOC.Challenge.Day07 (
   , bagParser
   ) where
 
-import           AOC.Common          (TokParser, parseWords)
-import           AOC.Solver          ((:~>)(..))
-import           Control.Applicative (many)
-import           Data.Map            (Map)
-import           Data.Semigroup      (Sum(..))
-import           Data.Set            (Set)
-import           Text.Megaparsec     (anySingle, try)
-import           Text.Read           (readMaybe)
-import qualified Data.Map            as M
-import qualified Data.Set            as S
+import           AOC.Common                 (pWord, parseLines, CharParser)
+import           AOC.Solver                 ((:~>)(..))
+import           Control.Applicative        (many)
+import           Data.Map                   (Map)
+import           Data.Semigroup             (Sum(..))
+import           Data.Set                   (Set)
+import           Text.Megaparsec            (anySingle, try)
+import           Text.Megaparsec.Char       (space)
+import           Text.Megaparsec.Char.Lexer (decimal)
+import           Text.Read                  (readMaybe)
+import qualified Data.Map                   as M
+import qualified Data.Set                   as S
 
 type Bag = (String, String)
 type Graph v e = Map v (Map v e)
@@ -30,18 +32,17 @@ type Graph v e = Map v (Map v e)
 target :: Bag
 target = ("shiny", "gold")
 
-bagParser :: TokParser String (Bag, Map Bag Int)
+bagParser :: CharParser (Bag, Map Bag Int)
 bagParser = do
-    nm <- bagName
-    _  <- anySingle
+    nm <- bagName <* pWord
     bs <- fmap M.fromList . many . try $ do
-      Just n <- readMaybe <$> anySingle
-      b      <- bagName
+      n <- decimal <* space
+      b <- bagName
       pure (b, n)
     pure (nm, bs)
   where
-    bagName :: TokParser String Bag
-    bagName = (,) <$> anySingle <*> (anySingle <* anySingle)
+    bagName :: CharParser Bag
+    bagName = (,) <$> pWord <*> (pWord <* pWord)
 
 flipGraph :: Ord v => Graph v e -> Graph v e
 flipGraph mp = M.fromListWith M.union
@@ -76,14 +77,14 @@ usageCounts = foldMapGraph
 
 day07a :: Graph Bag Int :~> Int
 day07a = MkSol
-    { sParse = fmap M.fromList . traverse (parseWords bagParser) . lines
+    { sParse = fmap M.fromList . parseLines bagParser
     , sShow  = show
     , sSolve = M.lookup target . fmap S.size . allDescendants . flipGraph
     }
 
 day07b :: Map Bag (Map Bag Int) :~> Int
 day07b = MkSol
-    { sParse = fmap M.fromList . traverse (parseWords bagParser) . lines
+    { sParse = fmap M.fromList . parseLines bagParser
     , sShow  = show
     , sSolve = M.lookup target . fmap getSum . usageCounts
     }
