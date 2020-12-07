@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Mon,  7 Dec 2020 02:30:31 EST</lastBuildDate>
+    <lastBuildDate>Mon,  7 Dec 2020 02:33:59 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Mon,  7 Dec 2020 02:30:31 EST</pubDate>
+    <pubDate>Mon,  7 Dec 2020 02:33:59 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -21,7 +21,7 @@ the file `./reflections/day07.md`.  If you want to edit this, edit
 that file instead!
 --&gt;
 &lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/7&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day07.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day07.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Another AoC staple, the recursive knot tying on a graph!&lt;/p&gt;
+&lt;p&gt;Another AoC staple, a graph search that can be solved with recursive knot tying! The last one I remember off the top of my head was &lt;a href=&quot;https://github.com/mstksg/advent-of-code-2019/blob/master/reflections.md#day-6&quot;&gt;2019 Day 6&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Here we can represent a graph as a map of vertices to other vertices, with an edge value:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v e)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Exercise is left to the reader to parse our dataset into a &lt;code&gt;Graph String Int&lt;/code&gt;, a graph of bags to bags with &lt;code&gt;Int&lt;/code&gt; edges.&lt;/p&gt;
@@ -74,7 +74,7 @@ that file instead!
 &lt;span id=&quot;cb7-11&quot;&gt;&lt;a href=&quot;#cb7-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb7-12&quot;&gt;&lt;a href=&quot;#cb7-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    res &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; gr &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;amp;&amp;gt;&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb7-13&quot;&gt;&lt;a href=&quot;#cb7-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      M.foldMapWithKey (\s v &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; f s &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;foldMap&lt;/span&gt; (g v) (M.lookup s res))&lt;/span&gt;
-&lt;span id=&quot;cb7-14&quot;&gt;&lt;a href=&quot;#cb7-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt; &lt;/span&gt;
+&lt;span id=&quot;cb7-14&quot;&gt;&lt;a href=&quot;#cb7-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb7-15&quot;&gt;&lt;a href=&quot;#cb7-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;allDescendants ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; v)&lt;/span&gt;
 &lt;span id=&quot;cb7-16&quot;&gt;&lt;a href=&quot;#cb7-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;allDescendants &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldMapGraph&lt;/span&gt;
 &lt;span id=&quot;cb7-17&quot;&gt;&lt;a href=&quot;#cb7-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    S.singleton     &lt;span class=&quot;co&quot;&gt;-- the node is embedded as itself&lt;/span&gt;&lt;/span&gt;

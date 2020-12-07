@@ -27,7 +27,11 @@ that file instead!
 [d07g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day07.hs
 [d07h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day07.html
 
-Another AoC staple, the recursive knot tying on a graph!
+Another AoC staple, a graph search that can be solved with recursive knot
+tying!  The last one I remember off the top of my head was [2019 Day
+6][2019d06].
+
+[2019d06]: https://github.com/mstksg/advent-of-code-2019/blob/master/reflections.md#day-6
 
 Here we can represent a graph as a map of vertices to other vertices, with an
 edge value:
@@ -127,7 +131,7 @@ foldMapGraph f g gr = res
   where
     res = gr <&>
       M.foldMapWithKey (\s v -> f s <> foldMap (g v) (M.lookup s res))
- 
+
 allDescendants :: Ord v => Graph v e -> Map v (Set v)
 allDescendants = foldMapGraph
     S.singleton     -- the node is embedded as itself
