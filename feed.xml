@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Mon,  7 Dec 2020 02:42:10 EST</lastBuildDate>
+    <lastBuildDate>Mon,  7 Dec 2020 02:44:02 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Mon,  7 Dec 2020 02:42:10 EST</pubDate>
+    <pubDate>Mon,  7 Dec 2020 02:44:02 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -88,21 +88,21 @@ that file instead!
 &lt;h3 id=&quot;day-7-benchmarks&quot;&gt;Day 7 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 07a
 benchmarking...
-time                 2.122 ms   (2.080 ms .. 2.185 ms)
-                     0.989 R²   (0.970 R² .. 0.999 R²)
-mean                 2.118 ms   (2.094 ms .. 2.214 ms)
-std dev              155.5 μs   (67.10 μs .. 304.9 μs)
-variance introduced by outliers: 54% (severely inflated)
+time                 2.206 ms   (2.167 ms .. 2.272 ms)
+                     0.971 R²   (0.920 R² .. 0.999 R²)
+mean                 2.192 ms   (2.142 ms .. 2.380 ms)
+std dev              291.8 μs   (57.37 μs .. 610.2 μs)
+variance introduced by outliers: 79% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 07b
 benchmarking...
-time                 19.19 μs   (18.80 μs .. 19.64 μs)
-                     0.993 R²   (0.988 R² .. 0.997 R²)
-mean                 18.89 μs   (18.50 μs .. 19.46 μs)
-std dev              1.764 μs   (1.471 μs .. 2.344 μs)
-variance introduced by outliers: 83% (severely inflated)
+time                 18.64 μs   (18.43 μs .. 19.00 μs)
+                     0.998 R²   (0.994 R² .. 1.000 R²)
+mean                 18.82 μs   (18.69 μs .. 19.13 μs)
+std dev              662.6 ns   (331.6 ns .. 1.140 μs)
+variance introduced by outliers: 41% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -143,21 +143,21 @@ that file instead!
 &lt;h3 id=&quot;day-6-benchmarks&quot;&gt;Day 6 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 06a
 benchmarking...
-time                 155.1 μs   (152.2 μs .. 157.4 μs)
-                     0.997 R²   (0.995 R² .. 0.999 R²)
-mean                 151.8 μs   (147.8 μs .. 153.9 μs)
-std dev              10.48 μs   (8.453 μs .. 12.96 μs)
-variance introduced by outliers: 66% (severely inflated)
+time                 145.0 μs   (137.0 μs .. 152.1 μs)
+                     0.985 R²   (0.980 R² .. 0.993 R²)
+mean                 142.7 μs   (139.0 μs .. 146.0 μs)
+std dev              12.22 μs   (10.47 μs .. 14.09 μs)
+variance introduced by outliers: 75% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 06b
 benchmarking...
-time                 149.4 μs   (142.5 μs .. 156.2 μs)
-                     0.990 R²   (0.983 R² .. 0.997 R²)
-mean                 154.1 μs   (151.1 μs .. 157.2 μs)
-std dev              10.23 μs   (7.084 μs .. 16.01 μs)
-variance introduced by outliers: 64% (severely inflated)
+time                 154.7 μs   (152.5 μs .. 157.4 μs)
+                     0.993 R²   (0.978 R² .. 0.999 R²)
+mean                 153.4 μs   (149.9 μs .. 161.0 μs)
+std dev              15.76 μs   (8.020 μs .. 28.24 μs)
+variance introduced by outliers: 81% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -225,20 +225,20 @@ that file instead!
 &lt;h3 id=&quot;day-5-benchmarks&quot;&gt;Day 5 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 05a
 benchmarking...
-time                 22.87 μs   (22.85 μs .. 22.90 μs)
+time                 23.26 μs   (23.23 μs .. 23.30 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 22.85 μs   (22.82 μs .. 22.89 μs)
-std dev              118.0 ns   (53.89 ns .. 206.5 ns)
+mean                 23.27 μs   (23.25 μs .. 23.33 μs)
+std dev              120.4 ns   (40.75 ns .. 238.7 ns)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 05b
 benchmarking...
-time                 24.39 μs   (24.17 μs .. 24.56 μs)
+time                 24.62 μs   (24.35 μs .. 24.79 μs)
                      0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 24.53 μs   (24.34 μs .. 24.91 μs)
-std dev              928.0 ns   (403.0 ns .. 1.512 μs)
-variance introduced by outliers: 43% (moderately inflated)
+mean                 24.68 μs   (24.55 μs .. 24.79 μs)
+std dev              480.0 ns   (289.1 ns .. 651.3 ns)
+variance introduced by outliers: 17% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -481,21 +481,21 @@ that file instead!
 &lt;h3 id=&quot;day-4-benchmarks&quot;&gt;Day 4 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 04a
 benchmarking...
-time                 1.718 ms   (1.670 ms .. 1.769 ms)
-                     0.996 R²   (0.992 R² .. 0.999 R²)
-mean                 1.774 ms   (1.744 ms .. 1.812 ms)
-std dev              124.2 μs   (47.91 μs .. 189.7 μs)
-variance introduced by outliers: 53% (severely inflated)
+time                 1.528 ms   (1.434 ms .. 1.686 ms)
+                     0.960 R²   (0.946 R² .. 0.977 R²)
+mean                 1.678 ms   (1.618 ms .. 1.730 ms)
+std dev              201.5 μs   (174.5 μs .. 272.1 μs)
+variance introduced by outliers: 78% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 04b
 benchmarking...
-time                 4.531 ms   (4.218 ms .. 4.829 ms)
-                     0.973 R²   (0.959 R² .. 0.988 R²)
-mean                 4.773 ms   (4.638 ms .. 4.931 ms)
-std dev              425.8 μs   (346.9 μs .. 577.5 μs)
-variance introduced by outliers: 56% (severely inflated)
+time                 4.882 ms   (4.647 ms .. 5.072 ms)
+                     0.982 R²   (0.969 R² .. 0.992 R²)
+mean                 4.814 ms   (4.691 ms .. 4.902 ms)
+std dev              371.2 μs   (271.7 μs .. 467.7 μs)
+variance introduced by outliers: 48% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -583,20 +583,20 @@ that file instead!
 &lt;h3 id=&quot;day-3-benchmarks&quot;&gt;Day 3 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 03a
 benchmarking...
-time                 318.4 μs   (300.7 μs .. 333.9 μs)
-                     0.984 R²   (0.979 R² .. 0.992 R²)
-mean                 325.0 μs   (315.0 μs .. 331.6 μs)
-std dev              28.88 μs   (24.75 μs .. 32.97 μs)
-variance introduced by outliers: 74% (severely inflated)
+time                 319.0 μs   (303.8 μs .. 334.5 μs)
+                     0.985 R²   (0.979 R² .. 0.991 R²)
+mean                 337.7 μs   (329.6 μs .. 343.8 μs)
+std dev              23.33 μs   (17.11 μs .. 30.25 μs)
+variance introduced by outliers: 63% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 03b
 benchmarking...
-time                 1.589 ms   (1.472 ms .. 1.692 ms)
-                     0.971 R²   (0.955 R² .. 0.986 R²)
-mean                 1.572 ms   (1.521 ms .. 1.612 ms)
-std dev              153.5 μs   (124.2 μs .. 197.6 μs)
+time                 1.540 ms   (1.452 ms .. 1.628 ms)
+                     0.982 R²   (0.973 R² .. 0.992 R²)
+mean                 1.599 ms   (1.551 ms .. 1.643 ms)
+std dev              155.1 μs   (116.6 μs .. 195.2 μs)
 variance introduced by outliers: 70% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
@@ -654,20 +654,20 @@ that file instead!
 &lt;h3 id=&quot;day-2-benchmarks&quot;&gt;Day 2 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 02a
 benchmarking...
-time                 67.91 μs   (67.76 μs .. 68.04 μs)
+time                 68.36 μs   (68.31 μs .. 68.39 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 68.07 μs   (68.04 μs .. 68.14 μs)
-std dev              138.2 ns   (75.99 ns .. 232.7 ns)
+mean                 68.43 μs   (68.40 μs .. 68.45 μs)
+std dev              93.46 ns   (76.39 ns .. 120.0 ns)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 02b
 benchmarking...
-time                 82.17 μs   (80.65 μs .. 83.32 μs)
-                     0.997 R²   (0.992 R² .. 0.999 R²)
-mean                 81.85 μs   (80.70 μs .. 83.46 μs)
-std dev              5.091 μs   (2.562 μs .. 8.513 μs)
-variance introduced by outliers: 64% (severely inflated)
+time                 79.58 μs   (77.84 μs .. 81.25 μs)
+                     0.998 R²   (0.996 R² .. 0.999 R²)
+mean                 80.76 μs   (79.83 μs .. 82.03 μs)
+std dev              3.570 μs   (2.862 μs .. 5.070 μs)
+variance introduced by outliers: 46% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
@@ -752,21 +752,21 @@ that file instead!
 &lt;h3 id=&quot;day-1-benchmarks&quot;&gt;Day 1 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 01a
 benchmarking...
-time                 7.177 μs   (6.720 μs .. 7.594 μs)
-                     0.976 R²   (0.963 R² .. 0.990 R²)
-mean                 7.740 μs   (7.492 μs .. 7.876 μs)
-std dev              729.0 ns   (502.0 ns .. 944.4 ns)
-variance introduced by outliers: 85% (severely inflated)
+time                 7.149 μs   (6.779 μs .. 7.486 μs)
+                     0.978 R²   (0.971 R² .. 0.987 R²)
+mean                 7.196 μs   (6.812 μs .. 7.467 μs)
+std dev              1.024 μs   (877.4 ns .. 1.230 μs)
+variance introduced by outliers: 93% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 01b
 benchmarking...
-time                 56.23 μs   (52.94 μs .. 59.21 μs)
-                     0.975 R²   (0.969 R² .. 0.982 R²)
-mean                 59.67 μs   (57.03 μs .. 61.53 μs)
-std dev              7.328 μs   (6.564 μs .. 8.193 μs)
-variance introduced by outliers: 88% (severely inflated)
+time                 60.32 μs   (56.08 μs .. 65.27 μs)
+                     0.977 R²   (0.962 R² .. 0.993 R²)
+mean                 61.98 μs   (60.08 μs .. 64.45 μs)
+std dev              6.926 μs   (5.163 μs .. 10.18 μs)
+variance introduced by outliers: 86% (severely inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>
