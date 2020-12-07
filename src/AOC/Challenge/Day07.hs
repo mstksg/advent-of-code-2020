@@ -27,6 +27,9 @@ import qualified Data.Set            as S
 type Bag = (String, String)
 type Graph v e = Map v (Map v e)
 
+target :: Bag
+target = ("shiny", "gold")
+
 bagParser :: TokParser String (Bag, Map Bag Int)
 bagParser = do
     nm <- bagName
@@ -48,8 +51,8 @@ flipGraph mp = M.fromListWith M.union
     ]
 
 -- | Recursively fold up a monoid value for each vertex and all of its
--- children.  You can transform the value in-transit before it
--- is accumulated if you want.
+-- children's monoid values.  You can transform the value in-transit before
+-- it is accumulated if you want.
 foldMapGraph
     :: (Ord v, Monoid m)
     => (v -> m)         -- ^ embed the vertex
@@ -61,29 +64,26 @@ foldMapGraph f g gr = res
     res = M.foldMapWithKey (\s v -> f s <> foldMap (g v) (M.lookup s res))
        <$> gr
 
-gatherGold1 :: Ord v => Graph v e -> Map v (Set v)
-gatherGold1 = foldMapGraph
+allDescendants :: Ord v => Graph v e -> Map v (Set v)
+allDescendants = foldMapGraph
     S.singleton     -- the node is embedded as itself
     (\_ -> id)      -- ignore the edge
 
-gatherGold2 :: Ord v => Graph v Int -> Map v (Sum Int)
-gatherGold2 = foldMapGraph
-    (const mempty)              -- ignore the nodes
-    (\n x -> Sum n * (x + 1))   -- the edge multiplies the accumulator
+usageCounts :: Ord v => Graph v Int -> Map v (Sum Int)
+usageCounts = foldMapGraph
+    (const 0)                   -- ignore the nodes
+    (\n x -> Sum n * (x + 1))   -- the edge multiplies the accumulator plus one
 
 day07a :: Graph Bag Int :~> Int
 day07a = MkSol
     { sParse = fmap M.fromList . traverse (parseWords bagParser) . lines
     , sShow  = show
-    , sSolve = M.lookup ("shiny","gold")
-             . fmap S.size
-             . gatherGold1
-             . flipGraph
+    , sSolve = M.lookup target . fmap S.size . allDescendants . flipGraph
     }
 
 day07b :: Map Bag (Map Bag Int) :~> Int
 day07b = MkSol
     { sParse = fmap M.fromList . traverse (parseWords bagParser) . lines
     , sShow  = show
-    , sSolve = M.lookup ("shiny","gold") . fmap getSum . gatherGold2
+    , sSolve = M.lookup target . fmap getSum . usageCounts
     }

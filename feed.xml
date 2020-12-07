@@ -7,11 +7,109 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Sun,  6 Dec 2020 01:33:09 EST</lastBuildDate>
+    <lastBuildDate>Mon,  7 Dec 2020 02:30:31 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Sun,  6 Dec 2020 01:33:09 EST</pubDate>
+    <pubDate>Mon,  7 Dec 2020 02:30:31 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 7</title>
+      <description>&lt;h2 id=&quot;day-7&quot;&gt;Day 7&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day07.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/7&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day07.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day07.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Another AoC staple, the recursive knot tying on a graph!&lt;/p&gt;
+&lt;p&gt;Here we can represent a graph as a map of vertices to other vertices, with an edge value:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v e)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Exercise is left to the reader to parse our dataset into a &lt;code&gt;Graph String Int&lt;/code&gt;, a graph of bags to bags with &lt;code&gt;Int&lt;/code&gt; edges.&lt;/p&gt;
+&lt;p&gt;Because our map has no cycles, we can take advantage of recursive knot tying to “fold up” all children and sub-children.&lt;/p&gt;
+&lt;p&gt;For example, part 1 can be written as:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;allDescendants ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; v)&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;allDescendants gr &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; descendantMap&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    descendantMap &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; gr &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;amp;&amp;gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      M.foldMapWithKey (\v _ &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; S.insert v (M.findWithDefault S.empty v descendantMap))&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-7&quot;&gt;&lt;a href=&quot;#cb2-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- note: (&amp;lt;&amp;amp;&amp;gt;) is flip fmap&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here we “assume” we already have a fully-featured &lt;code&gt;Map v (Set v)&lt;/code&gt; map of vertices to all their descendants, and then build &lt;code&gt;descendantMap&lt;/code&gt; in terms of it. For every vertex &lt;code&gt;v&lt;/code&gt; in the &lt;code&gt;Map v e&lt;/code&gt; directly underneath a given vertex, &lt;code&gt;v&lt;/code&gt; is a descendant, and also all of &lt;code&gt;v&lt;/code&gt;’s descendants (which we find by looking things up in &lt;code&gt;descendantMap&lt;/code&gt;, the map of all descendants).&lt;/p&gt;
+&lt;p&gt;Oh, um…oops, this found all the descendants, but we want all of the ancestors. So we have to flip the graph if we want to use this.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;flipGraph ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;flipGraph mp &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; M.fromListWith M.union&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ (m, M.singleton n e)&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; (n, ms) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; M.toList mp&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , (m, e ) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; M.toList ms&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;allAncestors ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; v)&lt;/span&gt;
+&lt;span id=&quot;cb3-9&quot;&gt;&lt;a href=&quot;#cb3-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;allAncestors &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; allDescendants &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; flipGraph&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And so that leaves Part 1 as:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; M.lookup &lt;span class=&quot;st&quot;&gt;&amp;quot;shiny gold&amp;quot;&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; allAncestors&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Part 2 we can do a similar way, by “assuming” we have a map of all vertices to their “usage count”, and looking things up to build it:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;usageCounts ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;usageCounts gr &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; usageMap&lt;/span&gt;
+&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    usageMap &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; gr &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;amp;&amp;gt;&lt;/span&gt; \neighbors &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-5&quot;&gt;&lt;a href=&quot;#cb5-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      [ n &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; (M.findWithDefault &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; v usageMap &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; (v, n) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; M.toList neighbors&lt;/span&gt;
+&lt;span id=&quot;cb5-7&quot;&gt;&lt;a href=&quot;#cb5-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So to find the total usage of each bag, we look under each &lt;code&gt;(v, Int)&lt;/code&gt; pair in the &lt;code&gt;Map v Int&lt;/code&gt; underneath a given vertex, look up the usage of that &lt;code&gt;v&lt;/code&gt; (by looking it up in &lt;code&gt;usageMap&lt;/code&gt;), add 1 (because the bag itself is used), and multiply by &lt;code&gt;n&lt;/code&gt;, the number of times the full contents of the bag is used.&lt;/p&gt;
+&lt;p&gt;And so Part 2 is:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb6&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb6-1&quot;&gt;&lt;a href=&quot;#cb6-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; M.lookup &lt;span class=&quot;st&quot;&gt;&amp;quot;shiny gold&amp;quot;&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; usageCounts&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If we stare at the two implementations, we note that both are pretty much the same overall structure: we are accumulating some sort of fold over all descendants of a given node. If we “outsource” this accumulation as a monoidal one (for part 1, it’s &lt;code&gt;Set&lt;/code&gt; union, and for part 2, it’s &lt;code&gt;Sum Int&lt;/code&gt; addition), we can needlessly hyper-generalize this to fold over any &lt;code&gt;Monoid&lt;/code&gt; instance.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb7&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb7-1&quot;&gt;&lt;a href=&quot;#cb7-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | Recursively fold up a monoid value for each vertex and all of its&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-2&quot;&gt;&lt;a href=&quot;#cb7-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- children&amp;#39;s monoid values.  You can transform the value in-transit before it&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-3&quot;&gt;&lt;a href=&quot;#cb7-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- is accumulated if you want.&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-4&quot;&gt;&lt;a href=&quot;#cb7-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;foldMapGraph&lt;/span&gt;
+&lt;span id=&quot;cb7-5&quot;&gt;&lt;a href=&quot;#cb7-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v, &lt;span class=&quot;dt&quot;&gt;Monoid&lt;/span&gt; m)&lt;/span&gt;
+&lt;span id=&quot;cb7-6&quot;&gt;&lt;a href=&quot;#cb7-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; (v &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; m)         &lt;span class=&quot;co&quot;&gt;-- ^ embed the vertex&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-7&quot;&gt;&lt;a href=&quot;#cb7-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; m &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; m)    &lt;span class=&quot;co&quot;&gt;-- ^ transform with edge before it is accumulated&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-8&quot;&gt;&lt;a href=&quot;#cb7-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e&lt;/span&gt;
+&lt;span id=&quot;cb7-9&quot;&gt;&lt;a href=&quot;#cb7-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v m&lt;/span&gt;
+&lt;span id=&quot;cb7-10&quot;&gt;&lt;a href=&quot;#cb7-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;foldMapGraph f g gr &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; res&lt;/span&gt;
+&lt;span id=&quot;cb7-11&quot;&gt;&lt;a href=&quot;#cb7-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-12&quot;&gt;&lt;a href=&quot;#cb7-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    res &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; gr &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;amp;&amp;gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-13&quot;&gt;&lt;a href=&quot;#cb7-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      M.foldMapWithKey (\s v &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; f s &lt;span class=&quot;op&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;foldMap&lt;/span&gt; (g v) (M.lookup s res))&lt;/span&gt;
+&lt;span id=&quot;cb7-14&quot;&gt;&lt;a href=&quot;#cb7-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt; &lt;/span&gt;
+&lt;span id=&quot;cb7-15&quot;&gt;&lt;a href=&quot;#cb7-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;allDescendants ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v e &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; v)&lt;/span&gt;
+&lt;span id=&quot;cb7-16&quot;&gt;&lt;a href=&quot;#cb7-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;allDescendants &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldMapGraph&lt;/span&gt;
+&lt;span id=&quot;cb7-17&quot;&gt;&lt;a href=&quot;#cb7-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    S.singleton     &lt;span class=&quot;co&quot;&gt;-- the node is embedded as itself&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-18&quot;&gt;&lt;a href=&quot;#cb7-18&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (\_ &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;id&lt;/span&gt;)      &lt;span class=&quot;co&quot;&gt;-- ignore the edge&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-19&quot;&gt;&lt;a href=&quot;#cb7-19&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-20&quot;&gt;&lt;a href=&quot;#cb7-20&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;usageCounts ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; v &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Graph&lt;/span&gt; v &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; v (&lt;span class=&quot;dt&quot;&gt;Sum&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb7-21&quot;&gt;&lt;a href=&quot;#cb7-21&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;usageCounts &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; foldMapGraph&lt;/span&gt;
+&lt;span id=&quot;cb7-22&quot;&gt;&lt;a href=&quot;#cb7-22&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (&lt;span class=&quot;fu&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;)                   &lt;span class=&quot;co&quot;&gt;-- ignore the nodes&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb7-23&quot;&gt;&lt;a href=&quot;#cb7-23&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (\n x &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Sum&lt;/span&gt; n &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; (x &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;))   &lt;span class=&quot;co&quot;&gt;-- the edge multiplies the accumulator plus one&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;That’s the curse of Haskell, I guess? If you write these things you can’t help but notice the common patterns, and you somehow wind up trying to figure out the higher-order function that can abstract over them, even though you know you don’t need to :)&lt;/p&gt;
+&lt;h3 id=&quot;day-7-benchmarks&quot;&gt;Day 7 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 07a
+benchmarking...
+time                 2.122 ms   (2.080 ms .. 2.185 ms)
+                     0.989 R²   (0.970 R² .. 0.999 R²)
+mean                 2.118 ms   (2.094 ms .. 2.214 ms)
+std dev              155.5 μs   (67.10 μs .. 304.9 μs)
+variance introduced by outliers: 54% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 07b
+benchmarking...
+time                 19.19 μs   (18.80 μs .. 19.64 μs)
+                     0.993 R²   (0.988 R² .. 0.997 R²)
+mean                 18.89 μs   (18.50 μs .. 19.46 μs)
+std dev              1.764 μs   (1.471 μs .. 2.344 μs)
+variance introduced by outliers: 83% (severely inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-7</link>
+      <pubDate>Mon,  7 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 6</title>
       <description>&lt;h2 id=&quot;day-6&quot;&gt;Day 6&lt;/h2&gt;
