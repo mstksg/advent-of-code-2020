@@ -12,24 +12,17 @@ module AOC.Challenge.Day08 (
   , day08b
   ) where
 
-import           AOC.Common                 (iterateMaybe, perturbationsBy, firstRepeatedBy, CharParser, parseLines)
+import           AOC.Common                 (perturbationsBy, CharParser, parseLines)
 import           AOC.Solver                 ((:~>)(..))
-import           Control.Applicative        (empty)
 import           Control.DeepSeq            (NFData)
-import           Control.Lens               ((+~), each, _1, Ixed(..), Index, IxValue, (^?))
-import           Data.Conduino
-import           Data.Foldable
-import           Data.Function              ((&))
-import           Data.Functor               ((<&>))
-import           Data.Generics.Labels       ()
+import           Control.Lens               (_1, Ixed(..), Index, IxValue, (^?))
+import           Data.IntSet                (IntSet)
 import           Data.Maybe                 (listToMaybe)
 import           Data.Vector                (Vector)
 import           GHC.Generics               (Generic)
-import           Safe                       (lastMay)
-import qualified Data.Conduino.Combinators  as C
 import qualified Data.Functor.Foldable      as R
 import qualified Data.Functor.Foldable.TH   as R
-import qualified Data.Set                   as S
+import qualified Data.IntSet                as IS
 import qualified Data.Vector                as V
 import qualified Text.Megaparsec            as P
 import qualified Text.Megaparsec.Char       as P
@@ -77,32 +70,45 @@ commandParser = (,) <$> (instrParser <* P.space) <*> intParser
 --                    & #csAcc +~ i
 --     (JMP, i) -> cs & #csPtr +~ i
 
-data EndState = Halt | Loop
+data EndType = Halt | Loop
   deriving (Generic, Eq, Ord, Show)
-instance NFData EndState
+instance NFData EndType
 
-vm  :: (Ixed t, Index t ~ Int, IxValue t ~ (Instr, Int))
+data AccStream = EndAcc EndType | Step AccStream | Acc Int AccStream
+R.makeBaseFunctor ''AccStream
+
+-- | Unfold an 'AccStream' over a program bank (@t@), given a seen-items
+-- list and the current instruction pointer.
+vmStreamCoalg
+    :: (Ixed t, Index t ~ Int, IxValue t ~ (Instr, Int))
     => t
-    -> Pipe i Int u m EndState
-vm cmds = go S.empty 0
+    -> (IntSet, Int)
+    -> AccStreamF (IntSet, Int)
+vmStreamCoalg cmds (!seen, !i)
+    | i `IS.member` seen = EndAccF Loop
+    | otherwise          = case cmds ^? ix i of
+        Nothing  -> EndAccF Halt
+        Just cmd -> case cmd of
+          (NOP, _) -> StepF  (seen', i+1)
+          (ACC, n) -> AccF n (seen', i+1)
+          (JMP, n) -> StepF  (seen', i+n)
   where
-    go !seen !i
-      | i `S.member` seen = pure Loop
-      | otherwise         = case cmds ^? ix i of
-          Nothing  -> pure Halt
-          Just cmd -> case cmd of
-            (NOP, _) -> go seen' (i + 1)
-            (ACC, n) -> yield n *> go seen' (i + 1)
-            (JMP, n) -> go seen' (i + n)
-      where
-        seen' = i `S.insert` seen
+    seen' = i `IS.insert` seen
+
+-- | Collapse an 'AccStream' to get the sum and the end state.
+sumStreamAlg
+    :: AccStreamF (EndType, Int)
+    -> (EndType, Int)
+sumStreamAlg = \case
+    EndAccF es      -> (es, 0)
+    StepF a         -> a
+    AccF n (es, !x) -> (es, x + n)
 
 exhaustVM
     :: (Ixed t, Index t ~ Int, IxValue t ~ (Instr, Int))
     => t
-    -> (EndState, Int)
-exhaustVM cmds = runPipePure $ vm cmds 
-             &| C.foldl (+) 0
+    -> (EndType, Int)
+exhaustVM cmds = R.hylo sumStreamAlg (vmStreamCoalg cmds) (IS.empty, 0)
 
 day08a :: Vector Command :~> Int
 day08a = MkSol
@@ -117,7 +123,7 @@ day08b = MkSol
     , sShow  = show
     , sSolve = \cmds0 -> listToMaybe [
           i
-        | cmds <- perturbationsBy (each . _1) perturbs cmds0
+        | cmds <- perturbationsBy (traverse . _1) perturbs cmds0
         , let (es, i) = exhaustVM cmds
         , es == Halt
         ]

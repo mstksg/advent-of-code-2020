@@ -41,6 +41,7 @@ default-extensions:
 - FunctionalDependencies
 - GADTs
 - GeneralizedNewtypeDeriving
+- TypeFamilyDependencies
 - ImplicitParams
 - KindSignatures
 - LambdaCase
