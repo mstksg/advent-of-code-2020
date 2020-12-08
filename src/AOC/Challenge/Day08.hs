@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day08
 -- License     : BSD3
@@ -9,52 +6,84 @@
 -- Portability : non-portable
 --
 -- Day 8.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day08 (
-    -- day08a
-  -- , day08b
+    day08a
+  , day08b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common      (iterateMaybe, perturbations)
+import           AOC.Solver      ((:~>)(..))
+import           Control.DeepSeq (NFData)
+import           Data.Functor    ((<&>))
+import           Data.IntMap     (IntMap)
+import           Data.Maybe      (listToMaybe)
+import           GHC.Generics    (Generic)
+import           Text.Read       (readMaybe)
+import qualified Data.IntMap     as IM
+import qualified Data.Set        as S
 
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+data Command = NOP Int | ACC Int | JMP Int
+  deriving (Generic, Show)
 
-day08a :: _ :~> _
+instance NFData Command
+
+parseCommand :: String -> Maybe Command
+parseCommand str = case words str of
+    "nop":n:_ -> NOP <$> readn n
+    "jmp":n:_ -> JMP <$> readn n
+    "acc":n:_ -> ACC <$> readn n
+    _         -> Nothing
+  where
+    readn ('-':ns) = negate <$> readMaybe ns
+    readn ('+':ns) = readMaybe ns
+    readn _        = Nothing
+
+data CState = CS { csPt :: Int, csAcc :: Int }
+  deriving (Generic, Show)
+
+instance NFData CState
+
+runCommand :: IntMap Command -> CState -> Maybe CState
+runCommand cmds cs = IM.lookup (csPt cs) cmds <&> \case
+    NOP _ -> cs { csPt = csPt cs + 1 }
+    ACC i -> cs { csPt = csPt cs + 1, csAcc = csAcc cs + i }
+    JMP i -> cs { csPt = csPt cs + i }
+
+zipInts :: [a] -> IntMap a
+zipInts = IM.fromList . zip [0..]
+
+day08a :: [Command] :~> Int
 day08a = MkSol
-    { sParse = Just
+    { sParse = traverse parseCommand . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \cmds ->
+        let states = iterateMaybe (runCommand (zipInts cmds)) (CS 0 0)
+        in  csAcc <$> firstRepeatedBy csPt states
     }
 
-day08b :: _ :~> _
+firstRepeatedBy :: Ord a => (b -> a) -> [b] -> Maybe b
+firstRepeatedBy f = go S.empty
+  where
+    go seen (x:xs)
+      | f x `S.member` seen = Just x
+      | otherwise         = go (f x `S.insert` seen) xs
+    go _ []     = Nothing
+
+day08b :: [Command] :~> Int
 day08b = MkSol
-    { sParse = Just
+    { sParse = traverse parseCommand . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \cmds0 -> listToMaybe
+        [ res
+        | cmds <- perturbations (\case NOP i -> [NOP i, JMP i]
+                                       ACC i -> [ACC i]
+                                       JMP i -> [JMP i, NOP i]
+                                ) cmds0
+        , let states = iterateMaybe (runCommand (zipInts cmds)) (CS 0 0)
+        , res <- case firstRepeatedBy csPt states of
+            Nothing -> [csAcc $ last states]
+            Just _  -> []
+        ]
     }
+

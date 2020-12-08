@@ -27,6 +27,7 @@ Table of Contents
 * [Day 5](#day-5)
 * [Day 6](#day-6)
 * [Day 7](#day-7)
+* [Day 8](#day-8) *(no reflection yet)*
 
 Day 1
 ------
@@ -1246,6 +1247,50 @@ time                 18.64 μs   (18.43 μs .. 19.00 μs)
 mean                 18.82 μs   (18.69 μs .. 19.13 μs)
 std dev              662.6 ns   (331.6 ns .. 1.140 μs)
 variance introduced by outliers: 41% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 8
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day08.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d08p]* / *[Code][d08g]* / *[Rendered][d08h]* / *[Standalone Reflection Page][d08r]*
+
+[d08p]: https://adventofcode.com/2020/day/8
+[d08g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day08.hs
+[d08h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day08.html
+[d08r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 8 Benchmarks
+
+```
+>> Day 08a
+benchmarking...
+time                 73.37 μs   (68.31 μs .. 80.16 μs)
+                     0.969 R²   (0.954 R² .. 0.990 R²)
+mean                 77.32 μs   (73.72 μs .. 86.05 μs)
+std dev              18.45 μs   (8.173 μs .. 31.83 μs)
+variance introduced by outliers: 97% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 08b
+benchmarking...
+time                 30.54 ms   (27.95 ms .. 34.72 ms)
+                     0.968 R²   (0.936 R² .. 0.995 R²)
+mean                 31.20 ms   (30.22 ms .. 32.46 ms)
+std dev              2.496 ms   (1.851 ms .. 3.767 ms)
+variance introduced by outliers: 34% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

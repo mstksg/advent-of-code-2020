@@ -19,10 +19,9 @@ import           Control.Applicative        (many)
 import           Data.Map                   (Map)
 import           Data.Semigroup             (Sum(..))
 import           Data.Set                   (Set)
-import           Text.Megaparsec            (anySingle, try)
+import           Text.Megaparsec            (try)
 import           Text.Megaparsec.Char       (space)
 import           Text.Megaparsec.Char.Lexer (decimal)
-import           Text.Read                  (readMaybe)
 import qualified Data.Map                   as M
 import qualified Data.Set                   as S
 
