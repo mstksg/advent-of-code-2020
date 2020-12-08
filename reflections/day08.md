@@ -178,11 +178,11 @@ Every item in the list returned by `holesOf` corresponds to a different hole,
 so for example:
 
 ```haskell
-ghci> map (peeks negate) (holesOf traverse [1,2,3]
-[ [-1, 2, 3]
-, [ 1,-2, 3]
-, [ 1, 2,-3]
-]
+ghci> map (peeks negate) (holesOf traverse [1,2,3])
+  [ [-1, 2, 3]
+  , [ 1,-2, 3]
+  , [ 1, 2,-3]
+  ]
 ```
 
 The `traverse :: Traversal' [a] a` is a `Traversal` that specifies the "holes"
@@ -224,11 +224,11 @@ selection:
 ```haskell
 ghci> map (peeks flipInstr)
         (holesOf (traverse . _1) [(NOP,1),(ACC,2),(JMP,3),(JMP,4)])
-[ [(JMP,1),(ACC,2),(JMP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(JMP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(NOP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(JMP,3),(NOP,4)]
-]
+  [ [(JMP,1),(ACC,2),(JMP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(JMP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(NOP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(JMP,3),(NOP,4)]
+  ]
 ```
 
 Neat!

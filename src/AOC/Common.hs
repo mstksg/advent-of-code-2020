@@ -88,6 +88,7 @@ module AOC.Common (
   , CharParser
   , pWord
   , pHWord
+  , pDecimal
   , parseLines
   -- * Graph
   , Graph
@@ -179,6 +180,7 @@ import qualified Data.Set.NonEmpty                  as NES
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
 import qualified Text.Megaparsec.Char               as P
+import qualified Text.Megaparsec.Char.Lexer         as PL
 
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a
@@ -860,6 +862,9 @@ pWord = P.many (P.satisfy (not . isSpace)) <* P.space
 
 pHWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
 pHWord = P.many (P.satisfy (not . isSpace)) <* P.many (P.satisfy (== ' '))
+
+pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s Int
+pDecimal = PL.signed P.space PL.decimal
 
 parseMaybeLenient :: P.Parsec e s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"

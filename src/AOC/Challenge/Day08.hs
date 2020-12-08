@@ -12,21 +12,20 @@ module AOC.Challenge.Day08 (
   , day08b
   ) where
 
-import           AOC.Common                 (perturbationsBy, CharParser, parseLines)
-import           AOC.Solver                 ((:~>)(..))
-import           Control.DeepSeq            (NFData)
-import           Control.Lens               (_1, Ixed(..), Index, IxValue, (^?))
-import           Data.IntSet                (IntSet)
-import           Data.Maybe                 (listToMaybe)
-import           Data.Vector                (Vector)
-import           GHC.Generics               (Generic)
-import qualified Data.Functor.Foldable      as R
-import qualified Data.Functor.Foldable.TH   as R
-import qualified Data.IntSet                as IS
-import qualified Data.Vector                as V
-import qualified Text.Megaparsec            as P
-import qualified Text.Megaparsec.Char       as P
-import qualified Text.Megaparsec.Char.Lexer as PL
+import           AOC.Common               (perturbationsBy, CharParser, parseLines, pDecimal)
+import           AOC.Solver               ((:~>)(..))
+import           Control.DeepSeq          (NFData)
+import           Control.Lens             (_1, Ixed(..), Index, IxValue, (^?))
+import           Data.IntSet              (IntSet)
+import           Data.Maybe               (listToMaybe)
+import           Data.Vector              (Vector)
+import           GHC.Generics             (Generic)
+import qualified Data.Functor.Foldable    as R
+import qualified Data.Functor.Foldable.TH as R
+import qualified Data.IntSet              as IS
+import qualified Data.Vector              as V
+import qualified Text.Megaparsec          as P
+import qualified Text.Megaparsec.Char     as P
 
 data Instr = NOP | ACC | JMP
   deriving (Generic, Eq, Ord, Show)
@@ -42,13 +41,7 @@ instrParser = P.choice
     ]
 
 commandParser :: CharParser Command
-commandParser = (,) <$> (instrParser <* P.space) <*> intParser
-  where
-    intParser = P.choice
-      [ P.char '-' *> (negate <$> PL.decimal)
-      , P.char '+' *> PL.decimal
-      , PL.decimal
-      ]
+commandParser = (,) <$> (instrParser <* P.space) <*> pDecimal
 
 -- RIP explicit state
 
