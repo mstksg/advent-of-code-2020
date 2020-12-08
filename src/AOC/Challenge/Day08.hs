@@ -91,6 +91,6 @@ day08b = MkSol
     }
   where
     perturbs = \case
-      NOP -> [NOP, JMP]
-      ACC -> [ACC]
-      JMP -> [NOP, JMP]
+      NOP -> [JMP]
+      ACC -> []
+      JMP -> [NOP]
