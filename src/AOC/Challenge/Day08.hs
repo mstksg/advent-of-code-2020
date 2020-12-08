@@ -53,7 +53,7 @@ commandParser = (,) <$> (instrParser <* P.space) <*> intParser
       , PL.decimal
       ]
 
-data CState = CS { csPtr :: Int, csAcc :: Int }
+data CState = CS { csPtr :: !Int, csAcc :: !Int }
   deriving (Generic, Show)
 instance NFData CState
 

@@ -1276,21 +1276,21 @@ that file instead!
 ```
 >> Day 08a
 benchmarking...
-time                 73.37 μs   (68.31 μs .. 80.16 μs)
-                     0.969 R²   (0.954 R² .. 0.990 R²)
-mean                 77.32 μs   (73.72 μs .. 86.05 μs)
-std dev              18.45 μs   (8.173 μs .. 31.83 μs)
-variance introduced by outliers: 97% (severely inflated)
+time                 30.13 μs   (28.40 μs .. 32.11 μs)
+                     0.986 R²   (0.980 R² .. 0.994 R²)
+mean                 31.76 μs   (31.00 μs .. 32.44 μs)
+std dev              2.459 μs   (1.668 μs .. 3.149 μs)
+variance introduced by outliers: 76% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 08b
 benchmarking...
-time                 30.54 ms   (27.95 ms .. 34.72 ms)
-                     0.968 R²   (0.936 R² .. 0.995 R²)
-mean                 31.20 ms   (30.22 ms .. 32.46 ms)
-std dev              2.496 ms   (1.851 ms .. 3.767 ms)
-variance introduced by outliers: 34% (moderately inflated)
+time                 15.74 ms   (14.92 ms .. 16.69 ms)
+                     0.986 R²   (0.977 R² .. 0.994 R²)
+mean                 16.53 ms   (16.17 ms .. 17.07 ms)
+std dev              1.195 ms   (649.1 μs .. 2.042 ms)
+variance introduced by outliers: 32% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
