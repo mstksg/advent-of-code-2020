@@ -15,15 +15,18 @@ module AOC.Challenge.Day08 (
 import           AOC.Common                 (iterateMaybe, perturbationsBy, firstRepeatedBy, CharParser, parseLines)
 import           AOC.Solver                 ((:~>)(..))
 import           Control.DeepSeq            (NFData)
+import           Control.Lens
 import           Control.Lens               ((+~), each, _1)
 import           Data.Function              ((&))
 import           Data.Functor               ((<&>))
 import           Data.Generics.Labels       ()
 import           Data.Maybe                 (listToMaybe, maybeToList)
 import           Data.Sequence              (Seq(..))
+import           Data.Vector                (Vector)
 import           GHC.Generics               (Generic)
 import           Safe                       (lastMay)
 import qualified Data.Sequence              as Seq
+import qualified Data.Vector                as V
 import qualified Text.Megaparsec            as P
 import qualified Text.Megaparsec.Char       as P
 import qualified Text.Megaparsec.Char.Lexer as PL
@@ -57,25 +60,29 @@ instance NFData CState
 initialCS :: CState
 initialCS = CS 0 0
 
-runCommand :: Seq Command -> CState -> Maybe CState
-runCommand cmds cs = Seq.lookup (csPtr cs) cmds <&> \case
+runCommand
+    :: (Ixed t, Index t ~ Int, IxValue t ~ (Instr, Int))
+    => t
+    -> CState
+    -> Maybe CState
+runCommand cmds cs = (cmds ^? ix (csPtr cs)) <&> \case
     (NOP, _) -> cs & #csPtr +~ 1
     (ACC, i) -> cs & #csPtr +~ 1
                    & #csAcc +~ i
     (JMP, i) -> cs & #csPtr +~ i
 
-day08a :: Seq Command :~> Int
+day08a :: Vector Command :~> Int
 day08a = MkSol
-    { sParse = fmap Seq.fromList . parseLines commandParser
+    { sParse = fmap V.fromList . parseLines commandParser
     , sShow  = show
     , sSolve = \cmds ->
         csAcc <$> firstRepeatedBy csPtr
             (iterateMaybe (runCommand cmds) initialCS)
     }
 
-day08b :: Seq Command :~> Int
+day08b :: Vector Command :~> Int
 day08b = MkSol
-    { sParse = fmap Seq.fromList . parseLines commandParser
+    { sParse = fmap V.fromList . parseLines commandParser
     , sShow  = show
     , sSolve = \cmds0 -> listToMaybe
         [ res
