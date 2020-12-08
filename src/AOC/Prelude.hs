@@ -69,3 +69,5 @@ import           Text.Megaparsec.Char.Lexer as P (decimal, binary, octal, hexade
 import           Text.Printf                as P
 import           Text.Read                  as P (readMaybe)
 import           Unsafe.Coerce              as P
+
+import           Data.Generics.Labels ()

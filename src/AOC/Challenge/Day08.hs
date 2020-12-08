@@ -12,78 +12,82 @@ module AOC.Challenge.Day08 (
   , day08b
   ) where
 
-import           AOC.Common      (iterateMaybe, perturbations)
-import           AOC.Solver      ((:~>)(..))
-import           Control.DeepSeq (NFData)
-import           Data.Functor    ((<&>))
-import           Data.IntMap     (IntMap)
-import           Data.Maybe      (listToMaybe)
-import           GHC.Generics    (Generic)
-import           Text.Read       (readMaybe)
-import qualified Data.IntMap     as IM
-import qualified Data.Set        as S
+import           AOC.Common                 (iterateMaybe, perturbationsBy, firstRepeatedBy, CharParser, parseLines)
+import           AOC.Solver                 ((:~>)(..))
+import           Control.DeepSeq            (NFData)
+import           Control.Lens               ((+~), each, _1)
+import           Data.Function              ((&))
+import           Data.Functor               ((<&>))
+import           Data.Generics.Labels       ()
+import           Data.Maybe                 (listToMaybe, maybeToList)
+import           Data.Sequence              (Seq(..))
+import           GHC.Generics               (Generic)
+import           Safe                       (lastMay)
+import qualified Data.Sequence              as Seq
+import qualified Text.Megaparsec            as P
+import qualified Text.Megaparsec.Char       as P
+import qualified Text.Megaparsec.Char.Lexer as PL
 
-data Command = NOP Int | ACC Int | JMP Int
-  deriving (Generic, Show)
+data Instr = NOP | ACC | JMP
+  deriving (Generic, Eq, Ord, Show)
+instance NFData Instr
 
-instance NFData Command
+type Command = (Instr, Int)
 
-parseCommand :: String -> Maybe Command
-parseCommand str = case words str of
-    "nop":n:_ -> NOP <$> readn n
-    "jmp":n:_ -> JMP <$> readn n
-    "acc":n:_ -> ACC <$> readn n
-    _         -> Nothing
+instrParser :: CharParser Instr
+instrParser = P.choice
+    [ NOP <$ P.string "nop"
+    , ACC <$ P.string "acc"
+    , JMP <$ P.string "jmp"
+    ]
+
+commandParser :: CharParser Command
+commandParser = (,) <$> (instrParser <* P.space) <*> intParser
   where
-    readn ('-':ns) = negate <$> readMaybe ns
-    readn ('+':ns) = readMaybe ns
-    readn _        = Nothing
+    intParser = P.choice
+      [ P.char '-' *> (negate <$> PL.decimal)
+      , P.char '+' *> PL.decimal
+      , PL.decimal
+      ]
 
-data CState = CS { csPt :: Int, csAcc :: Int }
+data CState = CS { csPtr :: Int, csAcc :: Int }
   deriving (Generic, Show)
-
 instance NFData CState
 
-runCommand :: IntMap Command -> CState -> Maybe CState
-runCommand cmds cs = IM.lookup (csPt cs) cmds <&> \case
-    NOP _ -> cs { csPt = csPt cs + 1 }
-    ACC i -> cs { csPt = csPt cs + 1, csAcc = csAcc cs + i }
-    JMP i -> cs { csPt = csPt cs + i }
+initialCS :: CState
+initialCS = CS 0 0
 
-zipInts :: [a] -> IntMap a
-zipInts = IM.fromList . zip [0..]
+runCommand :: Seq Command -> CState -> Maybe CState
+runCommand cmds cs = Seq.lookup (csPtr cs) cmds <&> \case
+    (NOP, _) -> cs & #csPtr +~ 1
+    (ACC, i) -> cs & #csPtr +~ 1
+                   & #csAcc +~ i
+    (JMP, i) -> cs & #csPtr +~ i
 
-day08a :: [Command] :~> Int
+day08a :: Seq Command :~> Int
 day08a = MkSol
-    { sParse = traverse parseCommand . lines
+    { sParse = fmap Seq.fromList . parseLines commandParser
     , sShow  = show
     , sSolve = \cmds ->
-        let states = iterateMaybe (runCommand (zipInts cmds)) (CS 0 0)
-        in  csAcc <$> firstRepeatedBy csPt states
+        csAcc <$> firstRepeatedBy csPtr
+            (iterateMaybe (runCommand cmds) initialCS)
     }
 
-firstRepeatedBy :: Ord a => (b -> a) -> [b] -> Maybe b
-firstRepeatedBy f = go S.empty
-  where
-    go seen (x:xs)
-      | f x `S.member` seen = Just x
-      | otherwise         = go (f x `S.insert` seen) xs
-    go _ []     = Nothing
-
-day08b :: [Command] :~> Int
+day08b :: Seq Command :~> Int
 day08b = MkSol
-    { sParse = traverse parseCommand . lines
+    { sParse = fmap Seq.fromList . parseLines commandParser
     , sShow  = show
     , sSolve = \cmds0 -> listToMaybe
         [ res
-        | cmds <- perturbations (\case NOP i -> [NOP i, JMP i]
-                                       ACC i -> [ACC i]
-                                       JMP i -> [JMP i, NOP i]
-                                ) cmds0
-        , let states = iterateMaybe (runCommand (zipInts cmds)) (CS 0 0)
-        , res <- case firstRepeatedBy csPt states of
-            Nothing -> [csAcc $ last states]
-            Just _  -> []
+        | cmds <- perturbationsBy (each . _1) perturbs cmds0
+        , let states = iterateMaybe (runCommand cmds) initialCS
+        , res <- maybeToList case firstRepeatedBy csPtr states of
+            Nothing -> csAcc <$> lastMay states
+            Just _  -> Nothing
         ]
     }
-
+  where
+    perturbs = \case
+      NOP -> [NOP, JMP]
+      ACC -> [ACC]
+      JMP -> [NOP, JMP]

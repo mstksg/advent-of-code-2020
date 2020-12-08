@@ -74,11 +74,11 @@ library:
   source-dirs: src
   dependencies:
   - advent-of-code-api >= 0.2.7
-  - recursion-schemes
   - aeson
   - ansi-terminal
   - barbies
   - bytestring
+  - comonad
   - containers
   - criterion
   - data-default-class
@@ -91,6 +91,7 @@ library:
   - finitary
   - finite-typelits
   - foldl
+  - generic-lens
   - groups
   - hashable
   - haskeline
@@ -110,7 +111,9 @@ library:
   - pointedlist
   - profunctors
   - psqueues
+  - recursion-schemes
   - refined
+  - safe
   - semigroupoids
   - split
   - strict-tuple

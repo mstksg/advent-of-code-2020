@@ -29,6 +29,7 @@ module AOC.Common (
   , scanlT
   , scanrT
   , firstRepeated
+  , firstRepeatedBy
   , fixedPoint
   , floodFill
   , floodFillCount
@@ -39,6 +40,7 @@ module AOC.Common (
   , freqList
   , revFreq
   , perturbations
+  , perturbationsBy
   , select
   , clearOut
   , foldMapPar
@@ -147,6 +149,7 @@ import           Data.Semigroup.Foldable
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.Lens
+import           Control.Comonad.Store
 import           Data.Set.NonEmpty                  (NESet)
 import           Data.Tree                          (Tree(..))
 import           Data.Tuple
@@ -162,7 +165,7 @@ import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
 import qualified Data.Finitary                      as F
 import qualified Data.Functor.Foldable              as R
-import qualified Data.Functor.Foldable.TH           as R
+-- import qualified Data.Functor.Foldable.TH           as R
 import qualified Data.Graph.Inductive               as G
 import qualified Data.IntMap                        as IM
 import qualified Data.List.NonEmpty                 as NE
@@ -249,12 +252,17 @@ scanrT f z = snd . mapAccumR (\x -> dup . flip f x) z
 
 -- | Lazily find the first repeated item.
 firstRepeated :: Ord a => [a] -> Maybe a
-firstRepeated = go S.empty
+firstRepeated = firstRepeatedBy id
+
+-- | Lazily find the first repeated projection.
+firstRepeatedBy :: Ord a => (b -> a) -> [b] -> Maybe b
+firstRepeatedBy f = go S.empty
   where
     go seen (x:xs)
-      | x `S.member` seen = Just x
-      | otherwise         = go (x `S.insert` seen) xs
+      | f x `S.member` seen = Just x
+      | otherwise           = go (f x `S.insert` seen) xs
     go _ []     = Nothing
+
 
 -- | Repeat a function until you get the same result twice.
 fixedPoint :: Eq a => (a -> a) -> a -> a
@@ -366,12 +374,30 @@ caeser i = over (_CharFinite . _2) (+ i)
 --         , [ 0,10,101]
 --         ]
 perturbations
-    :: (a -> [a])
-    -> [a]
-    -> [[a]]
-perturbations f xs = do
-    i <- [0 .. length xs - 1]
-    xs & ix i %%~ f
+    :: Each s t a a
+    => (a -> [a])
+    -> s
+    -> [t]
+perturbations = perturbationsBy each
+
+-- | Collect all possible single-item perturbations from a given
+-- perturbing function.
+--
+-- > perturbations (\i -> [i - 1, i + 1]) [0,10,100]
+--      == [ [-1,10,100]
+--         , [ 1,10,100]
+--         , [ 0, 9,100]
+--         , [ 0,11,100]
+--         , [ 0,10, 99]
+--         , [ 0,10,101]
+--         ]
+perturbationsBy
+    :: Conjoined p
+    => Over p (Bazaar p a a) s t a a
+    -> (a -> [a])
+    -> s
+    -> [t]
+perturbationsBy p f = experiment f <=< holesOf p
 
 -- | Clear out characters not matching a predicate
 clearOut :: (Char -> Bool) -> String -> String
