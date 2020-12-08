@@ -74,6 +74,7 @@ library:
   source-dirs: src
   dependencies:
   - advent-of-code-api >= 0.2.7
+  - recursion-schemes
   - aeson
   - ansi-terminal
   - barbies
@@ -84,6 +85,7 @@ library:
   - data-memocombinators
   - deepseq
   - directory
+  - fgl
   - filepath
   - fin
   - finitary
@@ -111,6 +113,7 @@ library:
   - refined
   - semigroupoids
   - split
+  - strict-tuple
   - template-haskell
   - text
   - th-abstraction

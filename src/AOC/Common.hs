@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP              #-}
 {-# LANGUAGE NoDeriveAnyClass #-}
 {-# LANGUAGE TypeFamilies     #-}
 {-# OPTIONS_GHC -Wno-orphans  #-}
@@ -86,6 +87,9 @@ module AOC.Common (
   , pWord
   , pHWord
   , parseLines
+  -- * Graph
+  , Graph
+  , toFGL
   -- * Points
   , Point
   , cardinalNeighbs
@@ -109,6 +113,9 @@ module AOC.Common (
   , parseAsciiSet
   , ScanPoint(..)
   , displayAsciiMap
+#if !MIN_VERSION_recursion_schemes(5,2,0)
+  , TreeF(..), ForestF
+#endif
   ) where
 
 import           AOC.Util
@@ -141,7 +148,9 @@ import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.Lens
 import           Data.Set.NonEmpty                  (NESet)
+import           Data.Tree                          (Tree(..))
 import           Data.Tuple
+import           Data.Tuple.Strict
 import           Data.Void
 import           Data.Word
 import           GHC.Generics                       (Generic)
@@ -152,6 +161,9 @@ import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
 import qualified Data.Finitary                      as F
+import qualified Data.Functor.Foldable              as R
+import qualified Data.Functor.Foldable.TH           as R
+import qualified Data.Graph.Inductive               as G
 import qualified Data.IntMap                        as IM
 import qualified Data.List.NonEmpty                 as NE
 import qualified Data.Map                           as M
@@ -499,6 +511,82 @@ floodFillCount f = go 0 S.empty
         outr' = foldMap f outr `S.difference` innr'
 
 
+type Graph v e = Map v (Map v e)
+
+toFGL :: (G.Graph gr, Ord v) => Graph v e -> (gr v e, Set v)
+toFGL gr = ( G.mkGraph (zip [0..] $ toList vertices)
+                ((\(v,u,e) -> (ixOf v, ixOf u, e)) <$> edges)
+           , vertices
+           )
+  where
+    edges = do
+      (v, es) <- M.toList gr
+      (u, e ) <- M.toList es
+      pure (v, u, e)
+    vertices = foldMap (\(v,u,_) -> S.fromList [v,u]) edges
+    ixOf     = (`S.findIndex` vertices)
+
+-- data ExpGraph v e = ExpGraph (Map v )
+-- data ExpGraph v e = ExpGraph e (Map v (ExpGraph v e))
+
+-- data ExpGraph v e = ExpGraph (Map v (e, ExpGraph v e))
+-- type ExpGraph v e = Map v (Map v (e, ExpGraph
+-- data ExpGraph v e = ExpGraph v (Map v (e, ExpGraph v e))
+                  -- { expGraphMap :: Map v [(v, e, ExpGraph v e)] }
+-- -- newtype ExpGraph v e = ExpGraph { expGraphMap :: Map v [(v, e, ExpGraph v e)] }
+--   deriving (Show, Eq, Ord, Functor)
+-- R.makeBaseFunctor ''ExpGraph
+
+-- -- Map v [(e, v)]
+
+-- expandGraph :: forall v e. Ord v => Graph v e -> Map v (ExpGraph v e)
+-- expandGraph gr = M.mapWithKey go gr
+  -- where
+  --   go :: v -> Map v e -> ExpGraph v e
+  --   go
+--   -- where
+  --   go :: Map v e -> ExpandGrahF v e (Map v e)
+  --   go vs = ExpandGraph
+
+-- expandGraph :: forall v e. Ord v => Graph v e -> ExpGraph v e
+-- expandGraph gr = go (M.keysSet gr)
+--   where
+--     go vs = ExpGraph $ M.fromSet (_ . flip M.lookup gr) vs
+
+
+-- expandGraph gr = R.ana go (M.keysSet gr)
+--   where
+--     go :: Set v -> ExpGraphF v e (Set v)
+--     go vs = ExpGraphF $
+--       M.mapMaybe id $ M.fromSet (fmap () . flip M.lookup gr) vs
+--       -- M.fromSet (_ . map swap . foldMap M.toList . flip M.lookup gr) vs
+--     -- M.fromSet (_ . map swap . foldMap M.toList . flip M.lookup gr) vs
+
+-- -- | Recursively fold up a monoid value for each vertex and all of its
+-- -- children's monoid values.  You can transform the value in-transit before
+-- -- it is accumulated if you want.
+-- foldMapGraph
+--     :: (Ord v, Monoid m)
+--     => (v -> m)         -- ^ embed the vertex
+--     -> (e -> m -> m)    -- ^ transform with edge before it is accumulated
+--     -> Graph v e
+--     -> Map v m
+-- foldMapGraph f g gr = res
+--   where
+--     res = M.foldMapWithKey (\s v -> f s <> foldMap (g v) (M.lookup s res))
+--        <$> gr
+
+-- data ExpandGraph v e = ExpandGraph v e (ExpandGraph v e)
+
+-- expandGraph :: Ord v => Graph v e -> Map v (v, [ExpandGraph v e])
+-- expandGraph gr = M.mapWithKey
+--   (\v es ->
+--       ( v
+--       , (\(u,e) -> ExpandGraph u e (go (gr M.! u)))
+--         <$> M.toList es
+--       )
+--   )
+--   gr
 
 -- | 2D Coordinate
 type Point = V2 Int
@@ -507,8 +595,8 @@ type Point = V2 Int
 --
 -- Returns @'V2' (V2 xMin yMin) (V2 xMax yMax)@.
 boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
-boundingBox = (\(Ap mn, Ap mx) -> V2 (getMin <$> mn) (getMax <$> mx))
-            . foldMap1 (\p -> (Ap (Min <$> p), Ap (Max <$> p)))
+boundingBox = (\(T2 (Ap mn) (Ap mx)) -> V2 (getMin <$> mn) (getMax <$> mx))
+            . foldMap1 (\p -> T2 (Ap (Min <$> p)) (Ap (Max <$> p)))
 
 -- | A version of 'boundingBox' that works for normal possibly-empty lists.
 boundingBox' :: Foldable f => f Point -> Maybe (V2 Point)
@@ -757,7 +845,7 @@ parseLines :: P.Parsec e String a -> String -> Maybe [a]
 parseLines p = traverse (parseMaybeLenient p) . lines
 
 parseWords :: P.Parsec e (TokStream String) a -> String -> Maybe a
-parseWords p = parseMaybeLenient p . TokStream . words 
+parseWords p = parseMaybeLenient p . TokStream . words
 
 type TokParser s = P.Parsec Void (TokStream s)
 
@@ -782,3 +870,17 @@ instance FoldableWithIndex k (NEMap k) where
     ifoldMap = NEM.foldMapWithKey
 instance TraversableWithIndex k (NEMap k) where
     itraverse = NEM.traverseWithKey
+
+#if !MIN_VERSION_recursion_schemes(5,2,0)
+data TreeF a b = NodeF a (ForestF a b)
+  deriving (Show, Functor, Generic)
+
+instance (NFData a, NFData b) => NFData (TreeF a b)
+type ForestF a b = [b]
+
+type instance R.Base (Tree a) = TreeF a
+instance R.Recursive (Tree a) where
+    project (Node x xs) = NodeF x xs
+instance R.Corecursive (Tree a) where
+    embed (NodeF x xs) = Node x xs
+#endif

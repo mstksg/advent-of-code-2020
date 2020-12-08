@@ -28,7 +28,7 @@ module AOC.Challenge.Day22 (
 
 import           AOC.Prelude
 
-import qualified Data.Graph                     as G
+import qualified Data.Graph.Inductive           as G
 import qualified Data.IntMap                    as IM
 import qualified Data.IntSet                    as IS
 import qualified Data.List.NonEmpty             as NE
