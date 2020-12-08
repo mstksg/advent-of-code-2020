@@ -47,6 +47,20 @@ packages:
   original:
     hackage: dependent-sum-0.7.1.0
 - completed:
+    hackage: conduino-0.2.2.0@sha256:1fe73859f8d518af7182c76248d0573bf69a6a6e12d79da85438a530f0227c9f,1621
+    pantry-tree:
+      size: 527
+      sha256: 45719113d47d7ce62da867f7d36f7518b925036867ab3a06db7b557a97c8fe43
+  original:
+    hackage: conduino-0.2.2.0
+- completed:
+    hackage: list-transformer-1.0.6@sha256:e214728decb4844b1c6ea0e3243324cfc11ad6da5629d16f06b92f00b6a5bed0,1455
+    pantry-tree:
+      size: 280
+      sha256: 7d2a46b5ade8b57a62888af490d6fb20b217e6fa92b5bf40d53c6e9fd7a3809c
+  original:
+    hackage: list-transformer-1.0.6
+- completed:
     hackage: constraints-extras-0.3.0.2@sha256:013b8d0392582c6ca068e226718a4fe8be8e22321cc0634f6115505bf377ad26,1853
     pantry-tree:
       size: 594

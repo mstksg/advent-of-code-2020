@@ -1521,6 +1521,54 @@ part2 cmds0 = listToMaybe
     ]
 ```
 
+In my actual code, I actually use the `experiment` function instead of `peeks`
+-- it's like a "peeksM", in a way:
+
+```haskell
+peeks      :: (a ->   a) -> Pretext (->) a a s ->   a
+experiment :: (a -> f a) -> Pretext (->) a a s -> f a
+```
+
+So instead of giving it a `Instr -> Instr`, you could give it an `Instr ->
+[Instr]`, and "cancel out" any branches that don't need to be addressed:
+
+```haskell
+experiment :: (a -> Maybe a) -> Pretext (->) a a s -> Maybe a   -- in our case
+
+flipInstrs :: Command -> Maybe Command
+flipInstrs = \case
+    NOP -> Just JMP
+    ACC -> Nothing  -- for ACC indices, don't do anything
+    JMP -> Just JMP
+```
+
+```haskell
+ghci> map (experiment flipInstrs)
+        (holesOf (traverse . _1) [(NOP,1),(ACC,2),(JMP,3),(JMP,4)])
+[ Just [(JMP,1),(ACC,2),(JMP,3),(JMP,4)]
+, Nothing
+, Just [(NOP,1),(ACC,2),(NOP,3),(JMP,4)]
+, Just [(NOP,1),(ACC,2),(JMP,3),(NOP,4)]
+]
+```
+
+```haskell
+part2 :: Vector Command -> Maybe CState
+part2 cmds0 = listToMaybe
+    [ res
+    | Just cmds <- experiment flipInstr <$> holesOf (traverse . _1) cmds0
+    , let states = iterateMaybe (runCommand cmds) initialCS
+    , res  <- case firstRepeatedBy csPtr stats of
+        Nothing -> [last states]    -- loop found
+        Just _  -> []               -- no loop found
+    ]
+```
+
+Not a super huge improvement, but maybe more theoretically nice because we can
+skip over the possible trials where we are permuting an `ACC`.  By my
+reckoning, 52% of my input file instructions were ACC instructions, so this
+small thing actually shaves off a decent amount of time.
+
 
 ### Day 8 Benchmarks
 

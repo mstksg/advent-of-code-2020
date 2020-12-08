@@ -79,6 +79,7 @@ library:
   - barbies
   - bytestring
   - comonad
+  - conduino
   - containers
   - criterion
   - data-default-class

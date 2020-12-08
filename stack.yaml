@@ -44,6 +44,8 @@ extra-deps:
 - finitary-2.0.0.0
 - typelits-witnesses-0.4.0.0
 - dependent-sum-0.7.1.0
+- conduino-0.2.2.0
+- list-transformer-1.0.6
 - constraints-extras-0.3.0.2
 - refined-0.6.1
 - barbies-2.0.2.0
