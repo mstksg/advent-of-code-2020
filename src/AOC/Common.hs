@@ -374,11 +374,11 @@ caeser i = over (_CharFinite . _2) (+ i)
 --         , [ 0,10,101]
 --         ]
 perturbations
-    :: Each s t a a
+    :: Traversable f
     => (a -> [a])
-    -> s
-    -> [t]
-perturbations = perturbationsBy each
+    -> f a
+    -> [f a]
+perturbations = perturbationsBy traverse
 
 -- | Collect all possible single-item perturbations from a given
 -- perturbing function.

@@ -14,18 +14,16 @@ module AOC.Challenge.Day08 (
 
 import           AOC.Common                 (iterateMaybe, perturbationsBy, firstRepeatedBy, CharParser, parseLines)
 import           AOC.Solver                 ((:~>)(..))
+import           Control.Applicative        (empty)
 import           Control.DeepSeq            (NFData)
-import           Control.Lens
-import           Control.Lens               ((+~), each, _1)
+import           Control.Lens               ((+~), each, _1, Ixed(..), Index, IxValue, (^?))
 import           Data.Function              ((&))
 import           Data.Functor               ((<&>))
 import           Data.Generics.Labels       ()
-import           Data.Maybe                 (listToMaybe, maybeToList)
-import           Data.Sequence              (Seq(..))
+import           Data.Maybe                 (listToMaybe)
 import           Data.Vector                (Vector)
 import           GHC.Generics               (Generic)
 import           Safe                       (lastMay)
-import qualified Data.Sequence              as Seq
 import qualified Data.Vector                as V
 import qualified Text.Megaparsec            as P
 import qualified Text.Megaparsec.Char       as P
@@ -84,14 +82,12 @@ day08b :: Vector Command :~> Int
 day08b = MkSol
     { sParse = fmap V.fromList . parseLines commandParser
     , sShow  = show
-    , sSolve = \cmds0 -> listToMaybe
-        [ res
-        | cmds <- perturbationsBy (each . _1) perturbs cmds0
-        , let states = iterateMaybe (runCommand cmds) initialCS
-        , res <- maybeToList case firstRepeatedBy csPtr states of
-            Nothing -> csAcc <$> lastMay states
-            Just _  -> Nothing
-        ]
+    , sSolve = \cmds0 -> listToMaybe $ do
+        cmds <- perturbationsBy (each . _1) perturbs cmds0
+        let states = iterateMaybe (runCommand cmds) initialCS
+        case firstRepeatedBy csPtr states of
+          Nothing -> maybe empty (pure . csAcc) $ lastMay states
+          Just _  -> empty
     }
   where
     perturbs = \case
