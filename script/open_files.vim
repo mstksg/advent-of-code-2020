@@ -22,15 +22,17 @@ let s:year = 2020
 function! OpenAoC(day)
     let l:daystr  = printf("%02d",a:day)
     let l:yearstr = printf("%04d",s:year)
-    let l:files = [ "prompt/" . l:daystr . "a.md",
+    let l:files = ["src/AOC/Challenge/Day" . l:daystr . ".hs",
+                  \"data/" . l:daystr . ".txt",
+                  \"prompt/" . l:daystr . "a.md",
                   \"prompt/" . l:daystr . "b.md",
                   \"test-data/" . l:yearstr . "/" . l:daystr . "a.txt",
                   \"test-data/" . l:yearstr . "/" . l:daystr . "b.txt",
-                  \"data/" . l:daystr . ".txt",
-                  \"src/AOC/Challenge/Day" . l:daystr . ".hs"
+                  \"reflections/day" . l:daystr . ".md",
+                  \"bench-out/day" . l:daystr . ".txt"
                   \]
 
-    for fn in l:files
+    for fn in reverse(l:files)
         execute "e " . fnameescape(fn)
     endfor
 endfunction

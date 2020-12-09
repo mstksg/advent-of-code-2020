@@ -30,6 +30,7 @@ default-extensions:
 - BangPatterns
 - BlockArguments
 - DataKinds
+- DeriveAnyClass
 - DeriveFoldable
 - DeriveFunctor
 - DeriveGeneric
@@ -41,7 +42,6 @@ default-extensions:
 - FunctionalDependencies
 - GADTs
 - GeneralizedNewtypeDeriving
-- TypeFamilyDependencies
 - ImplicitParams
 - KindSignatures
 - LambdaCase
@@ -62,6 +62,7 @@ default-extensions:
 - TemplateHaskell
 - TupleSections
 - TypeApplications
+- TypeFamilyDependencies
 - TypeInType
 - TypeOperators
 - UndecidableInstances

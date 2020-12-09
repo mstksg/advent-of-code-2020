@@ -50,6 +50,7 @@ import           Data.Map.NonEmpty          as P (NEMap)
 import           Data.Maybe                 as P
 import           Data.Ord                   as P
 import           Data.Semigroup             as P
+import           Data.Sequence              as P (Seq)
 import           Data.Set                   as P (Set)
 import           Data.Set.NonEmpty          as P (NESet)
 import           Data.Text                  as P (Text)
