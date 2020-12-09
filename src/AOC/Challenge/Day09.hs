@@ -21,16 +21,16 @@ import           Data.Sequence  (Seq(..))
 import           Text.Read      (readMaybe)
 import qualified Data.Vector    as V
 
-isGood :: Seq Int -> Bool
-isGood (xs :|> x) = not . null $ do
+isBad :: Seq Int -> Bool
+isBad (xs :|> x) = null $ do
     y:ys <- tails (toList xs)
     z    <- ys
     guard $ (y + z) == x
-isGood _          = False
+isBad _          = False
 
 oddOneOut :: [Int] -> Maybe Int
 oddOneOut xs = do
-    _ :|> x <- find (not . isGood) (slidingWindows 26 xs)
+    _ :|> x <- find isBad (slidingWindows 26 xs)
     pure x
 
 day09a :: [Int] :~> Int

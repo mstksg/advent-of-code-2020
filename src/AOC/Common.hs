@@ -117,13 +117,17 @@ module AOC.Common (
   , parseAsciiSet
   , ScanPoint(..)
   , displayAsciiMap
+  -- * Recursion Schemes
+  , anaM
 #if !MIN_VERSION_recursion_schemes(5,2,0)
   , TreeF(..), ForestF
 #endif
   ) where
 
+-- import qualified Data.Functor.Foldable.TH        as R
 import           AOC.Util
 import           Control.Applicative
+import           Control.Comonad.Store
 import           Control.Lens
 import           Control.Monad
 import           Control.Parallel.Strategies
@@ -134,6 +138,7 @@ import           Data.Finite
 import           Data.Finite.Internal
 import           Data.Foldable
 import           Data.Function
+import           Data.Functor.Compose
 import           Data.Group
 import           Data.Hashable
 import           Data.IntMap                        (IntMap)
@@ -151,7 +156,6 @@ import           Data.Semigroup.Foldable
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.Lens
-import           Control.Comonad.Store
 import           Data.Set.NonEmpty                  (NESet)
 import           Data.Tree                          (Tree(..))
 import           Data.Tuple
@@ -167,7 +171,6 @@ import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
 import qualified Data.Finitary                      as F
 import qualified Data.Functor.Foldable              as R
--- import qualified Data.Functor.Foldable.TH           as R
 import qualified Data.Graph.Inductive               as G
 import qualified Data.IntMap                        as IM
 import qualified Data.List.NonEmpty                 as NE
@@ -905,6 +908,13 @@ lineTo p0 p1 = [ p0 + t *^ step | t <- [1 .. gcf  - 1] ]
     d@(V2 dx dy) = p1 - p0
     gcf          = gcd dx dy
     step         = (`div` gcf) <$> d
+
+anaM
+    :: (Monad m, R.Corecursive t, Traversable (R.Base t))
+    => (a -> m (R.Base t a))
+    -> a
+    -> m t
+anaM f = R.hylo (fmap R.embed . join . fmap sequenceA . getCompose) (Compose . f)
 
 instance FunctorWithIndex k (NEMap k) where
     imap = NEM.mapWithKey
