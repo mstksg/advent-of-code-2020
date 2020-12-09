@@ -11,7 +11,7 @@ import           Data.Maybe
 import qualified Data.Map      as M
 
 newtype DynoMap = Dyno { runDyno :: Map String Dynamic }
-  deriving (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid)
 
 -- | Lookup the value at a given key in a 'Dyno'.
 --

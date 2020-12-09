@@ -28,6 +28,7 @@ Table of Contents
 * [Day 6](#day-6)
 * [Day 7](#day-7)
 * [Day 8](#day-8)
+* [Day 9](#day-9) *(no reflection yet)*
 
 Day 1
 ------
@@ -1449,11 +1450,11 @@ Every item in the list returned by `holesOf` corresponds to a different hole,
 so for example:
 
 ```haskell
-ghci> map (peeks negate) (holesOf traverse [1,2,3]
-[ [-1, 2, 3]
-, [ 1,-2, 3]
-, [ 1, 2,-3]
-]
+ghci> map (peeks negate) (holesOf traverse [1,2,3])
+  [ [-1, 2, 3]
+  , [ 1,-2, 3]
+  , [ 1, 2,-3]
+  ]
 ```
 
 The `traverse :: Traversal' [a] a` is a `Traversal` that specifies the "holes"
@@ -1495,11 +1496,11 @@ selection:
 ```haskell
 ghci> map (peeks flipInstr)
         (holesOf (traverse . _1) [(NOP,1),(ACC,2),(JMP,3),(JMP,4)])
-[ [(JMP,1),(ACC,2),(JMP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(JMP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(NOP,3),(JMP,4)]
-, [(NOP,1),(ACC,2),(JMP,3),(NOP,4)]
-]
+  [ [(JMP,1),(ACC,2),(JMP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(JMP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(NOP,3),(JMP,4)]
+  , [(NOP,1),(ACC,2),(JMP,3),(NOP,4)]
+  ]
 ```
 
 Neat!
@@ -1590,6 +1591,50 @@ time                 2.797 ms   (2.519 ms .. 3.049 ms)
 mean                 2.944 ms   (2.723 ms .. 3.726 ms)
 std dev              1.215 ms   (230.0 μs .. 2.529 ms)
 variance introduced by outliers: 98% (severely inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 9
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day09.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d09p]* / *[Code][d09g]* / *[Rendered][d09h]* / *[Standalone Reflection Page][d09r]*
+
+[d09p]: https://adventofcode.com/2020/day/9
+[d09g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day09.hs
+[d09h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day09.html
+[d09r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 9 Benchmarks
+
+```
+>> Day 09a
+benchmarking...
+time                 222.0 μs   (206.8 μs .. 232.3 μs)
+                     0.984 R²   (0.977 R² .. 0.993 R²)
+mean                 228.1 μs   (222.7 μs .. 232.5 μs)
+std dev              17.83 μs   (13.22 μs .. 21.39 μs)
+variance introduced by outliers: 70% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 09b
+benchmarking...
+time                 231.5 μs   (218.3 μs .. 242.7 μs)
+                     0.980 R²   (0.974 R² .. 0.988 R²)
+mean                 233.7 μs   (226.2 μs .. 242.3 μs)
+std dev              26.50 μs   (23.85 μs .. 32.49 μs)
+variance introduced by outliers: 83% (severely inflated)
 
 * parsing and formatting times excluded
 ```

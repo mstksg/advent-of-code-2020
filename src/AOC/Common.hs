@@ -43,6 +43,8 @@ module AOC.Common (
   , perturbationsBy
   , select
   , slidingWindows
+  , sortedSlidingWindows
+  , sortedSlidingWindowsInt
   , clearOut
   , foldMapPar
   , foldMapPar1
@@ -178,6 +180,7 @@ import qualified Data.Map                           as M
 import qualified Data.Map.NonEmpty                  as NEM
 import qualified Data.MemoCombinators               as Memo
 import qualified Data.OrdPSQ                        as OrdPSQ
+import qualified Data.IntPSQ                        as IntPSQ
 import qualified Data.Sequence                      as Seq
 import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
@@ -200,12 +203,16 @@ drop' n (x:xs) = x `seq` drop' (n - 1) xs
 
 -- | Iterate until a 'Nothing' is produced
 iterateMaybe :: (a -> Maybe a) -> a -> [a]
-iterateMaybe f x0 = x0 : unfoldr (fmap dup . f) x0
+iterateMaybe f = go
+  where
+    go !x = x : case f x of
+      Nothing -> []
+      Just y  -> go y
 
 (!?) :: [a] -> Int -> Maybe a
 []     !? _ = Nothing
 (x:_ ) !? 0 = Just x
-(_:xs) !? n = xs !? (n - 1)
+(x:xs) !? n = x `seq` (xs !? (n - 1))
 
 -- | Apply function until 'Nothing' is produced, and return last produced
 -- value.
@@ -411,7 +418,7 @@ clearOut p = map $ \c -> if p c then ' '
                                 else c
 
 -- | sliding windows of a given length
-slidingWindows :: Int -> [Int] -> [Seq Int]
+slidingWindows :: Int -> [a] -> [Seq a]
 slidingWindows n = uncurry go . first Seq.fromList . splitAt n
   where
     go ws@(_ :<| qs) = \case
@@ -419,6 +426,33 @@ slidingWindows n = uncurry go . first Seq.fromList . splitAt n
       []   -> ws : []
     go _  = const []
 
+-- | sorted windows of a given length
+sortedSlidingWindows
+    :: forall k v. Ord k
+    => Int
+    -> [(k,v)]
+    -> [OrdPSQ.OrdPSQ k Int v]
+sortedSlidingWindows n = uncurry go . first OrdPSQ.fromList . splitAt n . zipWith reIx [0..]
+  where
+    reIx i (j,k) = (j, i, k)
+    go :: OrdPSQ.OrdPSQ k Int v -> [(k, Int, v)] -> [OrdPSQ.OrdPSQ k Int v]
+    go ws = \case
+      (k, i, x):xs -> ws : go (OrdPSQ.insert k i x (OrdPSQ.deleteMin ws)) xs
+      _            -> ws : []
+
+-- | sorted windows of a given length
+sortedSlidingWindowsInt
+    :: forall v. ()
+    => Int
+    -> [(Int,v)]
+    -> [IntPSQ.IntPSQ Int v]
+sortedSlidingWindowsInt n = uncurry go . first IntPSQ.fromList . splitAt n . zipWith reIx [0..]
+  where
+    reIx i (j,k) = (j, i, k)
+    go :: IntPSQ.IntPSQ Int v -> [(Int, Int, v)] -> [IntPSQ.IntPSQ Int v]
+    go ws = \case
+      (k, i, x):xs -> ws : go (IntPSQ.insert k i x (IntPSQ.deleteMin ws)) xs
+      _            -> ws : []
 
 -- | Get the key-value pair corresponding to the maximum value in the map
 maximumVal :: Ord b => Map a b -> Maybe (a, b)
