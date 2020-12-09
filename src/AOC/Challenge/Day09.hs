@@ -12,21 +12,26 @@ module AOC.Challenge.Day09 (
   , day09b
   ) where
 
-import           AOC.Solver                        ((:~>)(..))
-import           Control.Monad                     (guard)
-import           Data.List                         (scanl', tails, find)
-import           Text.Read                         (readMaybe)
-import qualified Data.Vector                       as V
+import           AOC.Common     (slidingWindows)
+import           AOC.Solver     ((:~>)(..))
+import           Control.Monad  (guard)
+import           Data.Foldable  (toList)
+import           Data.List      (scanl', tails, find)
+import           Data.Sequence  (Seq(..))
+import           Text.Read      (readMaybe)
+import qualified Data.Vector    as V
 
-isGood :: [Int] -> Bool
-isGood (reverse->(x:xs)) = not . null $ do
-    y:ys <- tails xs
-    z <- ys
+isGood :: Seq Int -> Bool
+isGood (xs :|> x) = not . null $ do
+    y:ys <- tails (toList xs)
+    z    <- ys
     guard $ (y + z) == x
-isGood _ = False
+isGood _          = False
 
 oddOneOut :: [Int] -> Maybe Int
-oddOneOut = fmap last . find (not . isGood) . map (take 26) . tails
+oddOneOut xs = do
+    _ :|> x <- find (not . isGood) (slidingWindows 26 xs)
+    pure x
 
 day09a :: [Int] :~> Int
 day09a = MkSol
@@ -51,9 +56,9 @@ day09b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = \(x,y) -> show (x + y)
     , sSolve = \ns -> do
-        goal <- oddOneOut ns
-        let nseq = V.fromList (scanl' (+) 0 ns)
-        (i, j) <- findBounds nseq goal
+        goal   <- oddOneOut ns
+        let cumsum = V.fromList (scanl' (+) 0 ns)
+        (i, j) <- findBounds cumsum goal
         let xs = take (j - i) . drop i $ ns
         pure (minimum xs, maximum xs)
     }

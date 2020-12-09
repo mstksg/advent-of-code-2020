@@ -42,6 +42,7 @@ module AOC.Common (
   , perturbations
   , perturbationsBy
   , select
+  , slidingWindows
   , clearOut
   , foldMapPar
   , foldMapPar1
@@ -405,6 +406,16 @@ perturbationsBy p f = experiment f <=< holesOf p
 clearOut :: (Char -> Bool) -> String -> String
 clearOut p = map $ \c -> if p c then ' '
                                 else c
+
+-- | sliding windows of a given length
+slidingWindows :: Int -> [Int] -> [Seq Int]
+slidingWindows n = uncurry go . first Seq.fromList . splitAt n
+  where
+    go ws@(_ :<| qs) = \case
+      x:xs -> ws : go (qs :|> x) xs
+      []   -> ws : []
+    go _  = const []
+
 
 -- | Get the key-value pair corresponding to the maximum value in the map
 maximumVal :: Ord b => Map a b -> Maybe (a, b)
