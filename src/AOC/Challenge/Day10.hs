@@ -14,8 +14,9 @@ module AOC.Challenge.Day10 (
   , day10b
   ) where
 
-import           AOC.Common  (freqs, lookupFreq)
+import           AOC.Common  (freqs, lookupFreq, (!!!))
 import           AOC.Solver  ((:~>)(..))
+import           Data.List
 import           Data.IntMap (IntMap)
 import           Data.IntSet (IntSet)
 import           Text.Read   (readMaybe)
@@ -53,9 +54,26 @@ pathsToGoal is = res
                  ]
     goal = IS.findMax is
 
+-- it's abouit 2x slower
+-- gapMethod :: [Int] -> Int
+-- gapMethod xs = product
+--              . map (\ys@(y:_) ->
+--                       if y == 1
+--                         then trib (length ys)
+--                         else 1
+--                    )
+--              . group
+--              $ zipWith (-) (tail xs) xs
+
+-- trib :: Int -> Int
+-- trib i = tribs !!! (i + 2)
+--   where
+--     tribs = 0:0:1:zipWith3 (\x y z -> x + y + z) tribs (tail tribs) (tail (tail tribs))
+
 day10b :: [Int] :~> Int
 day10b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
+    -- , sSolve = Just . gapMethod . (0:) . sort
     , sSolve = Just . findOrZero 0 . pathsToGoal . toChain
     }
