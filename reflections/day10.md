@@ -10,7 +10,7 @@ freqs :: Ord a => [a] -> Map a Int
 freqs = M.fromListWith (+) . map (,1) . toList
 
 diffs :: [Int] -> [Int]
-diffs xs = zipWith (-) (drop 1 xs) xs
+diffs xs@(_:ys) = zipWith (-) ys xs
 ```
 
 ```haskell

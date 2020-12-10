@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Dec 2020 01:24:02 EST</lastBuildDate>
+    <lastBuildDate>Thu, 10 Dec 2020 01:53:24 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu, 10 Dec 2020 01:24:02 EST</pubDate>
+    <pubDate>Thu, 10 Dec 2020 01:53:24 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -28,7 +28,7 @@ that file instead!
 &lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;freqs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; M.fromListWith (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;map&lt;/span&gt; (,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; toList&lt;/span&gt;
 &lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;diffs ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;]&lt;/span&gt;
-&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;diffs xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;zipWith&lt;/span&gt; (&lt;span class=&quot;op&quot;&gt;-&lt;/span&gt;) (&lt;span class=&quot;fu&quot;&gt;drop&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; xs) xs&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;diffs xs&lt;span class=&quot;op&quot;&gt;@&lt;/span&gt;(_&lt;span class=&quot;op&quot;&gt;:&lt;/span&gt;ys) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;zipWith&lt;/span&gt; (&lt;span class=&quot;op&quot;&gt;-&lt;/span&gt;) ys xs&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; diffs [&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;4&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;7&lt;/span&gt;]&lt;/span&gt;
 &lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;[&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And so part 1 can be done with:&lt;/p&gt;
@@ -83,6 +83,83 @@ variance introduced by outliers: 94% (severely inflated)
 </description>
       <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-10</link>
       <pubDate>Thu, 10 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
+    <item>
+      <title>Day 9</title>
+      <description>&lt;h2 id=&quot;day-9&quot;&gt;Day 9&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day09.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/9&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day09.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day09.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Let’s tackle day 9!&lt;/p&gt;
+&lt;p&gt;A good way to check if a sequence of 25 numbers can add to the 26th number is to just iterate over everything, like we might have done in day 1:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | check if, for ([x,y,z] ++ [a]), no pair in xyz can add to &amp;#39;a&amp;#39;.  If it&amp;#39;s&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- bad, it returns &amp;#39;Just a&amp;#39;.&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;isBad ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;isBad xs0 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;op&quot;&gt;:&lt;/span&gt; xs &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;reverse&lt;/span&gt; xs0&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; badCheck &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          y&lt;span class=&quot;op&quot;&gt;:&lt;/span&gt;ys &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; tails (toList xs)&lt;/span&gt;
+&lt;span id=&quot;cb1-8&quot;&gt;&lt;a href=&quot;#cb1-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          z    &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; ys&lt;/span&gt;
+&lt;span id=&quot;cb1-9&quot;&gt;&lt;a href=&quot;#cb1-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          guard &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; (y &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; z) &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; x&lt;/span&gt;
+&lt;span id=&quot;cb1-10&quot;&gt;&lt;a href=&quot;#cb1-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    x &lt;span class=&quot;op&quot;&gt;&amp;lt;$&lt;/span&gt; guard badCheck&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;I use my favorite &lt;code&gt;Maybe&lt;/code&gt; do-notation trick of pattern matching within the block to take advantage of do block short circuiting for &lt;code&gt;Maybe&lt;/code&gt; with its &lt;code&gt;MonadFail&lt;/code&gt; instance. If you reverse &lt;code&gt;xs0&lt;/code&gt; then you can get the last item as the head, and the rest as the tail :)&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;badCheck&lt;/code&gt; we do a list-monad powered search (see my &lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md&quot;&gt;Day 1 Reflections&lt;/a&gt;) for more details on how it works. &lt;code&gt;badCheck&lt;/code&gt; will return &lt;code&gt;True&lt;/code&gt; if the search is empty (with &lt;code&gt;null&lt;/code&gt;). &lt;code&gt;guard badCheck&lt;/code&gt; will be Nothing if &lt;code&gt;badCheck&lt;/code&gt; fails (and our list is good) and &lt;code&gt;Just x&lt;/code&gt; if &lt;code&gt;badCheck&lt;/code&gt; succeeds (and our list is bad).&lt;/p&gt;
+&lt;p&gt;Part 1 is then just finding the first bad sequence:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ y&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; ys     &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; tails xs&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; y &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; [isBad (&lt;span class=&quot;fu&quot;&gt;take&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;26&lt;/span&gt; ys)]&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;For part 2, there’s a nice-ish way to do it in constant-time. First, we can generate a cumulative sum &lt;code&gt;cumSum&lt;/code&gt; for the &lt;em&gt;entire&lt;/em&gt; list. Then we know that &lt;code&gt;sumFrom(i,j)&lt;/code&gt; in our original list is just &lt;code&gt;cumSum(j) - cumSum(i)&lt;/code&gt;. This is similar to how definite integrals work, or also how you can find the area under a probability density function by subtracting two points from its cumulative distribution function.&lt;/p&gt;
+&lt;p&gt;So now the problem just becomes finding &lt;code&gt;i,j&lt;/code&gt; where &lt;code&gt;cumSum(j) - cumSum(i) == goal&lt;/code&gt;. There’s a clean imperative-ish way to do this that involves just “sliding” your window &lt;code&gt;i,j&lt;/code&gt; up from &lt;code&gt;0,1&lt;/code&gt;. If &lt;code&gt;cumSum(j) - cumSum(i)&lt;/code&gt; is too small, increase &lt;code&gt;j&lt;/code&gt; by 1 to open the window up a bit. If it’s too big, increase &lt;code&gt;i&lt;/code&gt; by 1 to close the window up a bit.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findBounds ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;V.Vector&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findBounds ns goal &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; go &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;i &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;j &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; ns &lt;span class=&quot;op&quot;&gt;V.!?&lt;/span&gt; i&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      y &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; ns &lt;span class=&quot;op&quot;&gt;V.!?&lt;/span&gt; j&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;compare&lt;/span&gt; (y &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; x) goal &lt;span class=&quot;kw&quot;&gt;of&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        &lt;span class=&quot;dt&quot;&gt;LT&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; go i (j &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb3-9&quot;&gt;&lt;a href=&quot;#cb3-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        &lt;span class=&quot;dt&quot;&gt;EQ&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; (i, j)&lt;/span&gt;
+&lt;span id=&quot;cb3-10&quot;&gt;&lt;a href=&quot;#cb3-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        &lt;span class=&quot;dt&quot;&gt;GT&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; go (i &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) j&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And there you go!&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    goal &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; part1 xs&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; cumSum &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; V.fromList (scanl&amp;#39; (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;) &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; xs)       &lt;span class=&quot;co&quot;&gt;-- cumulative sum&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    (i, j) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; findBounds cumSum goal&lt;/span&gt;
+&lt;span id=&quot;cb4-6&quot;&gt;&lt;a href=&quot;#cb4-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;take&lt;/span&gt; (j &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; i) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;drop&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; ns&lt;/span&gt;
+&lt;span id=&quot;cb4-7&quot;&gt;&lt;a href=&quot;#cb4-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;minimum&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;maximum&lt;/span&gt; xs&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If anything, maybe the implementation of &lt;code&gt;findBounds&lt;/code&gt; shows how one might directly translate a tight mutable loop in an imperative language into a tail-recursive function in Haskell!&lt;/p&gt;
+&lt;p&gt;We do often like to avoid explicitly writing recursive functions when we can, but in this case I’m not sure if there’s a way to get around it other than switching to a full on mutable answer, or in a very complex way that is extremely specific to the situation. If you think of one, let me know! :D&lt;/p&gt;
+&lt;h3 id=&quot;day-9-benchmarks&quot;&gt;Day 9 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 09a
+benchmarking...
+time                 222.0 μs   (206.8 μs .. 232.3 μs)
+                     0.984 R²   (0.977 R² .. 0.993 R²)
+mean                 228.1 μs   (222.7 μs .. 232.5 μs)
+std dev              17.83 μs   (13.22 μs .. 21.39 μs)
+variance introduced by outliers: 70% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 09b
+benchmarking...
+time                 231.5 μs   (218.3 μs .. 242.7 μs)
+                     0.980 R²   (0.974 R² .. 0.988 R²)
+mean                 233.7 μs   (226.2 μs .. 242.3 μs)
+std dev              26.50 μs   (23.85 μs .. 32.49 μs)
+variance introduced by outliers: 83% (severely inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-9</link>
+      <pubDate>Wed,  9 Dec 2020 01:00:00 EST</pubDate>
     </item>
 
     <item>

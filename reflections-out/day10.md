@@ -7,7 +7,7 @@ the file `./reflections/day10.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *10*
+*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *[9][day09]* / *10*
 
 [reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
 [day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
@@ -18,6 +18,7 @@ that file instead!
 [day06]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day06.md
 [day07]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md
 [day08]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md
+[day09]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md
 
 [Available as an RSS Feed][rss]
 
@@ -41,7 +42,7 @@ freqs :: Ord a => [a] -> Map a Int
 freqs = M.fromListWith (+) . map (,1) . toList
 
 diffs :: [Int] -> [Int]
-diffs xs = zipWith (-) (drop 1 xs) xs
+diffs xs@(_:ys) = zipWith (-) ys xs
 ```
 
 ```haskell
