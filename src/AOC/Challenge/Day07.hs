@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- |
 -- Module      : AOC.Challenge.Day07
 -- License     : BSD3
@@ -19,13 +20,15 @@ import           Control.Applicative        (many)
 import           Data.Map                   (Map)
 import           Data.Semigroup             (Sum(..))
 import           Data.Set                   (Set)
+import           Data.Text                  (Text)
 import           Text.Megaparsec            (try)
 import           Text.Megaparsec.Char       (space)
 import           Text.Megaparsec.Char.Lexer (decimal)
 import qualified Data.Map                   as M
 import qualified Data.Set                   as S
+import qualified Data.Text                  as T
 
-type Bag = (String, String)
+type Bag = (Text, Text)
 type Graph v e = Map v (Map v e)
 
 target :: Bag
@@ -41,7 +44,7 @@ bagParser = do
     pure (nm, bs)
   where
     bagName :: CharParser Bag
-    bagName = (,) <$> pWord <*> (pWord <* pWord)
+    bagName = (,) <$> (T.pack <$> pWord) <*> (T.pack <$> pWord <* pWord)
 
 flipGraph :: Ord v => Graph v e -> Graph v e
 flipGraph mp = M.fromListWith M.union
