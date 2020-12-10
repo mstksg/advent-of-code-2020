@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Dec 2020 03:36:50 EST</lastBuildDate>
+    <lastBuildDate>Thu, 10 Dec 2020 03:58:10 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu, 10 Dec 2020 03:36:50 EST</pubDate>
+    <pubDate>Thu, 10 Dec 2020 03:58:10 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -36,7 +36,7 @@ that file instead!
 &lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (stepFreqs &lt;span class=&quot;op&quot;&gt;M.!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; (stepFreqs &lt;span class=&quot;op&quot;&gt;M.!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;)&lt;/span&gt;
 &lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    xs&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;:&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;++&lt;/span&gt; [&lt;span class=&quot;fu&quot;&gt;maximum&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;
-&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    stepFreqs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; freqs (diffs (&lt;span class=&quot;fu&quot;&gt;sort&lt;/span&gt; xs))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    stepFreqs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; freqs (diffs (&lt;span class=&quot;fu&quot;&gt;sort&lt;/span&gt; xs&amp;#39;))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;For part 2, if we get an &lt;code&gt;IntSet&lt;/code&gt; of all of your numbers (and adding the zero, and the goal, the maximum + 3), then we can use it to build our &lt;code&gt;IntMap&lt;/code&gt; of all the number of paths from a given number.&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.IntMap&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;IntMap&lt;/span&gt;)&lt;/span&gt;
 &lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.IntSet&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;IntSet&lt;/span&gt;)&lt;/span&gt;

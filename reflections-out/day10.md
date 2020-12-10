@@ -57,7 +57,7 @@ part1 :: [Int] -> Int
 part1 xs = (stepFreqs M.! 1) * (stepFreqs M.! 3)
   where
     xs' = 0 : xs ++ [maximum xs + 3]
-    stepFreqs = freqs (diffs (sort xs))
+    stepFreqs = freqs (diffs (sort xs'))
 ```
 
 
