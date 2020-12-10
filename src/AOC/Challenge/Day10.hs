@@ -18,7 +18,6 @@ import           AOC.Common  (freqs, lookupFreq)
 import           AOC.Solver  ((:~>)(..))
 import           Data.IntMap (IntMap)
 import           Data.IntSet (IntSet)
-import           Data.Maybe  (mapMaybe)
 import           Text.Read   (readMaybe)
 import qualified Data.IntMap as IM
 import qualified Data.IntSet as IS
@@ -38,28 +37,25 @@ day10a = MkSol
         in  (lookupFreq 1 fs, lookupFreq 3 fs)
     }
 
-toGraph :: IntSet -> IntMap IntSet
-toGraph ss = IM.fromListWith (<>)
-    [ (x, IS.singleton opt)
-    | x <- IS.toList ss
-    , opt <- [x+1,x+2,x+3]
-    , opt `IS.member` ss
-    ]
+findOrZero :: Int -> IntMap Int -> Int
+findOrZero = IM.findWithDefault 0
 
 -- | A map of numbers to the count of how many paths from that number to
 -- the goal
-pathsToGoal :: IntMap IntSet -> IntMap Int
+pathsToGoal :: IntSet -> IntMap Int
 pathsToGoal is = res
   where
-    res = flip IM.mapWithKey is $ \i ks ->
+    res = flip IM.fromSet is $ \i ->
       if i == goal
         then 1
-        else sum . mapMaybe (flip IM.lookup res) $ IS.toList ks
-    (goal,_) = IM.findMax is
+        else sum [ findOrZero (i + j) res
+                 | j <- [1,2,3]
+                 ]
+    goal = IS.findMax is
 
 day10b :: [Int] :~> Int
 day10b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
-    , sSolve = Just . IM.findWithDefault 0 0 . pathsToGoal . toGraph . toChain
+    , sSolve = Just . findOrZero 0 . pathsToGoal . toChain
     }
