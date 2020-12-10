@@ -7,11 +7,84 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Wed,  9 Dec 2020 18:20:21 EST</lastBuildDate>
+    <lastBuildDate>Thu, 10 Dec 2020 01:24:02 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Wed,  9 Dec 2020 18:20:21 EST</pubDate>
+    <pubDate>Thu, 10 Dec 2020 01:24:02 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 10</title>
+      <description>&lt;h2 id=&quot;day-10&quot;&gt;Day 10&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day10.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/10&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day10.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day10.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Today is another day where the “automatically build a memoized recursive map” in Haskell really shines :) It’s essentially the same problem as Day 7.&lt;/p&gt;
+&lt;p&gt;For the first part, once you sort the list, you can compute the differences and then build a frequency map&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | Build a frequency map&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;freqs ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; a &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; [a] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Map&lt;/span&gt; a &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;freqs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; M.fromListWith (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;map&lt;/span&gt; (,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; toList&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;diffs ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;diffs xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;zipWith&lt;/span&gt; (&lt;span class=&quot;op&quot;&gt;-&lt;/span&gt;) (&lt;span class=&quot;fu&quot;&gt;drop&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt; xs) xs&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; diffs [&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;4&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;7&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;[&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And so part 1 can be done with:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (stepFreqs &lt;span class=&quot;op&quot;&gt;M.!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; (stepFreqs &lt;span class=&quot;op&quot;&gt;M.!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    xs&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;:&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;++&lt;/span&gt; [&lt;span class=&quot;fu&quot;&gt;maximum&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    stepFreqs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; freqs (diffs (&lt;span class=&quot;fu&quot;&gt;sort&lt;/span&gt; xs))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;For part 2, if we get an &lt;code&gt;IntSet&lt;/code&gt; of all of your numbers (and adding the zero, and the goal, the maximum + 3), then we can use it to build our &lt;code&gt;IntMap&lt;/code&gt; of all the number of paths from a given number.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.IntMap&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;IntMap&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Data.IntSet&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;IntSet&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.IntMap&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IM&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.IntSet&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IS&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-6&quot;&gt;&lt;a href=&quot;#cb4-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | A map of numbers to the count of how many paths from that number to&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-7&quot;&gt;&lt;a href=&quot;#cb4-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- the goal&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-8&quot;&gt;&lt;a href=&quot;#cb4-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;pathsToGoal ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IntSet&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IntMap&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-9&quot;&gt;&lt;a href=&quot;#cb4-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;pathsToGoal xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; res&lt;/span&gt;
+&lt;span id=&quot;cb4-10&quot;&gt;&lt;a href=&quot;#cb4-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-11&quot;&gt;&lt;a href=&quot;#cb4-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    res &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;flip&lt;/span&gt; IM.fromSet xs &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; \i &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-12&quot;&gt;&lt;a href=&quot;#cb4-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;if&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; goal&lt;/span&gt;
+&lt;span id=&quot;cb4-13&quot;&gt;&lt;a href=&quot;#cb4-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        &lt;span class=&quot;kw&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-14&quot;&gt;&lt;a href=&quot;#cb4-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        &lt;span class=&quot;kw&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt; [ IM.findWithDefault &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; (i &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; j) res&lt;/span&gt;
+&lt;span id=&quot;cb4-15&quot;&gt;&lt;a href=&quot;#cb4-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                 &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; j &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; [&lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb4-16&quot;&gt;&lt;a href=&quot;#cb4-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                 ]&lt;/span&gt;
+&lt;span id=&quot;cb4-17&quot;&gt;&lt;a href=&quot;#cb4-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    goal &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; IS.findMax is&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Our answer is &lt;code&gt;res&lt;/code&gt;, the map of numbers to the count of how many paths exist from that number to the goal. To generate the count for a given number &lt;code&gt;i&lt;/code&gt;, we add the number of paths from &lt;code&gt;i+1&lt;/code&gt;, &lt;code&gt;i+2&lt;/code&gt;, and &lt;code&gt;i+3&lt;/code&gt;. We get that count by looking it up in &lt;code&gt;res&lt;/code&gt;!&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; pathsToGoal xs &lt;span class=&quot;op&quot;&gt;IM.!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    xs&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; IS.fromList (&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;:&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;++&lt;/span&gt; [&lt;span class=&quot;fu&quot;&gt;maximum&lt;/span&gt; xs &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;3&lt;/span&gt;])&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;day-10-benchmarks&quot;&gt;Day 10 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 10a
+benchmarking...
+time                 7.379 μs   (6.799 μs .. 7.864 μs)
+                     0.969 R²   (0.957 R² .. 0.980 R²)
+mean                 7.338 μs   (6.925 μs .. 7.743 μs)
+std dev              1.302 μs   (1.178 μs .. 1.470 μs)
+variance introduced by outliers: 96% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 10b
+benchmarking...
+time                 9.736 μs   (9.534 μs .. 9.874 μs)
+                     0.994 R²   (0.990 R² .. 0.998 R²)
+mean                 10.07 μs   (9.800 μs .. 10.71 μs)
+std dev              1.506 μs   (988.1 ns .. 2.439 μs)
+variance introduced by outliers: 94% (severely inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-10</link>
+      <pubDate>Thu, 10 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 8</title>
       <description>&lt;h2 id=&quot;day-8&quot;&gt;Day 8&lt;/h2&gt;
