@@ -14,14 +14,13 @@ module AOC.Challenge.Day10 (
   , day10b
   ) where
 
-import           AOC.Common  (freqs, lookupFreq, (!!!))
-import           AOC.Solver  ((:~>)(..))
-import           Data.List
-import           Data.IntMap (IntMap)
-import           Data.IntSet (IntSet)
-import           Text.Read   (readMaybe)
-import qualified Data.IntMap as IM
-import qualified Data.IntSet as IS
+import           AOC.Common           (freqs, lookupFreq)
+import           AOC.Solver           ((:~>)(..))
+import           Data.IntMap          (IntMap)
+import           Data.IntSet          (IntSet)
+import           Text.Read            (readMaybe)
+import qualified Data.IntMap          as IM
+import qualified Data.IntSet          as IS
 
 toChain :: [Int] -> IntSet
 toChain xs = xsset `IS.union` IS.fromList [0, top + 3]
@@ -38,12 +37,12 @@ day10a = MkSol
         in  (lookupFreq 1 fs, lookupFreq 3 fs)
     }
 
-findOrZero :: Int -> IntMap Int -> Int
+findOrZero :: Num a => Int -> IntMap a -> a
 findOrZero = IM.findWithDefault 0
 
 -- | A map of numbers to the count of how many paths from that number to
 -- the goal
-pathsToGoal :: IntSet -> IntMap Int
+pathsToGoal :: Num a => IntSet -> IntMap a
 pathsToGoal is = res
   where
     res = flip IM.fromSet is $ \i ->
@@ -54,16 +53,17 @@ pathsToGoal is = res
                  ]
     goal = IS.findMax is
 
--- it's abouit 2x slower
+-- -- it's about 1.5x slower
 -- gapMethod :: [Int] -> Int
--- gapMethod xs = product
---              . map (\ys@(y:_) ->
---                       if y == 1
---                         then trib (length ys)
---                         else 1
---                    )
---              . group
---              $ zipWith (-) (tail xs) xs
+-- gapMethod xs = sfst
+--              . foldl' go (T2 1 0)
+--              $ zipWith (-) (tail xs') xs'
+--   where
+--     xs' = xs ++ [maximum xs + 3]
+--     go (T2 prod run) 1 = T2 prod (run + 1)
+--     go (T2 prod run) 3
+--       | run > 0   = T2 (prod * trib run) 0
+--       | otherwise = T2 prod 0
 
 -- trib :: Int -> Int
 -- trib i = tribs !!! (i + 2)
@@ -74,6 +74,6 @@ day10b :: [Int] :~> Int
 day10b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
-    -- , sSolve = Just . gapMethod . (0:) . sort
     , sSolve = Just . findOrZero 0 . pathsToGoal . toChain
+    -- , sSolve = Just . gapMethod . (0:) . sort
     }

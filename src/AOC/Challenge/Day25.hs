@@ -54,7 +54,7 @@ day25a = MkSol
 
 day25b :: _ :~> _
 day25b = MkSol
-    { sParse = Just
+    { sParse = sParse day25a
     , sShow  = show
     , sSolve = Just
     }
