@@ -1812,6 +1812,12 @@ part2 xs = pathsToGoal xs IM.! 0
     xs' = IS.fromList (0 : xs ++ [maximum xs + 3])
 ```
 
+A quick note --- after some discussion on the irc, we did [find a closed-form
+solution][d10cfs]...I might be editing this to implement it in Haskell
+eventually :)
+
+[d10cfs]: https://www.reddit.com/r/adventofcode/comments/kabi91/2020_day_10_closedform_mathematical_solution/
+
 
 ### Day 10 Benchmarks
 
