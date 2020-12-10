@@ -22,8 +22,8 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day10 (
-    -- day10a
-  -- , day10b
+    day10a
+  , day10b
   ) where
 
 import           AOC.Prelude
@@ -45,16 +45,42 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
+toChain :: [Int] -> IntSet
+toChain xs = xsset `IS.union` IS.fromList [0, top + 3]
+  where
+    xsset = IS.fromList xs
+    top   = IS.findMax xsset
+
 day10a :: _ :~> _
 day10a = MkSol
-    { sParse = Just
+    { sParse = fmap toChain . traverse (readMaybe @Int) . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \(IS.toList->xs) ->
+        let fs = freqs $ zipWith (-) (drop 1 xs) xs
+        in  Just $ lookupFreq 1 fs * lookupFreq 3 fs
     }
+
+toGraph2 :: IntSet -> IntMap IntSet
+toGraph2 ss = IM.fromListWith (<>)
+    [ (x, IS.singleton opt)
+    | x <- IS.toList ss
+    , opt <- [x+1,x+2,x+3]
+    , opt `IS.member` ss
+    ]
+
+pathsToGoal :: IntMap IntSet -> IntMap Int
+pathsToGoal is = res
+  where
+    res = flip IM.mapWithKey is $ \i ks ->
+      if i == goal
+        then 1
+        else sum . mapMaybe (flip IM.lookup res) $ IS.toList ks
+    (goal,_) = IM.findMax is
+      
 
 day10b :: _ :~> _
 day10b = MkSol
-    { sParse = Just
+    { sParse = fmap toChain . traverse (readMaybe @Int) . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . (IM.! 0) . pathsToGoal . toGraph2
     }
