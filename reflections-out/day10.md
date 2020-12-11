@@ -111,21 +111,21 @@ eventually :)
 ```
 >> Day 10a
 benchmarking...
-time                 7.379 μs   (6.799 μs .. 7.864 μs)
-                     0.969 R²   (0.957 R² .. 0.980 R²)
-mean                 7.338 μs   (6.925 μs .. 7.743 μs)
-std dev              1.302 μs   (1.178 μs .. 1.470 μs)
-variance introduced by outliers: 96% (severely inflated)
+time                 7.740 μs   (7.282 μs .. 8.267 μs)
+                     0.975 R²   (0.969 R² .. 0.983 R²)
+mean                 7.692 μs   (7.305 μs .. 8.044 μs)
+std dev              1.211 μs   (1.050 μs .. 1.340 μs)
+variance introduced by outliers: 94% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 10b
 benchmarking...
-time                 9.736 μs   (9.534 μs .. 9.874 μs)
-                     0.994 R²   (0.990 R² .. 0.998 R²)
-mean                 10.07 μs   (9.800 μs .. 10.71 μs)
-std dev              1.506 μs   (988.1 ns .. 2.439 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 10.04 μs   (9.738 μs .. 10.56 μs)
+                     0.935 R²   (0.863 R² .. 0.989 R²)
+mean                 11.43 μs   (10.47 μs .. 14.41 μs)
+std dev              5.128 μs   (2.250 μs .. 8.939 μs)
+variance introduced by outliers: 99% (severely inflated)
 
 * parsing and formatting times excluded
 ```

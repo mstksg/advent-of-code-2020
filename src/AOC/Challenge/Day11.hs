@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day11
 -- License     : BSD3
@@ -9,90 +6,90 @@
 -- Portability : non-portable
 --
 -- Day 11.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
--- module AOC.Challenge.Day11 (
---     day11a
---   , day11b
---   ) where
+module AOC.Challenge.Day11 (
+    day11a
+  , day11b
+  ) where
 
-module AOC.Challenge.Day11 where
-    -- day11a
-  -- , day11b
-  -- ) where
-
-
-import           AOC.Prelude
-
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+import           AOC.Common      (Point, boundingBox', inBoundingBox, fullNeighbs, parseAsciiMap, fixedPoint, countTrue)
+import           AOC.Solver      ((:~>)(..))
+import           Data.List       (find)
+import           Data.Map        (Map)
+import           Data.Maybe      (mapMaybe)
+import           Data.Set        (Set)
+import           Linear          (V2(..))
+import qualified Data.Map.Strict as M
+import qualified Data.Set        as S
 
 seatRule
-    :: Map Point Bool
+    :: Int                       -- ^ exit seat threshold
+    -> Map Point (Set Point)     -- ^ neighbors for each point
     -> Map Point Bool
-seatRule mp = M.mapWithKey go mp
+    -> Map Point Bool
+seatRule thr nmp mp = M.intersectionWith go nmp mp
   where
-    go p False = if any (\d -> M.findWithDefault False d mp) (fullNeighbs p)
-                then False
-                else True
-    go p True = not (n >= 4)
-      where
-        n = countTrue (\d -> M.findWithDefault False d mp) (fullNeighbs p)
+    go neighbs = \case
+      False -> not (any (mp M.!) neighbs)
+      True  ->
+        let onNeighbs = countTrue (mp M.!) neighbs
+        in  not (onNeighbs >= thr)
 
-day11a :: _ :~> _
+solveWith
+    :: Int                      -- ^ exit seat threshold
+    -> Map Point (Set Point)    -- ^ neighbors for each point
+    -> Map Point Bool           -- ^ initial state
+    -> Int                      -- ^ equilibrium size
+solveWith thr neighbs = countTrue id . fixedPoint (seatRule thr neighbs)
+
+parseSeatMap :: String -> Map Point Bool
+parseSeatMap = parseAsciiMap $ \case
+    'L' -> Just False
+    '#' -> Just True    -- not in the input, but just for completion's sake
+    _   -> Nothing
+
+-- | Get a map of points to all of those points' neighbors where there is
+-- a seat. Should only need to be computed once.
+lineOfSights1
+    :: Map Point Bool
+    -> Map Point (Set Point)
+lineOfSights1 mp = M.mapWithKey go mp
+  where
+    go p _ = S.fromList
+           . filter (`M.member` mp)
+           $ fullNeighbs p
+
+day11a :: Map Point Bool :~> Int
 day11a = MkSol
-    { sParse = Just . parseAsciiMap (\case 'L' -> Just False; _ -> Nothing)
+    { sParse = Just . parseSeatMap
     , sShow  = show
-    , sSolve = Just . M.size . M.filter id . fixedPoint seatRule
+    , sSolve = \mp -> Just $
+        let los = lineOfSights1 mp
+        in  solveWith 4 los mp
     }
 
-day11b :: _ :~> _
-day11b = MkSol
-    { sParse = sParse day11a
-    , sShow  = show
-    , sSolve = \mp ->
-        let Just bb = boundingBox' (M.keys mp)
-        in  Just . M.size . M.filter id . fixedPoint (seatRule2 bb) $ mp
-    }
-
-seatRule2
+-- | Get a map of points to all of those points' visible neighbors. Should
+-- only need to be computed once.
+lineOfSights2
     :: V2 Point
     -> Map Point Bool
-    -> Map Point Bool
-seatRule2 bb mp = res
+    -> Map Point (Set Point)
+lineOfSights2 bb mp = M.mapWithKey go mp
   where
-    res = M.mapWithKey go mp
-    go p False = if any (\d -> fromMaybe False $ scanDir p d) (fullNeighbs 0)
-                then False
-                else True
-    go p True = not (n >= 5)
-      where
-        n = countTrue (\d -> fromMaybe False $ scanDir p d) (fullNeighbs 0)
-    scanDir p d = firstJust (`M.lookup` mp)
-                . takeWhile (inBoundingBox bb)
-                . tail
-                $ iterate (+ d) p
+    go p _ = S.fromList
+           . mapMaybe (los p)
+           $ fullNeighbs 0
+    los p d = find (`M.member` mp)
+            . takeWhile (inBoundingBox bb)
+            . tail
+            $ iterate (+ d) p
+
+day11b :: Map Point Bool :~> Int
+day11b = MkSol
+    { sParse = Just . parseSeatMap
+    , sShow  = show
+    , sSolve = \mp -> do
+        bb <- boundingBox' (M.keys mp)
+        let los = lineOfSights2 bb mp
+        pure $ solveWith 5 los mp
+    }

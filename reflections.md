@@ -30,6 +30,7 @@ Table of Contents
 * [Day 8](#day-8)
 * [Day 9](#day-9)
 * [Day 10](#day-10)
+* [Day 11](#day-11) *(no reflection yet)*
 
 Day 1
 ------
@@ -1824,21 +1825,65 @@ eventually :)
 ```
 >> Day 10a
 benchmarking...
-time                 7.379 μs   (6.799 μs .. 7.864 μs)
-                     0.969 R²   (0.957 R² .. 0.980 R²)
-mean                 7.338 μs   (6.925 μs .. 7.743 μs)
-std dev              1.302 μs   (1.178 μs .. 1.470 μs)
-variance introduced by outliers: 96% (severely inflated)
+time                 7.740 μs   (7.282 μs .. 8.267 μs)
+                     0.975 R²   (0.969 R² .. 0.983 R²)
+mean                 7.692 μs   (7.305 μs .. 8.044 μs)
+std dev              1.211 μs   (1.050 μs .. 1.340 μs)
+variance introduced by outliers: 94% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 10b
 benchmarking...
-time                 9.736 μs   (9.534 μs .. 9.874 μs)
-                     0.994 R²   (0.990 R² .. 0.998 R²)
-mean                 10.07 μs   (9.800 μs .. 10.71 μs)
-std dev              1.506 μs   (988.1 ns .. 2.439 μs)
-variance introduced by outliers: 94% (severely inflated)
+time                 10.04 μs   (9.738 μs .. 10.56 μs)
+                     0.935 R²   (0.863 R² .. 0.989 R²)
+mean                 11.43 μs   (10.47 μs .. 14.41 μs)
+std dev              5.128 μs   (2.250 μs .. 8.939 μs)
+variance introduced by outliers: 99% (severely inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 11
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day11.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d11p]* / *[Code][d11g]* / *[Rendered][d11h]* / *[Standalone Reflection Page][d11r]*
+
+[d11p]: https://adventofcode.com/2020/day/11
+[d11g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day11.hs
+[d11h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day11.html
+[d11r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 11 Benchmarks
+
+```
+>> Day 11a
+benchmarking...
+time                 365.8 ms   (338.7 ms .. NaN s)
+                     0.997 R²   (0.994 R² .. 1.000 R²)
+mean                 353.4 ms   (348.3 ms .. 361.6 ms)
+std dev              7.925 ms   (2.215 ms .. 10.58 ms)
+variance introduced by outliers: 19% (moderately inflated)
+
+* parsing and formatting times excluded
+
+>> Day 11b
+benchmarking...
+time                 429.7 ms   (414.2 ms .. 439.2 ms)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 429.9 ms   (428.1 ms .. 432.4 ms)
+std dev              2.407 ms   (872.7 μs .. 3.100 ms)
+variance introduced by outliers: 19% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
