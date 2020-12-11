@@ -51,12 +51,11 @@ parseSeatMap = parseAsciiMap $ \case
 -- | Get a map of points to all of those points' neighbors where there is
 -- a seat. Should only need to be computed once.
 lineOfSights1
-    :: Map Point Bool
+    :: Set Point
     -> Map Point (Set Point)
-lineOfSights1 mp = M.mapWithKey go mp
+lineOfSights1 pts = M.fromSet go pts
   where
-    go p _ = fullNeighbsSet p `S.intersection` pts
-    pts = M.keysSet mp
+    go p = fullNeighbsSet p `S.intersection` pts
 
 
 day11a :: Map Point Bool :~> Int
@@ -64,7 +63,7 @@ day11a = MkSol
     { sParse = Just . parseSeatMap
     , sShow  = show
     , sSolve = \mp -> Just $
-        let los = lineOfSights1 mp
+        let los = lineOfSights1 (M.keysSet mp)
         in  solveWith 4 los mp
     }
 
@@ -72,14 +71,14 @@ day11a = MkSol
 -- only need to be computed once.
 lineOfSights2
     :: V2 Point
-    -> Map Point Bool
+    -> Set Point
     -> Map Point (Set Point)
-lineOfSights2 bb mp = M.mapWithKey go mp
+lineOfSights2 bb pts = M.fromSet go pts
   where
-    go p _ = S.fromList
-           . mapMaybe (los p)
-           $ fullNeighbs 0
-    los p d = find (`M.member` mp)
+    go p = S.fromList
+         . mapMaybe (los p)
+         $ fullNeighbs 0
+    los p d = find (`S.member` pts)
             . takeWhile (inBoundingBox bb)
             . tail
             $ iterate (+ d) p
@@ -90,6 +89,6 @@ day11b = MkSol
     , sShow  = show
     , sSolve = \mp -> do
         bb <- boundingBox' (M.keys mp)
-        let los = lineOfSights2 bb mp
+        let los = lineOfSights2 bb (M.keysSet mp)
         pure $ solveWith 5 los mp
     }

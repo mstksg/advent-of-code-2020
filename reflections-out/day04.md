@@ -7,7 +7,7 @@ the file `./reflections/day04.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *4* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *[9][day09]* / *[10][day10]*
+*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *4* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *[9][day09]* / *[10][day10]* / *[11][day11]*
 
 [reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
 [day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
@@ -19,6 +19,7 @@ that file instead!
 [day08]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day08.md
 [day09]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day09.md
 [day10]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md
+[day11]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day11.md
 
 [Available as an RSS Feed][rss]
 
