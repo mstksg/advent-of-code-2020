@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Dec 2020 02:43:14 EST</lastBuildDate>
+    <lastBuildDate>Fri, 11 Dec 2020 03:35:08 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Fri, 11 Dec 2020 02:43:14 EST</pubDate>
+    <pubDate>Fri, 11 Dec 2020 03:35:08 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -432,7 +432,7 @@ that file instead!
 &lt;p&gt;In my actual code, I actually use the &lt;code&gt;experiment&lt;/code&gt; function instead of &lt;code&gt;peeks&lt;/code&gt; – it’s like a “peeksM”, in a way:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb14&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb14-1&quot;&gt;&lt;a href=&quot;#cb14-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;peeks      ::&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;   a) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Pretext&lt;/span&gt; (&lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;) a a s &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;   a&lt;/span&gt;
 &lt;span id=&quot;cb14-2&quot;&gt;&lt;a href=&quot;#cb14-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;experiment ::&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; f a) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Pretext&lt;/span&gt; (&lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;) a a s &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; f a&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;So instead of giving it a &lt;code&gt;Instr -&amp;gt; Instr&lt;/code&gt;, you could give it an &lt;code&gt;Instr -&amp;gt; [Instr]&lt;/code&gt;, and “cancel out” any branches that don’t need to be addressed:&lt;/p&gt;
+&lt;p&gt;So instead of giving it a &lt;code&gt;Instr -&amp;gt; Instr&lt;/code&gt;, you could give it an &lt;code&gt;Instr -&amp;gt; Maybe Instr&lt;/code&gt;, and “cancel out” any branches that don’t need to be addressed:&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb15&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb15-1&quot;&gt;&lt;a href=&quot;#cb15-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;experiment ::&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; a) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Pretext&lt;/span&gt; (&lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt;) a a s &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; a   &lt;span class=&quot;co&quot;&gt;-- in our case&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb15-2&quot;&gt;&lt;a href=&quot;#cb15-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb15-3&quot;&gt;&lt;a href=&quot;#cb15-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;flipInstrs ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Command&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Command&lt;/span&gt;&lt;/span&gt;

@@ -1533,7 +1533,7 @@ experiment :: (a -> f a) -> Pretext (->) a a s -> f a
 ```
 
 So instead of giving it a `Instr -> Instr`, you could give it an `Instr ->
-[Instr]`, and "cancel out" any branches that don't need to be addressed:
+Maybe Instr`, and "cancel out" any branches that don't need to be addressed:
 
 ```haskell
 experiment :: (a -> Maybe a) -> Pretext (->) a a s -> Maybe a   -- in our case
