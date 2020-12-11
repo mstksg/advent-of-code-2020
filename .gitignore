@@ -8,4 +8,5 @@
 /bench-out
 /tmp
 /scratch
+/dist-newstyle
 _*
