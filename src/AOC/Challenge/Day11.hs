@@ -21,10 +21,16 @@
 --     solution.  You can delete the type signatures completely and GHC
 --     will recommend what should go in place of the underscores.
 
-module AOC.Challenge.Day11 (
+-- module AOC.Challenge.Day11 (
+--     day11a
+--   , day11b
+--   ) where
+
+module AOC.Challenge.Day11 where
     -- day11a
   -- , day11b
-  ) where
+  -- ) where
+
 
 import           AOC.Prelude
 
@@ -45,16 +51,48 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
+seatRule
+    :: Map Point Bool
+    -> Map Point Bool
+seatRule mp = M.mapWithKey go mp
+  where
+    go p False = if any (\d -> M.findWithDefault False d mp) (fullNeighbs p)
+                then False
+                else True
+    go p True = not (n >= 4)
+      where
+        n = countTrue (\d -> M.findWithDefault False d mp) (fullNeighbs p)
+
 day11a :: _ :~> _
 day11a = MkSol
-    { sParse = Just
+    { sParse = Just . parseAsciiMap (\case 'L' -> Just False; _ -> Nothing)
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . M.size . M.filter id . fixedPoint seatRule
     }
 
 day11b :: _ :~> _
 day11b = MkSol
     { sParse = sParse day11a
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \mp ->
+        let Just bb = boundingBox' (M.keys mp)
+        in  Just . M.size . M.filter id . fixedPoint (seatRule2 bb) $ mp
     }
+
+seatRule2
+    :: V2 Point
+    -> Map Point Bool
+    -> Map Point Bool
+seatRule2 bb mp = res
+  where
+    res = M.mapWithKey go mp
+    go p False = if any (\d -> fromMaybe False $ scanDir p d) (fullNeighbs 0)
+                then False
+                else True
+    go p True = not (n >= 5)
+      where
+        n = countTrue (\d -> fromMaybe False $ scanDir p d) (fullNeighbs 0)
+    scanDir p d = firstJust (`M.lookup` mp)
+                . takeWhile (inBoundingBox bb)
+                . tail
+                $ iterate (+ d) p

@@ -115,6 +115,7 @@ module AOC.Common (
   , memoPoint
   , boundingBox
   , boundingBox'
+  , inBoundingBox
   , parseAsciiMap
   , parseAsciiSet
   , ScanPoint(..)
@@ -677,6 +678,16 @@ boundingBox = (\(T2 (Ap mn) (Ap mx)) -> V2 (getMin <$> mn) (getMax <$> mx))
 -- | A version of 'boundingBox' that works for normal possibly-empty lists.
 boundingBox' :: Foldable f => f Point -> Maybe (V2 Point)
 boundingBox' = fmap boundingBox . NE.nonEmpty . toList
+
+inBoundingBox
+    :: (Applicative g, Foldable g, Ord a)
+    => V2 (g a)
+    -> g a
+    -> Bool
+inBoundingBox (V2 mn mx) x = all id $ go <$> x <*> mn <*> mx
+  where
+    go x' mn' mx' = x' >= mn' && x' <= mx'
+    
 
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbs p = (p +) <$> [ V2 0 (-1), V2 1 0, V2 0 1, V2 (-1) 0 ]

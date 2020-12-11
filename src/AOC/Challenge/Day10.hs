@@ -57,9 +57,8 @@ pathsToGoal is = res
 -- gapMethod :: [Int] -> Int
 -- gapMethod xs = sfst
 --              . foldl' go (T2 1 0)
---              $ zipWith (-) (tail xs') xs'
+--              $ zipWith (-) (tail xs) xs
 --   where
---     xs' = xs ++ [maximum xs + 3]
 --     go (T2 prod run) 1 = T2 prod (run + 1)
 --     go (T2 prod run) 3
 --       | run > 0   = T2 (prod * trib run) 0
@@ -75,5 +74,5 @@ day10b = MkSol
     { sParse = traverse readMaybe . lines
     , sShow  = show
     , sSolve = Just . findOrZero 0 . pathsToGoal . toChain
-    -- , sSolve = Just . gapMethod . (0:) . sort
+    -- , sSolve = Just . gapMethod . IS.toList . toChain
     }
