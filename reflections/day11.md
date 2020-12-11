@@ -9,7 +9,8 @@ same, with only two differences:
 2.  Threshold for seats unseating is 4 for part 1 and 5 for part 2.
 
 So let's write our function parameterized on those two.  We'll be storing our
-world as a `Map Point Seat`.  Floor points are not included in the map.
+world as a `Map Point Bool`, where `False` represents an empty seat and `True`
+represents a full one.  Floor points are not included in the map.
 
 ```haskell
 -- | A 2-vector type from the linear library, with a very convenient Num
@@ -17,9 +18,6 @@ world as a `Map Point Seat`.  Floor points are not included in the map.
 data V2 a = V2 a a
 
 type Point = V2 Int
-
-data Seat = Empty | Full
-  deriving Eq
 
 -- | A useful utility function I keep around that counts the number of items in
 -- a container matching a predicate
@@ -29,19 +27,15 @@ countTrue p = length . filter p . toList
 seatRule
     :: Int                       -- ^ exit seat threshold
     -> Map Point (Set Point)     -- ^ neighbors for each point
-    -> Map Point Seat
-    -> Map Point Seat
+    -> Map Point Bool
+    -> Map Point Bool
 seatRule thr nmp mp = M.intersectionWith go nmp mp
   where
     go neighbs = \case
-      Empty -> if any (mp M.!) neighbs
-                 then Full
-                 else Empty
+      Empty -> not (all (mp M.!) neighbs)
       Full  ->
-        let onNeighbs = countTrue ((== Full) . (mp M.!)) neighbs
-        in  if onNeighbs >= thr
-              then Full
-              else Empty
+        let onNeighbs = countTrue (mp M.!) neighbs
+        in  not (onNeighbs >= thr)
 ```
 
 Now we just need to create our neighborhood maps.
@@ -106,19 +100,19 @@ fixedPoint f = go
 solveWith
     :: Int                      -- ^ exit seat threshold
     -> Map Point (Set Point)    -- ^ neighbors for each point
-    -> Map Point Seat           -- ^ initial state
+    -> Map Point Bool           -- ^ initial state
     -> Int                      -- ^ equilibrium size
 solveWith thr neighbs = countTrue id . fixedPoint (seatRule thr neighbs)
 
 part1
-    :: Map Point Seat
+    :: Map Point Bool
     -> Int
 part1 mp = solveWith 4 los mp
   where
     los = lineOfSight1 (M.keysSet mp)
 
 part2
-    :: Map Point Seat
+    :: Map Point Bool
     -> Int
 part2 mp = solveWith 5 los mp
   where

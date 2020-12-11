@@ -687,7 +687,7 @@ inBoundingBox
 inBoundingBox (V2 mn mx) x = all id $ go <$> x <*> mn <*> mx
   where
     go x' mn' mx' = x' >= mn' && x' <= mx'
-    
+
 
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbs p = (p +) <$> [ V2 0 (-1), V2 1 0, V2 0 1, V2 (-1) 0 ]
