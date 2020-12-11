@@ -12,7 +12,7 @@ module AOC.Challenge.Day11 (
   , day11b
   ) where
 
-import           AOC.Common      (Point, boundingBox', inBoundingBox, fullNeighbs, parseAsciiMap, fixedPoint, countTrue)
+import           AOC.Common      (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, fixedPoint, countTrue)
 import           AOC.Solver      ((:~>)(..))
 import           Data.List       (find)
 import           Data.Map        (Map)
@@ -30,10 +30,10 @@ seatRule
 seatRule thr nmp mp = M.intersectionWith go nmp mp
   where
     go neighbs = \case
-      False -> not (any (mp M.!) neighbs)
-      True  ->
-        let onNeighbs = countTrue (mp M.!) neighbs
-        in  not (onNeighbs >= thr)
+      False -> not (or neighbSeats)
+      True  -> not (countTrue id neighbSeats >= thr)
+      where
+        neighbSeats = M.restrictKeys mp neighbs
 
 solveWith
     :: Int                      -- ^ exit seat threshold
@@ -55,9 +55,8 @@ lineOfSights1
     -> Map Point (Set Point)
 lineOfSights1 mp = M.mapWithKey go mp
   where
-    go p _ = S.fromList
-           . filter (`M.member` mp)
-           $ fullNeighbs p
+    go p _ = fullNeighbsSet p `S.intersection` pts
+    pts = M.keysSet mp
 
 day11a :: Map Point Bool :~> Int
 day11a = MkSol
