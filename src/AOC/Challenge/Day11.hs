@@ -30,10 +30,10 @@ seatRule
 seatRule thr nmp mp = M.intersectionWith go nmp mp
   where
     go neighbs = \case
-      False -> not (or neighbSeats)
-      True  -> not (countTrue id neighbSeats >= thr)
-      where
-        neighbSeats = M.restrictKeys mp neighbs
+      False -> not (any (mp M.!) neighbs)
+      True  ->
+        let onNeighbs = countTrue (mp M.!) neighbs
+        in  not (onNeighbs >= thr)
 
 solveWith
     :: Int                      -- ^ exit seat threshold
@@ -57,6 +57,7 @@ lineOfSights1 mp = M.mapWithKey go mp
   where
     go p _ = fullNeighbsSet p `S.intersection` pts
     pts = M.keysSet mp
+
 
 day11a :: Map Point Bool :~> Int
 day11a = MkSol
