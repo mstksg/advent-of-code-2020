@@ -12,15 +12,18 @@ module AOC.Challenge.Day11 (
   , day11b
   ) where
 
-import           AOC.Common      (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, fixedPoint, countTrue)
-import           AOC.Solver      ((:~>)(..))
-import           Data.List       (find)
-import           Data.Map        (Map)
-import           Data.Maybe      (mapMaybe)
-import           Data.Set        (Set)
-import           Linear          (V2(..))
-import qualified Data.Map.Strict as M
-import qualified Data.Set        as S
+import           AOC.Common          (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, fixedPoint, countTrue)
+import           AOC.Solver          ((:~>)(..))
+import           Data.IntMap         (IntMap)
+import           Data.List           (find)
+import           Data.Map            (Map)
+import           Data.Maybe          (mapMaybe)
+import           Data.Set            (Set)
+import           Linear              (V2(..))
+import qualified Data.IntMap         as IM
+import qualified Data.Map.Strict     as M
+import qualified Data.Set            as S
+import qualified Data.Vector.Unboxed as V
 
 seatRule
     :: Int                       -- ^ exit seat threshold

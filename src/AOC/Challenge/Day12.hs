@@ -12,7 +12,7 @@ module AOC.Challenge.Day12 (
   , day12b
   ) where
 
-import           AOC.Common      (Point, Dir(..), dirPoint, mulPoint, mannDist)
+import           AOC.Common      (Point, Dir(..), dirPoint, rotPoint, mannDist)
 import           AOC.Solver      ((:~>)(..))
 import           Control.DeepSeq (NFData)
 import           Data.Group      (pow)
@@ -44,11 +44,11 @@ parseInstr :: String -> Maybe Instr
 parseInstr []    = Nothing
 parseInstr (c:n) = M.lookup c mkInstr <*> readMaybe n
 
-day12a :: _ :~> _
+day12a :: [Instr] :~> Point
 day12a = MkSol
     { sParse = traverse parseInstr . lines
-    , sShow  = show
-    , sSolve = Just . mannDist 0 . snd . foldl' go (East, V2 0 0)
+    , sShow  = show . mannDist 0
+    , sSolve = Just . snd . foldl' go (East, 0)
     }
   where
     go :: (Dir, Point) -> Instr -> (Dir, Point)
@@ -57,15 +57,15 @@ day12a = MkSol
       Turn d    -> (dir <> d, p                    )
       Move r    -> (dir     , p + r                )
 
-day12b :: _ :~> _
+day12b :: [Instr] :~> Point
 day12b = MkSol
     { sParse = sParse day12a
-    , sShow  = show
-    , sSolve = Just . mannDist 0 . fst . foldl' go (V2 0 0, V2 10 1)
+    , sShow  = show . mannDist 0
+    , sSolve = Just . fst . foldl' go (0, V2 10 1)
     }
   where
     go :: (Point, Point) -> Instr -> (Point, Point)
     go (!shp, !wp) = \case
-      Forward n -> (shp + n *^ wp, wp                                )
-      Turn d    -> (shp          , wp `mulPoint` dirPoint (d <> East))
-      Move r    -> (shp          , wp + r                            )
+      Forward n -> (shp + n *^ wp, wp           )
+      Turn d    -> (shp          , rotPoint d wp)
+      Move r    -> (shp          , wp + r       )

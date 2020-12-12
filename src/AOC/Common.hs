@@ -110,6 +110,7 @@ module AOC.Common (
   , parseDir
   , dirPoint
   , dirPoint'
+  , rotPoint
   , mulDir
   -- * 2D Maps
   , memoPoint
@@ -717,7 +718,7 @@ mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
 mannDist x y = sum . abs $ x - y
 
 -- | Treat as complex number multiplication. useful for rotations
-mulPoint :: Point -> Point -> Point
+mulPoint :: Num a => V2 a -> V2 a -> V2 a
 mulPoint (V2 x y) (V2 u v) = V2 (x*u - y*v) (x*v + y*u)
 
 data Dir = North | East | South | West
@@ -726,7 +727,7 @@ data Dir = North | East | South | West
 instance Hashable Dir
 instance NFData Dir
 
-dirPoint :: Dir -> Point
+dirPoint :: Num a => Dir -> V2 a
 dirPoint = \case
     North -> V2   0   1
     East  -> V2   1   0
@@ -734,12 +735,20 @@ dirPoint = \case
     West  -> V2 (-1)  0
 
 -- | 'dirPoint' but with inverted y axis
-dirPoint' :: Dir -> Point
+dirPoint' :: Num a => Dir -> V2 a
 dirPoint' = \case
     North -> V2   0 (-1)
     East  -> V2   1   0
     South -> V2   0   1
     West  -> V2 (-1)  0
+
+-- | Rotate a point by a direction
+rotPoint :: Num a => Dir -> V2 a -> V2 a
+rotPoint = \case
+    North -> id
+    East  -> \(V2 x y) -> V2   y  (-x)
+    West  -> \(V2 x y) -> V2 (-y)   x
+    South -> negate
 
 parseDir :: Char -> Maybe Dir
 parseDir = flip M.lookup dirMap . toUpper
