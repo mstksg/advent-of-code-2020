@@ -782,6 +782,11 @@ mulDir West  = \case North -> West
 -- | '<>' is 'mulDir'.
 instance Semigroup Dir where
     (<>) = mulDir
+    stimes n x = case n `mod` 4 of
+      1 -> x
+      2 -> x <> x
+      3 -> invert x
+      _ -> North
 
 instance Monoid Dir where
     mempty = North
@@ -791,6 +796,7 @@ instance Group Dir where
                    East  -> West
                    South -> North
                    West  -> East
+    pow = flip stimes
 
 instance Abelian Dir
 

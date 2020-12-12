@@ -100,7 +100,7 @@ instance Semigroup Dir where
 instance Monoid Dir where
     mempty = North
 
--- | Reverse a turn
+-- | Reverse a turn.  Not needed for this puzzle, but still useful in general.
 instance Group Dir where
     invert = \case North -> South
                    East  -> West
@@ -111,7 +111,7 @@ instance Group Dir where
 I did not write any of this for the puzzle --- this is just a nice way I like
 to think about directions and points in my head :)
 
-One major advantage of defining a `Group` instance for `Dir` is that you can
+One major advantage of defining a `Semigroup` instance for `Dir` is that you can
 take advantage of the `pow` function from
 [Data.Group](https://hackage.haskell.org/package/groups-0.5.2/docs/Data-Group.html):
 
@@ -121,12 +121,15 @@ pow :: Group m => m -> Int -> m
 
 which is like `stimes`, but supporting negative numbers.  `pow x 3` is `x <> x
 <> x`, and `pow x (-3)` is `invert x <> invert x <> invert x`, or `invert (x <>
-x <> x)` (same thing, 'cause Group theory).  And, though it doesn't matter for
-this challenge, it also uses [repeated
+x <> x)` (same thing, 'cause Group theory).  We don't actually need the support
+for negative numbers in this puzzle, so we could just use `stimes`, but it's
+nice that we can just use `pow` and not think about our input range.  And,
+though it doesn't matter for this challenge, it also uses [repeated
 squaring](https://en.wikipedia.org/wiki/Exponentiation_by_squaring) so it can
 do these operations in log-n time (`pow x 1000000000` only takes 30
-operations), which is pretty neat for a lot of different applications (like
-[in my writeup for 2019 Day 22](https://blog.jle.im/entry/shuffling-things-up.html)).
+operations), which is pretty neat for a lot of different applications (like [in
+my writeup for 2019 Day
+22](https://blog.jle.im/entry/shuffling-things-up.html)).
 
 Anyway I think that's enough preamble...now let's use it! :D  Each instruction
 seems to be one of three forms: "go forward", "turn", or "move an absolute
