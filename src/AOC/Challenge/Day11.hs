@@ -12,44 +12,68 @@ module AOC.Challenge.Day11 (
   , day11b
   ) where
 
-import           AOC.Common          (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, fixedPoint, countTrue)
-import           AOC.Solver          ((:~>)(..))
-import           Data.IntMap         (IntMap)
-import           Data.List           (find)
-import           Data.Map            (Map)
-import           Data.Maybe          (mapMaybe)
-import           Data.Set            (Set)
-import           Linear              (V2(..))
-import qualified Data.IntMap         as IM
-import qualified Data.Map.Strict     as M
-import qualified Data.Set            as S
-import qualified Data.Vector.Unboxed as V
-
-seatRule
-    :: Int                       -- ^ exit seat threshold
-    -> Map Point (Set Point)     -- ^ neighbors for each point
-    -> Map Point Bool
-    -> Map Point Bool
-seatRule thr nmp mp = M.intersectionWith go nmp mp
-  where
-    go neighbs = \case
-      False -> not (any (mp M.!) neighbs)
-      True  ->
-        let onNeighbs = countTrue (mp M.!) neighbs
-        in  not (onNeighbs >= thr)
-
-solveWith
-    :: Int                      -- ^ exit seat threshold
-    -> Map Point (Set Point)    -- ^ neighbors for each point
-    -> Map Point Bool           -- ^ initial state
-    -> Int                      -- ^ equilibrium size
-solveWith thr neighbs = countTrue id . fixedPoint (seatRule thr neighbs)
+import           AOC.Common                (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, countTrue, loopMaybe)
+import           AOC.Solver                ((:~>)(..))
+import           Control.Monad             (guard)
+import           Control.Monad.State       (State, modify, runState)
+import           Data.Bit                  (Bit(..))
+import           Data.Bits                 (popCount)
+import           Data.Finite               (Finite)
+import           Data.Foldable             (find, toList)
+import           Data.Map                  (Map)
+import           Data.Maybe                (mapMaybe)
+import           Data.Set                  (Set)
+import           GHC.TypeNats              (KnownNat)
+import           Linear                    (V2(..))
+import qualified Data.Map.Strict           as M
+import qualified Data.Set                  as S
+import qualified Data.Vector.Generic.Sized as VG
+import qualified Data.Vector.Sized         as V
+import qualified Data.Vector.Unboxed.Sized as VU
 
 parseSeatMap :: String -> Map Point Bool
 parseSeatMap = parseAsciiMap $ \case
     'L' -> Just False
     '#' -> Just True    -- not in the input, but just for completion's sake
     _   -> Nothing
+
+compile
+    :: Map Point (Set Point, Bool)
+    -> (forall n. KnownNat n => V.Vector n [Finite n] -> VU.Vector n Bit -> r)
+    -> r
+compile mp f = V.withSizedList (toList mp) $ \xs ->
+            f (map go . S.toList . fst <$> xs)
+              (VG.convert (Bit . snd <$> xs))
+  where
+    go :: KnownNat n => Point -> Finite n
+    go = fromIntegral . (`M.findIndex` mp)
+
+seatRule
+    :: forall n. ()
+    => Int                       -- ^ exit seat threshold
+    -> V.Vector n [Finite n]
+    -> VU.Vector n Bit
+    -> Maybe (VU.Vector n Bit)
+seatRule thr ns xs = res <$ guard changed
+  where
+    (res, changed) = runState (VU.imapM go xs) False
+    go :: Finite n -> Bit -> State Bool Bit
+    go i (Bit x)
+        | x == x'   = pure $ Bit x
+        | otherwise = Bit x' <$ modify (const True)
+      where
+        n = countTrue (unBit . (xs `VU.index`)) $ ns `V.index` i
+        x' = case x of
+          False -> not (n > 0)
+          True  -> not (n >= thr)
+
+solveWith
+    :: KnownNat n
+    => Int                      -- ^ exit seat threshold
+    -> V.Vector n [Finite n]
+    -> VU.Vector n Bit
+    -> Int                      -- ^ equilibrium size
+solveWith thr ns = popCount . loopMaybe (seatRule thr ns)
 
 -- | Get a map of points to all of those points' neighbors where there is
 -- a seat. Should only need to be computed once.
@@ -67,7 +91,8 @@ day11a = MkSol
     , sShow  = show
     , sSolve = \mp -> Just $
         let los = lineOfSights1 (M.keysSet mp)
-        in  solveWith 4 los mp
+        in  compile (M.intersectionWith (,) los mp) (solveWith 4)
+
     }
 
 -- | Get a map of points to all of those points' visible neighbors. Should
@@ -93,5 +118,5 @@ day11b = MkSol
     , sSolve = \mp -> do
         bb <- boundingBox' (M.keys mp)
         let los = lineOfSights2 bb (M.keysSet mp)
-        pure $ solveWith 5 los mp
+        pure $ compile (M.intersectionWith (,) los mp) (solveWith 5)
     }

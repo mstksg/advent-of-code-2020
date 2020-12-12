@@ -78,7 +78,9 @@ library:
   - advent-of-code-api >= 0.2.7
   - aeson
   - ansi-terminal
+  - monad-loops
   - barbies
+  - bitvec
   - bytestring
   - comonad
   - conduino
@@ -112,6 +114,7 @@ library:
   - parallel
   - parser-combinators >= 1.2.0
   - pointedlist
+  - primitive
   - profunctors
   - psqueues
   - recursion-schemes
