@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day12
 -- License     : BSD3
@@ -9,52 +6,66 @@
 -- Portability : non-portable
 --
 -- Day 12.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day12 (
     day12a
   , day12b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common      (Point, Dir(..), dirPoint, mulPoint, mannDist)
+import           AOC.Solver      ((:~>)(..))
+import           Control.DeepSeq (NFData)
+import           Data.Group      (pow)
+import           Data.List       (foldl')
+import           Data.Map        (Map)
+import           GHC.Generics    (Generic)
+import           Linear          (V2(..), (*^))
+import           Text.Read       (readMaybe)
+import qualified Data.Map        as M
 
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+data Instr = Forward Int
+           | Turn Dir
+           | Move Point
+  deriving (Show, Eq, Generic)
+instance NFData Instr
+
+mkInstr :: Map Char (Int -> Instr)
+mkInstr = M.fromList
+    [ ('F', Forward)
+    , ('L', Turn . pow West . (`div` 90))
+    , ('R', Turn . pow East . (`div` 90))
+    , ('N', Move . (*^ dirPoint North))
+    , ('S', Move . (*^ dirPoint South))
+    , ('E', Move . (*^ dirPoint East ))
+    , ('W', Move . (*^ dirPoint West ))
+    ]
+
+parseInstr :: String -> Maybe Instr
+parseInstr []    = Nothing
+parseInstr (c:n) = M.lookup c mkInstr <*> readMaybe n
 
 day12a :: _ :~> _
 day12a = MkSol
-    { sParse = Just
+    { sParse = traverse parseInstr . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . mannDist 0 . snd . foldl' go (East, V2 0 0)
     }
+  where
+    go :: (Dir, Point) -> Instr -> (Dir, Point)
+    go (!dir, !p) = \case
+      Forward n -> (dir     , p + n *^ dirPoint dir)
+      Turn d    -> (dir <> d, p                    )
+      Move r    -> (dir     , p + r                )
 
 day12b :: _ :~> _
 day12b = MkSol
     { sParse = sParse day12a
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . mannDist 0 . fst . foldl' go (V2 0 0, V2 10 1)
     }
+  where
+    go :: (Point, Point) -> Instr -> (Point, Point)
+    go (!shp, !wp) = \case
+      Forward n -> (shp + n *^ wp, wp                                )
+      Turn d    -> (shp          , wp `mulPoint` dirPoint (d <> East))
+      Move r    -> (shp          , wp + r                            )
