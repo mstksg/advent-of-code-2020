@@ -12,18 +12,16 @@ module AOC.Challenge.Day13 (
   , day13b
   ) where
 
-import           AOC.Common                       (CharParser)
-import           AOC.Solver                       ((:~>)(..))
-import           Control.Applicative              ((<|>))
-import           Data.Foldable                    (minimumBy)
-import           Data.List.Split                  (splitOn)
-import           Data.Maybe                       (mapMaybe, catMaybes)
-import           Data.Ord                         (comparing)
-import           Math.NumberTheory.Moduli.Chinese (chineseRemainder)
-import           Text.Read                        (readMaybe)
-import qualified Text.Megaparsec                  as P
-import qualified Text.Megaparsec.Char             as P
-import qualified Text.Megaparsec.Char.Lexer       as PL
+import           AOC.Common                          (CharParser, iterateFind, parseMaybeLenient)
+import           AOC.Solver                          ((:~>)(..))
+import           Control.Applicative                 ((<|>))
+import           Data.Foldable                       (minimumBy)
+import           Data.List                           (foldl')
+import           Data.Maybe                          (mapMaybe, catMaybes)
+import           Data.Ord                            (comparing)
+import qualified Text.Megaparsec                     as P
+import qualified Text.Megaparsec.Char                as P
+import qualified Text.Megaparsec.Char.Lexer          as PL
 
 parseTrains :: Num a => CharParser [Maybe a]
 parseTrains = (Nothing <$ P.char 'x' <|> Just <$> PL.decimal)
@@ -31,7 +29,7 @@ parseTrains = (Nothing <$ P.char 'x' <|> Just <$> PL.decimal)
 
 day13a :: (Int, [Int]) :~> (Int, Int)
 day13a = MkSol
-    { sParse = P.parseMaybe $
+    { sParse = parseMaybeLenient $
         (,) <$> (PL.decimal <* P.newline)
             <*> (catMaybes <$> parseTrains)
     , sShow  = \(x,y) -> show $ x * y
@@ -42,11 +40,17 @@ day13a = MkSol
             ]
     }
 
-day13b :: [(Integer, Integer)] :~> Integer
+day13b :: [(Int, Int)] :~> Int
 day13b = MkSol
-    { sParse = P.parseMaybe $ do
+    { sParse = parseMaybeLenient $ do
         _ <- P.manyTill P.anySingle P.newline
-        mapMaybe sequenceA . zip [0,-1..] <$> parseTrains
+        mapMaybe sequenceA . zip [0,1..] <$> parseTrains
     , sShow  = show
-    , sSolve = chineseRemainder
+    , sSolve = Just . fst . foldl' go (0, 1)
     }
+  where
+    go (!base, !step) (offset, i) = (base', step * i)
+      where
+        base' = iterateFind (\n -> (n + offset) `mod` i == 0)
+                            (+ step)
+                            base

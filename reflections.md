@@ -2256,21 +2256,20 @@ that file instead!
 ```
 >> Day 13a
 benchmarking...
-time                 243.0 ns   (228.5 ns .. 254.9 ns)
-                     0.980 R²   (0.973 R² .. 0.986 R²)
-mean                 242.6 ns   (232.4 ns .. 252.1 ns)
-std dev              33.68 ns   (30.79 ns .. 38.19 ns)
+time                 220.1 ns   (210.0 ns .. 227.7 ns)
+                     0.981 R²   (0.976 R² .. 0.990 R²)
+mean                 231.2 ns   (221.3 ns .. 240.5 ns)
+std dev              32.56 ns   (30.28 ns .. 35.50 ns)
 variance introduced by outliers: 95% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 13b
 benchmarking...
-time                 2.155 μs   (2.135 μs .. 2.186 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 2.140 μs   (2.125 μs .. 2.161 μs)
-std dev              54.94 ns   (33.89 ns .. 83.03 ns)
-variance introduced by outliers: 32% (moderately inflated)
+time                 4.337 μs   (4.334 μs .. 4.342 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 4.334 μs   (4.329 μs .. 4.340 μs)
+std dev              18.12 ns   (8.841 ns .. 29.64 ns)
 
 * parsing and formatting times excluded
 ```
