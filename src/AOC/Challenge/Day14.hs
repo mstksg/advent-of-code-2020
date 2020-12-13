@@ -22,8 +22,8 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day14 (
-    -- day14a
-  -- , day14b
+    day14a
+  , day14b
   ) where
 
 import           AOC.Prelude

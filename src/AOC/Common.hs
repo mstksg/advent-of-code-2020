@@ -22,7 +22,6 @@ module AOC.Common (
   , loopMaybeM
   , loopEither
   , firstJust
-  , iterateFind
   , (!!!)
   , (!?)
   , drop'
@@ -216,18 +215,6 @@ iterateMaybe f = go
 []     !? _ = Nothing
 (x:_ ) !? 0 = Just x
 (x:xs) !? n = x `seq` (xs !? (n - 1))
-
--- | Iterate + Find, so can always return a Just
-iterateFind
-    :: (a -> Bool)
-    -> (a -> a)
-    -> a
-    -> a
-iterateFind p f = go
-  where
-    go !x
-      | p x       = x
-      | otherwise = go (f x)
 
 -- | Apply function until 'Nothing' is produced, and return last produced
 -- value.

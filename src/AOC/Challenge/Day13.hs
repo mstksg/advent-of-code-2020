@@ -12,7 +12,7 @@ module AOC.Challenge.Day13 (
   , day13b
   ) where
 
-import           AOC.Common                          (CharParser, iterateFind, parseMaybeLenient)
+import           AOC.Common                          (CharParser, parseMaybeLenient)
 import           AOC.Solver                          ((:~>)(..))
 import           Control.Applicative                 ((<|>))
 import           Data.Foldable                       (minimumBy)
@@ -51,6 +51,6 @@ day13b = MkSol
   where
     go (!base, !step) (offset, i) = (base', step * i)
       where
-        base' = iterateFind (\n -> (n + offset) `mod` i == 0)
-                            (+ step)
-                            base
+        base' = until (\n -> (n + offset) `mod` i == 0)
+                      (+ step)
+                      base

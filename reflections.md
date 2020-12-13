@@ -2283,27 +2283,13 @@ Next, what if we wanted to find the situation for pairs `(0,7)`, `(1,13)`, and
 *first* one of those that also matches `(4,15)`
 
 ```haskell
--- | A handy utility function I keep around: repeat a function until you find a
--- value that satifies a predicate.  Like iterate + find, but returns
--- non-Maybe.
-iterateFind
-    :: (a -> Bool)
-    -> (a -> a)
-    -> a
-    -> a
-iterateFind p f = go
-  where
-    go !x
-      | p x       = x
-      | otherwise = go (f x)
-```
-
-```haskell
-ghci> iterateFind (\t -> (t + 4) `mod` 15 == 0) (+ (7*13)) 14
+-- 'until' repeatedly applies a function until it finds a value that matches a
+-- predicate
+ghci> until (\t -> (t + 4) `mod` 15 == 0) (+ (7*13)) 14
 1106
 ```
 
-Ah hah, good ol' `1106`.  Well, `1106` isn't the only number that works.  
+Ah hah, good ol' `1106`.  Well, `1106` isn't the only number that works.
 We can see that `1106 + (7*13*15)n` for any integer n would *also* work, since
 it preserves that mod property.
 
