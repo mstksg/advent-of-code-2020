@@ -36,7 +36,7 @@ day13a = MkSol
     , sSolve = \(t0, xs) -> Just $ minimumBy (comparing snd)
             [ (x, waitTime)
             | x <- xs
-            , let waitTime = (x - t0) `mod` x
+            , let waitTime = x - (t0 `mod` x)
             ]
     }
 

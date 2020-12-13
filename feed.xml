@@ -7,11 +7,90 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Sat, 12 Dec 2020 17:28:07 EST</lastBuildDate>
+    <lastBuildDate>Sun, 13 Dec 2020 02:58:44 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Sat, 12 Dec 2020 17:28:07 EST</pubDate>
+    <pubDate>Sun, 13 Dec 2020 02:58:44 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 13</title>
+      <description>&lt;h2 id=&quot;day-13&quot;&gt;Day 13&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day13.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/13&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day13.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day13.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day13.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Aw man, I feel like I would have leaderboarded today had I not been busy :’( These type of number theory problems are the ones I usually do well on.&lt;/p&gt;
+&lt;p&gt;Oh well! Silly internet points, right?&lt;/p&gt;
+&lt;p&gt;For part 1, you just need to minimize a function on each bus ID:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 t0 xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; minimumBy (comparing &lt;span class=&quot;fu&quot;&gt;snd&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ (x, waitTime)&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; x &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; xs&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; waitTime &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; x &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; (t0 &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; x)&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Part 2 is where things get interesting! Let’s try to think of things inductively: start with small lists, and see how we would “add one more”.&lt;/p&gt;
+&lt;p&gt;Let’s say we had &lt;code&gt;(offset, id)&lt;/code&gt; pairs &lt;code&gt;(0,7)&lt;/code&gt; and &lt;code&gt;(1,13)&lt;/code&gt;, like in the example. This means that we want to find times where &lt;code&gt;t `mod` 7 == 0&lt;/code&gt; and &lt;code&gt;(t + 1) `mod` 13 == 0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We can sort of do a manual search by hand to get &lt;code&gt;14&lt;/code&gt; as our lowest candidate. But also, note that &lt;code&gt;14 + (7*13)n&lt;/code&gt; for any integer &lt;code&gt;n&lt;/code&gt; would preserve the offset property. &lt;code&gt;14&lt;/code&gt;, &lt;code&gt;14 + 91&lt;/code&gt;, &lt;code&gt;14 + 182&lt;/code&gt;, etc. So the family of all “valid” numbers are &lt;code&gt;14 + (7*13)n&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Next, what if we wanted to find the situation for pairs &lt;code&gt;(0,7)&lt;/code&gt;, &lt;code&gt;(1,13)&lt;/code&gt;, and &lt;code&gt;(4,15)&lt;/code&gt;? Well, we already know that any solution that includes &lt;code&gt;(0,7)&lt;/code&gt; and &lt;code&gt;(1,13)&lt;/code&gt; will be of the form &lt;code&gt;14 + (7*13)n&lt;/code&gt;. So now we just need to find the &lt;em&gt;first&lt;/em&gt; one of those that also matches &lt;code&gt;(4,15)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | A handy utility function I keep around: repeat a function until you find a&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- value that satifies a predicate.  Like iterate + find, but returns&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- non-Maybe.&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;iterateFind&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Bool&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; a)&lt;/span&gt;
+&lt;span id=&quot;cb2-7&quot;&gt;&lt;a href=&quot;#cb2-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; a&lt;/span&gt;
+&lt;span id=&quot;cb2-8&quot;&gt;&lt;a href=&quot;#cb2-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; a&lt;/span&gt;
+&lt;span id=&quot;cb2-9&quot;&gt;&lt;a href=&quot;#cb2-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;iterateFind p f &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; go&lt;/span&gt;
+&lt;span id=&quot;cb2-10&quot;&gt;&lt;a href=&quot;#cb2-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-11&quot;&gt;&lt;a href=&quot;#cb2-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;x&lt;/span&gt;
+&lt;span id=&quot;cb2-12&quot;&gt;&lt;a href=&quot;#cb2-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; p x       &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; x&lt;/span&gt;
+&lt;span id=&quot;cb2-13&quot;&gt;&lt;a href=&quot;#cb2-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;otherwise&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; go (f x)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;ghci&lt;span class=&quot;op&quot;&gt;&amp;gt;&lt;/span&gt; iterateFind (\t &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (t &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;4&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;15&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;) (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; (&lt;span class=&quot;dv&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;dv&quot;&gt;13&lt;/span&gt;)) &lt;span class=&quot;dv&quot;&gt;14&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;dv&quot;&gt;1106&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Ah hah, good ol’ &lt;code&gt;1106&lt;/code&gt;. Well, &lt;code&gt;1106&lt;/code&gt; isn’t the only number that works.&lt;br /&gt;
+We can see that &lt;code&gt;1106 + (7*13*15)n&lt;/code&gt; for any integer n would &lt;em&gt;also&lt;/em&gt; work, since it preserves that mod property.&lt;/p&gt;
+&lt;p&gt;And so, we can repeat this process over and over again for each new number we see.&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;Keep track of the current “lowest match” (&lt;code&gt;14&lt;/code&gt;) and the current “search step” (&lt;code&gt;7*13&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;When you see a number, search that family until you find a new lowest match that includes the new number.&lt;/li&gt;
+&lt;li&gt;Use that new number as the next lowest match, and multiply it to get the new search step.&lt;/li&gt;
+&lt;li&gt;Rinse and repeat.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Overall, this works pretty well as a &lt;code&gt;foldl&lt;/code&gt;, where we keep this &lt;code&gt;(lowest match, search step)&lt;/code&gt; pair as an accumulator, and update it as we see each new value in our list.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [(&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;)] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;fst&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; foldl&amp;#39; go (&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go (&lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;base, &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;step) (offset, i) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (base&amp;#39;, step &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; i)&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-6&quot;&gt;&lt;a href=&quot;#cb4-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        base&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; iterateFind (\n &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (n &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; offset) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-7&quot;&gt;&lt;a href=&quot;#cb4-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                            (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; step)&lt;/span&gt;
+&lt;span id=&quot;cb4-8&quot;&gt;&lt;a href=&quot;#cb4-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                            base&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;day-13-benchmarks&quot;&gt;Day 13 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 13a
+benchmarking...
+time                 220.1 ns   (210.0 ns .. 227.7 ns)
+                     0.981 R²   (0.976 R² .. 0.990 R²)
+mean                 231.2 ns   (221.3 ns .. 240.5 ns)
+std dev              32.56 ns   (30.28 ns .. 35.50 ns)
+variance introduced by outliers: 95% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 13b
+benchmarking...
+time                 4.337 μs   (4.334 μs .. 4.342 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 4.334 μs   (4.329 μs .. 4.340 μs)
+std dev              18.12 ns   (8.841 ns .. 29.64 ns)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-13</link>
+      <pubDate>Sun, 13 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 12</title>
       <description>&lt;h2 id=&quot;day-12&quot;&gt;Day 12&lt;/h2&gt;
