@@ -12,21 +12,28 @@ module AOC.Challenge.Day13 (
   , day13b
   ) where
 
+import           AOC.Common                       (CharParser)
 import           AOC.Solver                       ((:~>)(..))
+import           Control.Applicative              ((<|>))
 import           Data.Foldable                    (minimumBy)
 import           Data.List.Split                  (splitOn)
-import           Data.Maybe                       (mapMaybe)
+import           Data.Maybe                       (mapMaybe, catMaybes)
 import           Data.Ord                         (comparing)
 import           Math.NumberTheory.Moduli.Chinese (chineseRemainder)
 import           Text.Read                        (readMaybe)
+import qualified Text.Megaparsec                  as P
+import qualified Text.Megaparsec.Char             as P
+import qualified Text.Megaparsec.Char.Lexer       as PL
 
-day13a :: (Int, [Int]) :~> _
+parseTrains :: Num a => CharParser [Maybe a]
+parseTrains = (Nothing <$ P.char 'x' <|> Just <$> PL.decimal)
+    `P.sepBy` P.char ','
+
+day13a :: (Int, [Int]) :~> (Int, Int)
 day13a = MkSol
-    { sParse = \str -> do
-        [l1, l2] <- pure $ lines str
-        t0 <- readMaybe l1
-        let xs = mapMaybe readMaybe (splitOn "," l2)
-        pure (t0, xs)
+    { sParse = P.parseMaybe $
+        (,) <$> (PL.decimal <* P.newline)
+            <*> (catMaybes <$> parseTrains)
     , sShow  = \(x,y) -> show $ x * y
     , sSolve = \(t0, xs) -> Just $ minimumBy (comparing snd)
             [ (x, waitTime)
@@ -35,13 +42,11 @@ day13a = MkSol
             ]
     }
 
-day13b :: _ :~> _
+day13b :: [(Integer, Integer)] :~> Integer
 day13b = MkSol
-    { sParse = Just
-             . mapMaybe (traverse readMaybe)
-             . zip [0,-1..]
-             . splitOn ","
-             . dropWhile (/= '\n')
+    { sParse = P.parseMaybe $ do
+        _ <- P.manyTill P.anySingle P.newline
+        mapMaybe sequenceA . zip [0,-1..] <$> parseTrains
     , sShow  = show
     , sSolve = chineseRemainder
     }

@@ -940,16 +940,16 @@ pHWord = P.many (P.satisfy (not . isSpace)) <* P.many (P.satisfy (== ' '))
 pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s Int
 pDecimal = PL.signed P.space PL.decimal
 
-parseMaybeLenient :: P.Parsec e s a -> s -> Maybe a
+parseMaybeLenient :: P.Parsec Void s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
 
 parseOrFail :: (P.Stream s, P.ShowErrorComponent e) => P.Parsec e s a -> s -> a
 parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeLenient"
 
-parseLines :: P.Parsec e String a -> String -> Maybe [a]
+parseLines :: P.Parsec Void String a -> String -> Maybe [a]
 parseLines p = traverse (parseMaybeLenient p) . lines
 
-parseWords :: P.Parsec e (TokStream String) a -> String -> Maybe a
+parseWords :: P.Parsec Void (TokStream String) a -> String -> Maybe a
 parseWords p = parseMaybeLenient p . TokStream . words
 
 type TokParser s = P.Parsec Void (TokStream s)
