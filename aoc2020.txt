@@ -7998,6 +7998,8 @@ module AOC.Challenge.Day16
 --   will recommend what should go in place of the underscores.</li>
 --   </ul>
 module AOC.Challenge.Day15
+day15a :: _ :~> _
+day15b :: _ :~> _
 
 
 -- | Template Haskell for discovering all named challenges in a given
@@ -8266,6 +8268,7 @@ Day :: Finite 25 -> Day
 
 -- | Run a countdown on the console.
 countdownConsole :: MonadIO m => Integer -> Day -> m a -> m a
+countdownWithPrint :: MonadIO m => m NominalDiffTime -> Int -> String -> m a -> m a
 timeToRelease :: Integer -> Day -> IO NominalDiffTime
 
 -- | Pretty-print a <a>NominalDiffTime</a>
@@ -8322,14 +8325,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2aXH
-mainRunOpts :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH MainRunOpts
-mroActual :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH Bool
-mroBench :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH Bool
-mroInput :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH Bool
-mroSpec :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH TestSpec
-mroTest :: HasMainRunOpts c_a2aXH => Lens' c_a2aXH Bool
+class HasMainRunOpts c_a2b5y
+mainRunOpts :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y MainRunOpts
+mroActual :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y Bool
+mroBench :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y Bool
+mroInput :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y Bool
+mroSpec :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y TestSpec
+mroTest :: HasMainRunOpts c_a2b5y => Lens' c_a2b5y Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8342,10 +8345,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2b5a
-mainViewOpts :: HasMainViewOpts c_a2b5a => Lens' c_a2b5a MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2b5a => Lens' c_a2b5a TestSpec
-mvoWait :: HasMainViewOpts c_a2b5a => Lens' c_a2b5a Bool
+class HasMainViewOpts c_a2bd1
+mainViewOpts :: HasMainViewOpts c_a2bd1 => Lens' c_a2bd1 MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2bd1 => Lens' c_a2bd1 TestSpec
+mvoWait :: HasMainViewOpts c_a2bd1 => Lens' c_a2bd1 Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8355,7 +8358,7 @@ defaultMVO :: TestSpec -> MainViewOpts
 
 -- | Options for <a>mainSubmit</a>
 data MainSubmitOpts
-MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
+MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 [_msoSpec] :: MainSubmitOpts -> !ChallengeSpec
 
 -- | Run tests before submitting? (Default: True)
@@ -8366,12 +8369,17 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 
 -- | Lock answer if submission succeeded? (Default: True)
 [_msoLock] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2b9r
-mainSubmitOpts :: HasMainSubmitOpts c_a2b9r => Lens' c_a2b9r MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2b9r => Lens' c_a2b9r Bool
-msoLock :: HasMainSubmitOpts c_a2b9r => Lens' c_a2b9r Bool
-msoSpec :: HasMainSubmitOpts c_a2b9r => Lens' c_a2b9r ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2b9r => Lens' c_a2b9r Bool
+
+-- | If a wait is received after submission, try again automatically
+--   (Default: False)
+[_msoRetry] :: MainSubmitOpts -> !Bool
+class HasMainSubmitOpts c_a2bhz
+mainSubmitOpts :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz Bool
+msoLock :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz Bool
+msoRetry :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz Bool
+msoSpec :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2bhz => Lens' c_a2bhz Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
@@ -8413,7 +8421,8 @@ viewPrompt :: ChallengeSpec -> IO Text
 --   available.
 waitForPrompt :: ChallengeSpec -> IO Text
 
--- | Submit solution for a given challenge spec, and lock if correct.
+-- | Submit solution for a given challenge spec, lock if correct, and retry
+--   if a <tt>wait</tt> is received.
 submitSolution :: ChallengeSpec -> IO (Text, SubmitRes)
 
 -- | Result-suppressing version of <a>execSolution</a>.
