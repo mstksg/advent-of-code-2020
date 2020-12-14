@@ -108,6 +108,17 @@ packages:
   original:
     subdir: vec
     url: https://github.com/mstksg/vec/archive/d2dedab44fa49b4ed903fac6b9189c4d62835e1b.tar.gz
+- completed:
+    size: 71740
+    url: https://github.com/mstksg/vector-sized/archive/f3757806e54afeaa243c87ffdcab881592470ddf.tar.gz
+    name: vector-sized
+    version: 1.4.3
+    sha256: 16c878374c056ab5d6a23ab86d9ea6a5c014997ace47ec623818f13f1ef36df9
+    pantry-tree:
+      size: 1712
+      sha256: 599c238bec43ebd37cf9f650384d25af21108357951cf4e4cb77b56398e6aca6
+  original:
+    url: https://github.com/mstksg/vector-sized/archive/f3757806e54afeaa243c87ffdcab881592470ddf.tar.gz
 snapshots:
 - completed:
     size: 532832

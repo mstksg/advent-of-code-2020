@@ -79,7 +79,9 @@ library:
   - aeson
   - arithmoi
   - ansi-terminal
+  - monad-loops
   - barbies
+  - bitvec
   - bytestring
   - comonad
   - conduino
@@ -113,6 +115,7 @@ library:
   - parallel
   - parser-combinators >= 1.2.0
   - pointedlist
+  - primitive
   - profunctors
   - psqueues
   - recursion-schemes
