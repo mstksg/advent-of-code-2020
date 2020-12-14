@@ -17,7 +17,7 @@ import           AOC.Solver                        ((:~>)(..))
 import           Control.Monad.Loops               (whileM_)
 import           Control.Monad.Primitive           (PrimMonad, PrimState)
 import           Control.Monad.ST                  (runST)
-import           Control.Monad.State               (execStateT, modify, StateT)
+import           Control.Monad.State.Strict        (execStateT, StateT(..))
 import           Data.Bit                          (Bit(..))
 import           Data.Bits                         (popCount)
 import           Data.Finite                       (Finite, finites)
@@ -61,14 +61,14 @@ seatRule
 seatRule thr ns src targ = traverse_ go finites
   where
     go :: Finite n -> StateT Bool m ()
-    go i = do
+    go i = StateT $ \changed -> do
       Bit x <- MVU.read src i
       n     <- countTrue unBit <$> traverse (MVU.read src) (ns `V.index` i)
       let x' = case x of
-            False -> not (n > 0)
-            True  -> not (n >= thr)
-      modify (|| (x /= x'))
+            False -> n == 0
+            True  -> n < thr
       MVU.write targ i (Bit x')
+      pure ((), changed || x /= x')
     {-# INLINE go #-}
 {-# INLINE seatRule #-}
 
