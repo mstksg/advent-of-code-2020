@@ -29,8 +29,8 @@ import qualified Text.Megaparsec.Char       as P
 import qualified Text.Megaparsec.Char.Lexer as PP
 
 data Instr =
-      Mask [Maybe Bool]
-    | Write Int Int
+      Mask ![Maybe Bool]
+    | Write !Int !Int
   deriving (Show, Eq, Ord, Generic)
 instance NFData Instr
 
