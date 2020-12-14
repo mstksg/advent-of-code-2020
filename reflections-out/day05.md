@@ -137,20 +137,19 @@ seatId = foldl' iGuessWe'reDoingThis 0
 ```
 >> Day 05a
 benchmarking...
-time                 22.99 μs   (22.97 μs .. 23.00 μs)
+time                 17.82 μs   (17.80 μs .. 17.83 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 22.98 μs   (22.96 μs .. 22.99 μs)
-std dev              41.52 ns   (31.58 ns .. 51.93 ns)
+mean                 17.85 μs   (17.83 μs .. 17.90 μs)
+std dev              99.61 ns   (62.10 ns .. 135.5 ns)
 
 * parsing and formatting times excluded
 
 >> Day 05b
 benchmarking...
-time                 25.53 μs   (24.66 μs .. 26.59 μs)
-                     0.994 R²   (0.988 R² .. 1.000 R²)
-mean                 25.14 μs   (24.94 μs .. 25.75 μs)
-std dev              1.093 μs   (590.5 ns .. 1.932 μs)
-variance introduced by outliers: 50% (severely inflated)
+time                 18.71 μs   (18.70 μs .. 18.72 μs)
+                     1.000 R²   (1.000 R² .. 1.000 R²)
+mean                 18.70 μs   (18.70 μs .. 18.71 μs)
+std dev              29.62 ns   (22.55 ns .. 42.77 ns)
 
 * parsing and formatting times excluded
 ```

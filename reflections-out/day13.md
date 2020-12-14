@@ -112,20 +112,20 @@ part2 = fst . foldl' go (0, 1)
 ```
 >> Day 13a
 benchmarking...
-time                 249.4 ns   (231.5 ns .. 266.1 ns)
-                     0.972 R²   (0.957 R² .. 0.984 R²)
-mean                 247.9 ns   (237.1 ns .. 263.1 ns)
-std dev              44.37 ns   (34.61 ns .. 64.02 ns)
-variance introduced by outliers: 97% (severely inflated)
+time                 248.4 ns   (237.3 ns .. 255.2 ns)
+                     0.986 R²   (0.977 R² .. 0.992 R²)
+mean                 233.9 ns   (222.3 ns .. 242.7 ns)
+std dev              32.93 ns   (28.64 ns .. 37.78 ns)
+variance introduced by outliers: 95% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 13b
 benchmarking...
-time                 4.491 μs   (4.481 μs .. 4.506 μs)
+time                 3.811 μs   (3.805 μs .. 3.816 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 4.488 μs   (4.483 μs .. 4.500 μs)
-std dev              25.71 ns   (12.51 ns .. 44.60 ns)
+mean                 3.795 μs   (3.790 μs .. 3.799 μs)
+std dev              15.85 ns   (13.59 ns .. 18.67 ns)
 
 * parsing and formatting times excluded
 ```

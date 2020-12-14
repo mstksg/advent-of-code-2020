@@ -23,6 +23,7 @@ ghc-options:
 - -Wcompat
 - -Wno-partial-type-signatures
 - -Wredundant-constraints
+- -O2
 
 default-extensions:
 - AllowAmbiguousTypes
