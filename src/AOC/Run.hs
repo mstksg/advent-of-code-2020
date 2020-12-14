@@ -89,6 +89,7 @@ data MainSubmitOpts = MSO { _msoSpec  :: !ChallengeSpec
                           , _msoTest  :: !Bool    -- ^ Run tests before submitting?  (Default: True)
                           , _msoForce :: !Bool    -- ^ Force submission even if bad?  (Default: False)
                           , _msoLock  :: !Bool    -- ^ Lock answer if submission succeeded?  (Default: True)
+                          , _msoRetry :: !Bool    -- ^ If a wait is received after submission, try again automatically (Default: False)
                           }
   deriving Show
 
@@ -116,6 +117,7 @@ defaultMSO cs = MSO { _msoSpec  = cs
                     , _msoTest  = True
                     , _msoForce = False
                     , _msoLock  = True
+                    , _msoRetry = False
                     }
 
 filterChallengeMap :: TestSpec -> Either String ChallengeMap
@@ -230,8 +232,10 @@ mainSubmit Cfg{..} MSO{..} = do
     res       <- liftEither . first (("[SOLUTION ERROR]":) . (:[]) . show) $ resEither
     liftIO $ printf "Submitting solution: %s\n" res
 
-    output@(resp, status) <- liftEither . first showAoCError
-                         =<< liftIO (runAoC opts (AoCSubmit _csDay _csPart res))
+    let submitter
+          | _msoRetry = submitRetry opts _csDay _csPart res
+          | otherwise = liftIO $ runAoC opts (AoCSubmit _csDay _csPart res)
+    output@(resp, status) <- liftEither . first showAoCError =<< submitter
     let resp' = formatResp
               . either (map T.pack) T.lines
               . htmlToMarkdown False
@@ -259,6 +263,30 @@ mainSubmit Cfg{..} MSO{..} = do
                      , "Raw: %s"
                      , "%s"
                      ]
+
+submitRetry
+    :: MonadIO m
+    => AoCOpts
+    -> Day
+    -> Part
+    -> String
+    -> m (Either AoCError (Text, SubmitRes))
+submitRetry opts d p ans = runExceptT go
+  where
+    go = do
+      out@(_, status) <- ExceptT . liftIO $ runAoC opts (AoCSubmit d p ans)
+      case status of
+        SubWait i -> do
+          liftIO . withColor ANSI.Vivid ANSI.Yellow $
+              printf "Automatically waiting %s seconds to re-submit...\n" i
+          -- 0.1 to account for latency
+          resubTime <- addUTCTime (secondsToNominalDiffTime (fromIntegral i - 0.1)) <$> liftIO getCurrentTime
+          countdownWithPrint
+            ((resubTime `diffUTCTime`) <$> liftIO getCurrentTime)
+            100000
+            "Re-submit"
+            go
+        _ -> pure out
 
 displayStatus :: SubmitRes -> (ANSI.Color, Bool, String)
 displayStatus = \case

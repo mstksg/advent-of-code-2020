@@ -18,6 +18,7 @@ module AOC.Run.Load (
   , ChallengeData(..), challengeData
   , Day(..)
   , countdownConsole
+  , countdownWithPrint
   , timeToRelease
   , showNominalDiffTime
   , charPart
@@ -206,31 +207,43 @@ countdownConsole
     -> Day              -- ^ day to count down to
     -> m a              -- ^ callback on release
     -> m a
-countdownConsole yr d = countdownWith yr d 250000 $ \ttr -> liftIO $ do
+countdownConsole yr d = countdownWithPrint
+    (liftIO $ timeToRelease yr d)
+    250000
+    (printf "Day %d release" (dayInt d))
+
+countdownWithPrint
+    :: MonadIO m
+    => m NominalDiffTime
+    -> Int
+    -> String
+    -> m a
+    -> m a
+countdownWithPrint getNDT delay cbstr = countdownWith getNDT delay $ \ttr -> liftIO $ do
     ANSI.clearFromCursorToScreenEnd
-    printf "> Day %d release in: %s" (dayInt d) (showNominalDiffTime ttr)
+    printf "> %s in: %s" cbstr (showNominalDiffTime ttr)
     ANSI.setCursorColumn 0
     hFlush stdout
 
 -- | Run a countdown with a given callback on each tick.
 countdownWith
     :: MonadIO m
-    => Integer                      -- ^ year of challenge
-    -> Day                          -- ^ day to count down to
+    => m NominalDiffTime            -- ^ get time
     -> Int                          -- ^ interval (milliseconds)
     -> (NominalDiffTime -> m ())    -- ^ callback on each tick
-    -> m a                          -- ^ callback on release
+    -> m a                          -- ^ callback on finish
     -> m a
-countdownWith yr d delay callback release = go
+countdownWith getNDT delay callback release = go
   where
     go = do
-      ttr <- liftIO $ timeToRelease yr d
+      ttr <- getNDT
       if ttr <= 0
         then release
         else do
           callback ttr
           liftIO $ threadDelay delay
           go
+
 
 htmlToMarkdown :: Bool -> Text -> Either [String] T.Text
 htmlToMarkdown pretty html = first ((:[]) . show) . P.runPure $ do

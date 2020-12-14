@@ -104,11 +104,12 @@ waitForPrompt cs@CS{..} = eitherIO $ do
     maybeToEither ["Prompt not found in result map (Internal Error)"] $
       lookupSolution cs out
 
--- | Submit solution for a given challenge spec, and lock if correct.
+-- | Submit solution for a given challenge spec, lock if correct, and retry
+-- if a 'wait' is received.
 submitSolution :: ChallengeSpec -> IO (Text, SubmitRes)
 submitSolution cs = eitherIO $ do
     cfg <- liftIO $ configFile defConfPath
-    mainSubmit cfg . defaultMSO $ cs
+    mainSubmit cfg $ (defaultMSO cs) { _msoRetry = True }
 
 -- | Result-suppressing version of 'execSolution'.
 execSolution_ :: ChallengeSpec -> IO ()

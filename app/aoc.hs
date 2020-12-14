@@ -183,6 +183,11 @@ parseOpts inputCache = do
           , short 'n'
           , help "Do not lock in answer, even if correct submission was received"
           ]
+        _msoRetry <- switch . mconcat $
+          [ long "retry"
+          , short 'r'
+          , help "If a 'wait' is received after submission, automatically retry when the wait is over"
+          ]
         pure MSO{..}
     parseTest  :: Parser MainRunOpts
     parseTest  = parseRun & mapped . mroTest  .~ True
