@@ -29,15 +29,12 @@ import qualified Text.Megaparsec.Char       as P
 import qualified Text.Megaparsec.Char.Lexer as PP
 
 data Instr =
-      Mask ![Maybe Bool]
-    | Write !Int !Int
+      Mask [Maybe Bool]
+    | Write Int Int
   deriving (Show, Eq, Ord, Generic)
 instance NFData Instr
 
-applyMask1
-    :: Int
-    -> [Maybe Bool]
-    -> Int
+applyMask1 :: Int -> [Maybe Bool] -> Int
 applyMask1 = ifoldl' $ \i x -> \case
     Nothing    -> x
     Just False -> clearBit x i
@@ -55,10 +52,7 @@ day14a = MkSol
       Mask  msk'   -> (mp, msk')
       Write addr n -> (IM.insert addr (applyMask1 n msk) mp, msk)
 
-applyMask2
-    :: Int
-    -> [Maybe Bool]
-    -> [Int]
+applyMask2 :: Int -> [Maybe Bool] -> [Int]
 applyMask2 = ifoldlM $ \i x -> \case  -- we can save like 2ms with manual ifoldl'
     Nothing    -> [clearBit x i, setBit x i]
     Just False -> [x]
