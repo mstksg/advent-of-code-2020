@@ -1,5 +1,4 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# LANGUAGE OverloadedStrings        #-}
 
 -- |
 -- Module      : AOC.Challenge.Day14
@@ -9,80 +8,86 @@
 -- Portability : non-portable
 --
 -- Day 14.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day14 (
     day14a
   , day14b
   ) where
 
-import           AOC.Prelude hiding (binary)
+import           AOC.Common                 (CharParser, parseLines)
+import           AOC.Solver                 ((:~>)(..))
+import           Control.DeepSeq            (NFData)
+import           Control.Lens.Indexed       (ifoldlM, ifoldl')
+import           Data.Bits                  (setBit, clearBit)
+import           Data.Functor               (void)
+import           Data.IntMap                (IntMap)
+import           Data.List                  (foldl')
+import           GHC.Generics               (Generic)
+import qualified Data.IntMap                as IM
+import qualified Text.Megaparsec            as P
+import qualified Text.Megaparsec.Char       as P
+import qualified Text.Megaparsec.Char.Lexer as PP
 
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import           Numeric.Lens
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+data Instr =
+      Mask [Maybe Bool]
+    | Write Int Int
+  deriving (Show, Eq, Ord, Generic)
+instance NFData Instr
 
-day14a :: _ :~> _
+applyMask1
+    :: Int
+    -> [Maybe Bool]
+    -> Int
+applyMask1 = ifoldl' $ \i x -> \case
+    Nothing    -> x
+    Just False -> clearBit x i
+    Just True  -> setBit   x i
+
+day14a :: [Instr] :~> Int
 day14a = MkSol
-    { sParse = Just . lines
+    { sParse = parseLines parseInstr
     , sShow  = show
-    , sSolve = Just . sum . fst . foldl' process (IM.empty, replicate 36 Nothing)
+    , sSolve = Just . sum . fst . foldl' go mempty
     }
   where
-    process :: (IntMap Int, [Maybe Bool]) -> String -> (IntMap Int, [Maybe Bool])
-    process (mp,mks) str = case words str of
-      "mask":_:bs:_ -> (mp, map (\case '0' -> Just False; '1' -> Just True; 'X' -> Nothing) bs)
-      (takeWhile isDigit.drop 4->memer):_:n:_ ->
-        let digitstr = zipWith go mks (printf "%036b" (read @Int n))
-            val = digitstr ^?! binary
-        in  (IM.insert (read memer) val mp, mks)
-    go Nothing = id
-    go (Just True) = const '1'
-    go (Just False) = const '0'
+    go :: (IntMap Int, [Maybe Bool]) -> Instr -> (IntMap Int, [Maybe Bool])
+    go (!mp, !msk) = \case
+      Mask  msk'   -> (mp, msk')
+      Write addr n -> (IM.insert addr (applyMask1 n msk) mp, msk)
 
+applyMask2
+    :: Int
+    -> [Maybe Bool]
+    -> [Int]
+applyMask2 = ifoldlM $ \i x -> \case  -- we can save like 2ms with manual ifoldl'
+    Nothing    -> [clearBit x i, setBit x i]
+    Just False -> [x]
+    Just True  -> [setBit x i]
 
-
-
-
-day14b :: _ :~> _
+day14b :: [Instr] :~> Int
 day14b = MkSol
     { sParse = sParse day14a
     , sShow  = show
-    , sSolve = Just . sum . fst . foldl' process (IM.empty, replicate 36 Nothing)
+    , sSolve = Just . sum . fst . foldl' go mempty
     }
   where
-    process :: (IntMap Int, [Maybe Bool]) -> String -> (IntMap Int, [Maybe Bool])
-    process (mp,mks) str = case words str of
-      "mask":_:bs:_ -> (mp, map (\case '0' -> Just False; '1' -> Just True; 'X' -> Nothing) bs)
-      (takeWhile isDigit.drop 4->memer):_:n:_ ->
-        let memers :: [[Char -> Char]]
-            memers = for mks \case
-              Nothing -> [const '0', const '1']
-              Just True -> [const '1']
-              Just False -> [id]
-            ixes = map (fromJust . preview binary . zipWith (&) (printf "%036b" (read @Int memer))) memers
-        in  (foldl' (\mm x -> IM.insert x (read n) mm) mp ixes, mks)
+    go :: (IntMap Int, [Maybe Bool]) -> Instr -> (IntMap Int, [Maybe Bool])
+    go (!mp, !msk) = \case
+      Mask  msk'   -> (mp, msk')
+      Write addr n -> (IM.fromList ((,n) <$> applyMask2 addr msk) <> mp, msk)
+
+parseInstr :: CharParser Instr
+parseInstr = (Mask <$> P.try masker) P.<|> (uncurry Write <$> memer)
+  where
+    masker = do
+      void "mask = "
+      reverse <$> P.many bitter
+    bitter = P.choice
+      [ Just True  <$ P.char '1'
+      , Just False <$ P.char '0'
+      , Nothing    <$ P.char 'X'
+      ]
+    memer = (,)
+      <$> ("mem[" *> PP.decimal <* "]")
+      <*> (" = "  *> PP.decimal)
+
