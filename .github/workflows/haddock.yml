@@ -1,0 +1,44 @@
+name: Haddock
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**/*.hs'
+      - package.yaml
+      - stack.*
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: src
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: gh-pages
+      - uses: actions/setup-haskell@v1
+        with:
+          stack-version: latest
+      - uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-${{ hashFiles('src/stack.*') }}-${{ hashFiles('src/package.yaml') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('src/stack.*') }}-
+          path: ~/.stack
+      - run: stack build --haddock --no-haddock-deps
+        working-directory: src
+      - run: rsync --archive --delete --exclude=.git --verbose --whole-file src/.stack-work/dist/*/*/doc/html/aoc2020/ gh-pages/
+      - uses: EndBug/add-and-commit@v5
+        with:
+          branch: gh-pages
+          cwd: gh-pages
+          add: .
+          message: 'Update gh-pages at ${{ github.sha }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
