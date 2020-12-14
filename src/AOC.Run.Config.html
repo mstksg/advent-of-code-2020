@@ -28,7 +28,7 @@
 </span><span id="line-28"></span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="hs-comment">-- | Configuration for auto-runner.</span><span>
-</span><span id="line-31"></span><span id="local-6989586621679599050"><span id="local-6989586621679599051"></span></span><span class="hs-keyword">data</span><span> </span><span id="Config"><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-var">Config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Cfg"><span class="annot"><a href="AOC.Run.Config.html#Cfg"><span class="hs-identifier hs-var">Cfg</span></a></span></span><span>
+</span><span id="line-31"></span><span id="local-6989586621679625352"><span id="local-6989586621679625353"></span></span><span class="hs-keyword">data</span><span> </span><span id="Config"><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-var">Config</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Cfg"><span class="annot"><a href="AOC.Run.Config.html#Cfg"><span class="hs-identifier hs-var">Cfg</span></a></span></span><span>
 </span><span id="line-32"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="_cfgSession"><span class="annot"><span class="annottext">Config -&gt; Maybe String
 </span><a href="AOC.Run.Config.html#_cfgSession"><span class="hs-identifier hs-var hs-var">_cfgSession</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>     </span><span class="hs-comment">-- ^ Default: 'Nothing'</span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="_cfgYear"><span class="annot"><span class="annottext">Config -&gt; Integer
@@ -46,7 +46,7 @@ $cfrom :: forall x. Config -&gt; Rep Config x
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="hs-comment">-- | No session key, and 2015.</span><span>
 </span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679599041"><span class="annot"><span class="annottext">def :: Config
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679625343"><span class="annot"><span class="annottext">def :: Config
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Cfg :: Maybe String -&gt; Integer -&gt; Config
 </span><a href="AOC.Run.Config.html#Cfg"><span class="hs-identifier hs-type hs-type">Cfg</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">_cfgSession :: Maybe String
 </span><a href="AOC.Run.Config.html#_cfgSession"><span class="hs-identifier hs-var">_cfgSession</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe String
@@ -64,10 +64,10 @@ forall a. Maybe a
 </span><span id="line-47"></span><span class="hs-comment">-- | Load a 'Config' from a given filepath.</span><span>
 </span><span id="line-48"></span><span class="annot"><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-type">configFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span>
 </span><span id="line-49"></span><span id="configFile"><span class="annot"><span class="annottext">configFile :: String -&gt; IO Config
-</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var hs-var">configFile</span></a></span></span><span> </span><span id="local-6989586621679599037"><span class="annot"><span class="annottext">fp :: String
-</span><a href="#local-6989586621679599037"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-50"></span><span>    </span><span id="local-6989586621679599036"><span class="annot"><span class="annottext">Either () ByteString
-</span><a href="#local-6989586621679599036"><span class="hs-identifier hs-var">cfgInp</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(IOError -&gt; Maybe ()) -&gt; IO ByteString -&gt; IO (Either () ByteString)
+</span><a href="AOC.Run.Config.html#configFile"><span class="hs-identifier hs-var hs-var">configFile</span></a></span></span><span> </span><span id="local-6989586621679625339"><span class="annot"><span class="annottext">fp :: String
+</span><a href="#local-6989586621679625339"><span class="hs-identifier hs-var">fp</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679625338"><span class="annot"><span class="annottext">Either () ByteString
+</span><a href="#local-6989586621679625338"><span class="hs-identifier hs-var">cfgInp</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(IOError -&gt; Maybe ()) -&gt; IO ByteString -&gt; IO (Either () ByteString)
 forall e b a.
 Exception e =&gt;
 (e -&gt; Maybe b) -&gt; IO a -&gt; IO (Either b a)
@@ -82,43 +82,43 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ByteString
 </span><span class="hs-identifier hs-var">BS.readFile</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679599037"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><a href="#local-6989586621679625339"><span class="hs-identifier hs-var">fp</span></a></span><span>
 </span><span id="line-52"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either () ByteString
-</span><a href="#local-6989586621679599036"><span class="hs-identifier hs-var">cfgInp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679625338"><span class="hs-identifier hs-var">cfgInp</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-53"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-54"></span><span>        </span><span class="annot"><span class="annottext">String -&gt; Config -&gt; IO ()
 forall a. ToJSON a =&gt; String -&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">Y.encodeFile</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679599037"><span class="hs-identifier hs-var">fp</span></a></span><span> </span><span class="annot"><span class="annottext">Config
+</span><a href="#local-6989586621679625339"><span class="hs-identifier hs-var">fp</span></a></span><span> </span><span class="annot"><span class="annottext">Config
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span>
 </span><span id="line-55"></span><span>        </span><span class="hs-identifier">return</span><span> </span><span class="annot"><span class="annottext">Config
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span>
-</span><span id="line-56"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679599030"><span class="annot"><span class="annottext">b :: ByteString
-</span><a href="#local-6989586621679599030"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679625332"><span class="annot"><span class="annottext">b :: ByteString
+</span><a href="#local-6989586621679625332"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-57"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Either ParseException Config
 forall a. FromJSON a =&gt; ByteString -&gt; Either ParseException a
 </span><span class="hs-identifier hs-var">Y.decodeEither'</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679599030"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-58"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679599028"><span class="annot"><span class="annottext">e :: ParseException
-</span><a href="#local-6989586621679599028"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><a href="#local-6989586621679625332"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-58"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679625330"><span class="annot"><span class="annottext">e :: ParseException
+</span><a href="#local-6989586621679625330"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-59"></span><span>            </span><span class="annot"><span class="annottext">String -&gt; String -&gt; IO ()
 forall r. PrintfType r =&gt; String -&gt; r
 </span><span class="hs-identifier hs-var">printf</span></span><span> </span><span class="annot"><span class="hs-string">&quot;Configuration file at %s could not be parsed:\n&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679599037"><span class="hs-identifier hs-var">fp</span></a></span><span>
+</span><a href="#local-6989586621679625339"><span class="hs-identifier hs-var">fp</span></a></span><span>
 </span><span id="line-60"></span><span>            </span><span class="annot"><span class="annottext">ParseException -&gt; IO ()
 forall a. Show a =&gt; a -&gt; IO ()
 </span><span class="hs-identifier hs-var">print</span></span><span> </span><span class="annot"><span class="annottext">ParseException
-</span><a href="#local-6989586621679599028"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><a href="#local-6989586621679625330"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-61"></span><span>            </span><span class="hs-identifier">return</span><span> </span><span class="annot"><span class="annottext">Config
 forall a. Default a =&gt; a
 </span><span class="hs-identifier hs-var">def</span></span><span>
-</span><span id="line-62"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679599026"><span class="annot"><span class="annottext">cfg :: Config
-</span><a href="#local-6989586621679599026"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Config -&gt; IO Config
+</span><span id="line-62"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679625328"><span class="annot"><span class="annottext">cfg :: Config
+</span><a href="#local-6989586621679625328"><span class="hs-identifier hs-var">cfg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Config -&gt; IO Config
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Config
-</span><a href="#local-6989586621679599026"><span class="hs-identifier hs-var">cfg</span></a></span><span>
+</span><a href="#local-6989586621679625328"><span class="hs-identifier hs-var">cfg</span></a></span><span>
 </span><span id="line-63"></span><span>
 </span><span id="line-64"></span><span class="hs-comment">-- | Load a session token from the configuration file at a given filepath.</span><span>
 </span><span id="line-65"></span><span class="annot"><a href="AOC.Run.Config.html#session"><span class="hs-identifier hs-type">session</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
@@ -144,23 +144,23 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. Int -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="annot"><span class="hs-number">4</span></span><span> </span><span class="hs-special">}</span><span>
 </span><span id="line-71"></span><span>
-</span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679599015"><span id="local-6989586621679599017"><span class="annot"><span class="hs-identifier hs-type">A.ToJSON</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-73"></span><span>    </span><span id="local-6989586621679599013"><span class="annot"><span class="annottext">toJSON :: Config -&gt; Value
+</span><span id="line-72"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679625317"><span id="local-6989586621679625319"><span class="annot"><span class="hs-identifier hs-type">A.ToJSON</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>    </span><span id="local-6989586621679625315"><span class="annot"><span class="annottext">toJSON :: Config -&gt; Value
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">toJSON</span></span></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Options -&gt; Config -&gt; Value
 forall a.
 (Generic a, GToJSON Value Zero (Rep a)) =&gt;
 Options -&gt; a -&gt; Value
 </span><span class="hs-identifier hs-var">A.genericToJSON</span></span><span> </span><span class="annot"><span class="annottext">Options
 </span><a href="AOC.Run.Config.html#configJSON"><span class="hs-identifier hs-var">configJSON</span></a></span><span>
-</span><span id="line-74"></span><span>    </span><span id="local-6989586621679599010"><span class="annot"><span class="annottext">toEncoding :: Config -&gt; Encoding
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679625312"><span class="annot"><span class="annottext">toEncoding :: Config -&gt; Encoding
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">toEncoding</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Options -&gt; Config -&gt; Encoding
 forall a.
 (Generic a, GToJSON Encoding Zero (Rep a)) =&gt;
 Options -&gt; a -&gt; Encoding
 </span><span class="hs-identifier hs-var">A.genericToEncoding</span></span><span> </span><span class="annot"><span class="annottext">Options
 </span><a href="AOC.Run.Config.html#configJSON"><span class="hs-identifier hs-var">configJSON</span></a></span><span>
-</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679599005"><span class="annot"><span class="hs-identifier hs-type">A.FromJSON</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-76"></span><span>    </span><span id="local-6989586621679599003"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Config
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679625307"><span class="annot"><span class="hs-identifier hs-type">A.FromJSON</span></span><span> </span><span class="annot"><a href="AOC.Run.Config.html#Config"><span class="hs-identifier hs-type">Config</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621679625305"><span class="annot"><span class="annottext">parseJSON :: Value -&gt; Parser Config
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">parseJSON</span></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Options -&gt; Value -&gt; Parser Config
 forall a.
 (Generic a, GFromJSON Zero (Rep a)) =&gt;

@@ -1,87 +1,297 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-unused-imports   #-}</span><span>
-</span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-unused-top-binds #-}</span><span>
-</span><span id="line-3"></span><span>
-</span><span id="line-4"></span><span class="hs-comment">-- |</span><span>
-</span><span id="line-5"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day12</span><span>
-</span><span id="line-6"></span><span class="hs-comment">-- License     : BSD3</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- |</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day12</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- License     : BSD3</span><span>
+</span><span id="line-4"></span><span class="hs-comment">--</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Portability : non-portable</span><span>
 </span><span id="line-7"></span><span class="hs-comment">--</span><span>
-</span><span id="line-8"></span><span class="hs-comment">-- Stability   : experimental</span><span>
-</span><span id="line-9"></span><span class="hs-comment">-- Portability : non-portable</span><span>
-</span><span id="line-10"></span><span class="hs-comment">--</span><span>
-</span><span id="line-11"></span><span class="hs-comment">-- Day 12.  See &quot;AOC.Solver&quot; for the types used in this module!</span><span>
-</span><span id="line-12"></span><span class="hs-comment">--</span><span>
-</span><span id="line-13"></span><span class="hs-comment">-- After completing the challenge, it is recommended to:</span><span>
-</span><span id="line-14"></span><span class="hs-comment">--</span><span>
-</span><span id="line-15"></span><span class="hs-comment">-- *   Replace &quot;AOC.Prelude&quot; imports to specific modules (with explicit</span><span>
-</span><span id="line-16"></span><span class="hs-comment">--     imports) for readability.</span><span>
-</span><span id="line-17"></span><span class="hs-comment">-- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@</span><span>
-</span><span id="line-18"></span><span class="hs-comment">--     pragmas.</span><span>
-</span><span id="line-19"></span><span class="hs-comment">-- *   Replace the partial type signatures underscores in the solution</span><span>
-</span><span id="line-20"></span><span class="hs-comment">--     types @_ :~&gt; _@ with the actual types of inputs and outputs of the</span><span>
-</span><span id="line-21"></span><span class="hs-comment">--     solution.  You can delete the type signatures completely and GHC</span><span>
-</span><span id="line-22"></span><span class="hs-comment">--     will recommend what should go in place of the underscores.</span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Challenge.Day12</span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-25"></span><span>    </span><span class="hs-comment">-- day12a</span><span>
-</span><span id="line-26"></span><span>  </span><span class="hs-comment">-- , day12b</span><span>
-</span><span id="line-27"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Prelude.html"><span class="hs-identifier">AOC.Prelude</span></a></span><span>
-</span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Graph</span></span><span>                     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">G</span></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.IntMap</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">IM</span></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.IntSet</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">IS</span></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NonEmpty</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">NE</span></span><span>
-</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.PointedList</span></span><span>          </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PL</span></span><span>
-</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.PointedList.Circular</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
-</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>                       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
-</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.OrdPSQ</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PSQ</span></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Sequence</span></span><span>                  </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Seq</span></span><span>
-</span><span id="line-40"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
-</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>                      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
-</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">V</span></span><span>
-</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Linear</span></span><span>                         </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
-</span><span id="line-44"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>                </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-45"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span>           </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-46"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char.Lexer</span></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
-</span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><a href="AOC.Challenge.Day12.html#day12a"><span class="hs-identifier hs-type">day12a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span>
-</span><span id="line-49"></span><span id="day12a"><span class="annot"><span class="annottext">day12a :: String :~&gt; String
+</span><span id="line-8"></span><span class="hs-comment">-- Day 12.  See &quot;AOC.Solver&quot; for the types used in this module!</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Challenge.Day12</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day12.html#day12a"><span class="hs-identifier">day12a</span></a></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#day12b"><span class="hs-identifier">day12b</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier">Point</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#Dir"><span class="hs-identifier">Dir</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#dirPoint"><span class="hs-identifier">dirPoint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#rotPoint"><span class="hs-identifier">rotPoint</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#mannDist"><span class="hs-identifier">mannDist</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>      </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.DeepSeq</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NFData</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Group</span></span><span>      </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">pow</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">foldl'</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Map</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.Generics</span></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Linear</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">V2</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-operator">(*^)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>        </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span id="local-6989586621679630240"><span id="local-6989586621679630241"></span></span><span class="hs-keyword">data</span><span> </span><span id="Instr"><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-var">Instr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Forward"><span class="annot"><a href="AOC.Challenge.Day12.html#Forward"><span class="hs-identifier hs-var">Forward</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-27"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="Turn"><span class="annot"><a href="AOC.Challenge.Day12.html#Turn"><span class="hs-identifier hs-var">Turn</span></a></span></span><span> </span><span class="annot"><a href="AOC.Common.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span>
+</span><span id="line-28"></span><span>           </span><span class="hs-glyph">|</span><span> </span><span id="Move"><span class="annot"><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-var">Move</span></a></span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679630231"><span id="local-6989586621679630233"><span id="local-6989586621679630235"><span class="annot"><span class="annottext">Int -&gt; Instr -&gt; ShowS
+[Instr] -&gt; ShowS
+Instr -&gt; String
+(Int -&gt; Instr -&gt; ShowS)
+-&gt; (Instr -&gt; String) -&gt; ([Instr] -&gt; ShowS) -&gt; Show Instr
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Instr] -&gt; ShowS
+$cshowList :: [Instr] -&gt; ShowS
+show :: Instr -&gt; String
+$cshow :: Instr -&gt; String
+showsPrec :: Int -&gt; Instr -&gt; ShowS
+$cshowsPrec :: Int -&gt; Instr -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679630226"><span id="local-6989586621679630228"><span class="annot"><span class="annottext">Instr -&gt; Instr -&gt; Bool
+(Instr -&gt; Instr -&gt; Bool) -&gt; (Instr -&gt; Instr -&gt; Bool) -&gt; Eq Instr
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Instr -&gt; Instr -&gt; Bool
+$c/= :: Instr -&gt; Instr -&gt; Bool
+== :: Instr -&gt; Instr -&gt; Bool
+$c== :: Instr -&gt; Instr -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">(forall x. Instr -&gt; Rep Instr x)
+-&gt; (forall x. Rep Instr x -&gt; Instr) -&gt; Generic Instr
+forall x. Rep Instr x -&gt; Instr
+forall x. Instr -&gt; Rep Instr x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+$cto :: forall x. Rep Instr x -&gt; Instr
+$cfrom :: forall x. Instr -&gt; Rep Instr x
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
+</span><span id="line-30"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679630220"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><a href="AOC.Challenge.Day12.html#mkInstr"><span class="hs-identifier hs-type">mkInstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span id="mkInstr"><span class="annot"><span class="annottext">mkInstr :: Map Char (Int -&gt; Instr)
+</span><a href="AOC.Challenge.Day12.html#mkInstr"><span class="hs-identifier hs-var hs-var">mkInstr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Char, Int -&gt; Instr)] -&gt; Map Char (Int -&gt; Instr)
+forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
+</span><span class="hs-identifier hs-var">M.fromList</span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'F'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Forward"><span class="hs-identifier hs-var">Forward</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'L'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Turn"><span class="hs-identifier hs-var">Turn</span></a></span><span> </span><span class="annot"><span class="annottext">(Dir -&gt; Instr) -&gt; (Int -&gt; Dir) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Int -&gt; Dir
+forall m x. (Group m, Integral x) =&gt; m -&gt; x -&gt; m
+</span><span class="hs-identifier hs-var">pow</span></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#West"><span class="hs-identifier hs-var">West</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Dir) -&gt; (Int -&gt; Int) -&gt; Int -&gt; Dir
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="hs-number">90</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'R'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Turn"><span class="hs-identifier hs-var">Turn</span></a></span><span> </span><span class="annot"><span class="annottext">(Dir -&gt; Instr) -&gt; (Int -&gt; Dir) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Int -&gt; Dir
+forall m x. (Group m, Integral x) =&gt; m -&gt; x -&gt; m
+</span><span class="hs-identifier hs-var">pow</span></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#East"><span class="hs-identifier hs-var">East</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Dir) -&gt; (Int -&gt; Int) -&gt; Int -&gt; Dir
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Integral a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">`div`</span></span><span> </span><span class="annot"><span class="hs-number">90</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'N'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-var">Move</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Instr) -&gt; (Int -&gt; Point) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a
+</span><a href="AOC.Common.html#dirPoint"><span class="hs-identifier hs-var">dirPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#North"><span class="hs-identifier hs-var">North</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'S'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-var">Move</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Instr) -&gt; (Int -&gt; Point) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a
+</span><a href="AOC.Common.html#dirPoint"><span class="hs-identifier hs-var">dirPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#South"><span class="hs-identifier hs-var">South</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'E'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-var">Move</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Instr) -&gt; (Int -&gt; Point) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a
+</span><a href="AOC.Common.html#dirPoint"><span class="hs-identifier hs-var">dirPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#East"><span class="hs-identifier hs-var">East</span></a></span><span> </span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-char">'W'</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Instr
+</span><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-var">Move</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Instr) -&gt; (Int -&gt; Point) -&gt; Int -&gt; Instr
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a
+</span><a href="AOC.Common.html#dirPoint"><span class="hs-identifier hs-var">dirPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#West"><span class="hs-identifier hs-var">West</span></a></span><span> </span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-special">]</span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="AOC.Challenge.Day12.html#parseInstr"><span class="hs-identifier hs-type">parseInstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span>
+</span><span id="line-44"></span><span id="parseInstr"><span class="annot"><span class="annottext">parseInstr :: String -&gt; Maybe Instr
+</span><a href="AOC.Challenge.Day12.html#parseInstr"><span class="hs-identifier hs-var hs-var">parseInstr</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe Instr
+forall a. Maybe a
+</span><span class="hs-identifier hs-var">Nothing</span></span><span>
+</span><span id="line-45"></span><span class="annot"><a href="AOC.Challenge.Day12.html#parseInstr"><span class="hs-identifier hs-var">parseInstr</span></a></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679630209"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679630209"><span class="hs-identifier hs-var">c</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679630208"><span class="annot"><span class="annottext">n :: String
+</span><a href="#local-6989586621679630208"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Map Char (Int -&gt; Instr) -&gt; Maybe (Int -&gt; Instr)
+forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
+</span><span class="hs-identifier hs-var">M.lookup</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679630209"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Map Char (Int -&gt; Instr)
+</span><a href="AOC.Challenge.Day12.html#mkInstr"><span class="hs-identifier hs-var">mkInstr</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Int -&gt; Instr) -&gt; Maybe Int -&gt; Maybe Instr
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Int
+forall a. Read a =&gt; String -&gt; Maybe a
+</span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679630208"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="AOC.Challenge.Day12.html#day12a"><span class="hs-identifier hs-type">day12a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
+</span><span id="line-48"></span><span id="day12a"><span class="annot"><span class="annottext">day12a :: [Instr] :~&gt; Point
 </span><a href="AOC.Challenge.Day12.html#day12a"><span class="hs-identifier hs-var hs-var">day12a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-50"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
-forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: String -&gt; String
-</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><span id="line-49"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [Instr]
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Maybe Instr) -&gt; [String] -&gt; Maybe [Instr]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe Instr
+</span><a href="AOC.Challenge.Day12.html#parseInstr"><span class="hs-identifier hs-var">parseInstr</span></a></span><span> </span><span class="annot"><span class="annottext">([String] -&gt; Maybe [Instr])
+-&gt; (String -&gt; [String]) -&gt; String -&gt; Maybe [Instr]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String]
+</span><span class="hs-identifier hs-var">lines</span></span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Point -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?dyno::DynoMap) =&gt; String -&gt; Maybe String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; (Point -&gt; Int) -&gt; Point -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Int
+forall (f :: * -&gt; *) a.
+(Foldable f, Num a, Num (f a)) =&gt;
+f a -&gt; f a -&gt; a
+</span><a href="AOC.Common.html#mannDist"><span class="hs-identifier hs-var">mannDist</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [Instr] -&gt; Maybe Point
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Maybe Point
 forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="annot"><a href="AOC.Challenge.Day12.html#day12b"><span class="hs-identifier hs-type">day12b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span>
-</span><span id="line-56"></span><span id="day12b"><span class="annot"><span class="annottext">day12b :: String :~&gt; String
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Maybe Point)
+-&gt; ([Instr] -&gt; Point) -&gt; [Instr] -&gt; Maybe Point
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Dir, Point) -&gt; Point
+forall a b. (a, b) -&gt; b
+</span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((Dir, Point) -&gt; Point)
+-&gt; ([Instr] -&gt; (Dir, Point)) -&gt; [Instr] -&gt; Point
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((Dir, Point) -&gt; Instr -&gt; (Dir, Point))
+-&gt; (Dir, Point) -&gt; [Instr] -&gt; (Dir, Point)
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">(Dir, Point) -&gt; Instr -&gt; (Dir, Point)
+</span><a href="#local-6989586621679630198"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Dir
+</span><a href="AOC.Common.html#East"><span class="hs-identifier hs-var">East</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-53"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><a href="#local-6989586621679630198"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#Dir"><span class="hs-identifier hs-type">Dir</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679630198"><span class="annot"><span class="annottext">go :: (Dir, Point) -&gt; Instr -&gt; (Dir, Point)
+</span><a href="#local-6989586621679630198"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679630197"><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630197"><span class="hs-identifier hs-var">dir</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679630196"><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630196"><span class="hs-identifier hs-var">p</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-56"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Forward"><span class="hs-identifier hs-type">Forward</span></a></span><span> </span><span id="local-6989586621679630195"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679630195"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630197"><span class="hs-identifier hs-var">dir</span></a></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630196"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679630195"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a
+</span><a href="AOC.Common.html#dirPoint"><span class="hs-identifier hs-var">dirPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630197"><span class="hs-identifier hs-var">dir</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Turn"><span class="hs-identifier hs-type">Turn</span></a></span><span> </span><span id="local-6989586621679630193"><span class="annot"><span class="annottext">d :: Dir
+</span><a href="#local-6989586621679630193"><span class="hs-identifier hs-var">d</span></a></span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630197"><span class="hs-identifier hs-var">dir</span></a></span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Dir -&gt; Dir
+forall a. Semigroup a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630193"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630196"><span class="hs-identifier hs-var">p</span></a></span><span>                    </span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-type">Move</span></a></span><span> </span><span id="local-6989586621679630192"><span class="annot"><span class="annottext">r :: Point
+</span><a href="#local-6989586621679630192"><span class="hs-identifier hs-var">r</span></a></span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630197"><span class="hs-identifier hs-var">dir</span></a></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630196"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630192"><span class="hs-identifier hs-var">r</span></a></span><span>                </span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="annot"><a href="AOC.Challenge.Day12.html#day12b"><span class="hs-identifier hs-type">day12b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
+</span><span id="line-61"></span><span id="day12b"><span class="annot"><span class="annottext">day12b :: [Instr] :~&gt; Point
 </span><a href="AOC.Challenge.Day12.html#day12b"><span class="hs-identifier hs-var hs-var">day12b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
-forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: String -&gt; String
-</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><span id="line-62"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [Instr]
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Instr] :~&gt; Point) -&gt; String -&gt; Maybe [Instr]
+forall a b. (a :~&gt; b) -&gt; String -&gt; Maybe a
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var hs-var">sParse</span></a></span><span> </span><span class="annot"><span class="annottext">[Instr] :~&gt; Point
+</span><a href="AOC.Challenge.Day12.html#day12a"><span class="hs-identifier hs-var">day12a</span></a></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Point -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?dyno::DynoMap) =&gt; String -&gt; Maybe String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; (Point -&gt; Int) -&gt; Point -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Int
+forall (f :: * -&gt; *) a.
+(Foldable f, Num a, Num (f a)) =&gt;
+f a -&gt; f a -&gt; a
+</span><a href="AOC.Common.html#mannDist"><span class="hs-identifier hs-var">mannDist</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-64"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [Instr] -&gt; Maybe Point
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Maybe Point
 forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-61"></span></pre></body></html>
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Maybe Point)
+-&gt; ([Instr] -&gt; Point) -&gt; [Instr] -&gt; Maybe Point
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Point, Point) -&gt; Point
+forall a b. (a, b) -&gt; a
+</span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">((Point, Point) -&gt; Point)
+-&gt; ([Instr] -&gt; (Point, Point)) -&gt; [Instr] -&gt; Point
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">((Point, Point) -&gt; Instr -&gt; (Point, Point))
+-&gt; (Point, Point) -&gt; [Instr] -&gt; (Point, Point)
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">(Point, Point) -&gt; Instr -&gt; (Point, Point)
+</span><a href="#local-6989586621679630191"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Point
+forall a. a -&gt; a -&gt; V2 a
+</span><span class="hs-identifier hs-var">V2</span></span><span> </span><span class="annot"><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-67"></span><span>    </span><span class="annot"><a href="#local-6989586621679630191"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day12.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span>    </span><span id="local-6989586621679630191"><span class="annot"><span class="annottext">go :: (Point, Point) -&gt; Instr -&gt; (Point, Point)
+</span><a href="#local-6989586621679630191"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679630189"><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630189"><span class="hs-identifier hs-var">shp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679630188"><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630188"><span class="hs-identifier hs-var">wp</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-69"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Forward"><span class="hs-identifier hs-type">Forward</span></a></span><span> </span><span id="local-6989586621679630187"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679630187"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630189"><span class="hs-identifier hs-var">shp</span></a></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679630187"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Point -&gt; Point
+forall (f :: * -&gt; *) a. (Functor f, Num a) =&gt; a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">*^</span></span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630188"><span class="hs-identifier hs-var">wp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630188"><span class="hs-identifier hs-var">wp</span></a></span><span>           </span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Turn"><span class="hs-identifier hs-type">Turn</span></a></span><span> </span><span id="local-6989586621679630186"><span class="annot"><span class="annottext">d :: Dir
+</span><a href="#local-6989586621679630186"><span class="hs-identifier hs-var">d</span></a></span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630189"><span class="hs-identifier hs-var">shp</span></a></span><span>          </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Dir -&gt; Point -&gt; Point
+forall a. Num a =&gt; Dir -&gt; V2 a -&gt; V2 a
+</span><a href="AOC.Common.html#rotPoint"><span class="hs-identifier hs-var">rotPoint</span></a></span><span> </span><span class="annot"><span class="annottext">Dir
+</span><a href="#local-6989586621679630186"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630188"><span class="hs-identifier hs-var">wp</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day12.html#Move"><span class="hs-identifier hs-type">Move</span></a></span><span> </span><span id="local-6989586621679630185"><span class="annot"><span class="annottext">r :: Point
+</span><a href="#local-6989586621679630185"><span class="hs-identifier hs-var">r</span></a></span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630189"><span class="hs-identifier hs-var">shp</span></a></span><span>          </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630188"><span class="hs-identifier hs-var">wp</span></a></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679630185"><span class="hs-identifier hs-var">r</span></a></span><span>       </span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span></pre></body></html>
