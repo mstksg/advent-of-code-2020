@@ -163,20 +163,20 @@ part2 mp = solveWith 5 los mp
 ```
 >> Day 11a
 benchmarking...
-time                 142.1 ms   (136.4 ms .. 145.4 ms)
-                     0.999 R²   (0.997 R² .. 1.000 R²)
-mean                 142.8 ms   (140.9 ms .. 144.4 ms)
-std dev              2.792 ms   (2.035 ms .. 3.614 ms)
+time                 138.8 ms   (134.3 ms .. 145.2 ms)
+                     0.998 R²   (0.990 R² .. 1.000 R²)
+mean                 138.8 ms   (135.3 ms .. 141.0 ms)
+std dev              3.937 ms   (2.500 ms .. 5.713 ms)
 variance introduced by outliers: 12% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 11b
 benchmarking...
-time                 143.0 ms   (126.6 ms .. 152.0 ms)
-                     0.990 R²   (0.966 R² .. 1.000 R²)
-mean                 147.3 ms   (142.0 ms .. 151.3 ms)
-std dev              6.767 ms   (4.684 ms .. 8.850 ms)
+time                 151.2 ms   (143.6 ms .. 157.6 ms)
+                     0.998 R²   (0.996 R² .. 1.000 R²)
+mean                 143.8 ms   (141.1 ms .. 146.9 ms)
+std dev              4.376 ms   (2.957 ms .. 6.139 ms)
 variance introduced by outliers: 12% (moderately inflated)
 
 * parsing and formatting times excluded

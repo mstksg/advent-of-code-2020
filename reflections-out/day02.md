@@ -97,20 +97,20 @@ part2 = countTrue validate2
 ```
 >> Day 02a
 benchmarking...
-time                 68.36 μs   (68.31 μs .. 68.39 μs)
+time                 67.42 μs   (67.37 μs .. 67.47 μs)
                      1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 68.43 μs   (68.40 μs .. 68.45 μs)
-std dev              93.46 ns   (76.39 ns .. 120.0 ns)
+mean                 67.50 μs   (67.47 μs .. 67.56 μs)
+std dev              143.3 ns   (101.1 ns .. 189.6 ns)
 
 * parsing and formatting times excluded
 
 >> Day 02b
 benchmarking...
-time                 79.58 μs   (77.84 μs .. 81.25 μs)
-                     0.998 R²   (0.996 R² .. 0.999 R²)
-mean                 80.76 μs   (79.83 μs .. 82.03 μs)
-std dev              3.570 μs   (2.862 μs .. 5.070 μs)
-variance introduced by outliers: 46% (moderately inflated)
+time                 80.95 μs   (79.37 μs .. 82.27 μs)
+                     0.997 R²   (0.997 R² .. 0.998 R²)
+mean                 81.24 μs   (80.28 μs .. 82.63 μs)
+std dev              3.731 μs   (3.065 μs .. 4.246 μs)
+variance introduced by outliers: 49% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

@@ -413,21 +413,21 @@ part1 = mapMaybe loadPassport . splitOn "\n\n"
 ```
 >> Day 04a
 benchmarking...
-time                 1.528 ms   (1.434 ms .. 1.686 ms)
-                     0.960 R²   (0.946 R² .. 0.977 R²)
-mean                 1.678 ms   (1.618 ms .. 1.730 ms)
-std dev              201.5 μs   (174.5 μs .. 272.1 μs)
-variance introduced by outliers: 78% (severely inflated)
+time                 1.540 ms   (1.399 ms .. 1.689 ms)
+                     0.948 R²   (0.899 R² .. 0.981 R²)
+mean                 1.715 ms   (1.624 ms .. 1.921 ms)
+std dev              464.3 μs   (180.7 μs .. 867.4 μs)
+variance introduced by outliers: 95% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 04b
 benchmarking...
-time                 4.882 ms   (4.647 ms .. 5.072 ms)
-                     0.982 R²   (0.969 R² .. 0.992 R²)
-mean                 4.814 ms   (4.691 ms .. 4.902 ms)
-std dev              371.2 μs   (271.7 μs .. 467.7 μs)
-variance introduced by outliers: 48% (moderately inflated)
+time                 4.914 ms   (4.619 ms .. 5.166 ms)
+                     0.977 R²   (0.964 R² .. 0.989 R²)
+mean                 4.515 ms   (4.351 ms .. 4.675 ms)
+std dev              514.8 μs   (485.1 μs .. 573.6 μs)
+variance introduced by outliers: 68% (severely inflated)
 
 * parsing and formatting times excluded
 ```

@@ -130,21 +130,21 @@ extremely specific to the situation.  If you think of one, let me know! :D
 ```
 >> Day 09a
 benchmarking...
-time                 222.0 μs   (206.8 μs .. 232.3 μs)
-                     0.984 R²   (0.977 R² .. 0.993 R²)
-mean                 228.1 μs   (222.7 μs .. 232.5 μs)
-std dev              17.83 μs   (13.22 μs .. 21.39 μs)
-variance introduced by outliers: 70% (severely inflated)
+time                 226.1 μs   (216.3 μs .. 232.4 μs)
+                     0.981 R²   (0.961 R² .. 0.993 R²)
+mean                 232.2 μs   (224.9 μs .. 241.2 μs)
+std dev              29.81 μs   (18.15 μs .. 43.20 μs)
+variance introduced by outliers: 86% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 09b
 benchmarking...
-time                 231.5 μs   (218.3 μs .. 242.7 μs)
-                     0.980 R²   (0.974 R² .. 0.988 R²)
-mean                 233.7 μs   (226.2 μs .. 242.3 μs)
-std dev              26.50 μs   (23.85 μs .. 32.49 μs)
-variance introduced by outliers: 83% (severely inflated)
+time                 257.0 μs   (245.8 μs .. 263.8 μs)
+                     0.992 R²   (0.986 R² .. 0.997 R²)
+mean                 254.5 μs   (247.5 μs .. 259.5 μs)
+std dev              20.50 μs   (14.84 μs .. 25.57 μs)
+variance introduced by outliers: 70% (severely inflated)
 
 * parsing and formatting times excluded
 ```

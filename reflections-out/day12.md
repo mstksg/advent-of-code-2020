@@ -220,21 +220,21 @@ mannDist (V2 x y) = abs x + abs y
 ```
 >> Day 12a
 benchmarking...
-time                 4.395 μs   (4.360 μs .. 4.449 μs)
-                     0.998 R²   (0.997 R² .. 0.999 R²)
-mean                 4.508 μs   (4.451 μs .. 4.568 μs)
-std dev              193.4 ns   (178.2 ns .. 207.8 ns)
-variance introduced by outliers: 55% (severely inflated)
+time                 4.421 μs   (4.337 μs .. 4.502 μs)
+                     0.991 R²   (0.979 R² .. 0.999 R²)
+mean                 9.296 μs   (4.435 μs .. 28.72 μs)
+std dev              31.84 μs   (102.9 ns .. 67.72 μs)
+variance introduced by outliers: 99% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 12b
 benchmarking...
-time                 10.10 μs   (9.488 μs .. 10.61 μs)
+time                 9.759 μs   (9.213 μs .. 10.33 μs)
                      0.974 R²   (0.968 R² .. 0.983 R²)
-mean                 9.458 μs   (9.042 μs .. 9.983 μs)
-std dev              1.457 μs   (1.268 μs .. 1.603 μs)
-variance introduced by outliers: 94% (severely inflated)
+mean                 10.69 μs   (10.27 μs .. 11.12 μs)
+std dev              1.484 μs   (1.264 μs .. 1.668 μs)
+variance introduced by outliers: 92% (severely inflated)
 
 * parsing and formatting times excluded
 ```
