@@ -78,6 +78,7 @@ library:
   dependencies:
   - advent-of-code-api >= 0.2.7
   - aeson
+  - mutable
   - arithmoi
   - ansi-terminal
   - monad-loops
@@ -132,7 +133,7 @@ library:
   - transformers
   - vec
   - vector
-  - vector-sized
+  - vector-sized >= 1.4.3
   - vinyl
   - yaml
 

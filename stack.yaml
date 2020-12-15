@@ -55,8 +55,9 @@ extra-deps:
   commit: d2dedab44fa49b4ed903fac6b9189c4d62835e1b
   subdirs:
   - vec
-- github: mstksg/vector-sized
-  commit: f3757806e54afeaa243c87ffdcab881592470ddf
+- vector-sized-1.4.3
+- mutable-0.2.2.0
+#   commit: f3757806e54afeaa243c87ffdcab881592470ddf
 
 allow-newer: true
 

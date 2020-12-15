@@ -109,16 +109,19 @@ packages:
     subdir: vec
     url: https://github.com/mstksg/vec/archive/d2dedab44fa49b4ed903fac6b9189c4d62835e1b.tar.gz
 - completed:
-    size: 71740
-    url: https://github.com/mstksg/vector-sized/archive/f3757806e54afeaa243c87ffdcab881592470ddf.tar.gz
-    name: vector-sized
-    version: 1.4.3
-    sha256: 16c878374c056ab5d6a23ab86d9ea6a5c014997ace47ec623818f13f1ef36df9
+    hackage: vector-sized-1.4.3@sha256:c4bc7a313e40f67a1c5c91e70ea721e429b68a51606f285c013009e6b81aa9f8,1681
     pantry-tree:
-      size: 1712
-      sha256: 599c238bec43ebd37cf9f650384d25af21108357951cf4e4cb77b56398e6aca6
+      size: 1302
+      sha256: 6754d6e39720a566ae7dc8854725d2b97fdeb04415d34f6d20f1827bc9b34bc6
   original:
-    url: https://github.com/mstksg/vector-sized/archive/f3757806e54afeaa243c87ffdcab881592470ddf.tar.gz
+    hackage: vector-sized-1.4.3
+- completed:
+    hackage: mutable-0.2.2.0@sha256:def2840c9d572a37bcf21440d2fc94d2b7f8aeb78c7166c0e0d4e7acb47c3ca2,2603
+    pantry-tree:
+      size: 786
+      sha256: ae7019c25a140ab33e9e8f0dfdcb753c8ddafe7a5f3c6f5bb3231acffd24d3df
+  original:
+    hackage: mutable-0.2.2.0
 snapshots:
 - completed:
     size: 532832
