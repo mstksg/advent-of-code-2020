@@ -18,6 +18,8 @@ import           Control.Monad.ST            (runST)
 import           Control.Monad.State.Strict  (StateT(..), evalStateT, gets)
 import           Data.Foldable               (for_)
 import           Data.List.Split             (splitOn)
+import           Data.Tuple.Strict           (T2(..), sfst, ssnd)
+import           GHC.Int                     (Int32)
 import           Text.Read                   (readMaybe)
 import qualified Data.Vector.Unboxed.Mutable as MV
 
@@ -36,14 +38,17 @@ day15b = MkSol
     }
 
 looper :: Int -> [Int] -> Int
-looper n xs0 = runST $ flip evalStateT (0,0) $ do
+looper n xs0 = runST $ flip evalStateT (T2 0 0 :: T2 Int32 Int) $ do
     v <- MV.replicate n 0
-    for_ xs0 $ \y -> StateT $ \(!i,_) ->
-      (,(i+1, y)) <$> MV.unsafeWrite v y (i+1)
-    whileM_ (gets ((< n) . fst)) $ StateT $ \(!i, !x) -> do
+    for_ xs0 $ \y -> StateT $ \(T2 i _) ->
+      (,T2 (i+1) y) <$> MV.unsafeWrite v y (i+1)
+    whileM_ (gets ((< n32) . sfst)) $ StateT $ \(T2 i x) -> do
       lst <- MV.unsafeRead v x
       MV.unsafeWrite v x i
       let j | lst ==  0 = 0
             | otherwise = i - lst
-      pure ((),(i+1, j))
-    gets snd
+      pure ((),T2 (i+1) (fromIntegral j))
+    gets ssnd
+  where
+    n32 :: Int32
+    n32 = fromIntegral n

@@ -2523,21 +2523,21 @@ that file instead!
 ```
 >> Day 15a
 benchmarking...
-time                 16.11 μs   (14.95 μs .. 16.82 μs)
-                     0.976 R²   (0.968 R² .. 0.986 R²)
-mean                 15.98 μs   (15.34 μs .. 16.67 μs)
-std dev              2.311 μs   (2.074 μs .. 2.618 μs)
-variance introduced by outliers: 92% (severely inflated)
+time                 2.770 μs   (2.721 μs .. 2.819 μs)
+                     0.993 R²   (0.987 R² .. 0.997 R²)
+mean                 2.804 μs   (2.731 μs .. 2.980 μs)
+std dev              410.5 ns   (218.1 ns .. 710.5 ns)
+variance introduced by outliers: 94% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 15b
 benchmarking...
-time                 596.4 ms   (503.4 ms .. 685.8 ms)
-                     0.997 R²   (0.988 R² .. 1.000 R²)
-mean                 619.5 ms   (593.6 ms .. 652.0 ms)
-std dev              34.69 ms   (10.70 ms .. 47.29 ms)
-variance introduced by outliers: 19% (moderately inflated)
+time                 227.2 ms   (221.4 ms .. 232.6 ms)
+                     1.000 R²   (0.999 R² .. 1.000 R²)
+mean                 231.2 ms   (228.0 ms .. 239.5 ms)
+std dev              6.796 ms   (587.6 μs .. 9.527 ms)
+variance introduced by outliers: 14% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
