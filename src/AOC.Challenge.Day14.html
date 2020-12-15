@@ -28,10 +28,10 @@
 </span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span>       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
 </span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char.Lexer</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
 </span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span id="local-6989586621679637538"><span id="local-6989586621679637539"></span></span><span class="hs-keyword">data</span><span> </span><span id="Instr"><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-var">Instr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-31"></span><span id="local-6989586621679637395"><span id="local-6989586621679637396"></span></span><span class="hs-keyword">data</span><span> </span><span id="Instr"><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-var">Instr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-32"></span><span>      </span><span id="Mask"><span class="annot"><a href="AOC.Challenge.Day14.html#Mask"><span class="hs-identifier hs-var">Mask</span></a></span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span id="Write"><span class="annot"><a href="AOC.Challenge.Day14.html#Write"><span class="hs-identifier hs-var">Write</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679637530"><span id="local-6989586621679637532"><span id="local-6989586621679637534"><span class="annot"><span class="annottext">Int -&gt; Instr -&gt; ShowS
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679637387"><span id="local-6989586621679637389"><span id="local-6989586621679637391"><span class="annot"><span class="annottext">Int -&gt; Instr -&gt; ShowS
 [Instr] -&gt; ShowS
 Instr -&gt; String
 (Int -&gt; Instr -&gt; ShowS)
@@ -44,14 +44,14 @@ show :: Instr -&gt; String
 $cshow :: Instr -&gt; String
 showsPrec :: Int -&gt; Instr -&gt; ShowS
 $cshowsPrec :: Int -&gt; Instr -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679637525"><span id="local-6989586621679637527"><span class="annot"><span class="annottext">Instr -&gt; Instr -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679637382"><span id="local-6989586621679637384"><span class="annot"><span class="annottext">Instr -&gt; Instr -&gt; Bool
 (Instr -&gt; Instr -&gt; Bool) -&gt; (Instr -&gt; Instr -&gt; Bool) -&gt; Eq Instr
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: Instr -&gt; Instr -&gt; Bool
 $c/= :: Instr -&gt; Instr -&gt; Bool
 == :: Instr -&gt; Instr -&gt; Bool
 $c== :: Instr -&gt; Instr -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679637509"><span id="local-6989586621679637511"><span id="local-6989586621679637513"><span id="local-6989586621679637515"><span id="local-6989586621679637517"><span id="local-6989586621679637519"><span id="local-6989586621679637521"><span class="annot"><span class="annottext">Eq Instr
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679637366"><span id="local-6989586621679637368"><span id="local-6989586621679637370"><span id="local-6989586621679637372"><span id="local-6989586621679637374"><span id="local-6989586621679637376"><span id="local-6989586621679637378"><span class="annot"><span class="annottext">Eq Instr
 Eq Instr =&gt;
 (Instr -&gt; Instr -&gt; Ordering)
 -&gt; (Instr -&gt; Instr -&gt; Bool)
@@ -98,7 +98,7 @@ forall a.
 $cto :: forall x. Rep Instr x -&gt; Instr
 $cfrom :: forall x. Instr -&gt; Rep Instr x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679637503"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span></span><span>
+</span><span id="line-35"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679637360"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span></span><span>
 </span><span id="line-36"></span><span>
 </span><span id="line-37"></span><span class="annot"><a href="AOC.Challenge.Day14.html#applyMask1"><span class="hs-identifier hs-type">applyMask1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-38"></span><span id="applyMask1"><span class="annot"><span class="annottext">applyMask1 :: Int -&gt; [Maybe Bool] -&gt; Int
@@ -109,21 +109,21 @@ FoldableWithIndex i f =&gt;
 </span><span class="hs-identifier hs-var">ifoldl'</span></span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Int -&gt; Maybe Bool -&gt; Int) -&gt; Int -&gt; [Maybe Bool] -&gt; Int)
 -&gt; (Int -&gt; Int -&gt; Maybe Bool -&gt; Int) -&gt; Int -&gt; [Maybe Bool] -&gt; Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637500"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679637500"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679637499"><span class="annot"><span class="annottext">x :: Int
-</span><a href="#local-6989586621679637499"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637357"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679637357"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679637356"><span class="annot"><span class="annottext">x :: Int
+</span><a href="#local-6989586621679637356"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-39"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637499"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679637356"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-40"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">clearBit</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637499"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637500"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621679637356"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679637357"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">setBit</span></span><span>   </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637499"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637500"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621679637356"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679637357"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="annot"><a href="AOC.Challenge.Day14.html#day14a"><span class="hs-identifier hs-type">day14a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-44"></span><span id="day14a"><span class="annot"><span class="annottext">day14a :: [Instr] :~&gt; Int
@@ -162,31 +162,31 @@ forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 </span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
-</span><a href="#local-6989586621679637489"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool])
+</span><a href="#local-6989586621679637346"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool])
 forall a. Monoid a =&gt; a
 </span><span class="hs-identifier hs-var">mempty</span></span><span>
 </span><span id="line-48"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-49"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-50"></span><span>    </span><span class="annot"><a href="#local-6989586621679637489"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-51"></span><span>    </span><span id="local-6989586621679637489"><span class="annot"><span class="annottext">go :: (IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
-</span><a href="#local-6989586621679637489"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679637488"><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637488"><span class="hs-identifier hs-var">mp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679637487"><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637487"><span class="hs-identifier hs-var">msk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-52"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Mask"><span class="hs-identifier hs-type">Mask</span></a></span><span>  </span><span id="local-6989586621679637486"><span class="annot"><span class="annottext">msk' :: [Maybe Bool]
-</span><a href="#local-6989586621679637486"><span class="hs-identifier hs-var">msk'</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637488"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637486"><span class="hs-identifier hs-var">msk'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-53"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Write"><span class="hs-identifier hs-type">Write</span></a></span><span> </span><span id="local-6989586621679637485"><span class="annot"><span class="annottext">addr :: Int
-</span><a href="#local-6989586621679637485"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679637484"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679637484"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; IntMap Int -&gt; IntMap Int
+</span><span id="line-50"></span><span>    </span><span class="annot"><a href="#local-6989586621679637346"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679637346"><span class="annot"><span class="annottext">go :: (IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
+</span><a href="#local-6989586621679637346"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679637345"><span class="annot"><span class="annottext">IntMap Int
+</span><a href="#local-6989586621679637345"><span class="hs-identifier hs-var">mp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679637344"><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637344"><span class="hs-identifier hs-var">msk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-52"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Mask"><span class="hs-identifier hs-type">Mask</span></a></span><span>  </span><span id="local-6989586621679637343"><span class="annot"><span class="annottext">msk' :: [Maybe Bool]
+</span><a href="#local-6989586621679637343"><span class="hs-identifier hs-var">msk'</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap Int
+</span><a href="#local-6989586621679637345"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637343"><span class="hs-identifier hs-var">msk'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Write"><span class="hs-identifier hs-type">Write</span></a></span><span> </span><span id="local-6989586621679637342"><span class="annot"><span class="annottext">addr :: Int
+</span><a href="#local-6989586621679637342"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679637341"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679637341"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; IntMap Int -&gt; IntMap Int
 forall a. Int -&gt; a -&gt; IntMap a -&gt; IntMap a
 </span><span class="hs-identifier hs-var">IM.insert</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637485"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [Maybe Bool] -&gt; Int
+</span><a href="#local-6989586621679637342"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [Maybe Bool] -&gt; Int
 </span><a href="AOC.Challenge.Day14.html#applyMask1"><span class="hs-identifier hs-var">applyMask1</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637484"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637487"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637488"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637487"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679637341"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637344"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IntMap Int
+</span><a href="#local-6989586621679637345"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637344"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-54"></span><span>
 </span><span id="line-55"></span><span class="annot"><a href="AOC.Challenge.Day14.html#applyMask2"><span class="hs-identifier hs-type">applyMask2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
 </span><span id="line-56"></span><span id="applyMask2"><span class="annot"><span class="annottext">applyMask2 :: Int -&gt; [Maybe Bool] -&gt; [Int]
@@ -201,25 +201,25 @@ forall i (f :: * -&gt; *) (m :: * -&gt; *) b a.
 -&gt; [Maybe Bool]
 -&gt; [Int]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637481"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679637481"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679637480"><span class="annot"><span class="annottext">x :: Int
-</span><a href="#local-6989586621679637480"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>  </span><span class="hs-comment">-- we can save like 2ms with manual ifoldl'</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637338"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679637338"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679637337"><span class="annot"><span class="annottext">x :: Int
+</span><a href="#local-6989586621679637337"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>  </span><span class="hs-comment">-- we can save like 2ms with manual ifoldl'</span><span>
 </span><span id="line-57"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">clearBit</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637480"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637481"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679637337"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679637338"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">setBit</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637480"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637481"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679637337"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679637338"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-58"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637480"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679637337"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-59"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-identifier hs-var">setBit</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637480"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637481"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679637337"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679637338"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-60"></span><span>
 </span><span id="line-61"></span><span class="annot"><a href="AOC.Challenge.Day14.html#day14b"><span class="hs-identifier hs-type">day14b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-62"></span><span id="day14b"><span class="annot"><span class="annottext">day14b :: [Instr] :~&gt; Int
@@ -258,35 +258,35 @@ forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 </span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
-</span><a href="#local-6989586621679637479"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool])
+</span><a href="#local-6989586621679637336"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">(IntMap Int, [Maybe Bool])
 forall a. Monoid a =&gt; a
 </span><span class="hs-identifier hs-var">mempty</span></span><span>
 </span><span id="line-66"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-68"></span><span>    </span><span class="annot"><a href="#local-6989586621679637479"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-69"></span><span>    </span><span id="local-6989586621679637479"><span class="annot"><span class="annottext">go :: (IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
-</span><a href="#local-6989586621679637479"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679637478"><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637478"><span class="hs-identifier hs-var">mp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679637477"><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637477"><span class="hs-identifier hs-var">msk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-70"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Mask"><span class="hs-identifier hs-type">Mask</span></a></span><span>  </span><span id="local-6989586621679637476"><span class="annot"><span class="annottext">msk' :: [Maybe Bool]
-</span><a href="#local-6989586621679637476"><span class="hs-identifier hs-var">msk'</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637478"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637476"><span class="hs-identifier hs-var">msk'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-71"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Write"><span class="hs-identifier hs-type">Write</span></a></span><span> </span><span id="local-6989586621679637475"><span class="annot"><span class="annottext">addr :: Int
-</span><a href="#local-6989586621679637475"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679637474"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679637474"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(Int, Int)] -&gt; IntMap Int
+</span><span id="line-68"></span><span>    </span><span class="annot"><a href="#local-6989586621679637336"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>    </span><span id="local-6989586621679637336"><span class="annot"><span class="annottext">go :: (IntMap Int, [Maybe Bool]) -&gt; Instr -&gt; (IntMap Int, [Maybe Bool])
+</span><a href="#local-6989586621679637336"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679637335"><span class="annot"><span class="annottext">IntMap Int
+</span><a href="#local-6989586621679637335"><span class="hs-identifier hs-var">mp</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679637334"><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637334"><span class="hs-identifier hs-var">msk</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-70"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Mask"><span class="hs-identifier hs-type">Mask</span></a></span><span>  </span><span id="local-6989586621679637333"><span class="annot"><span class="annottext">msk' :: [Maybe Bool]
+</span><a href="#local-6989586621679637333"><span class="hs-identifier hs-var">msk'</span></a></span></span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap Int
+</span><a href="#local-6989586621679637335"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637333"><span class="hs-identifier hs-var">msk'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>      </span><span class="annot"><a href="AOC.Challenge.Day14.html#Write"><span class="hs-identifier hs-type">Write</span></a></span><span> </span><span id="local-6989586621679637332"><span class="annot"><span class="annottext">addr :: Int
+</span><a href="#local-6989586621679637332"><span class="hs-identifier hs-var">addr</span></a></span></span><span> </span><span id="local-6989586621679637331"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679637331"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(Int, Int)] -&gt; IntMap Int
 forall a. [(Int, a)] -&gt; IntMap a
 </span><span class="hs-identifier hs-var">IM.fromList</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="hs-special">,</span></span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637474"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; (Int, Int)) -&gt; [Int] -&gt; [(Int, Int)]
+</span><a href="#local-6989586621679637331"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; (Int, Int)) -&gt; [Int] -&gt; [(Int, Int)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Maybe Bool] -&gt; [Int]
 </span><a href="AOC.Challenge.Day14.html#applyMask2"><span class="hs-identifier hs-var">applyMask2</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637475"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637477"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IntMap Int -&gt; IntMap Int -&gt; IntMap Int
+</span><a href="#local-6989586621679637332"><span class="hs-identifier hs-var">addr</span></a></span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637334"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">IntMap Int -&gt; IntMap Int -&gt; IntMap Int
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">IntMap Int
-</span><a href="#local-6989586621679637478"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
-</span><a href="#local-6989586621679637477"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679637335"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Maybe Bool]
+</span><a href="#local-6989586621679637334"><span class="hs-identifier hs-var">msk</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-72"></span><span>
 </span><span id="line-73"></span><span class="annot"><a href="AOC.Challenge.Day14.html#parseInstr"><span class="hs-identifier hs-type">parseInstr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Common.html#CharParser"><span class="hs-identifier hs-type">CharParser</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day14.html#Instr"><span class="hs-identifier hs-type">Instr</span></a></span><span>
 </span><span id="line-74"></span><span id="parseInstr"><span class="annot"><span class="annottext">parseInstr :: Parsec Void String Instr
@@ -299,7 +299,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 -&gt; ParsecT Void String Identity [Maybe Bool]
 forall e s (m :: * -&gt; *) a. MonadParsec e s m =&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">P.try</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity [Maybe Bool]
-</span><a href="#local-6989586621679637470"><span class="hs-identifier hs-var">masker</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Instr
+</span><a href="#local-6989586621679637327"><span class="hs-identifier hs-var">masker</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Instr
 -&gt; Parsec Void String Instr -&gt; Parsec Void String Instr
 forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
 </span><span class="hs-operator hs-var">P.&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Instr) -&gt; (Int, Int) -&gt; Instr
@@ -310,10 +310,10 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 -&gt; Parsec Void String Instr
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Int, Int)
-</span><a href="#local-6989586621679637467"><span class="hs-identifier hs-var">memer</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679637324"><span class="hs-identifier hs-var">memer</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-75"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-76"></span><span>    </span><span id="local-6989586621679637470"><span class="annot"><span class="annottext">masker :: ParsecT Void String Identity [Maybe Bool]
-</span><a href="#local-6989586621679637470"><span class="hs-identifier hs-var hs-var">masker</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621679637327"><span class="annot"><span class="annottext">masker :: ParsecT Void String Identity [Maybe Bool]
+</span><a href="#local-6989586621679637327"><span class="hs-identifier hs-var hs-var">masker</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-77"></span><span>      </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity ()
 forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
@@ -328,9 +328,9 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 -&gt; ParsecT Void String Identity [Maybe Bool]
 forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
 </span><span class="hs-identifier hs-var">P.many</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Maybe Bool)
-</span><a href="#local-6989586621679637464"><span class="hs-identifier hs-var">bitter</span></a></span><span>
-</span><span id="line-79"></span><span>    </span><span id="local-6989586621679637464"><span class="annot"><span class="annottext">bitter :: ParsecT Void String Identity (Maybe Bool)
-</span><a href="#local-6989586621679637464"><span class="hs-identifier hs-var hs-var">bitter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ParsecT Void String Identity (Maybe Bool)]
+</span><a href="#local-6989586621679637321"><span class="hs-identifier hs-var">bitter</span></a></span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679637321"><span class="annot"><span class="annottext">bitter :: ParsecT Void String Identity (Maybe Bool)
+</span><a href="#local-6989586621679637321"><span class="hs-identifier hs-var hs-var">bitter</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ParsecT Void String Identity (Maybe Bool)]
 -&gt; ParsecT Void String Identity (Maybe Bool)
 forall (f :: * -&gt; *) (m :: * -&gt; *) a.
 (Foldable f, Alternative m) =&gt;
@@ -375,8 +375,8 @@ Token s -&gt; m (Token s)
 </span><span class="hs-identifier hs-var">P.char</span></span><span> </span><span class="annot"><span class="annottext">Token String
 </span><span class="hs-char">'X'</span></span><span>
 </span><span id="line-83"></span><span>      </span><span class="hs-special">]</span><span>
-</span><span id="line-84"></span><span>    </span><span id="local-6989586621679637467"><span class="annot"><span class="annottext">memer :: ParsecT Void String Identity (Int, Int)
-</span><a href="#local-6989586621679637467"><span class="hs-identifier hs-var hs-var">memer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679637324"><span class="annot"><span class="annottext">memer :: ParsecT Void String Identity (Int, Int)
+</span><a href="#local-6989586621679637324"><span class="hs-identifier hs-var hs-var">memer</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span>
 </span><span id="line-85"></span><span>      </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; (Int, Int))
 -&gt; ParsecT Void String Identity Int
 -&gt; ParsecT Void String Identity (Int -&gt; (Int, Int))
