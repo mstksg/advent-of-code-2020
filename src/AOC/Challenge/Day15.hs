@@ -39,10 +39,10 @@ looper :: Int -> [Int] -> Int
 looper n xs0 = runST $ flip evalStateT (0,0) $ do
     v <- MV.replicate n 0
     for_ xs0 $ \y -> StateT $ \(!i,_) ->
-      (,(i+1, y)) <$> MV.write v y (i+1)
+      (,(i+1, y)) <$> MV.unsafeWrite v y (i+1)
     whileM_ (gets ((< n) . fst)) $ StateT $ \(!i, !x) -> do
-      lst <- MV.read v x
-      MV.write v x i
+      lst <- MV.unsafeRead v x
+      MV.unsafeWrite v x i
       let j | lst ==  0 = 0
             | otherwise = i - lst
       pure ((),(i+1, j))
