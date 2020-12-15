@@ -139,7 +139,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 forall (m :: * -&gt; *) a.
 (PrimMonad m, Unbox a) =&gt;
 MVector (PrimState m) a -&gt; Int -&gt; a -&gt; m ()
-</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
+</span><span class="hs-identifier hs-var">MV.unsafeWrite</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
 MVector (PrimState (ST s)) Int
 </span><a href="#local-6989586621679637229"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679637227"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
@@ -177,7 +177,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (m :: * -&gt; *) a.
 (PrimMonad m, Unbox a) =&gt;
 MVector (PrimState m) a -&gt; Int -&gt; m a
-</span><span class="hs-identifier hs-var">MV.read</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
+</span><span class="hs-identifier hs-var">MV.unsafeRead</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
 MVector (PrimState (ST s)) Int
 </span><a href="#local-6989586621679637229"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679637219"><span class="hs-identifier hs-var">x</span></a></span><span>
@@ -185,7 +185,7 @@ MVector (PrimState (ST s)) Int
 forall (m :: * -&gt; *) a.
 (PrimMonad m, Unbox a) =&gt;
 MVector (PrimState m) a -&gt; Int -&gt; a -&gt; m ()
-</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
+</span><span class="hs-identifier hs-var">MV.unsafeWrite</span></span><span> </span><span class="annot"><span class="annottext">MVector s Int
 MVector (PrimState (ST s)) Int
 </span><a href="#local-6989586621679637229"><span class="hs-identifier hs-var">v</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><a href="#local-6989586621679637219"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int
