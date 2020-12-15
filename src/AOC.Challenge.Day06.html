@@ -31,21 +31,21 @@ Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 </span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">CharSet -&gt; Char -&gt; CharSet
 forall a. Bits a =&gt; a -&gt; Char -&gt; a
-</span><a href="#local-6989586621679638944"><span class="hs-identifier hs-var">insertCharSet</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><a href="#local-6989586621679638879"><span class="hs-identifier hs-var">insertCharSet</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
 </span><span id="line-28"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-29"></span><span>    </span><span id="local-6989586621679638944"><span class="annot"><span class="annottext">insertCharSet :: a -&gt; Char -&gt; a
-</span><a href="#local-6989586621679638944"><span class="hs-identifier hs-var hs-var">insertCharSet</span></a></span></span><span> </span><span id="local-6989586621679638943"><span class="annot"><span class="annottext">cs :: a
-</span><a href="#local-6989586621679638943"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span id="local-6989586621679638942"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679638942"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679638943"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Int -&gt; a
+</span><span id="line-29"></span><span>    </span><span id="local-6989586621679638879"><span class="annot"><span class="annottext">insertCharSet :: a -&gt; Char -&gt; a
+</span><a href="#local-6989586621679638879"><span class="hs-identifier hs-var hs-var">insertCharSet</span></a></span></span><span> </span><span id="local-6989586621679638878"><span class="annot"><span class="annottext">cs :: a
+</span><a href="#local-6989586621679638878"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span id="local-6989586621679638877"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679638877"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679638878"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Int -&gt; a
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">`setBit`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679638941"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><a href="#local-6989586621679638876"><span class="hs-identifier hs-var">i</span></a></span><span>
 </span><span id="line-30"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-31"></span><span>        </span><span id="local-6989586621679638941"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679638941"><span class="hs-identifier hs-var hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
+</span><span id="line-31"></span><span>        </span><span id="local-6989586621679638876"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679638876"><span class="hs-identifier hs-var hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><span class="hs-identifier hs-var">ord</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679638942"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679638877"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><span class="hs-identifier hs-var">ord</span></span><span> </span><span class="annot"><span class="hs-char">'a'</span></span><span>
@@ -78,8 +78,8 @@ forall a. [a] -&gt; Maybe (NonEmpty a)
 </span><span id="line-37"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day06.html#CharSet"><span class="hs-identifier hs-type">CharSet</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day06.html#CharSet"><span class="hs-identifier hs-type">CharSet</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day06.html#CharSet"><span class="hs-identifier hs-type">CharSet</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-38"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-39"></span><span id="day06With"><span class="annot"><span class="annottext">day06With :: (CharSet -&gt; CharSet -&gt; CharSet) -&gt; [[[Char]]] :~&gt; Int
-</span><a href="AOC.Challenge.Day06.html#day06With"><span class="hs-identifier hs-var hs-var">day06With</span></a></span></span><span> </span><span id="local-6989586621679638935"><span class="annot"><span class="annottext">f :: CharSet -&gt; CharSet -&gt; CharSet
-</span><a href="#local-6989586621679638935"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
+</span><a href="AOC.Challenge.Day06.html#day06With"><span class="hs-identifier hs-var hs-var">day06With</span></a></span></span><span> </span><span id="local-6989586621679638870"><span class="annot"><span class="annottext">f :: CharSet -&gt; CharSet -&gt; CharSet
+</span><a href="#local-6989586621679638870"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 ([Char] -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; [Char]) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
@@ -124,7 +124,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(CharSet -&gt; CharSet -&gt; CharSet) -&gt; NonEmpty CharSet -&gt; CharSet
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; a -&gt; a) -&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">foldr1</span></span><span> </span><span class="annot"><span class="annottext">CharSet -&gt; CharSet -&gt; CharSet
-</span><a href="#local-6989586621679638935"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Maybe (NonEmpty CharSet) -&gt; Maybe Int)
+</span><a href="#local-6989586621679638870"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Maybe (NonEmpty CharSet) -&gt; Maybe Int)
 -&gt; ([[Char]] -&gt; Maybe (NonEmpty CharSet)) -&gt; [[Char]] -&gt; Maybe Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[[Char]] -&gt; Maybe (NonEmpty CharSet)
