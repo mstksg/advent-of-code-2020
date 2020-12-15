@@ -47,7 +47,7 @@ import qualified Text.Megaparsec.Char.Lexer     as PP
 
 day${day}a :: _ :~> _
 day${day}a = MkSol
-    { sParse = Just
+    { sParse = Just . lines
     , sShow  = show
     , sSolve = Just
     }

@@ -45,16 +45,28 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
-day15a :: _ :~> _
+day15a :: [Int] :~> _
 day15a = MkSol
-    { sParse = Just
+    { sParse = Just . mapMaybe readMaybe . splitOn ","
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \xs -> Just . (view _3) . (!! (2020 - length xs)) . iterate go $ (length xs - 1, seed xs, last xs)
     }
+  where
+    seed xs = IM.fromList $ zip (init xs) [0..]
+    go (i, seen, lst) = case IM.lookup lst seen of
+      Nothing -> (i+1, IM.insert lst i seen, 0)
+      Just j  -> let dff = i - j
+                 in  (i + 1, IM.insert lst i seen, dff)
 
 day15b :: _ :~> _
 day15b = MkSol
     { sParse = sParse day15a
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \xs -> Just . (view _3) . (!!! (30000000 - length xs)) . iterate go $ (length xs - 1, seed xs, last xs)
     }
+  where
+    seed xs = IM.fromList $ zip (init xs) [0..]
+    go (i, seen, lst) = case IM.lookup lst seen of
+      Nothing -> (i+1, IM.insert lst i seen, 0)
+      Just j  -> let dff = i - j
+                 in  (i + 1, IM.insert lst i seen, dff)
