@@ -7,11 +7,100 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Mon, 14 Dec 2020 11:28:47 EST</lastBuildDate>
+    <lastBuildDate>Tue, 15 Dec 2020 16:27:58 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Mon, 14 Dec 2020 11:28:47 EST</pubDate>
+    <pubDate>Tue, 15 Dec 2020 16:27:58 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 15</title>
+      <description>&lt;h2 id=&quot;day-15&quot;&gt;Day 15&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day15.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/15&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day15.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day15.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;So it is yet another “here’s the algorithm, implement it” days again! Only the challenge this time is…you should probably implement it to be really fast!&lt;/p&gt;
+&lt;p&gt;I don’t think there is &lt;em&gt;too&lt;/em&gt; much wiggle room in how to implement things here; my original solution basically kept an &lt;code&gt;IntMap&lt;/code&gt; to the last seen time of any value, and just repeatedly looked things up and modified the (current time, last said) tuple.&lt;/p&gt;
+&lt;p&gt;My original solution took around 70 seconds to run, and that was what I used to submit things originally. But let’s see if we can get it down to something a little less…perceptible :) This reflection can be a deep dive into writing tight, performant Haskell.&lt;/p&gt;
+&lt;p&gt;The data type we’ll be using is an &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/vector/docs/Data-Vector-Unboxed-Mutable.html&quot;&gt;unboxed mutable array&lt;/a&gt;&lt;/em&gt;. There’s a trick we can use because we have a map from integers to values, we can just use the integer keys as the index to an array. This is usually a bad idea but for the fact that the keys we’ll be using are bounded within a decently small range (we won’t ever say a number that is greater than 30 million), so we can definitely accumulate 30 million-item array into memory without any major problems. We’ll also store our last-said times as &lt;code&gt;Int32&lt;/code&gt; to be a little bit more efficient since we’re trying to eek out every last bit of perf.&lt;/p&gt;
+&lt;p&gt;So overall we still keep some state: the current time and the last said item. Since those are just integers, we can keep that as pure in memory using &lt;code&gt;StateT&lt;/code&gt; running over &lt;code&gt;ST s&lt;/code&gt; (the mutable state monad, where our mutable vectors will live).&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Control.Monad.ST&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;Control.Monad.State&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt;           &lt;span class=&quot;dt&quot;&gt;GHC.Int&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.Vector.Unboxed.Mutable&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;MV&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;LoopState&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    {&lt;span class=&quot;ot&quot;&gt; lsLastSaid ::&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-8&quot;&gt;&lt;a href=&quot;#cb1-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ,&lt;span class=&quot;ot&quot;&gt; lsCurrTime ::&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-9&quot;&gt;&lt;a href=&quot;#cb1-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    }&lt;/span&gt;
+&lt;span id=&quot;cb1-10&quot;&gt;&lt;a href=&quot;#cb1-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-11&quot;&gt;&lt;a href=&quot;#cb1-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;sayNext&lt;/span&gt;
+&lt;span id=&quot;cb1-12&quot;&gt;&lt;a href=&quot;#cb1-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;MV.MVector&lt;/span&gt; s &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt;                   &lt;span class=&quot;co&quot;&gt;-- ^ the mutable vector of last-seen times&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-13&quot;&gt;&lt;a href=&quot;#cb1-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;StateT&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;T2&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) (&lt;span class=&quot;dt&quot;&gt;ST&lt;/span&gt; s) ()      &lt;span class=&quot;co&quot;&gt;-- ^ an &amp;#39;ST s&amp;#39; action with some pure (T2 Int32 Int) state&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-14&quot;&gt;&lt;a href=&quot;#cb1-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;sayNext v &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-15&quot;&gt;&lt;a href=&quot;#cb1-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;dt&quot;&gt;L&lt;/span&gt; s i &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; get                        &lt;span class=&quot;co&quot;&gt;-- get the current pure state&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-16&quot;&gt;&lt;a href=&quot;#cb1-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    lst &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; MV.read v x                  &lt;span class=&quot;co&quot;&gt;-- our last said is x, so look up the last time we saw it&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-17&quot;&gt;&lt;a href=&quot;#cb1-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    MV.write v x i                      &lt;span class=&quot;co&quot;&gt;-- update the last-time-seen&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-18&quot;&gt;&lt;a href=&quot;#cb1-18&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; j &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; lst &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;  &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;               &lt;span class=&quot;co&quot;&gt;-- we haven&amp;#39;t seen it&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-19&quot;&gt;&lt;a href=&quot;#cb1-19&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;otherwise&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;-&lt;/span&gt; lst         &lt;span class=&quot;co&quot;&gt;-- we have seen it&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-20&quot;&gt;&lt;a href=&quot;#cb1-20&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    put (&lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt; (&lt;span class=&quot;fu&quot;&gt;fromIntegral&lt;/span&gt; j) (i &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;))   &lt;span class=&quot;co&quot;&gt;-- update last seen and current time&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-21&quot;&gt;&lt;a href=&quot;#cb1-21&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;{-# INLINE sayNext #-}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We will want to INLINE this so that it gets inlined directly into our main loop code.&lt;/p&gt;
+&lt;p&gt;Oh, let’s also write a function to initialize our sequence with starting inputs:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;saySomething&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;MV.MVector&lt;/span&gt; s &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt;                   &lt;span class=&quot;co&quot;&gt;-- ^ the mutable vector of last-seen times&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;                                  &lt;span class=&quot;co&quot;&gt;-- ^ a number to &amp;quot;say&amp;quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;StateT&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;T2&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) (&lt;span class=&quot;dt&quot;&gt;ST&lt;/span&gt; s) ()      &lt;span class=&quot;co&quot;&gt;-- ^ an &amp;#39;ST s&amp;#39; action with some pure (T2 Int32 Int) state&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;saySomething v y &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt; x i &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; get&lt;/span&gt;
+&lt;span id=&quot;cb2-7&quot;&gt;&lt;a href=&quot;#cb2-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    MV.unsafeWrite v x i          &lt;span class=&quot;co&quot;&gt;-- write the last seen number with the right time&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-8&quot;&gt;&lt;a href=&quot;#cb2-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    put (&lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt; y (i &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;1&lt;/span&gt;))            &lt;span class=&quot;co&quot;&gt;-- queue up the write of the number to say&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-9&quot;&gt;&lt;a href=&quot;#cb2-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;{-# INLINE saySomething #-}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now we’re good to go to put it all together! We can use &lt;code&gt;whileM_&lt;/code&gt; from &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/monad-loops/docs/Control-Monad-Loops.html&quot;&gt;Control.Monad.Loops&lt;/a&gt;&lt;/em&gt; to emulate a while loop, where our condition is whenever &lt;code&gt;lsCurrTime&lt;/code&gt; reaches the maximum value.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- | Returns &amp;#39;True&amp;#39; until we need to stop&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;stopCond ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;StateT&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;T2&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int32&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;) m &lt;span class=&quot;dt&quot;&gt;Bool&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;stopCond n &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; gets &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; \(&lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt; _ i) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;&amp;lt;&lt;/span&gt; n&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;co&quot;&gt;-- gets f = f &amp;lt;$&amp;gt; get, it maps a function on top of a get&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;looper ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;looper n xs &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; runST &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;flip&lt;/span&gt; evalStateT (&lt;span class=&quot;dt&quot;&gt;LS&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    v &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; MV.replicate n &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;       &lt;span class=&quot;co&quot;&gt;-- initialize our vector with zeros&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-9&quot;&gt;&lt;a href=&quot;#cb3-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    traverse_ (saySomething v) xs&lt;/span&gt;
+&lt;span id=&quot;cb3-10&quot;&gt;&lt;a href=&quot;#cb3-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    whileM_ stopCond (sayNext v)&lt;/span&gt;
+&lt;span id=&quot;cb3-11&quot;&gt;&lt;a href=&quot;#cb3-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    gets lsLastSaid&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;On my machine (with some minor optimizations, like using &lt;code&gt;unsafeRead&lt;/code&gt;/&lt;code&gt;unsafeWrite&lt;/code&gt;), this runs in 230ms for part 2…a much more reasonable improvement over my original 70 seconds! :)&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; looper &lt;span class=&quot;dv&quot;&gt;2020&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; looper &lt;span class=&quot;dv&quot;&gt;30000000&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;day-15-benchmarks&quot;&gt;Day 15 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 15a
+benchmarking...
+time                 2.770 μs   (2.721 μs .. 2.819 μs)
+                     0.993 R²   (0.987 R² .. 0.997 R²)
+mean                 2.804 μs   (2.731 μs .. 2.980 μs)
+std dev              410.5 ns   (218.1 ns .. 710.5 ns)
+variance introduced by outliers: 94% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 15b
+benchmarking...
+time                 227.2 ms   (221.4 ms .. 232.6 ms)
+                     1.000 R²   (0.999 R² .. 1.000 R²)
+mean                 231.2 ms   (228.0 ms .. 239.5 ms)
+std dev              6.796 ms   (587.6 μs .. 9.527 ms)
+variance introduced by outliers: 14% (moderately inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-15</link>
+      <pubDate>Tue, 15 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 14</title>
       <description>&lt;h2 id=&quot;day-14&quot;&gt;Day 14&lt;/h2&gt;
