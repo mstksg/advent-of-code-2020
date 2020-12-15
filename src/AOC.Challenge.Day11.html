@@ -54,20 +54,20 @@ forall a. a -&gt; Maybe a
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span id="local-6989586621679637866"><span class="annot"><a href="AOC.Challenge.Day11.html#compile"><span class="hs-identifier hs-type">compile</span></a></span><span>
+</span><span id="line-43"></span><span id="local-6989586621679638182"><span class="annot"><a href="AOC.Challenge.Day11.html#compile"><span class="hs-identifier hs-type">compile</span></a></span><span>
 </span><span id="line-44"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679637975"><span class="annot"><a href="#local-6989586621679637975"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679637975"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637975"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679637975"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">VU.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637975"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679637866"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679637866"><span class="hs-identifier hs-type">r</span></a></span></span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679638291"><span class="annot"><a href="#local-6989586621679638291"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679638291"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638291"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679638291"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">VU.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638291"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679638182"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679638182"><span class="hs-identifier hs-type">r</span></a></span></span><span>
 </span><span id="line-47"></span><span id="compile"><span class="annot"><span class="annottext">compile :: Map Point (Set Point, Bool)
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
     Vector n [Finite n] -&gt; Vector n Bit -&gt; r)
 -&gt; r
-</span><a href="AOC.Challenge.Day11.html#compile"><span class="hs-identifier hs-var hs-var">compile</span></a></span></span><span> </span><span id="local-6989586621679637822"><span class="annot"><span class="annottext">mp :: Map Point (Set Point, Bool)
-</span><a href="#local-6989586621679637822"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span id="local-6989586621679637821"><span class="annot"><span class="annottext">f :: forall (n :: Nat).
+</span><a href="AOC.Challenge.Day11.html#compile"><span class="hs-identifier hs-var hs-var">compile</span></a></span></span><span> </span><span id="local-6989586621679638138"><span class="annot"><span class="annottext">mp :: Map Point (Set Point, Bool)
+</span><a href="#local-6989586621679638138"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span id="local-6989586621679638137"><span class="annot"><span class="annottext">f :: forall (n :: Nat).
 KnownNat n =&gt;
 Vector n [Finite n] -&gt; Vector n Bit -&gt; r
-</span><a href="#local-6989586621679637821"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Set Point, Bool)]
+</span><a href="#local-6989586621679638137"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Set Point, Bool)]
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
     Vector n (Set Point, Bool) -&gt; r)
@@ -77,24 +77,24 @@ forall a r.
 </span><span class="hs-identifier hs-var">V.withSizedList</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Point (Set Point, Bool) -&gt; [(Set Point, Bool)]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">Map Point (Set Point, Bool)
-</span><a href="#local-6989586621679637822"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat). KnownNat n =&gt; Vector n (Set Point, Bool) -&gt; r)
+</span><a href="#local-6989586621679638138"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat). KnownNat n =&gt; Vector n (Set Point, Bool) -&gt; r)
  -&gt; r)
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
     Vector n (Set Point, Bool) -&gt; r)
 -&gt; r
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637819"><span class="annot"><span class="annottext">xs :: Vector n (Set Point, Bool)
-</span><a href="#local-6989586621679637819"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679638135"><span class="annot"><span class="annottext">xs :: Vector n (Set Point, Bool)
+</span><a href="#local-6989586621679638135"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-48"></span><span>            </span><span class="annot"><span class="annottext">Vector n [Finite n] -&gt; Vector n Bit -&gt; r
 forall (n :: Nat).
 KnownNat n =&gt;
 Vector n [Finite n] -&gt; Vector n Bit -&gt; r
-</span><a href="#local-6989586621679637821"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Point -&gt; Finite n) -&gt; [Point] -&gt; [Finite n]
+</span><a href="#local-6989586621679638137"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Point -&gt; Finite n) -&gt; [Point] -&gt; [Finite n]
 forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Finite n
 forall (n :: Nat). KnownNat n =&gt; Point -&gt; Finite n
-</span><a href="#local-6989586621679637818"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">([Point] -&gt; [Finite n])
+</span><a href="#local-6989586621679638134"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">([Point] -&gt; [Finite n])
 -&gt; ((Set Point, Bool) -&gt; [Point])
 -&gt; (Set Point, Bool)
 -&gt; [Finite n]
@@ -110,7 +110,7 @@ forall a b. (a, b) -&gt; a
 -&gt; Vector n (Set Point, Bool) -&gt; Vector n [Finite n]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Vector n (Set Point, Bool)
-</span><a href="#local-6989586621679637819"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638135"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-49"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector Vector n Bit -&gt; Vector n Bit
 forall (v :: * -&gt; *) a (w :: * -&gt; *) (n :: Nat).
 (Vector v a, Vector w a) =&gt;
@@ -125,65 +125,65 @@ forall a b. (a, b) -&gt; b
 -&gt; Vector n (Set Point, Bool) -&gt; Vector Vector n Bit
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Vector n (Set Point, Bool)
-</span><a href="#local-6989586621679637819"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638135"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-50"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-51"></span><span>    </span><span id="local-6989586621679637961"><span class="annot"><a href="#local-6989586621679637818"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679637961"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679637961"><span class="hs-identifier hs-type">n</span></a></span></span><span>
-</span><span id="line-52"></span><span>    </span><span id="local-6989586621679637818"><span class="annot"><span class="annottext">go :: Point -&gt; Finite n
-</span><a href="#local-6989586621679637818"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n
+</span><span id="line-51"></span><span>    </span><span id="local-6989586621679638277"><span class="annot"><a href="#local-6989586621679638134"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679638277"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679638277"><span class="hs-identifier hs-type">n</span></a></span></span><span>
+</span><span id="line-52"></span><span>    </span><span id="local-6989586621679638134"><span class="annot"><span class="annottext">go :: Point -&gt; Finite n
+</span><a href="#local-6989586621679638134"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Finite n) -&gt; (Point -&gt; Int) -&gt; Point -&gt; Finite n
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Map Point (Set Point, Bool) -&gt; Int
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Int
 </span><span class="hs-operator hs-var">`M.findIndex`</span></span><span> </span><span class="annot"><span class="annottext">Map Point (Set Point, Bool)
-</span><a href="#local-6989586621679637822"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638138"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span><span class="annot"><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-identifier hs-type">seatRule</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679637884"><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679637883"><span class="annot"><a href="#local-6989586621679637883"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679637882"><span class="annot"><a href="#local-6989586621679637882"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679637883"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679637882"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679637883"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679638200"><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679638199"><span class="annot"><a href="#local-6989586621679638199"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679638198"><span class="annot"><a href="#local-6989586621679638198"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679638199"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="#local-6989586621679638198"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679638199"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>                          </span><span class="hs-comment">-- ^ exit seat threshold</span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span>        </span><span class="hs-comment">-- ^ neighbors</span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MVU.MVector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679637882"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>          </span><span class="hs-comment">-- ^ source</span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MVU.MVector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679637882"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>          </span><span class="hs-comment">-- ^ target</span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">StateT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="#local-6989586621679637883"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>             </span><span class="hs-comment">-- ^ changed</span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span>        </span><span class="hs-comment">-- ^ neighbors</span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MVU.MVector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679638198"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>          </span><span class="hs-comment">-- ^ source</span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MVU.MVector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679638198"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>          </span><span class="hs-comment">-- ^ target</span><span>
+</span><span id="line-60"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">StateT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="#local-6989586621679638199"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>             </span><span class="hs-comment">-- ^ changed</span><span>
 </span><span id="line-61"></span><span id="seatRule"><span class="annot"><span class="annottext">seatRule :: Int
 -&gt; Vector n [Finite n]
 -&gt; MVector n s Bit
 -&gt; MVector n s Bit
 -&gt; StateT Bool m ()
-</span><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-identifier hs-var hs-var">seatRule</span></a></span></span><span> </span><span id="local-6989586621679637810"><span class="annot"><span class="annottext">thr :: Int
-</span><a href="#local-6989586621679637810"><span class="hs-identifier hs-var">thr</span></a></span></span><span> </span><span id="local-6989586621679637809"><span class="annot"><span class="annottext">ns :: Vector n [Finite n]
-</span><a href="#local-6989586621679637809"><span class="hs-identifier hs-var">ns</span></a></span></span><span> </span><span id="local-6989586621679637808"><span class="annot"><span class="annottext">src :: MVector n s Bit
-</span><a href="#local-6989586621679637808"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679637807"><span class="annot"><span class="annottext">targ :: MVector n s Bit
-</span><a href="#local-6989586621679637807"><span class="hs-identifier hs-var">targ</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; StateT Bool m ()) -&gt; [Finite n] -&gt; StateT Bool m ()
+</span><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-identifier hs-var hs-var">seatRule</span></a></span></span><span> </span><span id="local-6989586621679638126"><span class="annot"><span class="annottext">thr :: Int
+</span><a href="#local-6989586621679638126"><span class="hs-identifier hs-var">thr</span></a></span></span><span> </span><span id="local-6989586621679638125"><span class="annot"><span class="annottext">ns :: Vector n [Finite n]
+</span><a href="#local-6989586621679638125"><span class="hs-identifier hs-var">ns</span></a></span></span><span> </span><span id="local-6989586621679638124"><span class="annot"><span class="annottext">src :: MVector n s Bit
+</span><a href="#local-6989586621679638124"><span class="hs-identifier hs-var">src</span></a></span></span><span> </span><span id="local-6989586621679638123"><span class="annot"><span class="annottext">targ :: MVector n s Bit
+</span><a href="#local-6989586621679638123"><span class="hs-identifier hs-var">targ</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; StateT Bool m ()) -&gt; [Finite n] -&gt; StateT Bool m ()
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Foldable t, Applicative f) =&gt;
 (a -&gt; f b) -&gt; t a -&gt; f ()
 </span><span class="hs-identifier hs-var">traverse_</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; StateT Bool m ()
-</span><a href="#local-6989586621679637806"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+</span><a href="#local-6989586621679638122"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">[Finite n]
 forall (n :: Nat). KnownNat n =&gt; [Finite n]
 </span><span class="hs-identifier hs-var">finites</span></span><span>
 </span><span id="line-62"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-63"></span><span>    </span><span class="annot"><a href="#local-6989586621679637806"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679637884"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">StateT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="#local-6989586621679637883"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>    </span><span id="local-6989586621679637806"><span class="annot"><span class="annottext">go :: Finite n -&gt; StateT Bool m ()
-</span><a href="#local-6989586621679637806"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679637805"><span class="annot"><span class="annottext">i :: Finite n
-</span><a href="#local-6989586621679637805"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; m ((), Bool)) -&gt; StateT Bool m ()
+</span><span id="line-63"></span><span>    </span><span class="annot"><a href="#local-6989586621679638122"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679638200"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">StateT</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="#local-6989586621679638199"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-64"></span><span>    </span><span id="local-6989586621679638122"><span class="annot"><span class="annottext">go :: Finite n -&gt; StateT Bool m ()
+</span><a href="#local-6989586621679638122"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679638121"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679638121"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; m ((), Bool)) -&gt; StateT Bool m ()
 forall s (m :: * -&gt; *) a. (s -&gt; m (a, s)) -&gt; StateT s m a
 </span><span class="hs-identifier hs-var">StateT</span></span><span> </span><span class="annot"><span class="annottext">((Bool -&gt; m ((), Bool)) -&gt; StateT Bool m ())
 -&gt; (Bool -&gt; m ((), Bool)) -&gt; StateT Bool m ()
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637803"><span class="annot"><span class="annottext">changed :: Bool
-</span><a href="#local-6989586621679637803"><span class="hs-identifier hs-var">changed</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-65"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span> </span><span id="local-6989586621679637802"><span class="annot"><span class="annottext">x :: Bool
-</span><a href="#local-6989586621679637802"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVector n (PrimState m) Bit -&gt; Finite n -&gt; m Bit
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679638119"><span class="annot"><span class="annottext">changed :: Bool
+</span><a href="#local-6989586621679638119"><span class="hs-identifier hs-var">changed</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-65"></span><span>      </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span> </span><span id="local-6989586621679638118"><span class="annot"><span class="annottext">x :: Bool
+</span><a href="#local-6989586621679638118"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVector n (PrimState m) Bit -&gt; Finite n -&gt; m Bit
 forall (n :: Nat) (m :: * -&gt; *) a.
 (PrimMonad m, Unbox a) =&gt;
 MVector n (PrimState m) a -&gt; Finite n -&gt; m a
 </span><span class="hs-identifier hs-var">MVU.read</span></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
 MVector n (PrimState m) Bit
-</span><a href="#local-6989586621679637808"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
-</span><a href="#local-6989586621679637805"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-66"></span><span>      </span><span id="local-6989586621679637800"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637800"><span class="hs-identifier hs-var">n</span></a></span></span><span>     </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Bit -&gt; Bool) -&gt; [Bit] -&gt; Int
+</span><a href="#local-6989586621679638124"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679638121"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-66"></span><span>      </span><span id="local-6989586621679638116"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679638116"><span class="hs-identifier hs-var">n</span></a></span></span><span>     </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Bit -&gt; Bool) -&gt; [Bit] -&gt; Int
 forall (f :: * -&gt; *) a. Foldable f =&gt; (a -&gt; Bool) -&gt; f a -&gt; Int
 </span><a href="AOC.Common.html#countTrue"><span class="hs-identifier hs-var">countTrue</span></a></span><span> </span><span class="annot"><span class="annottext">Bit -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var">unBit</span></span><span> </span><span class="annot"><span class="annottext">([Bit] -&gt; Int) -&gt; m [Bit] -&gt; m Int
@@ -198,67 +198,67 @@ forall (n :: Nat) (m :: * -&gt; *) a.
 MVector n (PrimState m) a -&gt; Finite n -&gt; m a
 </span><span class="hs-identifier hs-var">MVU.read</span></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
 MVector n (PrimState m) Bit
-</span><a href="#local-6989586621679637808"><span class="hs-identifier hs-var">src</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector n [Finite n]
-</span><a href="#local-6989586621679637809"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n] -&gt; Finite n -&gt; [Finite n]
+</span><a href="#local-6989586621679638124"><span class="hs-identifier hs-var">src</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector n [Finite n]
+</span><a href="#local-6989586621679638125"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n] -&gt; Finite n -&gt; [Finite n]
 forall (n :: Nat) a. Vector n a -&gt; Finite n -&gt; a
 </span><span class="hs-operator hs-var">`V.index`</span></span><span> </span><span class="annot"><span class="annottext">Finite n
-</span><a href="#local-6989586621679637805"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-67"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679637796"><span class="annot"><span class="annottext">x' :: Bool
-</span><a href="#local-6989586621679637796"><span class="hs-identifier hs-var hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679637802"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679638121"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679638112"><span class="annot"><span class="annottext">x' :: Bool
+</span><a href="#local-6989586621679638112"><span class="hs-identifier hs-var hs-var">x'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679638118"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-68"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">False</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637800"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679638116"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
 </span><span id="line-69"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">True</span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637800"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679638116"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&lt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637810"><span class="hs-identifier hs-var">thr</span></a></span><span>
+</span><a href="#local-6989586621679638126"><span class="hs-identifier hs-var">thr</span></a></span><span>
 </span><span id="line-70"></span><span>      </span><span class="annot"><span class="annottext">MVector n (PrimState m) Bit -&gt; Finite n -&gt; Bit -&gt; m ()
 forall (n :: Nat) (m :: * -&gt; *) a.
 (PrimMonad m, Unbox a) =&gt;
 MVector n (PrimState m) a -&gt; Finite n -&gt; a -&gt; m ()
 </span><span class="hs-identifier hs-var">MVU.write</span></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
 MVector n (PrimState m) Bit
-</span><a href="#local-6989586621679637807"><span class="hs-identifier hs-var">targ</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
-</span><a href="#local-6989586621679637805"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool -&gt; Bit
+</span><a href="#local-6989586621679638123"><span class="hs-identifier hs-var">targ</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679638121"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool -&gt; Bit
 </span><span class="hs-identifier hs-var">Bit</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679637796"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638112"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-71"></span><span>      </span><span class="hs-identifier">pure</span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679637803"><span class="hs-identifier hs-var">changed</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679638119"><span class="hs-identifier hs-var">changed</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679637802"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679638118"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">/=</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679637796"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-72"></span><span>    </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="#local-6989586621679637806"><span class="hs-pragma hs-type">go</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><a href="#local-6989586621679638112"><span class="hs-identifier hs-var">x'</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="#local-6989586621679638122"><span class="hs-pragma hs-type">go</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-73"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-pragma hs-type">seatRule</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span id="local-6989586621679637859"><span class="annot"><a href="AOC.Challenge.Day11.html#solveWith"><span class="hs-identifier hs-type">solveWith</span></a></span><span>
-</span><span id="line-76"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679637859"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-75"></span><span id="local-6989586621679638175"><span class="annot"><a href="AOC.Challenge.Day11.html#solveWith"><span class="hs-identifier hs-type">solveWith</span></a></span><span>
+</span><span id="line-76"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679638175"><span class="hs-identifier hs-type">n</span></a></span><span>
 </span><span id="line-77"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>                      </span><span class="hs-comment">-- ^ exit seat threshold</span><span>
-</span><span id="line-78"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637859"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679637859"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span>    </span><span class="hs-comment">-- ^ neighbors</span><span>
-</span><span id="line-79"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">VU.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679637859"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>
+</span><span id="line-78"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">V.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638175"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679638175"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span>    </span><span class="hs-comment">-- ^ neighbors</span><span>
+</span><span id="line-79"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">VU.Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679638175"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bit</span></span><span>
 </span><span id="line-80"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>                      </span><span class="hs-comment">-- ^ equilibrium size</span></span><span>
 </span><span id="line-81"></span><span id="solveWith"><span class="annot"><span class="annottext">solveWith :: Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
-</span><a href="AOC.Challenge.Day11.html#solveWith"><span class="hs-identifier hs-var hs-var">solveWith</span></a></span></span><span> </span><span id="local-6989586621679637790"><span class="annot"><span class="annottext">thr :: Int
-</span><a href="#local-6989586621679637790"><span class="hs-identifier hs-var">thr</span></a></span></span><span> </span><span id="local-6989586621679637789"><span class="annot"><span class="annottext">ns :: Vector n [Finite n]
-</span><a href="#local-6989586621679637789"><span class="hs-identifier hs-var">ns</span></a></span></span><span> </span><span id="local-6989586621679637788"><span class="annot"><span class="annottext">xs :: Vector n Bit
-</span><a href="#local-6989586621679637788"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s Int) -&gt; Int
+</span><a href="AOC.Challenge.Day11.html#solveWith"><span class="hs-identifier hs-var hs-var">solveWith</span></a></span></span><span> </span><span id="local-6989586621679638106"><span class="annot"><span class="annottext">thr :: Int
+</span><a href="#local-6989586621679638106"><span class="hs-identifier hs-var">thr</span></a></span></span><span> </span><span id="local-6989586621679638105"><span class="annot"><span class="annottext">ns :: Vector n [Finite n]
+</span><a href="#local-6989586621679638105"><span class="hs-identifier hs-var">ns</span></a></span></span><span> </span><span id="local-6989586621679638104"><span class="annot"><span class="annottext">xs :: Vector n Bit
+</span><a href="#local-6989586621679638104"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(forall s. ST s Int) -&gt; Int
 forall a. (forall s. ST s a) -&gt; a
 </span><span class="hs-identifier hs-var">runST</span></span><span> </span><span class="annot"><span class="annottext">((forall s. ST s Int) -&gt; Int) -&gt; (forall s. ST s Int) -&gt; Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679637787"><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637787"><span class="hs-identifier hs-var">xs0</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector n Bit -&gt; ST s (MVector n (PrimState (ST s)) Bit)
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679638103"><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638103"><span class="hs-identifier hs-var">xs0</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector n Bit -&gt; ST s (MVector n (PrimState (ST s)) Bit)
 forall (m :: * -&gt; *) a (n :: Nat).
 (PrimMonad m, Unbox a) =&gt;
 Vector n a -&gt; m (MVector n (PrimState m) a)
 </span><span class="hs-identifier hs-var">VU.thaw</span></span><span> </span><span class="annot"><span class="annottext">Vector n Bit
-</span><a href="#local-6989586621679637788"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-83"></span><span>    </span><span id="local-6989586621679637785"><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637785"><span class="hs-identifier hs-var">xs1</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s (MVector n s Bit)
+</span><a href="#local-6989586621679638104"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679638101"><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638101"><span class="hs-identifier hs-var">xs1</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ST s (MVector n s Bit)
 forall (n :: Nat) (m :: * -&gt; *) a.
 (KnownNat n, PrimMonad m, Unbox a) =&gt;
 m (MVector n (PrimState m) a)
@@ -295,10 +295,10 @@ Int
 -&gt; MVector n s Bit
 -&gt; StateT Bool m ()
 </span><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-identifier hs-var">seatRule</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637790"><span class="hs-identifier hs-var">thr</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n]
-</span><a href="#local-6989586621679637789"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637787"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637785"><span class="hs-identifier hs-var">xs1</span></a></span><span>
+</span><a href="#local-6989586621679638106"><span class="hs-identifier hs-var">thr</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n]
+</span><a href="#local-6989586621679638105"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638103"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638101"><span class="hs-identifier hs-var">xs1</span></a></span><span>
 </span><span id="line-86"></span><span>      </span><span class="annot"><span class="annottext">Int
 -&gt; Vector n [Finite n]
 -&gt; MVector n s Bit
@@ -312,10 +312,10 @@ Int
 -&gt; MVector n s Bit
 -&gt; StateT Bool m ()
 </span><a href="AOC.Challenge.Day11.html#seatRule"><span class="hs-identifier hs-var">seatRule</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679637790"><span class="hs-identifier hs-var">thr</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n]
-</span><a href="#local-6989586621679637789"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637785"><span class="hs-identifier hs-var">xs1</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
-</span><a href="#local-6989586621679637787"><span class="hs-identifier hs-var">xs0</span></a></span><span>
+</span><a href="#local-6989586621679638106"><span class="hs-identifier hs-var">thr</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n [Finite n]
+</span><a href="#local-6989586621679638105"><span class="hs-identifier hs-var">ns</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638101"><span class="hs-identifier hs-var">xs1</span></a></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
+</span><a href="#local-6989586621679638103"><span class="hs-identifier hs-var">xs0</span></a></span><span>
 </span><span id="line-87"></span><span>    </span><span class="annot"><span class="annottext">Vector n Bit -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int
 </span><span class="hs-identifier hs-var">popCount</span></span><span> </span><span class="annot"><span class="annottext">(Vector n Bit -&gt; Int) -&gt; ST s (Vector n Bit) -&gt; ST s Int
@@ -326,7 +326,7 @@ forall (m :: * -&gt; *) a (n :: Nat).
 MVector n (PrimState m) a -&gt; m (Vector n a)
 </span><span class="hs-identifier hs-var">VU.unsafeFreeze</span></span><span> </span><span class="annot"><span class="annottext">MVector n s Bit
 MVector n (PrimState (ST s)) Bit
-</span><a href="#local-6989586621679637787"><span class="hs-identifier hs-var">xs0</span></a></span><span>
+</span><a href="#local-6989586621679638103"><span class="hs-identifier hs-var">xs0</span></a></span><span>
 </span><span id="line-88"></span><span>
 </span><span id="line-89"></span><span>
 </span><span id="line-90"></span><span class="hs-comment">-- | Get a map of points to all of those points' neighbors where there is</span><span>
@@ -335,21 +335,21 @@ MVector n (PrimState (ST s)) Bit
 </span><span id="line-93"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
 </span><span id="line-94"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-95"></span><span id="lineOfSights1"><span class="annot"><span class="annottext">lineOfSights1 :: Set Point -&gt; Map Point (Set Point)
-</span><a href="AOC.Challenge.Day11.html#lineOfSights1"><span class="hs-identifier hs-var hs-var">lineOfSights1</span></a></span></span><span> </span><span id="local-6989586621679637780"><span class="annot"><span class="annottext">pts :: Set Point
-</span><a href="#local-6989586621679637780"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Map Point (Set Point)
+</span><a href="AOC.Challenge.Day11.html#lineOfSights1"><span class="hs-identifier hs-var hs-var">lineOfSights1</span></a></span></span><span> </span><span id="local-6989586621679638096"><span class="annot"><span class="annottext">pts :: Set Point
+</span><a href="#local-6989586621679638096"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Map Point (Set Point)
 forall k a. (k -&gt; a) -&gt; Set k -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromSet</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Set Point
-</span><a href="#local-6989586621679637778"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679637780"><span class="hs-identifier hs-var">pts</span></a></span><span>
+</span><a href="#local-6989586621679638094"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
+</span><a href="#local-6989586621679638096"><span class="hs-identifier hs-var">pts</span></a></span><span>
 </span><span id="line-96"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-97"></span><span>    </span><span id="local-6989586621679637778"><span class="annot"><span class="annottext">go :: Point -&gt; Set Point
-</span><a href="#local-6989586621679637778"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679637777"><span class="annot"><span class="annottext">p :: Point
-</span><a href="#local-6989586621679637777"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Set Point
+</span><span id="line-97"></span><span>    </span><span id="local-6989586621679638094"><span class="annot"><span class="annottext">go :: Point -&gt; Set Point
+</span><a href="#local-6989586621679638094"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679638093"><span class="annot"><span class="annottext">p :: Point
+</span><a href="#local-6989586621679638093"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Set Point
 </span><a href="AOC.Common.html#fullNeighbsSet"><span class="hs-identifier hs-var">fullNeighbsSet</span></a></span><span> </span><span class="annot"><span class="annottext">Point
-</span><a href="#local-6989586621679637777"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; Set Point -&gt; Set Point
+</span><a href="#local-6989586621679638093"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; Set Point -&gt; Set Point
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-operator hs-var">`S.intersection`</span></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679637780"><span class="hs-identifier hs-var">pts</span></a></span><span>
+</span><a href="#local-6989586621679638096"><span class="hs-identifier hs-var">pts</span></a></span><span>
 </span><span id="line-98"></span><span>
 </span><span id="line-99"></span><span>
 </span><span id="line-100"></span><span class="annot"><a href="AOC.Challenge.Day11.html#day11a"><span class="hs-identifier hs-type">day11a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
@@ -371,18 +371,18 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
 </span><span id="line-104"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Map Point Bool -&gt; Maybe Int
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637769"><span class="annot"><span class="annottext">mp :: Map Point Bool
-</span><a href="#local-6989586621679637769"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679638085"><span class="annot"><span class="annottext">mp :: Map Point Bool
+</span><a href="#local-6989586621679638085"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; Int -&gt; Maybe Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-105"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679637768"><span class="annot"><span class="annottext">los :: Map Point (Set Point)
-</span><a href="#local-6989586621679637768"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; Map Point (Set Point)
+</span><span id="line-105"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679638084"><span class="annot"><span class="annottext">los :: Map Point (Set Point)
+</span><a href="#local-6989586621679638084"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; Map Point (Set Point)
 </span><a href="AOC.Challenge.Day11.html#lineOfSights1"><span class="hs-identifier hs-var">lineOfSights1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Point Bool -&gt; Set Point
 forall k a. Map k a -&gt; Set k
 </span><span class="hs-identifier hs-var">M.keysSet</span></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
-</span><a href="#local-6989586621679637769"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638085"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-106"></span><span>        </span><span class="hs-keyword">in</span><span>  </span><span class="annot"><span class="annottext">Map Point (Set Point, Bool)
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
@@ -402,8 +402,8 @@ forall k a b c.
 Ord k =&gt;
 (a -&gt; b -&gt; c) -&gt; Map k a -&gt; Map k b -&gt; Map k c
 </span><span class="hs-identifier hs-var">M.intersectionWith</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map Point (Set Point)
-</span><a href="#local-6989586621679637768"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
-</span><a href="#local-6989586621679637769"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
+</span><a href="#local-6989586621679638084"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
+</span><a href="#local-6989586621679638085"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
 forall (n :: Nat).
 KnownNat n =&gt;
 Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
@@ -418,17 +418,17 @@ Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
 </span><span id="line-114"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
 </span><span id="line-115"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-116"></span><span id="lineOfSights2"><span class="annot"><span class="annottext">lineOfSights2 :: V2 Point -&gt; Set Point -&gt; Map Point (Set Point)
-</span><a href="AOC.Challenge.Day11.html#lineOfSights2"><span class="hs-identifier hs-var hs-var">lineOfSights2</span></a></span></span><span> </span><span id="local-6989586621679637764"><span class="annot"><span class="annottext">bb :: V2 Point
-</span><a href="#local-6989586621679637764"><span class="hs-identifier hs-var">bb</span></a></span></span><span> </span><span id="local-6989586621679637763"><span class="annot"><span class="annottext">pts :: Set Point
-</span><a href="#local-6989586621679637763"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Map Point (Set Point)
+</span><a href="AOC.Challenge.Day11.html#lineOfSights2"><span class="hs-identifier hs-var hs-var">lineOfSights2</span></a></span></span><span> </span><span id="local-6989586621679638080"><span class="annot"><span class="annottext">bb :: V2 Point
+</span><a href="#local-6989586621679638080"><span class="hs-identifier hs-var">bb</span></a></span></span><span> </span><span id="local-6989586621679638079"><span class="annot"><span class="annottext">pts :: Set Point
+</span><a href="#local-6989586621679638079"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Map Point (Set Point)
 forall k a. (k -&gt; a) -&gt; Set k -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromSet</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Set Point
-</span><a href="#local-6989586621679637762"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679637763"><span class="hs-identifier hs-var">pts</span></a></span><span>
+</span><a href="#local-6989586621679638078"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
+</span><a href="#local-6989586621679638079"><span class="hs-identifier hs-var">pts</span></a></span><span>
 </span><span id="line-117"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-118"></span><span>    </span><span id="local-6989586621679637762"><span class="annot"><span class="annottext">go :: Point -&gt; Set Point
-</span><a href="#local-6989586621679637762"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679637761"><span class="annot"><span class="annottext">p :: Point
-</span><a href="#local-6989586621679637761"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Point] -&gt; Set Point
+</span><span id="line-118"></span><span>    </span><span id="local-6989586621679638078"><span class="annot"><span class="annottext">go :: Point -&gt; Set Point
+</span><a href="#local-6989586621679638078"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679638077"><span class="annot"><span class="annottext">p :: Point
+</span><a href="#local-6989586621679638077"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Point] -&gt; Set Point
 forall a. Ord a =&gt; [a] -&gt; Set a
 </span><span class="hs-identifier hs-var">S.fromList</span></span><span>
 </span><span id="line-119"></span><span>         </span><span class="annot"><span class="annottext">([Point] -&gt; Set Point)
@@ -437,21 +437,21 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Maybe Point) -&gt; [Point] -&gt; [Point]
 forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
 </span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Maybe Point
-</span><a href="#local-6989586621679637759"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Point
-</span><a href="#local-6989586621679637761"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638075"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679638077"><span class="hs-identifier hs-var">p</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-120"></span><span>         </span><span class="annot"><span class="annottext">([Point] -&gt; Set Point) -&gt; [Point] -&gt; Set Point
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; [Point]
 </span><a href="AOC.Common.html#fullNeighbs"><span class="hs-identifier hs-var">fullNeighbs</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
-</span><span id="line-121"></span><span>    </span><span id="local-6989586621679637759"><span class="annot"><span class="annottext">los :: Point -&gt; Point -&gt; Maybe Point
-</span><a href="#local-6989586621679637759"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span id="local-6989586621679637758"><span class="annot"><span class="annottext">p :: Point
-</span><a href="#local-6989586621679637758"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679637757"><span class="annot"><span class="annottext">d :: Point
-</span><a href="#local-6989586621679637757"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Bool) -&gt; [Point] -&gt; Maybe Point
+</span><span id="line-121"></span><span>    </span><span id="local-6989586621679638075"><span class="annot"><span class="annottext">los :: Point -&gt; Point -&gt; Maybe Point
+</span><a href="#local-6989586621679638075"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span id="local-6989586621679638074"><span class="annot"><span class="annottext">p :: Point
+</span><a href="#local-6989586621679638074"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span id="local-6989586621679638073"><span class="annot"><span class="annottext">d :: Point
+</span><a href="#local-6989586621679638073"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Bool) -&gt; [Point] -&gt; Maybe Point
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">find</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Set Point -&gt; Bool
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Bool
 </span><span class="hs-operator hs-var">`S.member`</span></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679637763"><span class="hs-identifier hs-var">pts</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638079"><span class="hs-identifier hs-var">pts</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-122"></span><span>            </span><span class="annot"><span class="annottext">([Point] -&gt; Maybe Point)
 -&gt; ([Point] -&gt; [Point]) -&gt; [Point] -&gt; Maybe Point
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -462,7 +462,7 @@ forall (g :: * -&gt; *) a.
 (Applicative g, Foldable g, Ord a) =&gt;
 V2 (g a) -&gt; g a -&gt; Bool
 </span><a href="AOC.Common.html#inBoundingBox"><span class="hs-identifier hs-var">inBoundingBox</span></a></span><span> </span><span class="annot"><span class="annottext">V2 Point
-</span><a href="#local-6989586621679637764"><span class="hs-identifier hs-var">bb</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638080"><span class="hs-identifier hs-var">bb</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-123"></span><span>            </span><span class="annot"><span class="annottext">([Point] -&gt; [Point]) -&gt; ([Point] -&gt; [Point]) -&gt; [Point] -&gt; [Point]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Point] -&gt; [Point]
@@ -475,8 +475,8 @@ forall a. (a -&gt; a) -&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">iterate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Point
-</span><a href="#local-6989586621679637757"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Point
-</span><a href="#local-6989586621679637758"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><a href="#local-6989586621679638073"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Point
+</span><a href="#local-6989586621679638074"><span class="hs-identifier hs-var">p</span></a></span><span>
 </span><span id="line-125"></span><span>
 </span><span id="line-126"></span><span class="annot"><a href="AOC.Challenge.Day11.html#day11b"><span class="hs-identifier hs-type">day11b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-127"></span><span id="day11b"><span class="annot"><span class="annottext">day11b :: Map Point Bool :~&gt; Int
@@ -497,22 +497,22 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
 </span><span id="line-130"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Map Point Bool -&gt; Maybe Int
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679637751"><span class="annot"><span class="annottext">mp :: Map Point Bool
-</span><a href="#local-6989586621679637751"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-131"></span><span>        </span><span id="local-6989586621679637750"><span class="annot"><span class="annottext">V2 Point
-</span><a href="#local-6989586621679637750"><span class="hs-identifier hs-var">bb</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Point] -&gt; Maybe (V2 Point)
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679638067"><span class="annot"><span class="annottext">mp :: Map Point Bool
+</span><a href="#local-6989586621679638067"><span class="hs-identifier hs-var">mp</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-131"></span><span>        </span><span id="local-6989586621679638066"><span class="annot"><span class="annottext">V2 Point
+</span><a href="#local-6989586621679638066"><span class="hs-identifier hs-var">bb</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Point] -&gt; Maybe (V2 Point)
 forall (f :: * -&gt; *). Foldable f =&gt; f Point -&gt; Maybe (V2 Point)
 </span><a href="AOC.Common.html#boundingBox%27"><span class="hs-identifier hs-var">boundingBox'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Point Bool -&gt; [Point]
 forall k a. Map k a -&gt; [k]
 </span><span class="hs-identifier hs-var">M.keys</span></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
-</span><a href="#local-6989586621679637751"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-132"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679637748"><span class="annot"><span class="annottext">los :: Map Point (Set Point)
-</span><a href="#local-6989586621679637748"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">V2 Point -&gt; Set Point -&gt; Map Point (Set Point)
+</span><a href="#local-6989586621679638067"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-132"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679638064"><span class="annot"><span class="annottext">los :: Map Point (Set Point)
+</span><a href="#local-6989586621679638064"><span class="hs-identifier hs-var hs-var">los</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">V2 Point -&gt; Set Point -&gt; Map Point (Set Point)
 </span><a href="AOC.Challenge.Day11.html#lineOfSights2"><span class="hs-identifier hs-var">lineOfSights2</span></a></span><span> </span><span class="annot"><span class="annottext">V2 Point
-</span><a href="#local-6989586621679637750"><span class="hs-identifier hs-var">bb</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Point Bool -&gt; Set Point
+</span><a href="#local-6989586621679638066"><span class="hs-identifier hs-var">bb</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Point Bool -&gt; Set Point
 forall k a. Map k a -&gt; Set k
 </span><span class="hs-identifier hs-var">M.keysSet</span></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
-</span><a href="#local-6989586621679637751"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679638067"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-133"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; Int -&gt; Maybe Int
@@ -536,8 +536,8 @@ forall k a b c.
 Ord k =&gt;
 (a -&gt; b -&gt; c) -&gt; Map k a -&gt; Map k b -&gt; Map k c
 </span><span class="hs-identifier hs-var">M.intersectionWith</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Map Point (Set Point)
-</span><a href="#local-6989586621679637748"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
-</span><a href="#local-6989586621679637751"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
+</span><a href="#local-6989586621679638064"><span class="hs-identifier hs-var">los</span></a></span><span> </span><span class="annot"><span class="annottext">Map Point Bool
+</span><a href="#local-6989586621679638067"><span class="hs-identifier hs-var">mp</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
 forall (n :: Nat).
 KnownNat n =&gt;
 Int -&gt; Vector n [Finite n] -&gt; Vector n Bit -&gt; Int
