@@ -50,6 +50,6 @@ looper n xs0 = runST $ flip evalStateT (0,NE.head xs0) $ do
     gets snd
   where
     initter :: MV.MVector s Int -> Int -> StateT (Int, Int) (ST s) ()
-    initter v y = StateT $ \(!i, !x) ->
-      (,(i+1, y)) <$> MV.write v x i
+    initter v y = StateT $ \(!i, _) ->
+      (,(i+1, y)) <$> MV.write v y (i+1)
     {-# INLINE initter #-}
