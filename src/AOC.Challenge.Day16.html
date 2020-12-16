@@ -14,7 +14,7 @@
 </span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#day16b"><span class="hs-identifier">day16b</span></a></span><span>
 </span><span id="line-15"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>                 </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#CharParser"><span class="hs-identifier">CharParser</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#sortSizedBy"><span class="hs-identifier">sortSizedBy</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>                 </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#CharParser"><span class="hs-identifier">CharParser</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#sortSizedBy"><span class="hs-identifier">sortSizedBy</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#withAllSized"><span class="hs-identifier">withAllSized</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>                 </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.DeepSeq</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NFData</span></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.State</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">lift</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">modify</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">get</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">evalStateT</span></span><span class="hs-special">)</span><span>
@@ -41,7 +41,7 @@
 </span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char.Lexer</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
 </span><span id="line-42"></span><span>
 </span><span id="line-43"></span><span class="hs-keyword">type</span><span> </span><span id="Passport"><span class="annot"><a href="AOC.Challenge.Day16.html#Passport"><span class="hs-identifier hs-var">Passport</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
-</span><span id="line-44"></span><span id="local-6989586621679651305"><span id="local-6989586621679651306"></span></span><span class="hs-keyword">data</span><span> </span><span id="Info"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-var">Info</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Info"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-var">Info</span></a></span></span><span>
+</span><span id="line-44"></span><span id="local-6989586621679651440"><span id="local-6989586621679651441"></span></span><span class="hs-keyword">data</span><span> </span><span id="Info"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-var">Info</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Info"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-var">Info</span></a></span></span><span>
 </span><span id="line-45"></span><span>      </span><span class="hs-special">{</span><span> </span><span id="iFields"><span class="annot"><span class="annottext">Info -&gt; IntervalMap Int (Set Text)
 </span><a href="AOC.Challenge.Day16.html#iFields"><span class="hs-identifier hs-var hs-var">iFields</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntervalMap</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>      </span><span class="hs-special">,</span><span> </span><span id="iYours"><span class="annot"><span class="annottext">Info -&gt; Passport
@@ -49,7 +49,7 @@
 </span><span id="line-47"></span><span>      </span><span class="hs-special">,</span><span> </span><span id="iTheirs"><span class="annot"><span class="annottext">Info -&gt; [Passport]
 </span><a href="AOC.Challenge.Day16.html#iTheirs"><span class="hs-identifier hs-var hs-var">iTheirs</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="AOC.Challenge.Day16.html#Passport"><span class="hs-identifier hs-type">Passport</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-48"></span><span>      </span><span class="hs-special">}</span><span>
-</span><span id="line-49"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679651295"><span id="local-6989586621679651297"><span id="local-6989586621679651299"><span class="annot"><span class="annottext">Int -&gt; Info -&gt; ShowS
+</span><span id="line-49"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679651430"><span id="local-6989586621679651432"><span id="local-6989586621679651434"><span class="annot"><span class="annottext">Int -&gt; Info -&gt; ShowS
 [Info] -&gt; ShowS
 Info -&gt; String
 (Int -&gt; Info -&gt; ShowS)
@@ -62,7 +62,7 @@ show :: Info -&gt; String
 $cshow :: Info -&gt; String
 showsPrec :: Int -&gt; Info -&gt; ShowS
 $cshowsPrec :: Int -&gt; Info -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651290"><span id="local-6989586621679651292"><span class="annot"><span class="annottext">Info -&gt; Info -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651425"><span id="local-6989586621679651427"><span class="annot"><span class="annottext">Info -&gt; Info -&gt; Bool
 (Info -&gt; Info -&gt; Bool) -&gt; (Info -&gt; Info -&gt; Bool) -&gt; Eq Info
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: Info -&gt; Info -&gt; Bool
@@ -78,7 +78,7 @@ forall a.
 $cto :: forall x. Rep Info x -&gt; Info
 $cfrom :: forall x. Info -&gt; Rep Info x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
-</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679651284"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span></span><span>
+</span><span id="line-50"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679651419"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span></span><span>
 </span><span id="line-51"></span><span>
 </span><span id="line-52"></span><span class="annot"><a href="AOC.Challenge.Day16.html#day16a"><span class="hs-identifier hs-type">day16a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-53"></span><span id="day16a"><span class="annot"><span class="annottext">day16a :: Info :~&gt; Int
@@ -96,7 +96,7 @@ forall e s a. (Ord e, Stream s) =&gt; Parsec e s a -&gt; s -&gt; Maybe a
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Info -&gt; Maybe Int
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651272"><span id="local-6989586621679651273"><span id="local-6989586621679651274"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651407"><span id="local-6989586621679651408"><span id="local-6989586621679651409"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; (Passport -&gt; Int) -&gt; Passport -&gt; Maybe Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -106,17 +106,17 @@ forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
 </span><span id="line-57"></span><span>        </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679651269"><span class="hs-identifier hs-var">n</span></a></span><span>
-</span><span id="line-58"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679651269"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679651269"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Passport] -&gt; Passport
+</span><a href="#local-6989586621679651404"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-58"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679651404"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679651404"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Passport] -&gt; Passport
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">[Passport]
-</span><a href="#local-6989586621679651272"><span class="hs-identifier hs-var">iTheirs</span></a></span><span>
+</span><a href="#local-6989586621679651407"><span class="hs-identifier hs-var">iTheirs</span></a></span><span>
 </span><span id="line-59"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679651269"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntervalMap Int (Set Text) -&gt; Bool
+</span><a href="#local-6989586621679651404"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntervalMap Int (Set Text) -&gt; Bool
 forall k a. Ord k =&gt; k -&gt; IntervalMap k a -&gt; Bool
 </span><span class="hs-operator hs-var">`IM.notMember`</span></span><span> </span><span class="annot"><span class="annottext">IntervalMap Int (Set Text)
-</span><a href="#local-6989586621679651274"><span class="hs-identifier hs-var">iFields</span></a></span><span>
+</span><a href="#local-6989586621679651409"><span class="hs-identifier hs-var">iFields</span></a></span><span>
 </span><span id="line-60"></span><span>        </span><span class="hs-special">]</span><span>
 </span><span id="line-61"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-62"></span><span>
@@ -140,10 +140,10 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">product</span></span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Info -&gt; Maybe Passport
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651263"><span id="local-6989586621679651264"><span id="local-6989586621679651265"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-68"></span><span>        </span><span id="local-6989586621679651262"><span class="annot"><span class="annottext">th :: [Set Text]
-</span><a href="#local-6989586621679651262"><span class="hs-identifier hs-var">th</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679651261"><span class="annot"><span class="annottext">ths :: [[Set Text]]
-</span><a href="#local-6989586621679651261"><span class="hs-identifier hs-var">ths</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[[Set Text]] -&gt; Maybe [[Set Text]]
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651398"><span id="local-6989586621679651399"><span id="local-6989586621679651400"><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-68"></span><span>        </span><span id="local-6989586621679651397"><span class="annot"><span class="annottext">th :: [Set Text]
+</span><a href="#local-6989586621679651397"><span class="hs-identifier hs-var">th</span></a></span></span><span> </span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span> </span><span id="local-6989586621679651396"><span class="annot"><span class="annottext">ths :: [[Set Text]]
+</span><a href="#local-6989586621679651396"><span class="hs-identifier hs-var">ths</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[[Set Text]] -&gt; Maybe [[Set Text]]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">([[Set Text]] -&gt; Maybe [[Set Text]])
 -&gt; [[Set Text]] -&gt; Maybe [[Set Text]]
@@ -157,52 +157,42 @@ forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 </span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; IntervalMap Int (Set Text) -&gt; Maybe (Set Text)
 forall k a. Ord k =&gt; k -&gt; IntervalMap k a -&gt; Maybe a
 </span><span class="hs-operator hs-var">`IM.lookup`</span></span><span> </span><span class="annot"><span class="annottext">IntervalMap Int (Set Text)
-</span><a href="#local-6989586621679651265"><span class="hs-identifier hs-var">iFields</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Passport]
-</span><a href="#local-6989586621679651263"><span class="hs-identifier hs-var">iTheirs</span></a></span><span>
-</span><span id="line-69"></span><span>        </span><span class="annot"><span class="annottext">[Set Text]
+</span><a href="#local-6989586621679651400"><span class="hs-identifier hs-var">iFields</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Passport]
+</span><a href="#local-6989586621679651398"><span class="hs-identifier hs-var">iTheirs</span></a></span><span>
+</span><span id="line-69"></span><span>        </span><span class="annot"><span class="annottext">NonEmpty [Set Text]
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
-    Vector n (Set Text) -&gt; Maybe Passport)
+    NonEmpty (Vector Vector n (Set Text)) -&gt; Maybe Passport)
 -&gt; Maybe Passport
-forall a r.
-[a] -&gt; (forall (n :: Nat). KnownNat n =&gt; Vector n a -&gt; r) -&gt; r
-</span><span class="hs-identifier hs-var">V.withSizedList</span></span><span> </span><span class="annot"><span class="annottext">[Set Text]
-</span><a href="#local-6989586621679651262"><span class="hs-identifier hs-var">th</span></a></span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat).
+forall (v :: * -&gt; *) a r.
+Vector v a =&gt;
+NonEmpty [a]
+-&gt; (forall (n :: Nat).
+    KnownNat n =&gt;
+    NonEmpty (Vector v n a) -&gt; Maybe r)
+-&gt; Maybe r
+</span><a href="AOC.Common.html#withAllSized"><span class="hs-identifier hs-var">withAllSized</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Set Text]
+</span><a href="#local-6989586621679651397"><span class="hs-identifier hs-var">th</span></a></span><span> </span><span class="annot"><span class="annottext">[Set Text] -&gt; [[Set Text]] -&gt; NonEmpty [Set Text]
+forall a. a -&gt; [a] -&gt; NonEmpty a
+</span><span class="hs-operator hs-var">:|</span></span><span> </span><span class="annot"><span class="annottext">[[Set Text]]
+</span><a href="#local-6989586621679651396"><span class="hs-identifier hs-var">ths</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((forall (n :: Nat).
   KnownNat n =&gt;
-  Vector n (Set Text) -&gt; Maybe Passport)
+  NonEmpty (Vector Vector n (Set Text)) -&gt; Maybe Passport)
  -&gt; Maybe Passport)
 -&gt; (forall (n :: Nat).
     KnownNat n =&gt;
-    Vector n (Set Text) -&gt; Maybe Passport)
+    NonEmpty (Vector Vector n (Set Text)) -&gt; Maybe Passport)
 -&gt; Maybe Passport
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651257"><span class="annot"><span class="annottext">vth :: Vector n (Set Text)
-</span><a href="#local-6989586621679651257"><span class="hs-identifier hs-var">vth</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-70"></span><span>          </span><span id="local-6989586621679651256"><span class="annot"><span class="annottext">NonEmpty (Vector n (Set Text))
-</span><a href="#local-6989586621679651256"><span class="hs-identifier hs-var">vths</span></a></span></span><span>       </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector n (Set Text)
-</span><a href="#local-6989586621679651257"><span class="hs-identifier hs-var">vth</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n (Set Text)
--&gt; [Vector n (Set Text)] -&gt; NonEmpty (Vector n (Set Text))
-forall a. a -&gt; [a] -&gt; NonEmpty a
-</span><span class="hs-operator hs-var">:|</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Vector n (Set Text)] -&gt; NonEmpty (Vector n (Set Text)))
--&gt; Maybe [Vector n (Set Text)]
--&gt; Maybe (NonEmpty (Vector n (Set Text)))
-forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">([Set Text] -&gt; Maybe (Vector n (Set Text)))
--&gt; [[Set Text]] -&gt; Maybe [Vector n (Set Text)]
-forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
-(Traversable t, Applicative f) =&gt;
-(a -&gt; f b) -&gt; t a -&gt; f (t b)
-</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">[Set Text] -&gt; Maybe (Vector n (Set Text))
-forall (n :: Nat) a. KnownNat n =&gt; [a] -&gt; Maybe (Vector n a)
-</span><span class="hs-identifier hs-var">V.fromList</span></span><span> </span><span class="annot"><span class="annottext">[[Set Text]]
-</span><a href="#local-6989586621679651261"><span class="hs-identifier hs-var">ths</span></a></span><span>
-</span><span id="line-71"></span><span>          </span><span id="local-6989586621679651252"><span class="annot"><span class="annottext">Vector n Int
-</span><a href="#local-6989586621679651252"><span class="hs-identifier hs-var">yours</span></a></span></span><span>      </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Passport -&gt; Maybe (Vector n Int)
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679651392"><span class="annot"><span class="annottext">vths :: NonEmpty (Vector Vector n (Set Text))
+</span><a href="#local-6989586621679651392"><span class="hs-identifier hs-var">vths</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-70"></span><span>          </span><span id="local-6989586621679651391"><span class="annot"><span class="annottext">Vector n Int
+</span><a href="#local-6989586621679651391"><span class="hs-identifier hs-var">yours</span></a></span></span><span>      </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Passport -&gt; Maybe (Vector n Int)
 forall (n :: Nat) a. KnownNat n =&gt; [a] -&gt; Maybe (Vector n a)
 </span><span class="hs-identifier hs-var">V.fromList</span></span><span> </span><span class="annot"><span class="annottext">Passport
-</span><a href="#local-6989586621679651264"><span class="hs-identifier hs-var">iYours</span></a></span><span>
-</span><span id="line-72"></span><span>          </span><span id="local-6989586621679651251"><span class="annot"><span class="annottext">Vector Vector n (Finite n, NESet Text)
-</span><a href="#local-6989586621679651251"><span class="hs-identifier hs-var">candidates</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Vector n (NESet Text) -&gt; Vector Vector n (Finite n, NESet Text))
+</span><a href="#local-6989586621679651399"><span class="hs-identifier hs-var">iYours</span></a></span><span>
+</span><span id="line-71"></span><span>          </span><span id="local-6989586621679651389"><span class="annot"><span class="annottext">Vector Vector n (Finite n, NESet Text)
+</span><a href="#local-6989586621679651389"><span class="hs-identifier hs-var">candidates</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Vector n (NESet Text) -&gt; Vector Vector n (Finite n, NESet Text))
 -&gt; Maybe (Vector n (NESet Text))
 -&gt; Maybe (Vector Vector n (Finite n, NESet Text))
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -210,7 +200,7 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 -&gt; Vector Vector n (Finite n, NESet Text)
 -&gt; Vector Vector n (Finite n, NESet Text)
 forall (v :: * -&gt; *) a (n :: Nat).
-(MVector (Mutable v) a, Vector v a) =&gt;
+Vector v a =&gt;
 (a -&gt; a -&gt; Ordering) -&gt; Vector v n a -&gt; Vector v n a
 </span><a href="AOC.Common.html#sortSizedBy"><span class="hs-identifier hs-var">sortSizedBy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((Finite n, NESet Text) -&gt; Int)
 -&gt; (Finite n, NESet Text) -&gt; (Finite n, NESet Text) -&gt; Ordering
@@ -234,7 +224,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Vector n (NESet Text) -&gt; Vector Vector n (Finite n, NESet Text)
 forall (n :: Nat) a. Vector n a -&gt; Vector n (Finite n, a)
 </span><span class="hs-identifier hs-var">V.indexed</span></span><span class="hs-special">)</span><span>
-</span><span id="line-73"></span><span>                      </span><span class="annot"><span class="annottext">(Maybe (Vector n (NESet Text))
+</span><span id="line-72"></span><span>                      </span><span class="annot"><span class="annottext">(Maybe (Vector n (NESet Text))
  -&gt; Maybe (Vector Vector n (Finite n, NESet Text)))
 -&gt; (Vector Vector n (NonEmpty (Set Text))
     -&gt; Maybe (Vector n (NESet Text)))
@@ -260,20 +250,20 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; a -&gt; a) -&gt; t a -&gt; 
 </span><span class="hs-identifier hs-var">foldl1</span></span><span> </span><span class="annot"><span class="annottext">Set Text -&gt; Set Text -&gt; Set Text
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.intersection</span></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>                      </span><span class="annot"><span class="annottext">(Vector Vector n (NonEmpty (Set Text))
+</span><span id="line-73"></span><span>                      </span><span class="annot"><span class="annottext">(Vector Vector n (NonEmpty (Set Text))
  -&gt; Maybe (Vector Vector n (Finite n, NESet Text)))
 -&gt; Vector Vector n (NonEmpty (Set Text))
 -&gt; Maybe (Vector Vector n (Finite n, NESet Text))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty (Vector n (Set Text))
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty (Vector Vector n (Set Text))
 -&gt; Vector Vector n (NonEmpty (Set Text))
 forall (g :: * -&gt; *) (f :: * -&gt; *) a.
 (Distributive g, Functor f) =&gt;
 f (g a) -&gt; g (f a)
-</span><span class="hs-identifier hs-var">distribute</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty (Vector n (Set Text))
-</span><a href="#local-6989586621679651256"><span class="hs-identifier hs-var">vths</span></a></span><span>
-</span><span id="line-75"></span><span>          </span><span id="local-6989586621679651245"><span class="annot"><span class="annottext">Vector Vector n (Finite n, Text)
-</span><a href="#local-6989586621679651245"><span class="hs-identifier hs-var">validMap</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Vector Vector n (Finite n, Text)]
+</span><span class="hs-identifier hs-var">distribute</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty (Vector Vector n (Set Text))
+</span><a href="#local-6989586621679651392"><span class="hs-identifier hs-var">vths</span></a></span><span>
+</span><span id="line-74"></span><span>          </span><span id="local-6989586621679651383"><span class="annot"><span class="annottext">Vector Vector n (Finite n, Text)
+</span><a href="#local-6989586621679651383"><span class="hs-identifier hs-var">validMap</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Vector Vector n (Finite n, Text)]
 -&gt; Maybe (Vector Vector n (Finite n, Text))
 forall a. [a] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">listToMaybe</span></span><span> </span><span class="annot"><span class="annottext">([Vector Vector n (Finite n, Text)]
@@ -295,13 +285,13 @@ forall (m :: * -&gt; *) s a. Monad m =&gt; StateT s m a -&gt; s -&gt; m a
 </span><span class="hs-identifier hs-var">evalStateT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntervalMap Int (Set Text) -&gt; Set Text
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
 </span><span class="hs-identifier hs-var">fold</span></span><span> </span><span class="annot"><span class="annottext">IntervalMap Int (Set Text)
-</span><a href="#local-6989586621679651265"><span class="hs-identifier hs-var">iFields</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(StateT (Set Text) [] (Vector Vector n (Finite n, Text))
+</span><a href="#local-6989586621679651400"><span class="hs-identifier hs-var">iFields</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(StateT (Set Text) [] (Vector Vector n (Finite n, Text))
  -&gt; Maybe (Vector Vector n (Finite n, Text)))
 -&gt; StateT (Set Text) [] (Vector Vector n (Finite n, Text))
 -&gt; Maybe (Vector Vector n (Finite n, Text))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-76"></span><span>            </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, NESet Text)
+</span><span id="line-75"></span><span>            </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, NESet Text)
 -&gt; ((Finite n, NESet Text)
     -&gt; StateT (Set Text) [] (Finite n, Text))
 -&gt; StateT (Set Text) [] (Vector Vector n (Finite n, Text))
@@ -309,21 +299,21 @@ forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Traversable t, Applicative f) =&gt;
 t a -&gt; (a -&gt; f b) -&gt; f (t b)
 </span><span class="hs-identifier hs-var">for</span></span><span> </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, NESet Text)
-</span><a href="#local-6989586621679651251"><span class="hs-identifier hs-var">candidates</span></a></span><span> </span><span class="annot"><span class="annottext">(((Finite n, NESet Text) -&gt; StateT (Set Text) [] (Finite n, Text))
+</span><a href="#local-6989586621679651389"><span class="hs-identifier hs-var">candidates</span></a></span><span> </span><span class="annot"><span class="annottext">(((Finite n, NESet Text) -&gt; StateT (Set Text) [] (Finite n, Text))
  -&gt; StateT (Set Text) [] (Vector Vector n (Finite n, Text)))
 -&gt; ((Finite n, NESet Text)
     -&gt; StateT (Set Text) [] (Finite n, Text))
 -&gt; StateT (Set Text) [] (Vector Vector n (Finite n, Text))
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679651243"><span class="annot"><span class="annottext">i :: Finite n
-</span><a href="#local-6989586621679651243"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651242"><span class="annot"><span class="annottext">cands :: NESet Text
-</span><a href="#local-6989586621679651242"><span class="hs-identifier hs-var">cands</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-77"></span><span>              </span><span id="local-6989586621679651241"><span class="annot"><span class="annottext">Set Text
-</span><a href="#local-6989586621679651241"><span class="hs-identifier hs-var">soFar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">StateT (Set Text) [] (Set Text)
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679651381"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679651381"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651380"><span class="annot"><span class="annottext">cands :: NESet Text
+</span><a href="#local-6989586621679651380"><span class="hs-identifier hs-var">cands</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-76"></span><span>              </span><span id="local-6989586621679651379"><span class="annot"><span class="annottext">Set Text
+</span><a href="#local-6989586621679651379"><span class="hs-identifier hs-var">soFar</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">StateT (Set Text) [] (Set Text)
 forall s (m :: * -&gt; *). MonadState s m =&gt; m s
 </span><span class="hs-identifier hs-var">get</span></span><span>
-</span><span id="line-78"></span><span>              </span><span id="local-6989586621679651240"><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679651240"><span class="hs-identifier hs-var">pick</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; StateT (Set Text) [] Text
+</span><span id="line-77"></span><span>              </span><span id="local-6989586621679651378"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679651378"><span class="hs-identifier hs-var">pick</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Text] -&gt; StateT (Set Text) [] Text
 forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
 (MonadTrans t, Monad m) =&gt;
 m a -&gt; t m a
@@ -338,13 +328,13 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NESet Text -&gt; Set Text
 forall a. NESet a -&gt; Set a
 </span><span class="hs-identifier hs-var">NES.toSet</span></span><span> </span><span class="annot"><span class="annottext">NESet Text
-</span><a href="#local-6989586621679651242"><span class="hs-identifier hs-var">cands</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text -&gt; Set Text -&gt; Set Text
+</span><a href="#local-6989586621679651380"><span class="hs-identifier hs-var">cands</span></a></span><span> </span><span class="annot"><span class="annottext">Set Text -&gt; Set Text -&gt; Set Text
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
 </span><span class="hs-operator hs-var">`S.intersection`</span></span><span> </span><span class="annot"><span class="annottext">Set Text
-</span><a href="#local-6989586621679651241"><span class="hs-identifier hs-var">soFar</span></a></span><span>
-</span><span id="line-79"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
-</span><a href="#local-6989586621679651243"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679651240"><span class="hs-identifier hs-var">pick</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Finite n, Text)
+</span><a href="#local-6989586621679651379"><span class="hs-identifier hs-var">soFar</span></a></span><span>
+</span><span id="line-78"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679651381"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679651378"><span class="hs-identifier hs-var">pick</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Finite n, Text)
 -&gt; StateT (Set Text) [] () -&gt; StateT (Set Text) [] (Finite n, Text)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">(Set Text -&gt; Set Text) -&gt; StateT (Set Text) [] ()
@@ -352,30 +342,30 @@ forall s (m :: * -&gt; *). MonadState s m =&gt; (s -&gt; s) -&gt; m ()
 </span><span class="hs-identifier hs-var">modify</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Set Text -&gt; Set Text
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.delete</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679651240"><span class="hs-identifier hs-var">pick</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-80"></span><span>          </span><span class="hs-identifier">pure</span><span>
-</span><span id="line-81"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Vector n Int
-</span><a href="#local-6989586621679651252"><span class="hs-identifier hs-var">yours</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n Int -&gt; Finite n -&gt; Int
+</span><a href="#local-6989586621679651378"><span class="hs-identifier hs-var">pick</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>          </span><span class="hs-identifier">pure</span><span>
+</span><span id="line-80"></span><span>            </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Vector n Int
+</span><a href="#local-6989586621679651391"><span class="hs-identifier hs-var">yours</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n Int -&gt; Finite n -&gt; Int
 forall (n :: Nat) a. Vector n a -&gt; Finite n -&gt; a
 </span><span class="hs-operator hs-var">`V.index`</span></span><span> </span><span class="annot"><span class="annottext">Finite n
-</span><a href="#local-6989586621679651235"><span class="hs-identifier hs-var">i</span></a></span><span>
-</span><span id="line-82"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679651235"><span class="annot"><span class="annottext">i :: Finite n
-</span><a href="#local-6989586621679651235"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651234"><span class="annot"><span class="annottext">k :: Text
-</span><a href="#local-6989586621679651234"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, Text) -&gt; [(Finite n, Text)]
+</span><a href="#local-6989586621679651373"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-81"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679651373"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679651373"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679651372"><span class="annot"><span class="annottext">k :: Text
+</span><a href="#local-6989586621679651372"><span class="hs-identifier hs-var">k</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, Text) -&gt; [(Finite n, Text)]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">Vector Vector n (Finite n, Text)
-</span><a href="#local-6989586621679651245"><span class="hs-identifier hs-var">validMap</span></a></span><span>
-</span><span id="line-83"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;departure&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
+</span><a href="#local-6989586621679651383"><span class="hs-identifier hs-var">validMap</span></a></span><span>
+</span><span id="line-82"></span><span>            </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-string">&quot;departure&quot;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Text -&gt; Bool
 </span><span class="hs-operator hs-var">`T.isPrefixOf`</span></span><span> </span><span class="annot"><span class="annottext">Text
-</span><a href="#local-6989586621679651234"><span class="hs-identifier hs-var">k</span></a></span><span>
-</span><span id="line-84"></span><span>            </span><span class="hs-special">]</span><span>
-</span><span id="line-85"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-86"></span><span>
-</span><span id="line-87"></span><span class="annot"><a href="AOC.Challenge.Day16.html#parseInfo"><span class="hs-identifier hs-type">parseInfo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Common.html#CharParser"><span class="hs-identifier hs-type">CharParser</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span>
-</span><span id="line-88"></span><span id="parseInfo"><span class="annot"><span class="annottext">parseInfo :: Parsec Void String Info
+</span><a href="#local-6989586621679651372"><span class="hs-identifier hs-var">k</span></a></span><span>
+</span><span id="line-83"></span><span>            </span><span class="hs-special">]</span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-85"></span><span>
+</span><span id="line-86"></span><span class="annot"><a href="AOC.Challenge.Day16.html#parseInfo"><span class="hs-identifier hs-type">parseInfo</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Common.html#CharParser"><span class="hs-identifier hs-type">CharParser</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type">Info</span></a></span><span>
+</span><span id="line-87"></span><span id="parseInfo"><span class="annot"><span class="annottext">parseInfo :: Parsec Void String Info
 </span><a href="AOC.Challenge.Day16.html#parseInfo"><span class="hs-identifier hs-var hs-var">parseInfo</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-89"></span><span>    </span><span id="local-6989586621679651232"><span class="annot"><span class="annottext">IntervalMap Int (Set Text)
-</span><a href="#local-6989586621679651232"><span class="hs-identifier hs-var">iFields</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Set Text -&gt; Set Text -&gt; Set Text)
+</span><span id="line-88"></span><span>    </span><span id="local-6989586621679651370"><span class="annot"><span class="annottext">IntervalMap Int (Set Text)
+</span><a href="#local-6989586621679651370"><span class="hs-identifier hs-var">iFields</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(Set Text -&gt; Set Text -&gt; Set Text)
 -&gt; [(Interval Int, Set Text)] -&gt; IntervalMap Int (Set Text)
 forall k a.
 Ord k =&gt;
@@ -401,39 +391,39 @@ forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
 forall (f :: * -&gt; *) e s a.
 (MonadParsec e s f, Token s ~ Char) =&gt;
 f a -&gt; f a
-</span><a href="#local-6989586621679651229"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsecT Void String Identity [(Interval Int, Set Text)]
+</span><a href="#local-6989586621679651366"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsecT Void String Identity [(Interval Int, Set Text)]
 -&gt; ParsecT Void String Identity [(Interval Int, Set Text)]
 forall e s (m :: * -&gt; *) a. MonadParsec e s m =&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">P.try</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity [(Interval Int, Set Text)]
-</span><a href="#local-6989586621679651227"><span class="hs-identifier hs-var">fieldParser</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-90"></span><span>    </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><a href="#local-6989586621679651364"><span class="hs-identifier hs-var">fieldParser</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity String
 forall (f :: * -&gt; *) e s a.
 (MonadParsec e s f, Token s ~ Char) =&gt;
 f a -&gt; f a
-</span><a href="#local-6989586621679651229"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;your ticket:&quot;</span></span><span>
-</span><span id="line-91"></span><span>    </span><span id="local-6989586621679651226"><span class="annot"><span class="annottext">Passport
-</span><a href="#local-6989586621679651226"><span class="hs-identifier hs-var">iYours</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
+</span><a href="#local-6989586621679651366"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;your ticket:&quot;</span></span><span>
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679651363"><span class="annot"><span class="annottext">Passport
+</span><a href="#local-6989586621679651363"><span class="hs-identifier hs-var">iYours</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
 -&gt; ParsecT Void String Identity Passport
 forall (f :: * -&gt; *) e s a.
 (MonadParsec e s f, Token s ~ Char) =&gt;
 f a -&gt; f a
-</span><a href="#local-6989586621679651229"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="annottext">(ParsecT Void String Identity Passport
+</span><a href="#local-6989586621679651366"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="annottext">(ParsecT Void String Identity Passport
  -&gt; ParsecT Void String Identity Passport)
 -&gt; ParsecT Void String Identity Passport
 -&gt; ParsecT Void String Identity Passport
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
-</span><a href="#local-6989586621679651225"><span class="hs-identifier hs-var">passportParser</span></a></span><span>
-</span><span id="line-92"></span><span>    </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><a href="#local-6989586621679651362"><span class="hs-identifier hs-var">passportParser</span></a></span><span>
+</span><span id="line-91"></span><span>    </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity String
 forall (f :: * -&gt; *) e s a.
 (MonadParsec e s f, Token s ~ Char) =&gt;
 f a -&gt; f a
-</span><a href="#local-6989586621679651229"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;nearby tickets:&quot;</span></span><span>
-</span><span id="line-93"></span><span>    </span><span id="local-6989586621679651224"><span class="annot"><span class="annottext">[Passport]
-</span><a href="#local-6989586621679651224"><span class="hs-identifier hs-var">iTheirs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
-</span><a href="#local-6989586621679651225"><span class="hs-identifier hs-var">passportParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
+</span><a href="#local-6989586621679651366"><span class="hs-identifier hs-var">tok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;nearby tickets:&quot;</span></span><span>
+</span><span id="line-92"></span><span>    </span><span id="local-6989586621679651361"><span class="annot"><span class="annottext">[Passport]
+</span><a href="#local-6989586621679651361"><span class="hs-identifier hs-var">iTheirs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
+</span><a href="#local-6989586621679651362"><span class="hs-identifier hs-var">passportParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Passport
 -&gt; ParsecT Void String Identity Char
 -&gt; ParsecT Void String Identity [Passport]
 forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
@@ -442,13 +432,13 @@ forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.newline</span></span><span>
-</span><span id="line-94"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="annot"><span class="annottext">Info :: IntervalMap Int (Set Text) -&gt; Passport -&gt; [Passport] -&gt; Info
+</span><span id="line-93"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="annot"><span class="annottext">Info :: IntervalMap Int (Set Text) -&gt; Passport -&gt; [Passport] -&gt; Info
 </span><a href="AOC.Challenge.Day16.html#Info"><span class="hs-identifier hs-type hs-type">Info</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span><span>
-</span><span id="line-95"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-96"></span><span>    </span><span id="local-6989586621679651229"><span class="annot"><span class="annottext">tok :: f a -&gt; f a
-</span><a href="#local-6989586621679651229"><span class="hs-identifier hs-var hs-var">tok</span></a></span></span><span> </span><span id="local-6989586621679651220"><span class="annot"><span class="annottext">p :: f a
-</span><a href="#local-6989586621679651220"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679651220"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f String -&gt; f a
+</span><span id="line-94"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-95"></span><span>    </span><span id="local-6989586621679651366"><span class="annot"><span class="annottext">tok :: f a -&gt; f a
+</span><a href="#local-6989586621679651366"><span class="hs-identifier hs-var hs-var">tok</span></a></span></span><span> </span><span id="local-6989586621679651357"><span class="annot"><span class="annottext">p :: f a
+</span><a href="#local-6989586621679651357"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679651357"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f String -&gt; f a
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">f Char -&gt; f String
 forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
@@ -457,23 +447,23 @@ forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.newline</span></span><span>
-</span><span id="line-97"></span><span>    </span><span id="local-6989586621679651227"><span class="annot"><span class="annottext">fieldParser :: ParsecT Void String Identity [(Interval Int, Set Text)]
-</span><a href="#local-6989586621679651227"><span class="hs-identifier hs-var hs-var">fieldParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-98"></span><span>      </span><span id="local-6989586621679651217"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679651217"><span class="hs-identifier hs-var">k</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Token String -&gt; Bool)
+</span><span id="line-96"></span><span>    </span><span id="local-6989586621679651364"><span class="annot"><span class="annottext">fieldParser :: ParsecT Void String Identity [(Interval Int, Set Text)]
+</span><a href="#local-6989586621679651364"><span class="hs-identifier hs-var hs-var">fieldParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-97"></span><span>      </span><span id="local-6989586621679651354"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679651354"><span class="hs-identifier hs-var">k</span></a></span></span><span>  </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Token String -&gt; Bool)
 -&gt; ParsecT Void String Identity (Token String)
 forall e s (m :: * -&gt; *).
 MonadParsec e s m =&gt;
 (Token s -&gt; Bool) -&gt; m (Token s)
-</span><span class="hs-identifier hs-var">P.satisfy</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679651215"><span class="annot"><span class="annottext">c :: Token String
-</span><a href="#local-6989586621679651215"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">P.satisfy</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679651352"><span class="annot"><span class="annottext">c :: Token String
+</span><a href="#local-6989586621679651352"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isAlpha</span></span><span> </span><span class="annot"><span class="annottext">Char
 Token String
-</span><a href="#local-6989586621679651215"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><a href="#local-6989586621679651352"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isSpace</span></span><span> </span><span class="annot"><span class="annottext">Char
 Token String
-</span><a href="#local-6989586621679651215"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
+</span><a href="#local-6989586621679651352"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
 -&gt; ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity String
 forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
@@ -482,9 +472,9 @@ forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
 -&gt; ParsecT Void String Identity String
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span>
-</span><span id="line-99"></span><span>      </span><span id="local-6989586621679651212"><span class="annot"><span class="annottext">[Interval Int]
-</span><a href="#local-6989586621679651212"><span class="hs-identifier hs-var">vs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Interval Int)
-</span><a href="#local-6989586621679651211"><span class="hs-identifier hs-var">rangeParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Interval Int)
+</span><span id="line-98"></span><span>      </span><span id="local-6989586621679651349"><span class="annot"><span class="annottext">[Interval Int]
+</span><a href="#local-6989586621679651349"><span class="hs-identifier hs-var">vs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Interval Int)
+</span><a href="#local-6989586621679651348"><span class="hs-identifier hs-var">rangeParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Interval Int)
 -&gt; ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity [Interval Int]
 forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
@@ -493,19 +483,19 @@ forall e s (m :: * -&gt; *).
 MonadParsec e s m =&gt;
 Tokens s -&gt; m (Tokens s)
 </span><span class="hs-identifier hs-var">P.string</span></span><span> </span><span class="annot"><span class="hs-string">&quot; or &quot;</span></span><span>
-</span><span id="line-100"></span><span>      </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-special">,</span></span><span class="annot"><span class="annottext">Text -&gt; Set Text
+</span><span id="line-99"></span><span>      </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-special">,</span></span><span class="annot"><span class="annottext">Text -&gt; Set Text
 forall a. a -&gt; Set a
 </span><span class="hs-identifier hs-var">S.singleton</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">T.pack</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679651217"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Interval Int -&gt; (Interval Int, Set Text))
+</span><a href="#local-6989586621679651354"><span class="hs-identifier hs-var">k</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Interval Int -&gt; (Interval Int, Set Text))
 -&gt; [Interval Int] -&gt; [(Interval Int, Set Text)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[Interval Int]
-</span><a href="#local-6989586621679651212"><span class="hs-identifier hs-var">vs</span></a></span><span>
-</span><span id="line-101"></span><span>    </span><span id="local-6989586621679651211"><span class="annot"><span class="annottext">rangeParser :: ParsecT Void String Identity (Interval Int)
-</span><a href="#local-6989586621679651211"><span class="hs-identifier hs-var hs-var">rangeParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-102"></span><span>      </span><span id="local-6989586621679651207"><span class="annot"><span class="annottext">Extended Int
-</span><a href="#local-6989586621679651207"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Extended Int
+</span><a href="#local-6989586621679651349"><span class="hs-identifier hs-var">vs</span></a></span><span>
+</span><span id="line-100"></span><span>    </span><span id="local-6989586621679651348"><span class="annot"><span class="annottext">rangeParser :: ParsecT Void String Identity (Interval Int)
+</span><a href="#local-6989586621679651348"><span class="hs-identifier hs-var hs-var">rangeParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-101"></span><span>      </span><span id="local-6989586621679651344"><span class="annot"><span class="annottext">Extended Int
+</span><a href="#local-6989586621679651344"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Extended Int
 forall r. r -&gt; Extended r
 </span><span class="hs-identifier hs-var">ER.Finite</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Extended Int)
 -&gt; ParsecT Void String Identity Int
@@ -520,8 +510,8 @@ m a
 -&gt; ParsecT Void String Identity (Extended Int)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="hs-string">&quot;-&quot;</span></span><span>
-</span><span id="line-103"></span><span>      </span><span id="local-6989586621679651204"><span class="annot"><span class="annottext">Extended Int
-</span><a href="#local-6989586621679651204"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Extended Int
+</span><span id="line-102"></span><span>      </span><span id="local-6989586621679651341"><span class="annot"><span class="annottext">Extended Int
+</span><a href="#local-6989586621679651341"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Extended Int
 forall r. r -&gt; Extended r
 </span><span class="hs-identifier hs-var">ER.Finite</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Extended Int)
 -&gt; ParsecT Void String Identity Int
@@ -532,13 +522,13 @@ forall e s (m :: * -&gt; *) a.
 (MonadParsec e s m, Token s ~ Char, Num a) =&gt;
 m a
 </span><span class="hs-identifier hs-var">PP.decimal</span></span><span>
-</span><span id="line-104"></span><span>      </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span> </span><span class="annot"><span class="annottext">Extended Int
-</span><a href="#local-6989586621679651207"><span class="hs-identifier hs-var">mn</span></a></span><span> </span><span class="annot"><span class="annottext">Extended Int -&gt; Extended Int -&gt; Interval Int
+</span><span id="line-103"></span><span>      </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span> </span><span class="annot"><span class="annottext">Extended Int
+</span><a href="#local-6989586621679651344"><span class="hs-identifier hs-var">mn</span></a></span><span> </span><span class="annot"><span class="annottext">Extended Int -&gt; Extended Int -&gt; Interval Int
 forall r. Ord r =&gt; Extended r -&gt; Extended r -&gt; Interval r
 </span><span class="hs-operator hs-var">I.&lt;=..&lt;=</span></span><span> </span><span class="annot"><span class="annottext">Extended Int
-</span><a href="#local-6989586621679651204"><span class="hs-identifier hs-var">mx</span></a></span><span>
-</span><span id="line-105"></span><span>    </span><span id="local-6989586621679651225"><span class="annot"><span class="annottext">passportParser :: ParsecT Void String Identity Passport
-</span><a href="#local-6989586621679651225"><span class="hs-identifier hs-var hs-var">passportParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Int
+</span><a href="#local-6989586621679651341"><span class="hs-identifier hs-var">mx</span></a></span><span>
+</span><span id="line-104"></span><span>    </span><span id="local-6989586621679651362"><span class="annot"><span class="annottext">passportParser :: ParsecT Void String Identity Passport
+</span><a href="#local-6989586621679651362"><span class="hs-identifier hs-var hs-var">passportParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Int
 forall e s (m :: * -&gt; *) a.
 (MonadParsec e s m, Token s ~ Char, Num a) =&gt;
 m a
@@ -547,4 +537,4 @@ m a
 -&gt; ParsecT Void String Identity Passport
 forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
 </span><span class="hs-operator hs-var">`P.sepBy`</span></span><span> </span><span class="annot"><span class="hs-string">&quot;,&quot;</span></span><span>
-</span><span id="line-106"></span></pre></body></html>
+</span><span id="line-105"></span></pre></body></html>
