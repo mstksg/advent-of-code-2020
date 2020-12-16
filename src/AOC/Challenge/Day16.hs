@@ -33,7 +33,6 @@ import qualified Data.ExtendedReal          as ER
 import qualified Data.Interval              as I
 import qualified Data.IntervalMap.Strict    as IM
 import qualified Data.Set                   as S
-import qualified Data.Set.NonEmpty          as NES
 import qualified Data.Text                  as T
 import qualified Data.Vector.Sized          as V
 import qualified Text.Megaparsec            as P
@@ -68,13 +67,15 @@ day16b = MkSol
         th : ths <- pure $ mapMaybe (traverse (`IM.lookup` iFields)) iTheirs
         withAllSized (th :| ths) $ \vths -> do
           yours      <- V.fromList iYours
-          candidates <- fmap (sortSizedBy (comparing (NES.size . snd)) . V.indexed)
-                      . traverse (NES.nonEmptySet . foldl1 S.intersection)
-                      $ distribute vths
+          let candidates = sortSizedBy (comparing (S.size . snd)) . V.indexed
+                         . fmap (foldl1 S.intersection)
+                         $ distribute vths
+          -- we technically don't need a backtracking search, but it feels
+          -- cleaner to write one
           validMap <- listToMaybe . flip evalStateT (fold iFields) $ do
             for candidates $ \(i, cands) -> do
               soFar <- get
-              pick  <- lift . toList $ NES.toSet cands `S.intersection` soFar
+              pick  <- lift . toList $ cands `S.intersection` soFar
               (i, pick) <$ modify (S.delete pick)
           pure
             [ yours `V.index` i

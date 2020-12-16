@@ -78,21 +78,23 @@ library:
   dependencies:
   - advent-of-code-api >= 0.2.7
   - aeson
-  - arithmoi
   - ansi-terminal
-  - monad-loops
+  - ghc-typelits-knownnat
+  - arithmoi
   - barbies
   - bitvec
   - bytestring
-  - data-interval
   - comonad
   - conduino
   - containers
   - criterion
   - data-default-class
+  - data-interval
   - data-memocombinators
   - deepseq
   - directory
+  - distributive
+  - extended-reals
   - fgl
   - filepath
   - fin
@@ -100,6 +102,7 @@ library:
   - finite-typelits
   - foldl
   - generic-lens
+  - ghc-typelits-natnormalise
   - groups
   - hashable
   - haskeline
@@ -110,6 +113,7 @@ library:
   - lens
   - linear
   - megaparsec >= 8.0
+  - monad-loops
   - mtl
   - nonempty-containers
   - one-liner-instances
@@ -117,10 +121,7 @@ library:
   - parallel
   - parser-combinators >= 1.2.0
   - pointedlist
-  - extended-reals
-  - distributive
   - primitive
-  - vector-algorithms
   - profunctors
   - psqueues
   - recursion-schemes
@@ -134,8 +135,10 @@ library:
   - th-abstraction
   - time
   - transformers
+  - typelits-witnesses
   - vec
   - vector
+  - vector-algorithms
   - vector-sized
   - vinyl
   - yaml
