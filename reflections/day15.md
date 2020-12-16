@@ -78,13 +78,14 @@ the maximum value.
 -- | Returns 'True' until we need to stop
 stopCond :: Int32 -> StateT (T2 Int32 Int) m Bool
 stopCond n = gets $ \(LS _ i) -> i < n
+{-# INLINE stopCond #-}
 -- gets f = f <$> get, it maps a function on top of a get
 
 looper :: Int -> [Int] -> Int
 looper n xs = runST $ flip evalStateT (LS 0 0) $ do
     v <- MV.replicate n 0       -- initialize our vector with zeros
     traverse_ (saySomething v) xs
-    whileM_ stopCond (sayNext v)
+    whileM_ (stopCond n) (sayNext v)
     gets lsLastSaid
 ```
 
