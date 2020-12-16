@@ -65,6 +65,7 @@ module AOC.Common (
   , listTup4
   , _ListTup4
   , sortSizedBy
+  , withAllSized
   -- * Simple type util
   , deleteFinite
   , Letter
@@ -149,7 +150,7 @@ import           Data.Group
 import           Data.Hashable
 import           Data.IntMap                        (IntMap)
 import           Data.List
-import           Data.List.NonEmpty                 (NonEmpty)
+import           Data.List.NonEmpty                 (NonEmpty(..))
 import           Data.List.Split
 import           Data.Map                           (Map)
 import           Data.Map.Lens
@@ -190,7 +191,7 @@ import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
 import qualified Data.Vector.Algorithms.Intro       as VAI
 import qualified Data.Vector.Generic                as VG
-import qualified Data.Vector.Generic.Mutable        as MVG
+import qualified Data.Vector.Generic.Sized          as SVG
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
 import qualified Text.Megaparsec.Char               as P
@@ -853,7 +854,7 @@ displayAsciiMap _ _ = ""
 
 
 sortSizedBy
-    :: (MVG.MVector (VG.Mutable v) a, VG.Vector v a)
+    :: VG.Vector v a
     => (a -> a -> Ordering)
     -> SVG.Vector v n a
     -> SVG.Vector v n a
@@ -861,7 +862,16 @@ sortSizedBy f (SVG.Vector xs) = runST $ do
     ys <- VG.thaw xs
     VAI.sortBy f ys
     SVG.Vector <$> VG.unsafeFreeze ys
+{-# INLINE sortSizedBy #-}
 
+withAllSized
+    :: VG.Vector v a
+    => NonEmpty [a]
+    -> (forall n. KnownNat n => NonEmpty (SVG.Vector v n a) -> Maybe r)
+    -> Maybe r
+withAllSized (x :| xs) f = SVG.withSizedList x $ \vx ->
+    f . (vx :|) =<< traverse SVG.fromList xs
+{-# INLINE withAllSized #-}
 
 type instance Index   (SVG.Vector v n a) = Int
 type instance IxValue (SVG.Vector v n a) = a

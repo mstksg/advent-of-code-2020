@@ -14,7 +14,7 @@ module AOC.Challenge.Day16 (
   , day16b
   ) where
 
-import           AOC.Common                 (CharParser, sortSizedBy)
+import           AOC.Common                 (CharParser, sortSizedBy, withAllSized)
 import           AOC.Solver                 ((:~>)(..))
 import           Control.DeepSeq            (NFData)
 import           Control.Monad.State        (lift, modify, get, evalStateT)
@@ -66,8 +66,7 @@ day16b = MkSol
     , sShow  = show . product
     , sSolve = \Info{..} -> do
         th : ths <- pure $ mapMaybe (traverse (`IM.lookup` iFields)) iTheirs
-        V.withSizedList th $ \vth -> do
-          vths       <- (vth :|) <$> traverse V.fromList ths
+        withAllSized (th :| ths) $ \vths -> do
           yours      <- V.fromList iYours
           candidates <- fmap (sortSizedBy (comparing (NES.size . snd)) . V.indexed)
                       . traverse (NES.nonEmptySet . foldl1 S.intersection)

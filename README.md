@@ -52,7 +52,7 @@ haddocks][haddock] --- more info below!
 | Day 13    | [x][d13r]   | [x][d13g] | [x][d13h]  | [x][d13b]  |
 | Day 14    | [x][d14r]   | [x][d14g] | [x][d14h]  | [x][d14b]  |
 | Day 15    | [x][d15r]   | [x][d15g] | [x][d15h]  | [x][d15b]  |
-| Day 16    |             |           |            |            |
+| Day 16    |             | [x][d16g] | [x][d16h]  | [x][d16b]  |
 | Day 17    |             |           |            |            |
 | Day 18    |             |           |            |            |
 | Day 19    |             |           |            |            |
@@ -354,3 +354,6 @@ All networking features are powered by *[advent-of-code-api][]*.
 [d15h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day15.html
 [d15r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-15
 [d15b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-15-benchmarks
+[d16g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day16.hs
+[d16h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day16.html
+[d16b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-16-benchmarks
