@@ -64,6 +64,7 @@ module AOC.Common (
   , _ListTup3
   , listTup4
   , _ListTup4
+  , sortSizedBy
   -- * Simple type util
   , deleteFinite
   , Letter
@@ -134,6 +135,7 @@ import           Control.Applicative
 import           Control.Comonad.Store
 import           Control.Lens
 import           Control.Monad
+import           Control.Monad.ST
 import           Control.Parallel.Strategies
 import           Data.Bifunctor
 import           Data.Char
@@ -177,15 +179,18 @@ import qualified Data.Finitary                      as F
 import qualified Data.Functor.Foldable              as R
 import qualified Data.Graph.Inductive               as G
 import qualified Data.IntMap                        as IM
+import qualified Data.IntPSQ                        as IntPSQ
 import qualified Data.List.NonEmpty                 as NE
 import qualified Data.Map                           as M
 import qualified Data.Map.NonEmpty                  as NEM
 import qualified Data.MemoCombinators               as Memo
 import qualified Data.OrdPSQ                        as OrdPSQ
-import qualified Data.IntPSQ                        as IntPSQ
 import qualified Data.Sequence                      as Seq
 import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
+import qualified Data.Vector.Algorithms.Intro       as VAI
+import qualified Data.Vector.Generic                as VG
+import qualified Data.Vector.Generic.Mutable        as MVG
 import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
 import qualified Text.Megaparsec.Char               as P
@@ -847,6 +852,15 @@ displayAsciiMap d (NEM.IsNonEmpty mp) = unlines
 displayAsciiMap _ _ = ""
 
 
+sortSizedBy
+    :: (MVG.MVector (VG.Mutable v) a, VG.Vector v a)
+    => (a -> a -> Ordering)
+    -> SVG.Vector v n a
+    -> SVG.Vector v n a
+sortSizedBy f (SVG.Vector xs) = runST $ do
+    ys <- VG.thaw xs
+    VAI.sortBy f ys
+    SVG.Vector <$> VG.unsafeFreeze ys
 
 
 type instance Index   (SVG.Vector v n a) = Int

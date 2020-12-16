@@ -84,6 +84,7 @@ library:
   - barbies
   - bitvec
   - bytestring
+  - data-interval
   - comonad
   - conduino
   - containers
@@ -116,7 +117,10 @@ library:
   - parallel
   - parser-combinators >= 1.2.0
   - pointedlist
+  - extended-reals
+  - distributive
   - primitive
+  - vector-algorithms
   - profunctors
   - psqueues
   - recursion-schemes
