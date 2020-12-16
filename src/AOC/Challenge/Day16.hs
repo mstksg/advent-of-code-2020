@@ -20,7 +20,7 @@ import           Control.DeepSeq            (NFData)
 import           Control.Monad.State        (lift, modify, get, evalStateT)
 import           Data.Char                  (isAlpha, isSpace)
 import           Data.Distributive          (distribute)
-import           Data.Foldable              (toList, fold)
+import           Data.Foldable              (toList)
 import           Data.IntervalMap.Strict    (IntervalMap)
 import           Data.List.NonEmpty         (NonEmpty(..))
 import           Data.Maybe                 (listToMaybe, mapMaybe)
@@ -54,7 +54,8 @@ day16a = MkSol
     , sShow  = show
     , sSolve = \Info{..} -> Just . sum $
         [ n
-        | n <- concat iTheirs
+        | ns <- iTheirs
+        , n  <- ns
         , n `IM.notMember` iFields
         ]
     }
@@ -72,11 +73,11 @@ day16b = MkSol
                          $ distribute vths
           -- we technically don't need a backtracking search, but it feels
           -- cleaner to write one
-          validMap <- listToMaybe . flip evalStateT (fold iFields) $ do
+          validMap <- listToMaybe . flip evalStateT S.empty $ do
             for candidates $ \(i, cands) -> do
               soFar <- get
-              pick  <- lift . toList $ cands `S.intersection` soFar
-              (i, pick) <$ modify (S.delete pick)
+              pick  <- lift . toList $ cands S.\\ soFar
+              (i, pick) <$ modify (S.insert pick)
           pure
             [ yours `V.index` i
             | (i, k) <- toList validMap
@@ -99,6 +100,6 @@ parseInfo = do
       vs <- rangeParser `P.sepBy` P.string " or "
       pure $ (,S.singleton (T.pack k)) <$> vs
     rangeParser = (I.<=..<=)
-            <$> (ER.Finite <$> PP.decimal <* "-")
-            <*> (ER.Finite <$> PP.decimal)
+              <$> (ER.Finite <$> PP.decimal <* "-")
+              <*> (ER.Finite <$> PP.decimal)
     passportParser = PP.decimal `P.sepBy` ","

@@ -7,11 +7,98 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Dec 2020 05:02:41 EST</lastBuildDate>
+    <lastBuildDate>Wed, 16 Dec 2020 12:25:11 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Wed, 16 Dec 2020 05:02:41 EST</pubDate>
+    <pubDate>Wed, 16 Dec 2020 12:25:11 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 16</title>
+      <description>&lt;h2 id=&quot;day-16&quot;&gt;Day 16&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day16.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/16&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day16.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day16.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Today was a nice little self-contained constraint satisfaction problem! Well, it didn’t have to be (apparently), but it was fun as one :)&lt;/p&gt;
+&lt;p&gt;First, our data type:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Info&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Info&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      {&lt;span class=&quot;ot&quot;&gt; iFields ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IntervalMap&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ,&lt;span class=&quot;ot&quot;&gt; iYours  ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ,&lt;span class=&quot;ot&quot;&gt; iTheirs ::&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      }&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here we’re using &lt;code&gt;IntervalMap&lt;/code&gt; from the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/data-interval&quot;&gt;data-interval&lt;/a&gt;&lt;/em&gt; package, which makes it easy to store data at different intervals with easy lookups. For example, if we have &lt;code&gt;[&quot;class&quot;]&lt;/code&gt; at interval &lt;code&gt;(1,5)&lt;/code&gt;, and we had &lt;code&gt;[&quot;row&quot;]&lt;/code&gt; at interval &lt;code&gt;(3,7)&lt;/code&gt;, &lt;code&gt;IntervalMap&lt;/code&gt; will merge them together (with &lt;code&gt;&amp;lt;&amp;gt;&lt;/code&gt;, if we choose) to get &lt;code&gt;[&quot;class&quot;]&lt;/code&gt; at &lt;code&gt;(1,3)&lt;/code&gt;, &lt;code&gt;[&quot;class&quot;,&quot;row&quot;]&lt;/code&gt; at &lt;code&gt;(3,5)&lt;/code&gt;, and &lt;code&gt;[&quot;row&quot;]&lt;/code&gt; at &lt;code&gt;(5,7)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If we have this &lt;code&gt;IntervalMap&lt;/code&gt;, part 1 becomes straightforward enough with the efficient &lt;code&gt;IM.notMember&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Data.IntervalMap.Lazy&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IM&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Info&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 info &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-5&quot;&gt;&lt;a href=&quot;#cb2-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ n&lt;/span&gt;
+&lt;span id=&quot;cb2-6&quot;&gt;&lt;a href=&quot;#cb2-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; ns &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; iTheirs info&lt;/span&gt;
+&lt;span id=&quot;cb2-7&quot;&gt;&lt;a href=&quot;#cb2-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , n  &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; ns&lt;/span&gt;
+&lt;span id=&quot;cb2-8&quot;&gt;&lt;a href=&quot;#cb2-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , n &lt;span class=&quot;ot&quot;&gt;`IM.notMember`&lt;/span&gt; iFields info&lt;/span&gt;
+&lt;span id=&quot;cb2-9&quot;&gt;&lt;a href=&quot;#cb2-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So now let’s move on to the search for part 2!&lt;/p&gt;
+&lt;p&gt;Our goal is to get a list &lt;code&gt;[(Int, Set Text)]&lt;/code&gt; of a column number (in the passport) with the set of all valid field names for that position. And because we are going to be doing a search, we want this list in order of smallest to largest valid-name sets.&lt;/p&gt;
+&lt;p&gt;First, we can replace the &lt;code&gt;Int&lt;/code&gt;s in each passport instead with the set of fields they are valid for&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;validate ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IntervalMap&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;validate flds &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;traverse&lt;/span&gt; (&lt;span class=&quot;ot&quot;&gt;`IM.lookup`&lt;/span&gt; flds)&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;validateAll ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;IntervalMap&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [&lt;span class=&quot;dt&quot;&gt;Passport&lt;/span&gt;] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [[&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;]]&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;validateAll flds &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; mapMaybe (validate flds)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Here &lt;code&gt;(`IM.lookup` flds)&lt;/code&gt; is &lt;code&gt;Int -&amp;gt; Set Text&lt;/code&gt;: it’ll look up the &lt;code&gt;Set Text&lt;/code&gt; corresponding to the interval that the &lt;code&gt;Int&lt;/code&gt; falls under in the &lt;code&gt;IntervalMap&lt;/code&gt;. It’ll return &lt;code&gt;Nothing&lt;/code&gt; if &lt;em&gt;any&lt;/em&gt; of the &lt;code&gt;Int&lt;/code&gt;s are invalid, and &lt;code&gt;Just&lt;/code&gt; if &lt;em&gt;all&lt;/em&gt; of the &lt;code&gt;Int&lt;/code&gt;s are valid.&lt;/p&gt;
+&lt;p&gt;Next we want to build our &lt;code&gt;[(Int, Set Text)]&lt;/code&gt;. The &lt;code&gt;Set Text&lt;/code&gt; is a set of what is valid for that column number, so to get the &lt;code&gt;Set Text&lt;/code&gt; for &lt;code&gt;0&lt;/code&gt;, for instance, we need to &lt;code&gt;S.intersection&lt;/code&gt; all of the first &lt;code&gt;Set Text&lt;/code&gt;s in our list,; to get the &lt;code&gt;Set Text&lt;/code&gt; for &lt;code&gt;1&lt;/code&gt;, we need to &lt;code&gt;S.intersection&lt;/code&gt; all of the second &lt;code&gt;Set Text&lt;/code&gt;s in our lists, etc. This can be done succinctly with a &lt;code&gt;transpose&lt;/code&gt; (&lt;code&gt;transpose [[1,2,3],[4,5,6]] == [[1,4],[2,5],[3,6]]&lt;/code&gt;). Then we can use &lt;code&gt;sortOn&lt;/code&gt; to sort by the size of the valids set.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;columnSets ::&lt;/span&gt; [[&lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;]] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; [(&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;)]&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;columnSets &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; sortOn (S.size &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;snd&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;zip&lt;/span&gt; [&lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;..&lt;/span&gt;]&lt;/span&gt;
+&lt;span id=&quot;cb4-4&quot;&gt;&lt;a href=&quot;#cb4-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;map&lt;/span&gt; (foldl1&amp;#39; S.intersection)&lt;/span&gt;
+&lt;span id=&quot;cb4-5&quot;&gt;&lt;a href=&quot;#cb4-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; transpose&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now we’re ready for our search! We’ll be using &lt;code&gt;StateT&lt;/code&gt; over list, to get a backtracking search with backtracking state (I described this technique in &lt;a href=&quot;https://blog.jle.im/entry/unique-sample-drawing-searches-with-list-and-statet.html&quot;&gt;a constraint solving blog post&lt;/a&gt;). Our state will be the &lt;code&gt;Set Text&lt;/code&gt; of all the “committed” fields so far.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;search ::&lt;/span&gt; [(&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;)] &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; [(&lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;, &lt;span class=&quot;dt&quot;&gt;Text&lt;/span&gt;)]&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;search candidateMap &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; listToMaybe &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;flip&lt;/span&gt; evalStateT S.empty &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    for candidates &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; \(i, cands) &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;              &lt;span class=&quot;co&quot;&gt;-- for each (Int, Set Text):&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      soFar &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; get                                  &lt;span class=&quot;co&quot;&gt;-- get the seen candidates&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-5&quot;&gt;&lt;a href=&quot;#cb5-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      pick  &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; lift &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; toList &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; cands &lt;span class=&quot;dt&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;op&quot;&gt;.&lt;/span&gt;\\ soFar     &lt;span class=&quot;co&quot;&gt;-- pick from the Set Text not including seens&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      (i, pick) &lt;span class=&quot;op&quot;&gt;&amp;lt;$&lt;/span&gt; modify (S.insert pick)           &lt;span class=&quot;co&quot;&gt;-- propose this index/pick, inserting into seens&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And that should be it for our search! In the end this gets the first &lt;code&gt;[(Int, Text)]&lt;/code&gt; that is valid, matching a column ID to the field at that column. Our search supports backtracking through the list monad, but it should be noted that we actually don’t end up needing it for the way the puzzle input is structured. But, because we sort our lists first from smallest to largest valid-sets, our solution ends up being equivalent to the non-backtracking method and backtracking is never actually triggered.&lt;/p&gt;
+&lt;p&gt;And we can wrap it all up:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb6&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb6-1&quot;&gt;&lt;a href=&quot;#cb6-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Info&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-2&quot;&gt;&lt;a href=&quot;#cb6-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;product&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-3&quot;&gt;&lt;a href=&quot;#cb6-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ iYours info &lt;span class=&quot;op&quot;&gt;!!&lt;/span&gt; i&lt;/span&gt;
+&lt;span id=&quot;cb6-4&quot;&gt;&lt;a href=&quot;#cb6-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;op&quot;&gt;|&lt;/span&gt; (i, fld) &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; res&lt;/span&gt;
+&lt;span id=&quot;cb6-5&quot;&gt;&lt;a href=&quot;#cb6-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , &lt;span class=&quot;st&quot;&gt;&amp;quot;departure&amp;quot;&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;`isPrefixOf`&lt;/span&gt; fld&lt;/span&gt;
+&lt;span id=&quot;cb6-6&quot;&gt;&lt;a href=&quot;#cb6-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;
+&lt;span id=&quot;cb6-7&quot;&gt;&lt;a href=&quot;#cb6-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb6-8&quot;&gt;&lt;a href=&quot;#cb6-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    cSets    &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; columnSets &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; validateAll (iFields info) (iTheirs info)&lt;/span&gt;
+&lt;span id=&quot;cb6-9&quot;&gt;&lt;a href=&quot;#cb6-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; res &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; search cSets&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&quot;day-16-benchmarks&quot;&gt;Day 16 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 16a
+benchmarking...
+time                 821.6 μs   (817.5 μs .. 826.3 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 813.7 μs   (806.6 μs .. 821.2 μs)
+std dev              22.69 μs   (16.70 μs .. 29.36 μs)
+variance introduced by outliers: 18% (moderately inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 16b
+benchmarking...
+time                 886.2 μs   (875.7 μs .. 905.0 μs)
+                     0.997 R²   (0.992 R² .. 1.000 R²)
+mean                 894.0 μs   (887.9 μs .. 906.7 μs)
+std dev              30.87 μs   (19.73 μs .. 54.15 μs)
+variance introduced by outliers: 25% (moderately inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-16</link>
+      <pubDate>Wed, 16 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 15</title>
       <description>&lt;h2 id=&quot;day-15&quot;&gt;Day 15&lt;/h2&gt;
