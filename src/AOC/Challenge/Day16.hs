@@ -15,7 +15,7 @@ module AOC.Challenge.Day16 (
   ) where
 
 import           AOC.Common                 (CharParser, sortSizedBy, withAllSized)
-import           AOC.Solver                 ((:~>)(..))
+import           AOC.Solver                 ((:~>)(..), dyno_)
 import           Control.DeepSeq            (NFData)
 import           Control.Monad.State        (lift, modify, get, evalStateT)
 import           Data.Char                  (isAlpha, isSpace)
@@ -80,7 +80,7 @@ day16b = MkSol
           pure
             [ yours `V.index` i
             | (i, k) <- toList validMap
-            , "departure" `T.isPrefixOf` k
+            , dyno_ "prefix" "departure" `T.isPrefixOf` k
             ]
     }
 
@@ -98,8 +98,7 @@ parseInfo = do
       k  <- (P.satisfy (\c -> isAlpha c || isSpace c) `P.manyTill` ":") <* " "
       vs <- rangeParser `P.sepBy` P.string " or "
       pure $ (,S.singleton (T.pack k)) <$> vs
-    rangeParser = do
-      mn <- ER.Finite <$> PP.decimal <* "-"
-      mx <- ER.Finite <$> PP.decimal
-      pure $ mn I.<=..<= mx
+    rangeParser = (I.<=..<=)
+            <$> (ER.Finite <$> PP.decimal <* "-")
+            <*> (ER.Finite <$> PP.decimal)
     passportParser = PP.decimal `P.sepBy` ","

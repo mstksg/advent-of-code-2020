@@ -309,5 +309,6 @@ parseMeta = do
                   . readMaybe @Int
                   $ val
         "string" -> pure (sym, toDyn val)
+        "text"   -> pure (sym, toDyn (T.pack val))
         _        -> fail $ "Unrecognized type " ++ typ
 
