@@ -683,7 +683,7 @@ boundingBox = (\(T2 (Ap mn) (Ap mx)) -> V2 (getMin <$> mn) (getMax <$> mx))
             . foldMap1 (\p -> T2 (Ap (Min <$> p)) (Ap (Max <$> p)))
 
 -- | A version of 'boundingBox' that works for normal possibly-empty lists.
-boundingBox' :: Foldable f => f Point -> Maybe (V2 Point)
+boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
 boundingBox' = fmap boundingBox . NE.nonEmpty . toList
 
 inBoundingBox
