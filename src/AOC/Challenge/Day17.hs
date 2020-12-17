@@ -15,7 +15,8 @@ import           Debug.Trace
 import           Data.Foldable (toList)
 import           Control.Applicative (liftA2)
 import           AOC.Solver      ((:~>)(..))
-import           Control.Lens    (to, set, asIndex, filtered)
+import           Control.Lens
+-- import           Control.Lens    (to, set, asIndex, filtered)
 import           Data.Set        (Set)
 import           Data.Set.Lens   (setOf)
 import           Linear          (R2(..), V3(..), V4(..))
@@ -23,16 +24,15 @@ import qualified Data.Map.Strict as M
 import qualified Data.Set        as S
 
 stepper
-    :: (Applicative f, Num a, Ord (f a), Eq a, Traversable f)
+    :: (Applicative f, Num a, Ord (f a), Eq a, Traversable f, R2 f)
     => Set (f a)
     -> Set (f a)
 stepper cs = stayAlive <> comeAlive
   where
     neighborCounts = M.unionsWith ((+) @Int) $
-      [ M.fromSet (weight c) (S.map (fmap abs) (fullNeighbsSet c))
+      [ M.fromSet (weight c) (S.map (abszy) (fullNeighbsSet c))
       | c <- S.toList cs
       ]
-      -- M.fromSet symNeighb . S.map (fmap abs) . fullNeighbsSet <$> S.toList cs
     stayAlive = M.keysSet . M.filter (\n -> n == 2 || n == 3) $
                   neighborCounts `M.restrictKeys` cs
     comeAlive = M.keysSet . M.filter (== 3) $
@@ -41,6 +41,7 @@ stepper cs = stayAlive <> comeAlive
       where
         xs = drop 2 (toList x)
         ys = drop 2 (toList y)
+    abszy x = set _xy (view _xy x) (fmap abs x)
 
 day17
     :: (Applicative f, R2 f, Ord (f Int), Traversable f, Show (f Int))
@@ -52,7 +53,6 @@ day17 = MkSol
     }
   where
     dupSym x = S.fromList
-    -- dupSym x = traceShow x . traceShowId $ S.fromList
       [ liftA2 (*) x p
       | p <- set _xy 1 <$> sequence (pure [1,-1])
       ]
