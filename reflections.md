@@ -2829,21 +2829,21 @@ that file instead!
 ```
 >> Day 17a
 benchmarking...
-time                 6.449 ms   (6.240 ms .. 6.754 ms)
-                     0.969 R²   (0.923 R² .. 0.995 R²)
-mean                 6.396 ms   (6.216 ms .. 6.725 ms)
-std dev              669.0 μs   (363.2 μs .. 1.126 ms)
-variance introduced by outliers: 61% (severely inflated)
+time                 5.581 ms   (5.284 ms .. 6.341 ms)
+                     0.915 R²   (0.793 R² .. 0.997 R²)
+mean                 5.471 ms   (5.293 ms .. 5.858 ms)
+std dev              823.9 μs   (234.9 μs .. 1.521 ms)
+variance introduced by outliers: 78% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 17b
 benchmarking...
-time                 142.4 ms   (135.4 ms .. 149.8 ms)
-                     0.997 R²   (0.988 R² .. 1.000 R²)
-mean                 145.4 ms   (142.8 ms .. 147.9 ms)
-std dev              3.754 ms   (2.755 ms .. 4.579 ms)
-variance introduced by outliers: 12% (moderately inflated)
+time                 108.7 ms   (95.78 ms .. 118.8 ms)
+                     0.983 R²   (0.955 R² .. 0.998 R²)
+mean                 107.7 ms   (103.2 ms .. 114.4 ms)
+std dev              9.567 ms   (5.699 ms .. 14.09 ms)
+variance introduced by outliers: 21% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

@@ -10,7 +10,7 @@ module AOC.Challenge.Day17 (
   , day17b
   ) where
 
-import           AOC.Common      (fullNeighbs, (!!!), asciiGrid)
+import           AOC.Common      (fullNeighbsSet, (!!!), asciiGrid)
 import           AOC.Solver      ((:~>)(..))
 import           Control.Lens    (to, set, asIndex, filtered)
 import           Data.Set        (Set)
@@ -25,8 +25,8 @@ stepper
     -> Set (f a)
 stepper cs = stayAlive <> comeAlive
   where
-    neighborCounts = M.fromListWith ((+) @Int) $
-      map (,1) . fullNeighbs =<< S.toList cs
+    neighborCounts = M.unionsWith ((+) @Int) $
+      M.fromSet (const 1) . fullNeighbsSet <$> S.toList cs
     stayAlive = M.keysSet . M.filter (\n -> n == 2 || n == 3) $
                   neighborCounts `M.restrictKeys` cs
     comeAlive = M.keysSet . M.filter (== 3) $
