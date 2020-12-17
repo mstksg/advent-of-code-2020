@@ -120,6 +120,7 @@ module AOC.Common (
   , boundingBox'
   , inBoundingBox
   , parseAsciiMap
+  , asciiGrid
   , parseAsciiSet
   , ScanPoint(..)
   , displayAsciiMap
@@ -707,13 +708,21 @@ cardinalNeighbsSet p = S.fromAscList . map (p +) $
   , V2   1    0
   ]
 
-fullNeighbs :: Point -> [Point]
-fullNeighbs p = [ p + V2 dx dy
-                | dx <- [-1 .. 1]
-                , dy <- if dx == 0 then [-1,1] else [-1..1]
-                ]
+fullNeighbs
+    :: (Applicative f, Num a, Eq (f a), Traversable f)
+    => f a
+    -> [f a]
+fullNeighbs p =
+    [ liftA2 (+) p d
+    | d <- sequenceA (pure [-1,0,1])
+    , d /= pure 0
+    ]
+{-# INLINE fullNeighbs #-}
 
-fullNeighbsSet :: Point -> Set Point
+fullNeighbsSet
+    :: (Applicative f, Num a, Ord (f a), Traversable f)
+    => f a
+    -> Set (f a)
 fullNeighbsSet = S.fromList . fullNeighbs
 
 memoPoint :: Memo Point

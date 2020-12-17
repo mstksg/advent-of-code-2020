@@ -36,6 +36,7 @@ Table of Contents
 * [Day 14](#day-14)
 * [Day 15](#day-15)
 * [Day 16](#day-16)
+* [Day 17](#day-17) *(no reflection yet)*
 
 Day 1
 ------
@@ -2799,6 +2800,50 @@ time                 886.2 μs   (875.7 μs .. 905.0 μs)
 mean                 894.0 μs   (887.9 μs .. 906.7 μs)
 std dev              30.87 μs   (19.73 μs .. 54.15 μs)
 variance introduced by outliers: 25% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 17
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day17.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d17p]* / *[Code][d17g]* / *[Rendered][d17h]* / *[Standalone Reflection Page][d17r]*
+
+[d17p]: https://adventofcode.com/2020/day/17
+[d17g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day17.hs
+[d17h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day17.html
+[d17r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 17 Benchmarks
+
+```
+>> Day 17a
+benchmarking...
+time                 6.449 ms   (6.240 ms .. 6.754 ms)
+                     0.969 R²   (0.923 R² .. 0.995 R²)
+mean                 6.396 ms   (6.216 ms .. 6.725 ms)
+std dev              669.0 μs   (363.2 μs .. 1.126 ms)
+variance introduced by outliers: 61% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 17b
+benchmarking...
+time                 142.4 ms   (135.4 ms .. 149.8 ms)
+                     0.997 R²   (0.988 R² .. 1.000 R²)
+mean                 145.4 ms   (142.8 ms .. 147.9 ms)
+std dev              3.754 ms   (2.755 ms .. 4.579 ms)
+variance introduced by outliers: 12% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
