@@ -709,13 +709,12 @@ cardinalNeighbsSet p = S.fromAscList . map (p +) $
   ]
 
 fullNeighbs
-    :: (Applicative f, Num a, Eq (f a), Traversable f)
+    :: (Applicative f, Num a, Traversable f)
     => f a
     -> [f a]
-fullNeighbs p =
+fullNeighbs p = tail
     [ liftA2 (+) p d
-    | d <- sequence (pure [-1,0,1])
-    , d /= pure 0
+    | d <- sequence (pure [0,-1,1])
     ]
 {-# INLINE fullNeighbs #-}
 
@@ -723,7 +722,11 @@ fullNeighbsSet
     :: (Applicative f, Num a, Ord (f a), Traversable f)
     => f a
     -> Set (f a)
-fullNeighbsSet = S.fromDistinctAscList . fullNeighbs
+fullNeighbsSet p = S.fromDistinctAscList $
+    [ liftA2 (+) p d
+    | d <- sequence (pure [-1,0,1])
+    , d /= pure 0
+    ]
 
 memoPoint :: Memo Point
 memoPoint = Memo.wrap (uncurry V2) (\(V2 x y) -> (x, y)) $
