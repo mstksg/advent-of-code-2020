@@ -320,8 +320,8 @@ toFGL :: (Graph gr, Ord v) => Graph v e -> (gr v e, Set v)
 type Point = V2 Int
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbsSet :: Point -> Set Point
-fullNeighbs :: Point -> [Point]
-fullNeighbsSet :: Point -> Set Point
+fullNeighbs :: (Applicative f, Num a, Eq (f a), Traversable f) => f a -> [f a]
+fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
 mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
 
 -- | Treat as complex number multiplication. useful for rotations
@@ -362,6 +362,7 @@ boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
 boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
 inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
 parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
+asciiGrid :: IndexedTraversal Point String [a] Char a
 parseAsciiSet :: (Char -> Bool) -> String -> Set Point
 
 -- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
@@ -7658,8 +7659,8 @@ boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a)
 inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbsSet :: Point -> Set Point
-fullNeighbs :: Point -> [Point]
-fullNeighbsSet :: Point -> Set Point
+fullNeighbs :: (Applicative f, Num a, Eq (f a), Traversable f) => f a -> [f a]
+fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
 memoPoint :: Memo Point
 mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
 
@@ -7683,6 +7684,7 @@ parseDir :: Char -> Maybe Dir
 mulDir :: Dir -> Dir -> Dir
 parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
 parseAsciiSet :: (Char -> Bool) -> String -> Set Point
+asciiGrid :: IndexedTraversal Point String [a] Char a
 displayAsciiMap :: Char -> Map Point Char -> String
 sortSizedBy :: Vector v a => (a -> a -> Ordering) -> Vector v n a -> Vector v n a
 withAllSized :: Vector v a => NonEmpty [a] -> (forall n. KnownNat n => NonEmpty (Vector v n a) -> Maybe r) -> Maybe r
@@ -7953,25 +7955,6 @@ module AOC.Challenge.Day19
 module AOC.Challenge.Day18
 
 
--- | Day 17. See <a>AOC.Solver</a> for the types used in this module!
---   
---   After completing the challenge, it is recommended to:
---   
---   <ul>
---   <li>Replace <a>AOC.Prelude</a> imports to specific modules (with
---   explicit imports) for readability.</li>
---   <li>Remove the <tt>-Wno-unused-imports</tt> and
---   <tt>-Wno-unused-top-binds</tt> pragmas.</li>
---   <li>Replace the partial type signatures underscores in the solution
---   types <tt>_ :~&gt; _</tt> with the actual types of inputs and outputs
---   of the solution. You can delete the type signatures completely and GHC
---   will recommend what should go in place of the underscores.</li>
---   </ul>
-module AOC.Challenge.Day17
-day17a :: _ :~> _
-day17b :: _ :~> _
-
-
 -- | Template Haskell for discovering all named challenges in a given
 --   directory.
 module AOC.Discover
@@ -8025,6 +8008,11 @@ instance GHC.Classes.Ord AOC.Discover.ChallengeSpec
 instance GHC.Classes.Eq AOC.Discover.ChallengeSpec
 instance GHC.Show.Show AOC.Discover.ChallengeSpec
 instance Data.String.IsString AOC.Discover.ChallengeSpec
+
+
+module AOC.Challenge.Day17
+day17a :: Set (V3 Int) :~> Int
+day17b :: Set (V4 Int) :~> Int
 
 
 -- | Day 16. See <a>AOC.Solver</a> for the types used in this module!
@@ -8311,14 +8299,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2gfF
-mainRunOpts :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF MainRunOpts
-mroActual :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF Bool
-mroBench :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF Bool
-mroInput :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF Bool
-mroSpec :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF TestSpec
-mroTest :: HasMainRunOpts c_a2gfF => Lens' c_a2gfF Bool
+class HasMainRunOpts c_a2fzr
+mainRunOpts :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr MainRunOpts
+mroActual :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr Bool
+mroBench :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr Bool
+mroInput :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr Bool
+mroSpec :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr TestSpec
+mroTest :: HasMainRunOpts c_a2fzr => Lens' c_a2fzr Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8331,10 +8319,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2gn8
-mainViewOpts :: HasMainViewOpts c_a2gn8 => Lens' c_a2gn8 MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2gn8 => Lens' c_a2gn8 TestSpec
-mvoWait :: HasMainViewOpts c_a2gn8 => Lens' c_a2gn8 Bool
+class HasMainViewOpts c_a2fGU
+mainViewOpts :: HasMainViewOpts c_a2fGU => Lens' c_a2fGU MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2fGU => Lens' c_a2fGU TestSpec
+mvoWait :: HasMainViewOpts c_a2fGU => Lens' c_a2fGU Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8359,13 +8347,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2grG
-mainSubmitOpts :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG Bool
-msoLock :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG Bool
-msoRetry :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG Bool
-msoSpec :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2grG => Lens' c_a2grG Bool
+class HasMainSubmitOpts c_a2fLs
+mainSubmitOpts :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs Bool
+msoLock :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs Bool
+msoRetry :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs Bool
+msoSpec :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2fLs => Lens' c_a2fLs Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
