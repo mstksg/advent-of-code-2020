@@ -714,7 +714,7 @@ fullNeighbs
     -> [f a]
 fullNeighbs p =
     [ liftA2 (+) p d
-    | d <- sequenceA (pure [-1,0,1])
+    | d <- sequence (pure [-1,0,1])
     , d /= pure 0
     ]
 {-# INLINE fullNeighbs #-}
@@ -723,7 +723,7 @@ fullNeighbsSet
     :: (Applicative f, Num a, Ord (f a), Traversable f)
     => f a
     -> Set (f a)
-fullNeighbsSet = S.fromList . fullNeighbs
+fullNeighbsSet = S.fromDistinctAscList . fullNeighbs
 
 memoPoint :: Memo Point
 memoPoint = Memo.wrap (uncurry V2) (\(V2 x y) -> (x, y)) $
