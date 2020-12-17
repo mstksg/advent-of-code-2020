@@ -172,20 +172,21 @@ And that's it --- code that should work for both parts :)
 ```
 >> Day 17a
 benchmarking...
-time                 5.502 ms   (5.266 ms .. 5.742 ms)
-                     0.970 R²   (0.929 R² .. 0.992 R²)
-mean                 5.559 ms   (5.408 ms .. 5.805 ms)
-std dev              663.7 μs   (347.7 μs .. 1.139 ms)
-variance introduced by outliers: 68% (severely inflated)
+time                 4.029 ms   (3.733 ms .. 4.560 ms)
+                     0.950 R²   (0.911 R² .. 0.988 R²)
+mean                 3.857 ms   (3.712 ms .. 4.097 ms)
+std dev              588.5 μs   (315.3 μs .. 926.7 μs)
+variance introduced by outliers: 81% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 17b
 benchmarking...
-time                 102.6 ms   (98.00 ms .. 109.1 ms)
-                     0.994 R²   (0.981 R² .. 1.000 R²)
-mean                 102.4 ms   (100.3 ms .. 105.1 ms)
-std dev              4.033 ms   (2.650 ms .. 6.092 ms)
+time                 39.35 ms   (37.16 ms .. 41.84 ms)
+                     0.978 R²   (0.939 R² .. 0.997 R²)
+mean                 40.54 ms   (39.07 ms .. 42.25 ms)
+std dev              3.075 ms   (1.676 ms .. 4.775 ms)
+variance introduced by outliers: 25% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
