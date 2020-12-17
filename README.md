@@ -53,7 +53,7 @@ haddocks][haddock] --- more info below!
 | Day 14    | [x][d14r]   | [x][d14g] | [x][d14h]  | [x][d14b]  |
 | Day 15    | [x][d15r]   | [x][d15g] | [x][d15h]  | [x][d15b]  |
 | Day 16    | [x][d16r]   | [x][d16g] | [x][d16h]  | [x][d16b]  |
-| Day 17    |             | [x][d17g] | [x][d17h]  | [x][d17b]  |
+| Day 17    | [x][d17r]   | [x][d17g] | [x][d17h]  | [x][d17b]  |
 | Day 18    |             |           |            |            |
 | Day 19    |             |           |            |            |
 | Day 20    |             |           |            |            |
@@ -360,4 +360,5 @@ All networking features are powered by *[advent-of-code-api][]*.
 [d16b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-16-benchmarks
 [d17g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day17.hs
 [d17h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day17.html
+[d17r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-17
 [d17b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-17-benchmarks
