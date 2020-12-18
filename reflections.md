@@ -3000,21 +3000,21 @@ that file instead!
 ```
 >> Day 18a
 benchmarking...
-time                 5.031 ms   (4.832 ms .. 5.244 ms)
-                     0.984 R²   (0.972 R² .. 0.992 R²)
-mean                 4.883 ms   (4.762 ms .. 5.012 ms)
-std dev              435.2 μs   (368.4 μs .. 539.7 μs)
-variance introduced by outliers: 55% (severely inflated)
+time                 3.680 ms   (3.535 ms .. 3.849 ms)
+                     0.965 R²   (0.923 R² .. 0.995 R²)
+mean                 3.656 ms   (3.567 ms .. 3.814 ms)
+std dev              399.4 μs   (247.9 μs .. 688.3 μs)
+variance introduced by outliers: 68% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 18b
 benchmarking...
-time                 14.06 ms   (12.64 ms .. 14.77 ms)
-                     0.976 R²   (0.936 R² .. 0.996 R²)
-mean                 14.07 ms   (13.55 ms .. 14.47 ms)
-std dev              1.122 ms   (818.9 μs .. 1.567 ms)
-variance introduced by outliers: 41% (moderately inflated)
+time                 3.431 ms   (3.145 ms .. 3.780 ms)
+                     0.951 R²   (0.924 R² .. 0.978 R²)
+mean                 3.386 ms   (3.225 ms .. 3.584 ms)
+std dev              678.5 μs   (377.8 μs .. 976.8 μs)
+variance introduced by outliers: 89% (severely inflated)
 
 * parsing and formatting times excluded
 ```
