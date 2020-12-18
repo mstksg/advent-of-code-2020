@@ -7,7 +7,7 @@ the file `./reflections/day07.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *7* / *[8][day08]* / *[9][day09]* / *[10][day10]* / *[11][day11]* / *[12][day12]* / *[13][day13]* / *[14][day14]* / *[15][day15]* / *[16][day16]* / *[17][day17]*
+*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *7* / *[8][day08]* / *[9][day09]* / *[10][day10]* / *[11][day11]* / *[12][day12]* / *[13][day13]* / *[14][day14]* / *[15][day15]* / *[16][day16]* / *[17][day17]* / *[18][day18]*
 
 [reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
 [day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
@@ -26,6 +26,7 @@ that file instead!
 [day15]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md
 [day16]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md
 [day17]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day17.md
+[day18]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md
 
 [Available as an RSS Feed][rss]
 

@@ -97,6 +97,7 @@ module AOC.Common (
   , pWord
   , pHWord
   , pDecimal
+  , pTok
   , parseLines
   -- * Graph
   , Graph
@@ -164,6 +165,7 @@ import           Data.Monoid                        (Ap(..))
 import           Data.Ord
 import           Data.Semigroup
 import           Data.Semigroup.Foldable
+import           Data.Maybe
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.Lens
@@ -993,13 +995,16 @@ parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
 type CharParser = P.Parsec Void String
 
 pWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
-pWord = P.many (P.satisfy (not . isSpace)) <* P.space
+pWord = pTok $ P.many (P.satisfy (not . isSpace))
 
 pHWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
 pHWord = P.many (P.satisfy (not . isSpace)) <* P.many (P.satisfy (== ' '))
 
-pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s Int
+pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e, Num a) => P.Parsec e s a
 pDecimal = PL.signed P.space PL.decimal
+
+pTok :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s a -> P.Parsec e s a
+pTok p = p <* P.space
 
 parseMaybeLenient :: P.Parsec Void s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
@@ -1008,7 +1013,7 @@ parseOrFail :: (P.Stream s, P.ShowErrorComponent e) => P.Parsec e s a -> s -> a
 parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeLenient"
 
 parseLines :: P.Parsec Void String a -> String -> Maybe [a]
-parseLines p = traverse (parseMaybeLenient p) . lines
+parseLines p = Just . mapMaybe (parseMaybeLenient p) . lines
 
 parseWords :: P.Parsec Void (TokStream String) a -> String -> Maybe a
 parseWords p = parseMaybeLenient p . TokStream . words

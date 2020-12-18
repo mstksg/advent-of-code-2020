@@ -7,11 +7,116 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu, 17 Dec 2020 23:40:47 EST</lastBuildDate>
+    <lastBuildDate>Fri, 18 Dec 2020 11:24:08 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu, 17 Dec 2020 23:40:47 EST</pubDate>
+    <pubDate>Fri, 18 Dec 2020 11:24:08 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 18</title>
+      <description>&lt;h2 id=&quot;day-18&quot;&gt;Day 18&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day18.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/18&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day18.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day18.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Let’s parse with parser combinators!&lt;/p&gt;
+&lt;p&gt;The main way I have learned how to deal with these binary-operation parsers is to separate out the stages into a “bottom” level containing only the leaves (here, the int literals) and parentheses, and then build up layers of precedence one-by-one from highest to lowest. For the first part we only have two layers, then, since we only have one level of precedence.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;{-# LANGUAGE OverloadedStrings #-}&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text.Megaparsec&lt;/span&gt;            &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;P&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text.Megaparsec.Char&lt;/span&gt;       &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;P&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;qualified&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Text.Megaparsec.Char.Lexer&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;PP&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;P.Parsec&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Void&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-8&quot;&gt;&lt;a href=&quot;#cb1-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-9&quot;&gt;&lt;a href=&quot;#cb1-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseBottom1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-10&quot;&gt;&lt;a href=&quot;#cb1-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseBottom1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.choice&lt;/span&gt;
+&lt;span id=&quot;cb1-11&quot;&gt;&lt;a href=&quot;#cb1-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ PP.decimal&lt;/span&gt;
+&lt;span id=&quot;cb1-12&quot;&gt;&lt;a href=&quot;#cb1-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , P.between &lt;span class=&quot;st&quot;&gt;&amp;quot;(&amp;quot;&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot;)&amp;quot;&lt;/span&gt; parseTop1  &lt;span class=&quot;co&quot;&gt;-- use -XOverloadedStrings to get parsers that match strings&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-13&quot;&gt;&lt;a href=&quot;#cb1-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;
+&lt;span id=&quot;cb1-14&quot;&gt;&lt;a href=&quot;#cb1-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-15&quot;&gt;&lt;a href=&quot;#cb1-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseTop1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-16&quot;&gt;&lt;a href=&quot;#cb1-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseTop1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-17&quot;&gt;&lt;a href=&quot;#cb1-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    leftOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseBottom1   &lt;span class=&quot;co&quot;&gt;-- parse the left hand side of a possible binary operator&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-18&quot;&gt;&lt;a href=&quot;#cb1-18&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext acc&lt;/span&gt;
+&lt;span id=&quot;cb1-19&quot;&gt;&lt;a href=&quot;#cb1-19&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-20&quot;&gt;&lt;a href=&quot;#cb1-20&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext acc &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.choice          &lt;span class=&quot;co&quot;&gt;-- once we parse a left hand side, pick from:&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-21&quot;&gt;&lt;a href=&quot;#cb1-21&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      [ &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot; * &amp;quot;&lt;/span&gt;                        &lt;span class=&quot;co&quot;&gt;-- either it&amp;#39;s a *&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-22&quot;&gt;&lt;a href=&quot;#cb1-22&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           rightOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseBottom1    &lt;span class=&quot;co&quot;&gt;--   ... so we parse the right hand side and multiply&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-23&quot;&gt;&lt;a href=&quot;#cb1-23&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           doNext (acc &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; rightOfOp)&lt;/span&gt;
+&lt;span id=&quot;cb1-24&quot;&gt;&lt;a href=&quot;#cb1-24&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      , &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot; + &amp;quot;&lt;/span&gt;                        &lt;span class=&quot;co&quot;&gt;-- or it&amp;#39;s a +&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-25&quot;&gt;&lt;a href=&quot;#cb1-25&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           rightOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseBottom1    &lt;span class=&quot;co&quot;&gt;--   ... so we parse the right hand side and add&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-26&quot;&gt;&lt;a href=&quot;#cb1-26&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           doNext (acc &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; rightOfOp)&lt;/span&gt;
+&lt;span id=&quot;cb1-27&quot;&gt;&lt;a href=&quot;#cb1-27&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      , &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; acc                        &lt;span class=&quot;co&quot;&gt;-- otherwise that was it, no operator&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-28&quot;&gt;&lt;a href=&quot;#cb1-28&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Remember that &lt;code&gt;leftOfOp&lt;/code&gt; could either come from a leaf literal number or from a parenthesized equation. In the end, we get an &lt;code&gt;Int&lt;/code&gt;, representing whatever number was on the left hand side of our operator. Then we move into &lt;code&gt;doNext&lt;/code&gt;, which continually accumulates new operations after that first &lt;code&gt;leftOfOp&lt;/code&gt; parse.&lt;/p&gt;
+&lt;p&gt;If we see a &lt;code&gt;*&lt;/code&gt;, we parse the right hand side, fold that into our accumulator and repeat until we hit a dead end and yield our accumulated value; same for &lt;code&gt;+&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So there’s this sort of “cycle” that &lt;code&gt;parseTop&lt;/code&gt; defers to &lt;code&gt;parseBottom&lt;/code&gt; for its underlying things “in between” the operators, but &lt;code&gt;parseBottom&lt;/code&gt; loops back up to &lt;code&gt;parseTop&lt;/code&gt; to handle what is in the parentheses.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part1 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.parseMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; P.many parseTop1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The twist for part 2 is that now we have to have another layer of precedence, so we split things out:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb3&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb3-1&quot;&gt;&lt;a href=&quot;#cb3-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseBottom2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-2&quot;&gt;&lt;a href=&quot;#cb3-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseBottom2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.choice&lt;/span&gt;
+&lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    [ PP.decimal&lt;/span&gt;
+&lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , P.between &lt;span class=&quot;st&quot;&gt;&amp;quot;(&amp;quot;&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot;)&amp;quot;&lt;/span&gt; parseTop2&lt;/span&gt;
+&lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseMiddle2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseMiddle2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-9&quot;&gt;&lt;a href=&quot;#cb3-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    leftOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseBottom2&lt;/span&gt;
+&lt;span id=&quot;cb3-10&quot;&gt;&lt;a href=&quot;#cb3-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext leftOfOp&lt;/span&gt;
+&lt;span id=&quot;cb3-11&quot;&gt;&lt;a href=&quot;#cb3-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-12&quot;&gt;&lt;a href=&quot;#cb3-12&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext acc &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.choice&lt;/span&gt;
+&lt;span id=&quot;cb3-13&quot;&gt;&lt;a href=&quot;#cb3-13&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      [ &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot; + &amp;quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-14&quot;&gt;&lt;a href=&quot;#cb3-14&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           rightOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseBottom2&lt;/span&gt;
+&lt;span id=&quot;cb3-15&quot;&gt;&lt;a href=&quot;#cb3-15&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           doNext (acc &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; rightOfOp)&lt;/span&gt;
+&lt;span id=&quot;cb3-16&quot;&gt;&lt;a href=&quot;#cb3-16&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      , &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; acc&lt;/span&gt;
+&lt;span id=&quot;cb3-17&quot;&gt;&lt;a href=&quot;#cb3-17&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ]&lt;/span&gt;
+&lt;span id=&quot;cb3-18&quot;&gt;&lt;a href=&quot;#cb3-18&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-19&quot;&gt;&lt;a href=&quot;#cb3-19&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;parseTop2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-20&quot;&gt;&lt;a href=&quot;#cb3-20&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;parseTop2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-21&quot;&gt;&lt;a href=&quot;#cb3-21&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    leftOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseMiddle2&lt;/span&gt;
+&lt;span id=&quot;cb3-22&quot;&gt;&lt;a href=&quot;#cb3-22&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext leftOfOp&lt;/span&gt;
+&lt;span id=&quot;cb3-23&quot;&gt;&lt;a href=&quot;#cb3-23&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-24&quot;&gt;&lt;a href=&quot;#cb3-24&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    doNext acc &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.choice&lt;/span&gt;
+&lt;span id=&quot;cb3-25&quot;&gt;&lt;a href=&quot;#cb3-25&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      [ &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;st&quot;&gt;&amp;quot; * &amp;quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb3-26&quot;&gt;&lt;a href=&quot;#cb3-26&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           rightOfOp &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; parseMiddle2&lt;/span&gt;
+&lt;span id=&quot;cb3-27&quot;&gt;&lt;a href=&quot;#cb3-27&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           doNext (acc &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; rightOfOp)&lt;/span&gt;
+&lt;span id=&quot;cb3-28&quot;&gt;&lt;a href=&quot;#cb3-28&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      , &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; acc&lt;/span&gt;
+&lt;span id=&quot;cb3-29&quot;&gt;&lt;a href=&quot;#cb3-29&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So the parser dependency again is kind of interesting: &lt;code&gt;parseTop2&lt;/code&gt; is built up of chained &lt;code&gt;parseMiddle2&lt;/code&gt;s, which is built up of chained &lt;code&gt;parseBottom2&lt;/code&gt;, which could loop back up with &lt;code&gt;parseTop2&lt;/code&gt; if detect parentheses.&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb4&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb4-1&quot;&gt;&lt;a href=&quot;#cb4-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;part2 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Int&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part2 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; P.parseMaybe &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb4-3&quot;&gt;&lt;a href=&quot;#cb4-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;          &lt;span class=&quot;fu&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; (parseTop2 &lt;span class=&quot;ot&quot;&gt;`P.sepBy`&lt;/span&gt; P.newline)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Note that this chaining and looping behavior can be abstracted out — that’s essentially what I wrote in my &lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day18.hs&quot;&gt;cleaned up solution&lt;/a&gt;. But also the &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/parser-combinators-1.2.1/docs/Control-Monad-Combinators-Expr.html&quot;&gt;Control.Monad.Combinators.Expr&lt;/a&gt;&lt;/em&gt; module also abstracts over this pattern, letting you specify the “layers” you want, and it’ll generate the right parser for you with the correct weaving of dependencies like I described here. But still, I think it’s fun to see how these things end up looking like under the hood :)&lt;/p&gt;
+&lt;h3 id=&quot;day-18-benchmarks&quot;&gt;Day 18 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 18a
+benchmarking...
+time                 2.628 ms   (2.442 ms .. 2.867 ms)
+                     0.968 R²   (0.952 R² .. 0.992 R²)
+mean                 2.573 ms   (2.485 ms .. 2.671 ms)
+std dev              315.6 μs   (188.3 μs .. 456.3 μs)
+variance introduced by outliers: 76% (severely inflated)
+
+* parsing and formatting times excluded
+
+&amp;gt;&amp;gt; Day 18b
+benchmarking...
+time                 2.166 ms   (2.081 ms .. 2.247 ms)
+                     0.987 R²   (0.980 R² .. 0.993 R²)
+mean                 2.166 ms   (2.106 ms .. 2.224 ms)
+std dev              203.9 μs   (155.9 μs .. 269.6 μs)
+variance introduced by outliers: 65% (severely inflated)
+
+* parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-18</link>
+      <pubDate>Fri, 18 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 17</title>
       <description>&lt;h2 id=&quot;day-17&quot;&gt;Day 17&lt;/h2&gt;
@@ -90,21 +195,21 @@ that file instead!
 &lt;h3 id=&quot;day-17-benchmarks&quot;&gt;Day 17 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 17a
 benchmarking...
-time                 10.31 ms   (9.525 ms .. 10.88 ms)
-                     0.966 R²   (0.936 R² .. 0.986 R²)
-mean                 9.696 ms   (9.332 ms .. 10.04 ms)
-std dev              986.1 μs   (777.7 μs .. 1.213 ms)
-variance introduced by outliers: 55% (severely inflated)
+time                 4.025 ms   (3.914 ms .. 4.168 ms)
+                     0.989 R²   (0.976 R² .. 0.996 R²)
+mean                 4.028 ms   (3.934 ms .. 4.153 ms)
+std dev              338.7 μs   (256.8 μs .. 461.4 μs)
+variance introduced by outliers: 54% (severely inflated)
 
 * parsing and formatting times excluded
 
 &amp;gt;&amp;gt; Day 17b
 benchmarking...
-time                 30.68 ms   (26.11 ms .. 33.75 ms)
-                     0.914 R²   (0.774 R² .. 0.995 R²)
-mean                 33.23 ms   (30.59 ms .. 39.46 ms)
-std dev              8.639 ms   (2.757 ms .. 12.38 ms)
-variance introduced by outliers: 81% (severely inflated)
+time                 18.76 ms   (17.61 ms .. 20.33 ms)
+                     0.968 R²   (0.936 R² .. 0.991 R²)
+mean                 19.49 ms   (18.95 ms .. 20.16 ms)
+std dev              1.440 ms   (1.108 ms .. 2.085 ms)
+variance introduced by outliers: 31% (moderately inflated)
 
 * parsing and formatting times excluded&lt;/code&gt;&lt;/pre&gt;
 </description>

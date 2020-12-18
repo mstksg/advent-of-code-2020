@@ -7,7 +7,7 @@ the file `./reflections/day17.md`.  If you want to edit this, edit
 that file instead!
 -->
 
-*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *[9][day09]* / *[10][day10]* / *[11][day11]* / *[12][day12]* / *[13][day13]* / *[14][day14]* / *[15][day15]* / *[16][day16]* / *17*
+*[all][reflections]* / *[1][day01]* / *[2][day02]* / *[3][day03]* / *[4][day04]* / *[5][day05]* / *[6][day06]* / *[7][day07]* / *[8][day08]* / *[9][day09]* / *[10][day10]* / *[11][day11]* / *[12][day12]* / *[13][day13]* / *[14][day14]* / *[15][day15]* / *[16][day16]* / *17* / *[18][day18]*
 
 [reflections]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md
 [day01]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day01.md
@@ -26,6 +26,7 @@ that file instead!
 [day14]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day14.md
 [day15]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day15.md
 [day16]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day16.md
+[day18]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md
 
 [Available as an RSS Feed][rss]
 
@@ -172,21 +173,21 @@ And that's it --- code that should work for both parts :)
 ```
 >> Day 17a
 benchmarking...
-time                 10.31 ms   (9.525 ms .. 10.88 ms)
-                     0.966 R²   (0.936 R² .. 0.986 R²)
-mean                 9.696 ms   (9.332 ms .. 10.04 ms)
-std dev              986.1 μs   (777.7 μs .. 1.213 ms)
-variance introduced by outliers: 55% (severely inflated)
+time                 4.025 ms   (3.914 ms .. 4.168 ms)
+                     0.989 R²   (0.976 R² .. 0.996 R²)
+mean                 4.028 ms   (3.934 ms .. 4.153 ms)
+std dev              338.7 μs   (256.8 μs .. 461.4 μs)
+variance introduced by outliers: 54% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 17b
 benchmarking...
-time                 30.68 ms   (26.11 ms .. 33.75 ms)
-                     0.914 R²   (0.774 R² .. 0.995 R²)
-mean                 33.23 ms   (30.59 ms .. 39.46 ms)
-std dev              8.639 ms   (2.757 ms .. 12.38 ms)
-variance introduced by outliers: 81% (severely inflated)
+time                 18.76 ms   (17.61 ms .. 20.33 ms)
+                     0.968 R²   (0.936 R² .. 0.991 R²)
+mean                 19.49 ms   (18.95 ms .. 20.16 ms)
+std dev              1.440 ms   (1.108 ms .. 2.085 ms)
+variance introduced by outliers: 31% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
