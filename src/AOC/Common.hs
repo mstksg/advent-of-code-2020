@@ -1,7 +1,9 @@
-{-# LANGUAGE CPP              #-}
-{-# LANGUAGE NoDeriveAnyClass #-}
-{-# LANGUAGE TypeFamilies     #-}
-{-# OPTIONS_GHC -Wno-orphans  #-}
+{-# LANGUAGE CPP                                #-}
+{-# LANGUAGE NoDeriveAnyClass                   #-}
+{-# LANGUAGE QuantifiedConstraints              #-}
+{-# LANGUAGE TypeFamilies                       #-}
+{-# OPTIONS_GHC -Wno-orphans                    #-}
+{-# OPTIONS_GHC -fplugin GHC.TypeLits.Normalise #-}
 
 -- |
 -- Module      : AOC.Common
@@ -16,8 +18,9 @@
 --
 
 module AOC.Common (
+    trace'
   -- * Loops and searches
-    iterateMaybe
+  , iterateMaybe
   , loopMaybe
   , loopMaybeM
   , loopEither
@@ -170,9 +173,10 @@ import           Data.Tuple
 import           Data.Tuple.Strict
 import           Data.Void
 import           Data.Word
+import           Debug.Trace
 import           GHC.Generics                       (Generic)
 import           GHC.TypeNats
-import           Linear                             (V2(..), _x, _y)
+import           Linear                             (V2(..), V3(..), V4(..), R1(..), R2(..), R3(..), R4(..))
 import           Linear.Vector
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
@@ -197,6 +201,10 @@ import qualified Data.Vector.Generic.Sized.Internal as SVG
 import qualified Text.Megaparsec                    as P
 import qualified Text.Megaparsec.Char               as P
 import qualified Text.Megaparsec.Char.Lexer         as PL
+
+-- | trace but only after something has evaluated to WHNF
+trace' :: String -> a -> a
+trace' str x = trace (x `seq` str) x
 
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a
@@ -890,6 +898,23 @@ type instance IxValue (SVG.Vector v n a) = a
 
 instance (Ixed (v a), Index (v a) ~ Int, IxValue (v a) ~ a) => Ixed (SVG.Vector v n a) where
     ix i f (SVG.Vector v) = SVG.Vector <$> ix i f v
+
+instance (KnownNat n, forall a. VG.Vector v a, 1 <= n) => R1 (SVG.Vector v n) where
+    _x = SVG.ix 0
+
+instance (KnownNat n, forall a. VG.Vector v a, 2 <= n) => R2 (SVG.Vector v n) where
+    _xy f v = (\(V2 x y) -> v SVG.// [(0, x), (1, y)]) <$> f (V2 (v `SVG.index` 0) (v `SVG.index` 1))
+    _y = SVG.ix 1
+
+instance (KnownNat n, forall a. VG.Vector v a, 3 <= n) => R3 (SVG.Vector v n) where
+    _xyz f v = (\(V3 x y z) -> v SVG.// [(0, x), (1, y), (2, z)])
+           <$> f (V3 (v `SVG.index` 0) (v `SVG.index` 1) (v `SVG.index` 2))
+    _z = SVG.ix 2
+
+instance (KnownNat n, forall a. VG.Vector v a, 4 <= n) => R4 (SVG.Vector v n) where
+    _xyzw f v = (\(V4 x y z w) -> v SVG.// [(0, x), (1, y), (2, z), (3, w)])
+           <$> f (V4 (v `SVG.index` 0) (v `SVG.index` 1) (v `SVG.index` 2) (v `SVG.index` 3))
+    _w = SVG.ix 3
 
 type instance Index   (OrdPSQ.OrdPSQ k p v) = k
 type instance IxValue (OrdPSQ.OrdPSQ k p v) = v
