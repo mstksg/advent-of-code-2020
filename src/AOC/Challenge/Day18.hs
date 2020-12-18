@@ -64,16 +64,16 @@ parseSyntax Syntax{..} = parseTopLevel
               parseThisLevelWith (f x y)
         in  parseDown >>= parseThisLevelWith
 
-day18 :: (Num a, Show a) => Syntax Parser a -> [String] :~> a
+day18 :: (Num a, Show a) => Syntax Parser a -> String :~> a
 day18 s = MkSol
-    { sParse = Just . lines
+    { sParse = Just
     , sShow  = show
-    , sSolve = fmap sum . traverse (P.parseMaybe (parseSyntax s))
+    , sSolve = P.parseMaybe (sum <$> P.many (parseSyntax s))
     }
 {-# INLINE day18 #-}
 
-day18a :: [String] :~> Int
+day18a :: String :~> Int
 day18a = day18 exprSyntax1
 
-day18b :: [String] :~> Int
+day18b :: String :~> Int
 day18b = day18 exprSyntax2
