@@ -14,248 +14,197 @@
 </span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#day18b"><span class="hs-identifier">day18b</span></a></span><span>
 </span><span id="line-15"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>           </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#pTok"><span class="hs-identifier">pTok</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>           </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MonadPlus</span></span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">digitToInt</span></span><span class="hs-special">)</span><span>
-</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">fromMaybe</span></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">)</span><span>
-</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>           </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MonadPlus</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">digitToInt</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">type</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-25"></span><span>
-</span><span id="line-26"></span><span class="hs-keyword">type</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-27"></span><span>
-</span><span id="line-28"></span><span class="hs-comment">-- | A right-associative syntax</span><span>
-</span><span id="line-29"></span><span class="hs-keyword">data</span><span> </span><span id="Syntax"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-var">Syntax</span></a></span></span><span> </span><span id="local-6989586621679667799"><span class="annot"><a href="#local-6989586621679667799"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679667798"><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Syntax"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-var">Syntax</span></a></span></span><span>
-</span><span id="line-30"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="sBinOps"><span class="annot"><span class="annottext">Syntax f a -&gt; [f (a -&gt; a -&gt; a)]
-</span><a href="AOC.Challenge.Day18.html#sBinOps"><span class="hs-identifier hs-var hs-var">sBinOps</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679667799"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>  </span><span class="hs-comment">-- ^ Operations at each level; highest precedence is last.</span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="sPrim"><span class="annot"><span class="annottext">Syntax f a -&gt; f a
-</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var hs-var">sPrim</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667799"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span>                </span><span class="hs-comment">-- ^ How to parse a primitive</span><span>
-</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="sPar"><span class="annot"><span class="annottext">Syntax f a -&gt; f a -&gt; f a
-</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var hs-var">sPar</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667799"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667799"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667798"><span class="hs-identifier hs-type">a</span></a></span><span>         </span><span class="hs-comment">-- ^ parentheses</span><span>
-</span><span id="line-33"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-34"></span><span>
-</span><span id="line-35"></span><span class="annot"><a href="AOC.Challenge.Day18.html#exprSyntax1"><span class="hs-identifier hs-type">exprSyntax1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-36"></span><span id="exprSyntax1"><span class="annot"><span class="annottext">exprSyntax1 :: Syntax Parser Int
+</span><span id="line-26"></span><span class="hs-comment">-- | A right-associative syntax</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">data</span><span> </span><span id="Syntax"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-var">Syntax</span></a></span></span><span> </span><span id="local-6989586621679667504"><span class="annot"><a href="#local-6989586621679667504"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679667503"><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Syntax"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-var">Syntax</span></a></span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="sBinOps"><span class="annot"><span class="annottext">Syntax f a -&gt; [f (a -&gt; a -&gt; a)]
+</span><a href="AOC.Challenge.Day18.html#sBinOps"><span class="hs-identifier hs-var hs-var">sBinOps</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679667504"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>  </span><span class="hs-comment">-- ^ Operations at each level; highest precedence is last.</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="sPrim"><span class="annot"><span class="annottext">Syntax f a -&gt; f a
+</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var hs-var">sPrim</span></a></span></span><span>   </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667504"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span>                </span><span class="hs-comment">-- ^ How to parse a primitive</span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="sPar"><span class="annot"><span class="annottext">Syntax f a -&gt; f a -&gt; f a
+</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var hs-var">sPar</span></a></span></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667504"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667504"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667503"><span class="hs-identifier hs-type">a</span></a></span><span>         </span><span class="hs-comment">-- ^ parentheses</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-32"></span><span>
+</span><span id="line-33"></span><span class="annot"><a href="AOC.Challenge.Day18.html#exprSyntax1"><span class="hs-identifier hs-type">exprSyntax1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-34"></span><span id="exprSyntax1"><span class="annot"><span class="annottext">exprSyntax1 :: Syntax Parser Int
 </span><a href="AOC.Challenge.Day18.html#exprSyntax1"><span class="hs-identifier hs-var hs-var">exprSyntax1</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Syntax :: forall (f :: * -&gt; *) a.
 [f (a -&gt; a -&gt; a)] -&gt; f a -&gt; (f a -&gt; f a) -&gt; Syntax f a
 </span><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type hs-type">Syntax</span></a></span><span>
-</span><span id="line-37"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sBinOps :: [Parser (Int -&gt; Int -&gt; Int)]
+</span><span id="line-35"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sBinOps :: [Parser (Int -&gt; Int -&gt; Int)]
 </span><a href="AOC.Challenge.Day18.html#sBinOps"><span class="hs-identifier hs-var">sBinOps</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">[Parser (Int -&gt; Int -&gt; Int)] -&gt; Parser (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) (m :: * -&gt; *) a.
 (Foldable f, Alternative m) =&gt;
 f (m a) -&gt; m a
 </span><span class="hs-identifier hs-var">P.choice</span></span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int)
--&gt; ParsecT Void String Identity String
--&gt; Parser (Int -&gt; Int -&gt; Int)
+</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; Parser String -&gt; Parser (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
-</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;*&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="hs-string">&quot; * &quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int)
--&gt; ParsecT Void String Identity String
--&gt; Parser (Int -&gt; Int -&gt; Int)
+</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; Parser String -&gt; Parser (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
-</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;+&quot;</span></span><span> </span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>  </span><span class="hs-comment">-- all same level</span><span>
-</span><span id="line-38"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPrim :: Parser Int
-</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var">sPrim</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Int -&gt; Parser Int
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser Int -&gt; Parser Int) -&gt; Parser Int -&gt; Parser Int
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
-</span><span class="hs-identifier hs-var">digitToInt</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Int) -&gt; ParsecT Void String Identity Char -&gt; Parser Int
+</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="hs-string">&quot; + &quot;</span></span><span> </span><span class="hs-special">]</span><span> </span><span class="hs-special">]</span><span>  </span><span class="hs-comment">-- all same level</span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPrim :: Parser Int
+</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var">sPrim</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
+</span><span class="hs-identifier hs-var">digitToInt</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Int) -&gt; Parser Char -&gt; Parser Int
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Char
 forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.digitChar</span></span><span>
-</span><span id="line-39"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPar :: Parser Int -&gt; Parser Int
-</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var">sPar</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Int -&gt; Parser Int
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser Int -&gt; Parser Int)
--&gt; (Parser Int -&gt; Parser Int) -&gt; Parser Int -&gt; Parser Int
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String -&gt; Parser Int -&gt; Parser Int
+</span><span id="line-37"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPar :: Parser Int -&gt; Parser Int
+</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var">sPar</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; Parser String -&gt; Parser Int -&gt; Parser Int
 forall (m :: * -&gt; *) open close a.
 Applicative m =&gt;
 m open -&gt; m close -&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">P.between</span></span><span> </span><span class="annot"><span class="hs-string">&quot;(&quot;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-40"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-41"></span><span>
-</span><span id="line-42"></span><span class="annot"><a href="AOC.Challenge.Day18.html#exprSyntax2"><span class="hs-identifier hs-type">exprSyntax2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-43"></span><span id="exprSyntax2"><span class="annot"><span class="annottext">exprSyntax2 :: Syntax Parser Int
+</span><span id="line-38"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="annot"><a href="AOC.Challenge.Day18.html#exprSyntax2"><span class="hs-identifier hs-type">exprSyntax2</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-41"></span><span id="exprSyntax2"><span class="annot"><span class="annottext">exprSyntax2 :: Syntax Parser Int
 </span><a href="AOC.Challenge.Day18.html#exprSyntax2"><span class="hs-identifier hs-var hs-var">exprSyntax2</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Syntax :: forall (f :: * -&gt; *) a.
 [f (a -&gt; a -&gt; a)] -&gt; f a -&gt; (f a -&gt; f a) -&gt; Syntax f a
 </span><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type hs-type">Syntax</span></a></span><span>
-</span><span id="line-44"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sBinOps :: [Parser (Int -&gt; Int -&gt; Int)]
+</span><span id="line-42"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sBinOps :: [Parser (Int -&gt; Int -&gt; Int)]
 </span><a href="AOC.Challenge.Day18.html#sBinOps"><span class="hs-identifier hs-var">sBinOps</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int)
--&gt; ParsecT Void String Identity String
--&gt; Parser (Int -&gt; Int -&gt; Int)
+</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; Parser String -&gt; Parser (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
-</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;*&quot;</span></span><span>    </span><span class="hs-comment">-- + higher than *</span><span>
-</span><span id="line-45"></span><span>                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="hs-string">&quot; * &quot;</span></span><span>    </span><span class="hs-comment">-- + higher than *</span><span>
+</span><span id="line-43"></span><span>                </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int)
--&gt; ParsecT Void String Identity String
--&gt; Parser (Int -&gt; Int -&gt; Int)
+</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; Parser String -&gt; Parser (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
-</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="hs-string">&quot;+&quot;</span></span><span>
-</span><span id="line-46"></span><span>                </span><span class="hs-special">]</span><span>
-</span><span id="line-47"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPrim :: Parser Int
-</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var">sPrim</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Int -&gt; Parser Int
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser Int -&gt; Parser Int) -&gt; Parser Int -&gt; Parser Int
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
-</span><span class="hs-identifier hs-var">digitToInt</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Int) -&gt; ParsecT Void String Identity Char -&gt; Parser Int
+</span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="hs-string">&quot; + &quot;</span></span><span>
+</span><span id="line-44"></span><span>                </span><span class="hs-special">]</span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPrim :: Parser Int
+</span><a href="AOC.Challenge.Day18.html#sPrim"><span class="hs-identifier hs-var">sPrim</span></a></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
+</span><span class="hs-identifier hs-var">digitToInt</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Int) -&gt; Parser Char -&gt; Parser Int
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Char
 forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.digitChar</span></span><span>
-</span><span id="line-48"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPar :: Parser Int -&gt; Parser Int
-</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var">sPar</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Int -&gt; Parser Int
-forall s e a.
-(Stream s, Token s ~ Char, Ord e) =&gt;
-Parsec e s a -&gt; Parsec e s a
-</span><a href="AOC.Common.html#pTok"><span class="hs-identifier hs-var">pTok</span></a></span><span> </span><span class="annot"><span class="annottext">(Parser Int -&gt; Parser Int)
--&gt; (Parser Int -&gt; Parser Int) -&gt; Parser Int -&gt; Parser Int
-forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
--&gt; ParsecT Void String Identity String -&gt; Parser Int -&gt; Parser Int
+</span><span id="line-46"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sPar :: Parser Int -&gt; Parser Int
+</span><a href="AOC.Challenge.Day18.html#sPar"><span class="hs-identifier hs-var">sPar</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser String -&gt; Parser String -&gt; Parser Int -&gt; Parser Int
 forall (m :: * -&gt; *) open close a.
 Applicative m =&gt;
 m open -&gt; m close -&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">P.between</span></span><span> </span><span class="annot"><span class="hs-string">&quot;(&quot;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-49"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-50"></span><span>
-</span><span id="line-51"></span><span class="annot"><a href="AOC.Challenge.Day18.html#parseSyntax"><span class="hs-identifier hs-type">parseSyntax</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679667738"><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679667737"><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadPlus</span></span><span> </span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-52"></span><span id="parseSyntax"><span class="annot"><span class="annottext">parseSyntax :: Syntax f a -&gt; f a
-</span><a href="AOC.Challenge.Day18.html#parseSyntax"><span class="hs-identifier hs-var hs-var">parseSyntax</span></a></span></span><span> </span><span id="local-6989586621679667712"><span id="local-6989586621679667713"><span id="local-6989586621679667714"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679667711"><span class="hs-identifier hs-var">parseTopLevel</span></a></span><span>
-</span><span id="line-53"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-54"></span><span>    </span><span class="annot"><a href="#local-6989586621679667711"><span class="hs-identifier hs-type">parseTopLevel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span id="local-6989586621679667711"><span class="annot"><span class="annottext">parseTopLevel :: f a
-</span><a href="#local-6989586621679667711"><span class="hs-identifier hs-var hs-var">parseTopLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)] -&gt; f a
-</span><a href="#local-6989586621679667710"><span class="hs-identifier hs-var">parseLevels</span></a></span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)]
-</span><a href="#local-6989586621679667714"><span class="hs-identifier hs-var">sBinOps</span></a></span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><a href="#local-6989586621679667710"><span class="hs-identifier hs-type">parseLevels</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667738"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667737"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span id="local-6989586621679667710"><span class="annot"><span class="annottext">parseLevels :: [f (a -&gt; a -&gt; a)] -&gt; f a
-</span><a href="#local-6989586621679667710"><span class="hs-identifier hs-var hs-var">parseLevels</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-58"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679667713"><span class="hs-identifier hs-var">sPrim</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a -&gt; f a
+</span><span id="line-47"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="annot"><a href="AOC.Challenge.Day18.html#parseSyntax"><span class="hs-identifier hs-type">parseSyntax</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679667454"><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679667452"><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MonadPlus</span></span><span> </span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-50"></span><span id="parseSyntax"><span class="annot"><span class="annottext">parseSyntax :: Syntax f a -&gt; f a
+</span><a href="AOC.Challenge.Day18.html#parseSyntax"><span class="hs-identifier hs-var hs-var">parseSyntax</span></a></span></span><span> </span><span id="local-6989586621679667427"><span id="local-6989586621679667428"><span id="local-6989586621679667429"><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679667426"><span class="hs-identifier hs-var">parseTopLevel</span></a></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><a href="#local-6989586621679667426"><span class="hs-identifier hs-type">parseTopLevel</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-53"></span><span>    </span><span id="local-6989586621679667426"><span class="annot"><span class="annottext">parseTopLevel :: f a
+</span><a href="#local-6989586621679667426"><span class="hs-identifier hs-var hs-var">parseTopLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)] -&gt; f a
+</span><a href="#local-6989586621679667425"><span class="hs-identifier hs-var">parseLevels</span></a></span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)]
+</span><a href="#local-6989586621679667429"><span class="hs-identifier hs-var">sBinOps</span></a></span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><a href="#local-6989586621679667425"><span class="hs-identifier hs-type">parseLevels</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679667454"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667452"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span id="local-6989586621679667425"><span class="annot"><span class="annottext">parseLevels :: [f (a -&gt; a -&gt; a)] -&gt; f a
+</span><a href="#local-6989586621679667425"><span class="hs-identifier hs-var hs-var">parseLevels</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-56"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679667428"><span class="hs-identifier hs-var">sPrim</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a -&gt; f a
 forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
 </span><span class="hs-operator hs-var">P.&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
-</span><a href="#local-6989586621679667712"><span class="hs-identifier hs-var">sPar</span></a></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679667711"><span class="hs-identifier hs-var">parseTopLevel</span></a></span><span>
-</span><span id="line-59"></span><span>      </span><span id="local-6989586621679667708"><span class="annot"><span class="annottext">o :: f (a -&gt; a -&gt; a)
-</span><a href="#local-6989586621679667708"><span class="hs-identifier hs-var">o</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679667707"><span class="annot"><span class="annottext">os :: [f (a -&gt; a -&gt; a)]
-</span><a href="#local-6989586621679667707"><span class="hs-identifier hs-var">os</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-60"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679667706"><span class="annot"><span class="annottext">parseDown :: f a
-</span><a href="#local-6989586621679667706"><span class="hs-identifier hs-var hs-var">parseDown</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)] -&gt; f a
-</span><a href="#local-6989586621679667710"><span class="hs-identifier hs-var">parseLevels</span></a></span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)]
-</span><a href="#local-6989586621679667707"><span class="hs-identifier hs-var">os</span></a></span><span>
-</span><span id="line-61"></span><span>            </span><span id="local-6989586621679667705"><span class="annot"><span class="annottext">parseThisLevelWith :: a -&gt; f a
-</span><a href="#local-6989586621679667705"><span class="hs-identifier hs-var hs-var">parseThisLevelWith</span></a></span></span><span> </span><span id="local-6989586621679667704"><span class="annot"><span class="annottext">x :: a
-</span><a href="#local-6989586621679667704"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679667427"><span class="hs-identifier hs-var">sPar</span></a></span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679667426"><span class="hs-identifier hs-var">parseTopLevel</span></a></span><span>
+</span><span id="line-57"></span><span>      </span><span id="local-6989586621679667423"><span class="annot"><span class="annottext">o :: f (a -&gt; a -&gt; a)
+</span><a href="#local-6989586621679667423"><span class="hs-identifier hs-var">o</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679667422"><span class="annot"><span class="annottext">os :: [f (a -&gt; a -&gt; a)]
+</span><a href="#local-6989586621679667422"><span class="hs-identifier hs-var">os</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-58"></span><span>        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679667421"><span class="annot"><span class="annottext">parseDown :: f a
+</span><a href="#local-6989586621679667421"><span class="hs-identifier hs-var hs-var">parseDown</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)] -&gt; f a
+</span><a href="#local-6989586621679667425"><span class="hs-identifier hs-var">parseLevels</span></a></span><span> </span><span class="annot"><span class="annottext">[f (a -&gt; a -&gt; a)]
+</span><a href="#local-6989586621679667422"><span class="hs-identifier hs-var">os</span></a></span><span>
+</span><span id="line-59"></span><span>            </span><span id="local-6989586621679667420"><span class="annot"><span class="annottext">parseThisLevelWith :: a -&gt; f a
+</span><a href="#local-6989586621679667420"><span class="hs-identifier hs-var hs-var">parseThisLevelWith</span></a></span></span><span> </span><span id="local-6989586621679667419"><span class="annot"><span class="annottext">x :: a
+</span><a href="#local-6989586621679667419"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a -&gt; f a
 forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
 </span><span class="hs-operator hs-var">P.&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f a
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679667704"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; f a -&gt; f a
+</span><a href="#local-6989586621679667419"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; f a -&gt; f a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-62"></span><span>              </span><span id="local-6989586621679667703"><span class="annot"><span class="annottext">a -&gt; a -&gt; a
-</span><a href="#local-6989586621679667703"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">f (a -&gt; a -&gt; a)
-</span><a href="#local-6989586621679667708"><span class="hs-identifier hs-var">o</span></a></span><span>
-</span><span id="line-63"></span><span>              </span><span id="local-6989586621679667702"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679667702"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679667706"><span class="hs-identifier hs-var">parseDown</span></a></span><span>
-</span><span id="line-64"></span><span>              </span><span class="annot"><span class="annottext">a -&gt; f a
-</span><a href="#local-6989586621679667705"><span class="hs-identifier hs-var">parseThisLevelWith</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
-</span><a href="#local-6989586621679667703"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679667704"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679667702"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-65"></span><span>        </span><span class="hs-keyword">in</span><span>  </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679667706"><span class="hs-identifier hs-var">parseDown</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; (a -&gt; f a) -&gt; f a
+</span><span id="line-60"></span><span>              </span><span id="local-6989586621679667418"><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679667418"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">f (a -&gt; a -&gt; a)
+</span><a href="#local-6989586621679667423"><span class="hs-identifier hs-var">o</span></a></span><span>
+</span><span id="line-61"></span><span>              </span><span id="local-6989586621679667417"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679667417"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679667421"><span class="hs-identifier hs-var">parseDown</span></a></span><span>
+</span><span id="line-62"></span><span>              </span><span class="annot"><span class="annottext">a -&gt; f a
+</span><a href="#local-6989586621679667420"><span class="hs-identifier hs-var">parseThisLevelWith</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679667418"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679667419"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679667417"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-63"></span><span>        </span><span class="hs-keyword">in</span><span>  </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679667421"><span class="hs-identifier hs-var">parseDown</span></a></span><span> </span><span class="annot"><span class="annottext">f a -&gt; (a -&gt; f a) -&gt; f a
 forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
 </span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; f a
-</span><a href="#local-6989586621679667705"><span class="hs-identifier hs-var">parseThisLevelWith</span></a></span><span>
-</span><span id="line-66"></span><span>
-</span><span id="line-67"></span><span id="local-6989586621679667736"><span class="annot"><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-type">day18</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679667736"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679667736"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667736"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667736"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-68"></span><span id="day18"><span class="annot"><span class="annottext">day18 :: Syntax Parser a -&gt; String :~&gt; a
-</span><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-var hs-var">day18</span></a></span></span><span> </span><span id="local-6989586621679667700"><span class="annot"><span class="annottext">s :: Syntax Parser a
-</span><a href="#local-6989586621679667700"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
+</span><a href="#local-6989586621679667420"><span class="hs-identifier hs-var">parseThisLevelWith</span></a></span><span>
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span id="local-6989586621679667448"><span class="annot"><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-type">day18</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679667448"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="#local-6989586621679667448"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Syntax"><span class="hs-identifier hs-type">Syntax</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667448"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679667448"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-66"></span><span id="day18"><span class="annot"><span class="annottext">day18 :: Syntax Parser a -&gt; String :~&gt; a
+</span><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-var hs-var">day18</span></a></span></span><span> </span><span id="local-6989586621679667415"><span class="annot"><span class="annottext">s :: Syntax Parser a
+</span><a href="#local-6989586621679667415"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-69"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
+</span><span id="line-67"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-70"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: a -&gt; String
+</span><span id="line-68"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: a -&gt; String
 </span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe a
+</span><span id="line-69"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe a
 </span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String a -&gt; String -&gt; Maybe a
 forall e s a. (Ord e, Stream s) =&gt; Parsec e s a -&gt; s -&gt; Maybe a
-</span><span class="hs-identifier hs-var">P.parseMaybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[a] -&gt; a
+</span><span class="hs-identifier hs-var">P.parseMaybe</span></span><span> </span><span class="annot"><span class="annottext">(Parsec Void String a -&gt; String -&gt; Maybe a)
+-&gt; Parsec Void String a -&gt; String -&gt; Maybe a
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[a] -&gt; a
 forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">sum</span></span><span> </span><span class="annot"><span class="annottext">([a] -&gt; a) -&gt; Parser [a] -&gt; Parsec Void String a
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
-</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parsec Void String a -&gt; Parser [a]
-forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
-</span><span class="hs-identifier hs-var">P.many</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Syntax Parser a -&gt; Parsec Void String a
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Syntax Parser a -&gt; Parsec Void String a
 forall (f :: * -&gt; *) a. MonadPlus f =&gt; Syntax f a -&gt; f a
 </span><a href="AOC.Challenge.Day18.html#parseSyntax"><span class="hs-identifier hs-var">parseSyntax</span></a></span><span> </span><span class="annot"><span class="annottext">Syntax Parser a
-</span><a href="#local-6989586621679667700"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-72"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-73"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#day18"><span class="hs-pragma hs-type">day18</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="annot"><a href="AOC.Challenge.Day18.html#day18a"><span class="hs-identifier hs-type">day18a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-76"></span><span id="day18a"><span class="annot"><span class="annottext">day18a :: String :~&gt; Int
+</span><a href="#local-6989586621679667415"><span class="hs-identifier hs-var">s</span></a></span><span> </span><span class="annot"><span class="annottext">Parsec Void String a -&gt; Parser Char -&gt; Parser [a]
+forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
+</span><span class="hs-operator hs-var">`P.sepBy`</span></span><span> </span><span class="annot"><span class="annottext">Parser Char
+forall e s (m :: * -&gt; *).
+(MonadParsec e s m, Token s ~ Char) =&gt;
+m (Token s)
+</span><span class="hs-identifier hs-var">P.newline</span></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-71"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day18.html#day18"><span class="hs-pragma hs-type">day18</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-72"></span><span>
+</span><span id="line-73"></span><span class="annot"><a href="AOC.Challenge.Day18.html#day18a"><span class="hs-identifier hs-type">day18a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-74"></span><span id="day18a"><span class="annot"><span class="annottext">day18a :: String :~&gt; Int
 </span><a href="AOC.Challenge.Day18.html#day18a"><span class="hs-identifier hs-var hs-var">day18a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Syntax Parser Int -&gt; String :~&gt; Int
 forall a. (Num a, Show a) =&gt; Syntax Parser a -&gt; String :~&gt; a
 </span><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-var">day18</span></a></span><span> </span><span class="annot"><span class="annottext">Syntax Parser Int
 </span><a href="AOC.Challenge.Day18.html#exprSyntax1"><span class="hs-identifier hs-var">exprSyntax1</span></a></span><span>
-</span><span id="line-77"></span><span>
-</span><span id="line-78"></span><span class="annot"><a href="AOC.Challenge.Day18.html#day18b"><span class="hs-identifier hs-type">day18b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-79"></span><span id="day18b"><span class="annot"><span class="annottext">day18b :: String :~&gt; Int
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="annot"><a href="AOC.Challenge.Day18.html#day18b"><span class="hs-identifier hs-type">day18b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-77"></span><span id="day18b"><span class="annot"><span class="annottext">day18b :: String :~&gt; Int
 </span><a href="AOC.Challenge.Day18.html#day18b"><span class="hs-identifier hs-var hs-var">day18b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Syntax Parser Int -&gt; String :~&gt; Int
 forall a. (Num a, Show a) =&gt; Syntax Parser a -&gt; String :~&gt; a
 </span><a href="AOC.Challenge.Day18.html#day18"><span class="hs-identifier hs-var">day18</span></a></span><span> </span><span class="annot"><span class="annottext">Syntax Parser Int
 </span><a href="AOC.Challenge.Day18.html#exprSyntax2"><span class="hs-identifier hs-var">exprSyntax2</span></a></span><span>
-</span><span id="line-80"></span></pre></body></html>
+</span><span id="line-78"></span></pre></body></html>
