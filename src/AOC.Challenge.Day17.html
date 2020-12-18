@@ -10,87 +10,101 @@
 </span><span id="line-10"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#day17b"><span class="hs-identifier">day17b</span></a></span><span>
 </span><span id="line-11"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-12"></span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>          </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#fullNeighbsSet"><span class="hs-identifier">fullNeighbsSet</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#%21%21%21"><span class="hs-operator">(!!!)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#asciiGrid"><span class="hs-identifier">asciiGrid</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>          </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">iover</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">traversed</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">set</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">to</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">asIndex</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">filtered</span></span><span class="hs-special">)</span><span>
-</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
-</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Set</span></span><span class="hs-special">)</span><span>
-</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set.Lens</span></span><span>       </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">setOf</span></span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Linear</span></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">R2</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">V3</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">V4</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>            </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
-</span><span id="line-22"></span><span>
-</span><span id="line-23"></span><span id="local-6989586621679662285"><span id="local-6989586621679662286"><span class="annot"><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-identifier hs-type">stepper</span></a></span><span>
-</span><span id="line-24"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679662286"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679662285"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662286"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679662285"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679662285"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679662286"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-25"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662286"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679662285"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662286"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679662285"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
-</span><span id="line-27"></span><span id="stepper"><span class="annot"><span class="annottext">stepper :: Set (f a) -&gt; Set (f a)
-</span><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-identifier hs-var hs-var">stepper</span></a></span></span><span> </span><span id="local-6989586621679662235"><span class="annot"><span class="annottext">cs :: Set (f a)
-</span><a href="#local-6989586621679662235"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set (f a)
-</span><a href="#local-6989586621679662234"><span class="hs-identifier hs-var">stayAlive</span></a></span><span> </span><span class="annot"><span class="annottext">Set (f a) -&gt; Set (f a) -&gt; Set (f a)
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Common.html"><span class="hs-identifier">AOC.Common</span></a></span><span>               </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Common.html#fullNeighbsSet"><span class="hs-identifier">fullNeighbsSet</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#%21%21%21"><span class="hs-operator">(!!!)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#asciiGrid"><span class="hs-identifier">asciiGrid</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.html#foldMapParChunk"><span class="hs-identifier">foldMapParChunk</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>               </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.DeepSeq</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NFData</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">iover</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">traversed</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">set</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">to</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">asIndex</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">filtered</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Coerce</span></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">coerce</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>                 </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Map</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Semigroup</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Sum</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                 </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Set</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set.Lens</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">setOf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Linear</span></span><span>                   </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">R2</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">V3</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">V4</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Monoidal.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">MM</span></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span>          </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                 </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-identifier hs-type">stepper</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679663926"><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span></span><span> </span><span id="local-6989586621679663925"><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span>
+</span><span id="line-30"></span><span>     </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-31"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span>
+</span><span id="line-32"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-33"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-34"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>     </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>     </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span id="stepper"><span class="annot"><span class="annottext">stepper :: Set (f a) -&gt; Set (f a)
+</span><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-identifier hs-var hs-var">stepper</span></a></span></span><span> </span><span id="local-6989586621679663874"><span class="annot"><span class="annottext">cs :: Set (f a)
+</span><a href="#local-6989586621679663874"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set (f a)
+</span><a href="#local-6989586621679663873"><span class="hs-identifier hs-var">stayAlive</span></a></span><span> </span><span class="annot"><span class="annottext">Set (f a) -&gt; Set (f a) -&gt; Set (f a)
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">&lt;&gt;</span></span><span> </span><span class="annot"><span class="annottext">Set (f a)
-</span><a href="#local-6989586621679662233"><span class="hs-identifier hs-var">comeAlive</span></a></span><span>
-</span><span id="line-28"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-29"></span><span>    </span><span id="local-6989586621679662232"><span class="annot"><span class="annottext">neighborCounts :: Map (f a) Int
-</span><a href="#local-6989586621679662232"><span class="hs-identifier hs-var hs-var">neighborCounts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; [Map (f a) Int] -&gt; Map (f a) Int
-forall (f :: * -&gt; *) k a.
-(Foldable f, Ord k) =&gt;
-(a -&gt; a -&gt; a) -&gt; f (Map k a) -&gt; Map k a
-</span><span class="hs-identifier hs-var">M.unionsWith</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Num Int =&gt; Int -&gt; Int -&gt; Int
-forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Map (f a) Int] -&gt; Map (f a) Int)
+</span><a href="#local-6989586621679663872"><span class="hs-identifier hs-var">comeAlive</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>    </span><span class="annot"><a href="#local-6989586621679663871"><span class="hs-identifier hs-type">neighborCounts</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-42"></span><span>    </span><span id="local-6989586621679663871"><span class="annot"><span class="annottext">neighborCounts :: Map (f a) Int
+</span><a href="#local-6989586621679663871"><span class="hs-identifier hs-var hs-var">neighborCounts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([MonoidalMap (f a) (Sum Int)] -&gt; MonoidalMap (f a) (Sum Int))
 -&gt; [Map (f a) Int] -&gt; Map (f a) Int
-forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-30"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; Int) -&gt; Set (f a) -&gt; Map (f a) Int
+forall a b. Coercible a b =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">coerce</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+-&gt; (MonoidalMap (f a) (Sum Int) -&gt; MonoidalMap (f a) (Sum Int))
+-&gt; [MonoidalMap (f a) (Sum Int)]
+-&gt; MonoidalMap (f a) (Sum Int)
+forall m a. (NFData m, Monoid m) =&gt; Int -&gt; (a -&gt; m) -&gt; [a] -&gt; m
+</span><a href="AOC.Common.html#foldMapParChunk"><span class="hs-identifier hs-var">foldMapParChunk</span></a></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MM.MonoidalMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663926"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663925"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Sum</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">10</span></span><span> </span><span class="annot"><span class="annottext">MonoidalMap (f a) (Sum Int) -&gt; MonoidalMap (f a) (Sum Int)
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>      </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; Int) -&gt; Set (f a) -&gt; Map (f a) Int
 forall k a. (k -&gt; a) -&gt; Set k -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromSet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; f a -&gt; Int
 forall (f :: * -&gt; *) a.
 (Foldable f, Num a, Ord a) =&gt;
 f a -&gt; f a -&gt; Int
 </span><a href="AOC.Challenge.Day17.html#weight"><span class="hs-identifier hs-var">weight</span></a></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679662227"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; Set (f a) -&gt; Set (f a)
+</span><a href="#local-6989586621679663867"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; Set (f a) -&gt; Set (f a)
 forall b a. Ord b =&gt; (a -&gt; b) -&gt; Set a -&gt; Set b
 </span><span class="hs-identifier hs-var">S.map</span></span><span> </span><span class="annot"><span class="annottext">f a -&gt; f a
-</span><a href="#local-6989586621679662225"><span class="hs-identifier hs-var">abszy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; Set (f a)
+</span><a href="#local-6989586621679663865"><span class="hs-identifier hs-var">abszy</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; Set (f a)
 forall (f :: * -&gt; *) a.
 (Applicative f, Num a, Ord (f a), Traversable f) =&gt;
 f a -&gt; Set (f a)
 </span><a href="AOC.Common.html#fullNeighbsSet"><span class="hs-identifier hs-var">fullNeighbsSet</span></a></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679662227"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-31"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679662227"><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679662227"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set (f a) -&gt; [f a]
+</span><a href="#local-6989586621679663867"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679663867"><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679663867"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set (f a) -&gt; [f a]
 forall a. Set a -&gt; [a]
 </span><span class="hs-identifier hs-var">S.toList</span></span><span> </span><span class="annot"><span class="annottext">Set (f a)
-</span><a href="#local-6989586621679662235"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-32"></span><span>      </span><span class="hs-special">]</span><span>
-</span><span id="line-33"></span><span>    </span><span id="local-6989586621679662234"><span class="annot"><span class="annottext">stayAlive :: Set (f a)
-</span><a href="#local-6989586621679662234"><span class="hs-identifier hs-var hs-var">stayAlive</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a)
+</span><a href="#local-6989586621679663874"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-45"></span><span>      </span><span class="hs-special">]</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679663873"><span class="annot"><span class="annottext">stayAlive :: Set (f a)
+</span><a href="#local-6989586621679663873"><span class="hs-identifier hs-var hs-var">stayAlive</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a)
 forall k a. Map k a -&gt; Set k
 </span><span class="hs-identifier hs-var">M.keysSet</span></span><span> </span><span class="annot"><span class="annottext">(Map (f a) Int -&gt; Set (f a))
 -&gt; (Map (f a) Int -&gt; Map (f a) Int) -&gt; Map (f a) Int -&gt; Set (f a)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Bool) -&gt; Map (f a) Int -&gt; Map (f a) Int
 forall a k. (a -&gt; Bool) -&gt; Map k a -&gt; Map k a
-</span><span class="hs-identifier hs-var">M.filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679662220"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679662220"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679662220"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><span class="hs-identifier hs-var">M.filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679663860"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679663860"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679663860"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">||</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679662220"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679663860"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Map (f a) Int -&gt; Set (f a)) -&gt; Map (f a) Int -&gt; Set (f a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-34"></span><span>                  </span><span class="annot"><span class="annottext">Map (f a) Int
-</span><a href="#local-6989586621679662232"><span class="hs-identifier hs-var">neighborCounts</span></a></span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a) -&gt; Map (f a) Int
+</span><span id="line-47"></span><span>                  </span><span class="annot"><span class="annottext">Map (f a) Int
+</span><a href="#local-6989586621679663871"><span class="hs-identifier hs-var">neighborCounts</span></a></span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a) -&gt; Map (f a) Int
 forall k a. Ord k =&gt; Map k a -&gt; Set k -&gt; Map k a
 </span><span class="hs-operator hs-var">`M.restrictKeys`</span></span><span> </span><span class="annot"><span class="annottext">Set (f a)
-</span><a href="#local-6989586621679662235"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-35"></span><span>    </span><span id="local-6989586621679662233"><span class="annot"><span class="annottext">comeAlive :: Set (f a)
-</span><a href="#local-6989586621679662233"><span class="hs-identifier hs-var hs-var">comeAlive</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a)
+</span><a href="#local-6989586621679663874"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-48"></span><span>    </span><span id="local-6989586621679663872"><span class="annot"><span class="annottext">comeAlive :: Set (f a)
+</span><a href="#local-6989586621679663872"><span class="hs-identifier hs-var hs-var">comeAlive</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a)
 forall k a. Map k a -&gt; Set k
 </span><span class="hs-identifier hs-var">M.keysSet</span></span><span> </span><span class="annot"><span class="annottext">(Map (f a) Int -&gt; Set (f a))
 -&gt; (Map (f a) Int -&gt; Map (f a) Int) -&gt; Map (f a) Int -&gt; Set (f a)
@@ -102,13 +116,13 @@ forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Map (f a) Int -&gt; Set (f a)) -&gt; Map (f a) Int -&gt; Set (f a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-36"></span><span>                  </span><span class="annot"><span class="annottext">Map (f a) Int
-</span><a href="#local-6989586621679662232"><span class="hs-identifier hs-var">neighborCounts</span></a></span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a) -&gt; Map (f a) Int
+</span><span id="line-49"></span><span>                  </span><span class="annot"><span class="annottext">Map (f a) Int
+</span><a href="#local-6989586621679663871"><span class="hs-identifier hs-var">neighborCounts</span></a></span><span> </span><span class="annot"><span class="annottext">Map (f a) Int -&gt; Set (f a) -&gt; Map (f a) Int
 forall k a. Ord k =&gt; Map k a -&gt; Set k -&gt; Map k a
 </span><span class="hs-operator hs-var">`M.withoutKeys`</span></span><span>  </span><span class="annot"><span class="annottext">Set (f a)
-</span><a href="#local-6989586621679662235"><span class="hs-identifier hs-var">cs</span></a></span><span>
-</span><span id="line-37"></span><span>    </span><span id="local-6989586621679662225"><span class="annot"><span class="annottext">abszy :: f a -&gt; f a
-</span><a href="#local-6989586621679662225"><span class="hs-identifier hs-var hs-var">abszy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AnIndexedSetter Int (f a) (f a) a a
+</span><a href="#local-6989586621679663874"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span id="local-6989586621679663865"><span class="annot"><span class="annottext">abszy :: f a -&gt; f a
+</span><a href="#local-6989586621679663865"><span class="hs-identifier hs-var hs-var">abszy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AnIndexedSetter Int (f a) (f a) a a
 -&gt; (Int -&gt; a -&gt; a) -&gt; f a -&gt; f a
 forall i s t a b.
 AnIndexedSetter i s t a b -&gt; (i -&gt; a -&gt; b) -&gt; s -&gt; t
@@ -116,71 +130,73 @@ AnIndexedSetter i s t a b -&gt; (i -&gt; a -&gt; b) -&gt; s -&gt; t
 forall (f :: * -&gt; *) a b.
 Traversable f =&gt;
 IndexedTraversal Int (f a) (f b) a b
-</span><span class="hs-identifier hs-var">traversed</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679662216"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679662216"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679662216"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><span class="hs-identifier hs-var">traversed</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679663856"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679663856"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679663855"><span class="annot"><span class="annottext">x :: a
+</span><a href="#local-6989586621679663855"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679663856"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
 forall a. Num a =&gt; a -&gt; a
-</span><span class="hs-identifier hs-var">abs</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
-forall a. a -&gt; a
-</span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-pragma hs-type">stepper</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-39"></span><span>
-</span><span id="line-40"></span><span id="local-6989586621679662340"><span id="local-6989586621679662341"><span class="annot"><a href="AOC.Challenge.Day17.html#weight"><span class="hs-identifier hs-type">weight</span></a></span><span>
-</span><span id="line-41"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679662341"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679662340"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679662340"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-42"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679662341"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679662340"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-43"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679662341"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679662340"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-44"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span></span><span>
-</span><span id="line-45"></span><span id="weight"><span class="annot"><span class="annottext">weight :: f a -&gt; f a -&gt; Int
-</span><a href="AOC.Challenge.Day17.html#weight"><span class="hs-identifier hs-var hs-var">weight</span></a></span></span><span> </span><span id="local-6989586621679662212"><span class="annot"><span class="annottext">x :: f a
-</span><a href="#local-6989586621679662212"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679662211"><span class="annot"><span class="annottext">y :: f a
-</span><a href="#local-6989586621679662211"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
+</span><span class="hs-identifier hs-var">abs</span></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679663855"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679663855"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-51"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-pragma hs-type">stepper</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span id="local-6989586621679663982"><span id="local-6989586621679663983"><span class="annot"><a href="AOC.Challenge.Day17.html#weight"><span class="hs-identifier hs-type">weight</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Foldable</span></span><span> </span><span class="annot"><a href="#local-6989586621679663983"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Num</span></span><span> </span><span class="annot"><a href="#local-6989586621679663982"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679663982"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679663983"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663982"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679663983"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679663982"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-58"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span></span><span>
+</span><span id="line-59"></span><span id="weight"><span class="annot"><span class="annottext">weight :: f a -&gt; f a -&gt; Int
+</span><a href="AOC.Challenge.Day17.html#weight"><span class="hs-identifier hs-var hs-var">weight</span></a></span></span><span> </span><span id="local-6989586621679663852"><span class="annot"><span class="annottext">x :: f a
+</span><a href="#local-6989586621679663852"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679663851"><span class="annot"><span class="annottext">y :: f a
+</span><a href="#local-6989586621679663851"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
 forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">product</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Int) -&gt; [Int] -&gt; Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-46"></span><span>    </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; Int) -&gt; [a] -&gt; [a] -&gt; [Int]
+</span><span id="line-60"></span><span>    </span><span class="annot"><span class="annottext">(a -&gt; a -&gt; Int) -&gt; [a] -&gt; [a] -&gt; [Int]
 forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
 </span><span class="hs-identifier hs-var">zipWith</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Int
 forall a a p. (Ord a, Num a, Num a, Num p, Eq a) =&gt; a -&gt; a -&gt; p
-</span><a href="#local-6989586621679662208"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679663848"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
 forall a. Int -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; [a]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679662212"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679663852"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; [a] -&gt; [a]
 forall a. Int -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">drop</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">f a -&gt; [a]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679662211"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-47"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-48"></span><span>    </span><span id="local-6989586621679662208"><span class="annot"><span class="annottext">go :: a -&gt; a -&gt; p
-</span><a href="#local-6989586621679662208"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679662206"><span class="annot"><span class="annottext">i :: a
-</span><a href="#local-6989586621679662206"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679662205"><span class="annot"><span class="annottext">j :: a
-</span><a href="#local-6989586621679662205"><span class="hs-identifier hs-var">j</span></a></span></span><span>
-</span><span id="line-49"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679662206"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
+</span><a href="#local-6989586621679663851"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679663848"><span class="annot"><span class="annottext">go :: a -&gt; a -&gt; p
+</span><a href="#local-6989586621679663848"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679663846"><span class="annot"><span class="annottext">i :: a
+</span><a href="#local-6989586621679663846"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679663845"><span class="annot"><span class="annottext">j :: a
+</span><a href="#local-6989586621679663845"><span class="hs-identifier hs-var">j</span></a></span></span><span>
+</span><span id="line-63"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679663846"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679662205"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
+</span><a href="#local-6989586621679663845"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">2</span></span><span>
-</span><span id="line-50"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span id="line-64"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span>       </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">1</span></span><span>
-</span><span id="line-51"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#weight"><span class="hs-pragma hs-type">weight</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span id="local-6989586621679662283"><span class="annot"><a href="AOC.Challenge.Day17.html#day17"><span class="hs-identifier hs-type">day17</span></a></span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679662283"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R2</span></span><span> </span><span class="annot"><a href="#local-6989586621679662283"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662283"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679662283"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-55"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662283"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span><span>
-</span><span id="line-56"></span><span id="day17"><span class="annot"><span class="annottext">day17 :: Set (f Int) :~&gt; Int
+</span><span id="line-65"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#weight"><span class="hs-pragma hs-type">weight</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span id="local-6989586621679663923"><span class="annot"><a href="AOC.Challenge.Day17.html#day17"><span class="hs-identifier hs-type">day17</span></a></span><span>
+</span><span id="line-68"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R2</span></span><span> </span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Traversable</span></span><span> </span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663923"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span><span>
+</span><span id="line-70"></span><span id="day17"><span class="annot"><span class="annottext">day17 :: Set (f Int) :~&gt; Int
 </span><a href="AOC.Challenge.Day17.html#day17"><span class="hs-identifier hs-var hs-var">day17</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Set (f Int))
+</span><span id="line-71"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Set (f Int))
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set (f Int) -&gt; Maybe (Set (f Int))
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Set (f Int) -&gt; Maybe (Set (f Int)))
@@ -191,11 +207,11 @@ forall (f :: * -&gt; *).
 (Applicative f, R2 f, Ord (f Int)) =&gt;
 String -&gt; Set (f Int)
 </span><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-var">parseMap</span></a></span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
+</span><span id="line-72"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
 </span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Set (f Int) -&gt; Maybe Int
+</span><span id="line-73"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Set (f Int) -&gt; Maybe Int
 </span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int)
@@ -226,33 +242,36 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. (a -&gt; a) -&gt; a -&gt; [a]
 </span><span class="hs-identifier hs-var">iterate</span></span><span> </span><span class="annot"><span class="annottext">Set (f Int) -&gt; Set (f Int)
 forall (f :: * -&gt; *) a.
-(Applicative f, Num a, Ord (f a), Ord a, Traversable f) =&gt;
+(Applicative f, Traversable f, Num a, Ord a, Ord (f a),
+ NFData (f a)) =&gt;
 Set (f a) -&gt; Set (f a)
 </span><a href="AOC.Challenge.Day17.html#stepper"><span class="hs-identifier hs-var">stepper</span></a></span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-61"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#day17"><span class="hs-pragma hs-type">day17</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-62"></span><span>
-</span><span id="line-63"></span><span class="annot"><a href="AOC.Challenge.Day17.html#day17a"><span class="hs-identifier hs-type">day17a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V3</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-64"></span><span id="day17a"><span class="annot"><span class="annottext">day17a :: Set (V3 Int) :~&gt; Int
+</span><span id="line-74"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-75"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day17.html#day17"><span class="hs-pragma hs-type">day17</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-76"></span><span>
+</span><span id="line-77"></span><span class="annot"><a href="AOC.Challenge.Day17.html#day17a"><span class="hs-identifier hs-type">day17a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V3</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-78"></span><span id="day17a"><span class="annot"><span class="annottext">day17a :: Set (V3 Int) :~&gt; Int
 </span><a href="AOC.Challenge.Day17.html#day17a"><span class="hs-identifier hs-var hs-var">day17a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set (V3 Int) :~&gt; Int
 forall (f :: * -&gt; *).
-(Applicative f, R2 f, Ord (f Int), Traversable f) =&gt;
+(Applicative f, R2 f, Ord (f Int), Traversable f,
+ NFData (f Int)) =&gt;
 Set (f Int) :~&gt; Int
 </span><a href="AOC.Challenge.Day17.html#day17"><span class="hs-identifier hs-var">day17</span></a></span><span>
-</span><span id="line-65"></span><span>
-</span><span id="line-66"></span><span class="annot"><a href="AOC.Challenge.Day17.html#day17b"><span class="hs-identifier hs-type">day17b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V4</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-67"></span><span id="day17b"><span class="annot"><span class="annottext">day17b :: Set (V4 Int) :~&gt; Int
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="annot"><a href="AOC.Challenge.Day17.html#day17b"><span class="hs-identifier hs-type">day17b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V4</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-81"></span><span id="day17b"><span class="annot"><span class="annottext">day17b :: Set (V4 Int) :~&gt; Int
 </span><a href="AOC.Challenge.Day17.html#day17b"><span class="hs-identifier hs-var hs-var">day17b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set (V4 Int) :~&gt; Int
 forall (f :: * -&gt; *).
-(Applicative f, R2 f, Ord (f Int), Traversable f) =&gt;
+(Applicative f, R2 f, Ord (f Int), Traversable f,
+ NFData (f Int)) =&gt;
 Set (f Int) :~&gt; Int
 </span><a href="AOC.Challenge.Day17.html#day17"><span class="hs-identifier hs-var">day17</span></a></span><span>
-</span><span id="line-68"></span><span>
-</span><span id="line-69"></span><span id="local-6989586621679662293"><span class="annot"><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-type">parseMap</span></a></span><span>
-</span><span id="line-70"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679662293"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R2</span></span><span> </span><span class="annot"><a href="#local-6989586621679662293"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662293"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-71"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-72"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679662293"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span></span><span>
-</span><span id="line-73"></span><span id="parseMap"><span class="annot"><span class="annottext">parseMap :: String -&gt; Set (f Int)
+</span><span id="line-82"></span><span>
+</span><span id="line-83"></span><span id="local-6989586621679663933"><span class="annot"><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-type">parseMap</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Applicative</span></span><span> </span><span class="annot"><a href="#local-6989586621679663933"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">R2</span></span><span> </span><span class="annot"><a href="#local-6989586621679663933"><span class="hs-identifier hs-type">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663933"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679663933"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span></span><span>
+</span><span id="line-87"></span><span id="parseMap"><span class="annot"><span class="annottext">parseMap :: String -&gt; Set (f Int)
 </span><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-var hs-var">parseMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Getting (Set (f Int)) String (f Int) -&gt; String -&gt; Set (f Int)
 forall a s. Getting (Set a) s a -&gt; s -&gt; Set a
 </span><span class="hs-identifier hs-var">setOf</span></span><span> </span><span class="annot"><span class="annottext">(Getting (Set (f Int)) String (f Int) -&gt; String -&gt; Set (f Int))
@@ -262,7 +281,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 -&gt; String -&gt; Const (Set (f Int)) String
 forall a. IndexedTraversal (V2 Int) String [a] Char a
 </span><a href="AOC.Common.html#asciiGrid"><span class="hs-identifier hs-var">asciiGrid</span></a></span><span>
-</span><span id="line-74"></span><span>                 </span><span class="annot"><span class="annottext">(Indexed (V2 Int) Char (Const (Set (f Int)) Char)
+</span><span id="line-88"></span><span>                 </span><span class="annot"><span class="annottext">(Indexed (V2 Int) Char (Const (Set (f Int)) Char)
  -&gt; String -&gt; Const (Set (f Int)) String)
 -&gt; ((f Int -&gt; Const (Set (f Int)) (f Int))
     -&gt; Indexed (V2 Int) Char (Const (Set (f Int)) Char))
@@ -276,7 +295,7 @@ forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) a.
 </span><span class="hs-identifier hs-var">filtered</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-char">'#'</span></span><span class="hs-special">)</span><span>
-</span><span id="line-75"></span><span>                 </span><span class="annot"><span class="annottext">Optic' (Indexed (V2 Int)) (Const (Set (f Int))) Char Char
+</span><span id="line-89"></span><span>                 </span><span class="annot"><span class="annottext">Optic' (Indexed (V2 Int)) (Const (Set (f Int))) Char Char
 -&gt; ((f Int -&gt; Const (Set (f Int)) (f Int))
     -&gt; Indexed (V2 Int) Char (Const (Set (f Int)) Char))
 -&gt; (f Int -&gt; Const (Set (f Int)) (f Int))
@@ -288,7 +307,7 @@ forall i (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s.
 (Indexable i p, Contravariant f, Functor f) =&gt;
 p i (f i) -&gt; Indexed i s (f s)
 </span><span class="hs-identifier hs-var">asIndex</span></span><span>
-</span><span id="line-76"></span><span>                 </span><span class="annot"><span class="annottext">((V2 Int -&gt; Const (Set (f Int)) (V2 Int))
+</span><span id="line-90"></span><span>                 </span><span class="annot"><span class="annottext">((V2 Int -&gt; Const (Set (f Int)) (V2 Int))
  -&gt; Indexed (V2 Int) Char (Const (Set (f Int)) Char))
 -&gt; ((f Int -&gt; Const (Set (f Int)) (f Int))
     -&gt; V2 Int -&gt; Const (Set (f Int)) (V2 Int))
@@ -302,14 +321,36 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 (Profunctor p, Contravariant f) =&gt;
 (s -&gt; a) -&gt; Optic' p f s a
-</span><span class="hs-identifier hs-var">to</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679662193"><span class="annot"><span class="annottext">p :: V2 Int
-</span><a href="#local-6989586621679662193"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASetter (f Int) (f Int) (V2 Int) (V2 Int)
+</span><span class="hs-identifier hs-var">to</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679663833"><span class="annot"><span class="annottext">p :: V2 Int
+</span><a href="#local-6989586621679663833"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ASetter (f Int) (f Int) (V2 Int) (V2 Int)
 -&gt; V2 Int -&gt; f Int -&gt; f Int
 forall s t a b. ASetter s t a b -&gt; b -&gt; s -&gt; t
 </span><span class="hs-identifier hs-var">set</span></span><span> </span><span class="annot"><span class="annottext">ASetter (f Int) (f Int) (V2 Int) (V2 Int)
 forall (t :: * -&gt; *) a. R2 t =&gt; Lens' (t a) (V2 a)
 </span><span class="hs-identifier hs-var">_xy</span></span><span> </span><span class="annot"><span class="annottext">V2 Int
-</span><a href="#local-6989586621679662193"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; f Int
+</span><a href="#local-6989586621679663833"><span class="hs-identifier hs-var">p</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; f Int
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-77"></span></pre></body></html>
+</span><span id="line-91"></span><span>
+</span><span id="line-92"></span><span class="hs-comment">-- stepper</span><span>
+</span><span id="line-93"></span><span class="hs-comment">--     :: forall f a. (Applicative f, Num a, Ord (f a), Ord a, Traversable f, NFData (f a), NFData (f Int))</span><span>
+</span><span id="line-94"></span><span class="hs-comment">--     =&gt; Set (f a)</span><span>
+</span><span id="line-95"></span><span class="hs-comment">--     -&gt; Set (f a)</span><span>
+</span><span id="line-96"></span><span class="hs-comment">-- stepper cs = trace (&quot;size: &quot; &lt;&gt; show (S.size cs)) $</span><span>
+</span><span id="line-97"></span><span class="hs-comment">--              trace (&quot;neighbor size: &quot; &lt;&gt; show (M.size neighborCounts)) $</span><span>
+</span><span id="line-98"></span><span class="hs-comment">--     trace' &quot;stayAlive&quot; stayAlive &lt;&gt; trace' &quot;comeAlive&quot; comeAlive</span><span>
+</span><span id="line-99"></span><span class="hs-comment">--   where</span><span>
+</span><span id="line-100"></span><span class="hs-comment">--     neighborCounts :: Map (f a) Int</span><span>
+</span><span id="line-101"></span><span class="hs-comment">--     neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (f a) (Sum Int)) 500 id)</span><span>
+</span><span id="line-102"></span><span class="hs-comment">--       [ M.fromSet (weight c) (S.map abszy (fullNeighbsSet c))</span><span>
+</span><span id="line-103"></span><span class="hs-comment">--       | c &lt;- S.toList cs</span><span>
+</span><span id="line-104"></span><span class="hs-comment">--       ]</span><span>
+</span><span id="line-105"></span><span class="hs-comment">--     stayAlive = M.keysSet . M.filter (\n -&gt; n == 2 || n == 3) $</span><span>
+</span><span id="line-106"></span><span class="hs-comment">--                   trace' (&quot;raw stayAlive&quot;) $ neighborCounts `M.restrictKeys` cs</span><span>
+</span><span id="line-107"></span><span class="hs-comment">--     comeAlive = M.keysSet . M.filter (== 3) $</span><span>
+</span><span id="line-108"></span><span class="hs-comment">--                   trace' (&quot;raw comeAlive&quot;) $ neighborCounts `M.withoutKeys`  cs</span><span>
+</span><span id="line-109"></span><span class="hs-comment">--     abszy = iover traversed (\i x -&gt; if i &gt; 1 then abs x else x)</span><span>
+</span><span id="line-110"></span><span class="hs-comment">-- {-# INLINE stepper #-}</span><span>
+</span><span id="line-111"></span><span>
+</span><span id="line-112"></span><span>    </span><span class="hs-comment">-- , sSolve = Just . sum . M.fromSet (`weight` pure 0)  . (!!! 6) . zipWith traceShow [0..] . iterate stepper</span><span>
+</span><span id="line-113"></span></pre></body></html>
