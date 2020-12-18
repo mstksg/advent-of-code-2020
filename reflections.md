@@ -3010,14 +3010,10 @@ import qualified Text.Megaparsec.Char.Lexer as PP
 
 type Parser = P.Parsec Void String
 
--- | Just a simple combinator to make a parser eat all of the spaces after it
-tok :: Parser a -> Parser a
-tok p = p <* P.spaces
-
 parseBottom1 :: Parser Int
 parseBottom1 = P.choice
-    [ tok $ PP.decimal
-    , tok $ P.between "(" ")" parseTop1  -- use -XOverloadedStrings to get parsers that match strings
+    [ PP.decimal
+    , P.between "(" ")" parseTop1  -- use -XOverloadedStrings to get parsers that match strings
     ]
 
 parseTop1 :: Parser Int
@@ -3026,10 +3022,10 @@ parseTop1 = do
     doNext acc
   where
     doNext acc = P.choice          -- once we parse a left hand side, pick from:
-      [ do tok "*"                      -- either it's a *
+      [ do " * "                        -- either it's a *
            rightOfOp <- parseBottom1    --   ... so we parse the right hand side and multiply
            doNext (acc * rightOfOp)
-      , do tok "+"                      -- or it's a +
+      , do " + "                        -- or it's a +
            rightOfOp <- parseBottom1    --   ... so we parse the right hand side and add
            doNext (acc + rightOfOp)
       , pure acc                        -- otherwise that was it, no operator
@@ -3061,8 +3057,8 @@ so we split things out:
 ```haskell
 parseBottom2 :: Parser Int
 parseBottom2 = P.choice
-    [ tok $ PP.decimal
-    , tok $ P.between "(" ")" parseTop2
+    [ PP.decimal
+    , P.between "(" ")" parseTop2
     ]
 
 parseMiddle2 :: Parser Int
@@ -3071,7 +3067,7 @@ parseMiddle2 = do
     doNext leftOfOp
   where
     doNext acc = P.choice
-      [ do tok "+"
+      [ do " + "
            rightOfOp <- parseBottom2
            doNext (acc + rightOfOp)
       , pure acc
@@ -3083,7 +3079,7 @@ parseTop2 = do
     doNext leftOfOp
   where
     doNext acc = P.choice
-      [ do tok "*"
+      [ do " * "
            rightOfOp <- parseMiddle2
            doNext (acc * rightOfOp)
       , pure acc
@@ -3097,7 +3093,7 @@ could loop back up with `parseTop2` if detect parentheses.
 ```haskell
 part2 :: String -> Maybe Int
 part2 = P.parseMaybe $
-          sum <$> P.many parseTop2
+          sum <$> (parseTop2 `P.sepBy` P.newline)
 ```
 
 Note that this chaining and looping behavior can be abstracted out --- that's
@@ -3114,21 +3110,21 @@ these things end up looking like under the hood :)
 ```
 >> Day 18a
 benchmarking...
-time                 3.680 ms   (3.535 ms .. 3.849 ms)
-                     0.965 R²   (0.923 R² .. 0.995 R²)
-mean                 3.656 ms   (3.567 ms .. 3.814 ms)
-std dev              399.4 μs   (247.9 μs .. 688.3 μs)
-variance introduced by outliers: 68% (severely inflated)
+time                 2.628 ms   (2.442 ms .. 2.867 ms)
+                     0.968 R²   (0.952 R² .. 0.992 R²)
+mean                 2.573 ms   (2.485 ms .. 2.671 ms)
+std dev              315.6 μs   (188.3 μs .. 456.3 μs)
+variance introduced by outliers: 76% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 18b
 benchmarking...
-time                 3.431 ms   (3.145 ms .. 3.780 ms)
-                     0.951 R²   (0.924 R² .. 0.978 R²)
-mean                 3.386 ms   (3.225 ms .. 3.584 ms)
-std dev              678.5 μs   (377.8 μs .. 976.8 μs)
-variance introduced by outliers: 89% (severely inflated)
+time                 2.166 ms   (2.081 ms .. 2.247 ms)
+                     0.987 R²   (0.980 R² .. 0.993 R²)
+mean                 2.166 ms   (2.106 ms .. 2.224 ms)
+std dev              203.9 μs   (155.9 μs .. 269.6 μs)
+variance introduced by outliers: 65% (severely inflated)
 
 * parsing and formatting times excluded
 ```

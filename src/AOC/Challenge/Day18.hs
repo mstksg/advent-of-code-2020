@@ -14,11 +14,9 @@ module AOC.Challenge.Day18 (
   , day18b
   ) where
 
-import           AOC.Common           (pTok)
 import           AOC.Solver           ((:~>)(..))
 import           Control.Monad        (MonadPlus)
 import           Data.Char            (digitToInt)
-import           Data.Maybe           (fromMaybe)
 import           Data.Void            (Void)
 import qualified Text.Megaparsec      as P
 import qualified Text.Megaparsec.Char as P
@@ -34,18 +32,18 @@ data Syntax f a = Syntax
 
 exprSyntax1 :: Syntax Parser Int
 exprSyntax1 = Syntax
-    { sBinOps = [ P.choice [ (*) <$ pTok "*", (+) <$ pTok "+" ] ]  -- all same level
-    , sPrim   = pTok $ digitToInt <$> P.digitChar
-    , sPar    = pTok . P.between "(" ")"
+    { sBinOps = [ P.choice [ (*) <$ " * ", (+) <$ " + " ] ]  -- all same level
+    , sPrim   = digitToInt <$> P.digitChar
+    , sPar    = P.between "(" ")"
     }
 
 exprSyntax2 :: Syntax Parser Int
 exprSyntax2 = Syntax
-    { sBinOps = [ (*) <$ pTok "*"    -- + higher than *
-                , (+) <$ pTok "+"
+    { sBinOps = [ (*) <$ " * "    -- + higher than *
+                , (+) <$ " + "
                 ]
-    , sPrim   = pTok $ digitToInt <$> P.digitChar
-    , sPar    = pTok . P.between "(" ")"
+    , sPrim   = digitToInt <$> P.digitChar
+    , sPar    = P.between "(" ")"
     }
 
 parseSyntax :: forall f a. MonadPlus f => Syntax f a -> f a
@@ -68,7 +66,7 @@ day18 :: (Num a, Show a) => Syntax Parser a -> String :~> a
 day18 s = MkSol
     { sParse = Just
     , sShow  = show
-    , sSolve = P.parseMaybe (sum <$> P.many (parseSyntax s))
+    , sSolve = P.parseMaybe $ sum <$> (parseSyntax s `P.sepBy` P.newline)
     }
 {-# INLINE day18 #-}
 
