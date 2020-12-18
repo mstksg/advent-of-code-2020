@@ -38,8 +38,10 @@ stepper
     -> Set (f a)
 stepper cs = stayAlive <> comeAlive
   where
+    chnk :: Int
+    chnk = min 1000 (max 10 (S.size cs `div` 100))
     neighborCounts :: Map (f a) Int
-    neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (f a) (Sum Int)) 10 id)
+    neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (f a) (Sum Int)) chnk id)
       [ M.fromSet (weight c) (S.map abszy (fullNeighbsSet c))
       | c <- S.toList cs
       ]
