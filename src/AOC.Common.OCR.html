@@ -30,20 +30,20 @@
 </span><span id="line-30"></span><span class="hs-comment">-- mass</span><span>
 </span><span id="line-31"></span><span class="annot"><a href="AOC.Common.OCR.html#contiguousShapes"><span class="hs-identifier hs-type">contiguousShapes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V2</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">NESet</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span id="contiguousShapes"><span class="annot"><span class="annottext">contiguousShapes :: Set Point -&gt; Map (V2 Double) (NESet Point)
-</span><a href="AOC.Common.OCR.html#contiguousShapes"><span class="hs-identifier hs-var hs-var">contiguousShapes</span></a></span></span><span> </span><span id="local-6989586621679668895"><span class="annot"><span class="annottext">s0 :: Set Point
-</span><a href="#local-6989586621679668895"><span class="hs-identifier hs-var">s0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(V2 Double, NESet Point)] -&gt; Map (V2 Double) (NESet Point)
+</span><a href="AOC.Common.OCR.html#contiguousShapes"><span class="hs-identifier hs-var hs-var">contiguousShapes</span></a></span></span><span> </span><span id="local-6989586621679665414"><span class="annot"><span class="annottext">s0 :: Set Point
+</span><a href="#local-6989586621679665414"><span class="hs-identifier hs-var">s0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(V2 Double, NESet Point)] -&gt; Map (V2 Double) (NESet Point)
 forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromList</span></span><span>
 </span><span id="line-33"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">V2 Double
-</span><a href="#local-6989586621679668893"><span class="hs-identifier hs-var">com</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; NESet Point -&gt; NESet Point
+</span><a href="#local-6989586621679665412"><span class="hs-identifier hs-var">com</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; NESet Point -&gt; NESet Point
 forall b a. Ord b =&gt; (a -&gt; b) -&gt; NESet a -&gt; NESet b
 </span><span class="hs-identifier hs-var">NES.map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Point -&gt; Point
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">subtract</span></span><span> </span><span class="annot"><span class="annottext">Point
-</span><a href="#local-6989586621679668890"><span class="hs-identifier hs-var">topCorner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NESet Point
-</span><a href="#local-6989586621679668889"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-34"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NES.IsNonEmpty</span></span><span> </span><span id="local-6989586621679668889"><span class="annot"><span class="annottext">s :: NESet Point
-</span><a href="#local-6989586621679668889"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set (Set Point) -&gt; [Set Point]
+</span><a href="#local-6989586621679665409"><span class="hs-identifier hs-var">topCorner</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NESet Point
+</span><a href="#local-6989586621679665408"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NES.IsNonEmpty</span></span><span> </span><span id="local-6989586621679665408"><span class="annot"><span class="annottext">s :: NESet Point
+</span><a href="#local-6989586621679665408"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Set (Set Point) -&gt; [Set Point]
 forall a. Set a -&gt; [a]
 </span><span class="hs-identifier hs-var">S.toList</span></span><span> </span><span class="annot"><span class="annottext">(Set (Set Point) -&gt; [Set Point])
 -&gt; (Set Point -&gt; Set (Set Point)) -&gt; Set Point -&gt; [Set Point]
@@ -51,12 +51,12 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Set (Set Point)
 forall b a. Ord b =&gt; (a -&gt; b) -&gt; Set a -&gt; Set b
 </span><span class="hs-identifier hs-var">S.map</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Set Point
-</span><a href="#local-6989586621679668884"><span class="hs-identifier hs-var">flood</span></a></span><span> </span><span class="annot"><span class="annottext">(Set Point -&gt; [Set Point]) -&gt; Set Point -&gt; [Set Point]
+</span><a href="#local-6989586621679665403"><span class="hs-identifier hs-var">flood</span></a></span><span> </span><span class="annot"><span class="annottext">(Set Point -&gt; [Set Point]) -&gt; Set Point -&gt; [Set Point]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679668895"><span class="hs-identifier hs-var">s0</span></a></span><span>
-</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679668893"><span class="annot"><span class="annottext">com :: V2 Double
-</span><a href="#local-6989586621679668893"><span class="hs-identifier hs-var hs-var">com</span></a></span></span><span>            </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fold Point (V2 Double) -&gt; NESet Point -&gt; V2 Double
+</span><a href="#local-6989586621679665414"><span class="hs-identifier hs-var">s0</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679665412"><span class="annot"><span class="annottext">com :: V2 Double
+</span><a href="#local-6989586621679665412"><span class="hs-identifier hs-var hs-var">com</span></a></span></span><span>            </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Fold Point (V2 Double) -&gt; NESet Point -&gt; V2 Double
 forall (f :: * -&gt; *) a b. Foldable f =&gt; Fold a b -&gt; f a -&gt; b
 </span><span class="hs-identifier hs-var">F.fold</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Point -&gt; V2 Double)
 -&gt; Fold (V2 Double) (V2 Double) -&gt; Fold Point (V2 Double)
@@ -77,18 +77,18 @@ forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Fold (V2 Double) (V2 Double)
 forall a. Fractional a =&gt; Fold a a
 </span><span class="hs-identifier hs-var">F.mean</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">NESet Point
-</span><a href="#local-6989586621679668889"><span class="hs-identifier hs-var">s</span></a></span><span>
-</span><span id="line-36"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">V2</span></span><span> </span><span id="local-6989586621679668890"><span class="annot"><span class="annottext">topCorner :: Point
-</span><a href="#local-6989586621679668890"><span class="hs-identifier hs-var">topCorner</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NESet Point -&gt; V2 Point
+</span><a href="#local-6989586621679665408"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><span id="line-36"></span><span>          </span><span class="annot"><span class="hs-identifier hs-type">V2</span></span><span> </span><span id="local-6989586621679665409"><span class="annot"><span class="annottext">topCorner :: Point
+</span><a href="#local-6989586621679665409"><span class="hs-identifier hs-var">topCorner</span></a></span></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">NESet Point -&gt; V2 Point
 forall (f :: * -&gt; *) (g :: * -&gt; *) a.
 (Foldable1 f, Applicative g, Ord a) =&gt;
 f (g a) -&gt; V2 (g a)
 </span><a href="AOC.Common.html#boundingBox"><span class="hs-identifier hs-var">boundingBox</span></a></span><span> </span><span class="annot"><span class="annottext">NESet Point
-</span><a href="#local-6989586621679668889"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><a href="#local-6989586621679665408"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-37"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-38"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679668884"><span class="annot"><span class="annottext">flood :: Point -&gt; Set Point
-</span><a href="#local-6989586621679668884"><span class="hs-identifier hs-var hs-var">flood</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Set Point
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679665403"><span class="annot"><span class="annottext">flood :: Point -&gt; Set Point
+</span><a href="#local-6989586621679665403"><span class="hs-identifier hs-var hs-var">flood</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Set Point) -&gt; Set Point -&gt; Set Point
 forall a. Ord a =&gt; (a -&gt; Set a) -&gt; Set a -&gt; Set a
 </span><a href="AOC.Common.html#floodFill"><span class="hs-identifier hs-var">floodFill</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Point] -&gt; Set Point
 forall a. Ord a =&gt; [a] -&gt; Set a
@@ -99,7 +99,7 @@ forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Set Point -&gt; Bool
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Bool
 </span><span class="hs-operator hs-var">`S.member`</span></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679668895"><span class="hs-identifier hs-var">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Point] -&gt; [Point]) -&gt; (Point -&gt; [Point]) -&gt; Point -&gt; [Point]
+</span><a href="#local-6989586621679665414"><span class="hs-identifier hs-var">s0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Point] -&gt; [Point]) -&gt; (Point -&gt; [Point]) -&gt; Point -&gt; [Point]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; [Point]
 forall (f :: * -&gt; *) a.
@@ -115,14 +115,14 @@ forall a. a -&gt; Set a
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="hs-comment">-- | The set of unconnected shapes, sorted against some function on their</span><span>
 </span><span id="line-43"></span><span class="hs-comment">-- original center of masses</span><span>
-</span><span id="line-44"></span><span id="local-6989586621679668934"><span class="annot"><a href="AOC.Common.OCR.html#contiguousShapesBy"><span class="hs-identifier hs-type">contiguousShapesBy</span></a></span><span>
-</span><span id="line-45"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679668934"><span class="hs-identifier hs-type">a</span></a></span><span>
-</span><span id="line-46"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V2</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679668934"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span id="local-6989586621679665453"><span class="annot"><a href="AOC.Common.OCR.html#contiguousShapesBy"><span class="hs-identifier hs-type">contiguousShapesBy</span></a></span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679665453"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">V2</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679665453"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
 </span><span id="line-48"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">NESet</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-49"></span><span id="contiguousShapesBy"><span class="annot"><span class="annottext">contiguousShapesBy :: (V2 Double -&gt; a) -&gt; Set Point -&gt; [NESet Point]
-</span><a href="AOC.Common.OCR.html#contiguousShapesBy"><span class="hs-identifier hs-var hs-var">contiguousShapesBy</span></a></span></span><span> </span><span id="local-6989586621679668872"><span class="annot"><span class="annottext">f :: V2 Double -&gt; a
-</span><a href="#local-6989586621679668872"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map a (NESet Point) -&gt; [NESet Point]
+</span><a href="AOC.Common.OCR.html#contiguousShapesBy"><span class="hs-identifier hs-var hs-var">contiguousShapesBy</span></a></span></span><span> </span><span id="local-6989586621679665391"><span class="annot"><span class="annottext">f :: V2 Double -&gt; a
+</span><a href="#local-6989586621679665391"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map a (NESet Point) -&gt; [NESet Point]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">(Map a (NESet Point) -&gt; [NESet Point])
 -&gt; (Set Point -&gt; Map a (NESet Point)) -&gt; Set Point -&gt; [NESet Point]
@@ -131,7 +131,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 -&gt; Map (V2 Double) (NESet Point) -&gt; Map a (NESet Point)
 forall k2 k1 a. Ord k2 =&gt; (k1 -&gt; k2) -&gt; Map k1 a -&gt; Map k2 a
 </span><span class="hs-identifier hs-var">M.mapKeys</span></span><span> </span><span class="annot"><span class="annottext">V2 Double -&gt; a
-</span><a href="#local-6989586621679668872"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(Map (V2 Double) (NESet Point) -&gt; Map a (NESet Point))
+</span><a href="#local-6989586621679665391"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">(Map (V2 Double) (NESet Point) -&gt; Map a (NESet Point))
 -&gt; (Set Point -&gt; Map (V2 Double) (NESet Point))
 -&gt; Set Point
 -&gt; Map a (NESet Point)
@@ -143,8 +143,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-52"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
 </span><span id="line-53"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NonEmpty</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-54"></span><span id="parseLettersAll"><span class="annot"><span class="annottext">parseLettersAll :: Set Point -&gt; NonEmpty String
-</span><a href="AOC.Common.OCR.html#parseLettersAll"><span class="hs-identifier hs-var hs-var">parseLettersAll</span></a></span></span><span> </span><span id="local-6989586621679668869"><span class="annot"><span class="annottext">letters :: Set Point
-</span><a href="#local-6989586621679668869"><span class="hs-identifier hs-var">letters</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, NonEmpty String) -&gt; NonEmpty String
+</span><a href="AOC.Common.OCR.html#parseLettersAll"><span class="hs-identifier hs-var hs-var">parseLettersAll</span></a></span></span><span> </span><span id="local-6989586621679665388"><span class="annot"><span class="annottext">letters :: Set Point
+</span><a href="#local-6989586621679665388"><span class="hs-identifier hs-var">letters</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, NonEmpty String) -&gt; NonEmpty String
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((Int, NonEmpty String) -&gt; NonEmpty String)
 -&gt; (Int, NonEmpty String) -&gt; NonEmpty String
@@ -152,22 +152,22 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">NEMap Int (NonEmpty String) -&gt; (Int, NonEmpty String)
 forall k a. NEMap k a -&gt; (k, a)
 </span><span class="hs-identifier hs-var">NEM.findMin</span></span><span> </span><span class="annot"><span class="annottext">NEMap Int (NonEmpty String)
-</span><a href="#local-6989586621679668867"><span class="hs-identifier hs-var">attempts</span></a></span><span>
+</span><a href="#local-6989586621679665386"><span class="hs-identifier hs-var">attempts</span></a></span><span>
 </span><span id="line-55"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NEM.IsNonEmpty</span></span><span> </span><span id="local-6989586621679668867"><span class="annot"><span class="annottext">attempts :: NEMap Int (NonEmpty String)
-</span><a href="#local-6989586621679668867"><span class="hs-identifier hs-var">attempts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NonEmpty String -&gt; NonEmpty String -&gt; NonEmpty String)
+</span><span id="line-56"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">NEM.IsNonEmpty</span></span><span> </span><span id="local-6989586621679665386"><span class="annot"><span class="annottext">attempts :: NEMap Int (NonEmpty String)
+</span><a href="#local-6989586621679665386"><span class="hs-identifier hs-var">attempts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NonEmpty String -&gt; NonEmpty String -&gt; NonEmpty String)
 -&gt; [(Int, NonEmpty String)] -&gt; Map Int (NonEmpty String)
 forall k a. Ord k =&gt; (a -&gt; a -&gt; a) -&gt; [(k, a)] -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromListWith</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty String -&gt; NonEmpty String -&gt; NonEmpty String
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">(&lt;&gt;)</span></span><span>
 </span><span id="line-57"></span><span>        </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679668864"><span class="hs-identifier hs-var">score</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679668863"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; NonEmpty String
+</span><a href="#local-6989586621679665383"><span class="hs-identifier hs-var">score</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679665382"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; NonEmpty String
 forall a. a -&gt; [a] -&gt; NonEmpty a
 </span><span class="hs-operator hs-var">:|</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
-</span><span id="line-58"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679668861"><span class="annot"><span class="annottext">Point -&gt; Point
-</span><a href="#local-6989586621679668861"><span class="hs-identifier hs-var">refl</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Point -&gt; Point
+</span><span id="line-58"></span><span>        </span><span class="hs-glyph">|</span><span> </span><span id="local-6989586621679665380"><span class="annot"><span class="annottext">Point -&gt; Point
+</span><a href="#local-6989586621679665380"><span class="hs-identifier hs-var">refl</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Point -&gt; Point
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ASetter Point Point Int Int -&gt; (Int -&gt; Int) -&gt; Point -&gt; Point
 forall s t a b. ASetter s t a b -&gt; (a -&gt; b) -&gt; s -&gt; t
@@ -176,8 +176,8 @@ forall (t :: * -&gt; *) a. R1 t =&gt; Lens' (t a) a
 </span><span class="hs-identifier hs-var">_x</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">negate</span></span><span class="hs-special">]</span><span>
-</span><span id="line-59"></span><span>        </span><span class="hs-special">,</span><span> </span><span id="local-6989586621679668857"><span class="annot"><span class="annottext">Point -&gt; Point
-</span><a href="#local-6989586621679668857"><span class="hs-identifier hs-var">rots</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Point -&gt; Point
+</span><span id="line-59"></span><span>        </span><span class="hs-special">,</span><span> </span><span id="local-6989586621679665376"><span class="annot"><span class="annottext">Point -&gt; Point
+</span><a href="#local-6989586621679665376"><span class="hs-identifier hs-var">rots</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Point -&gt; Point
 forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point
 forall a. Num a =&gt; V2 a -&gt; V2 a
@@ -190,29 +190,29 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point
 forall a. Num a =&gt; V2 a -&gt; V2 a
 </span><span class="hs-identifier hs-var">perp</span></span><span class="hs-special">]</span><span>
-</span><span id="line-60"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679668855"><span class="annot"><span class="annottext">ls :: Set Point
-</span><a href="#local-6989586621679668855"><span class="hs-identifier hs-var hs-var">ls</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; Set Point -&gt; Set Point
+</span><span id="line-60"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679665374"><span class="annot"><span class="annottext">ls :: Set Point
+</span><a href="#local-6989586621679665374"><span class="hs-identifier hs-var hs-var">ls</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; Set Point -&gt; Set Point
 forall b a. Ord b =&gt; (a -&gt; b) -&gt; Set a -&gt; Set b
 </span><span class="hs-identifier hs-var">S.map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Point -&gt; Point
-</span><a href="#local-6989586621679668857"><span class="hs-identifier hs-var">rots</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; (Point -&gt; Point) -&gt; Point -&gt; Point
+</span><a href="#local-6989586621679665376"><span class="hs-identifier hs-var">rots</span></a></span><span> </span><span class="annot"><span class="annottext">(Point -&gt; Point) -&gt; (Point -&gt; Point) -&gt; Point -&gt; Point
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Point -&gt; Point
-</span><a href="#local-6989586621679668861"><span class="hs-identifier hs-var">refl</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679668869"><span class="hs-identifier hs-var">letters</span></a></span><span>
-</span><span id="line-61"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Sum</span></span><span> </span><span id="local-6989586621679668864"><span class="annot"><span class="annottext">score :: Int
-</span><a href="#local-6989586621679668864"><span class="hs-identifier hs-var">score</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679668863"><span class="annot"><span class="annottext">res :: String
-</span><a href="#local-6989586621679668863"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; (Sum Int, String)
-</span><a href="#local-6989586621679668853"><span class="hs-identifier hs-var">tryMe</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679668855"><span class="hs-identifier hs-var">ls</span></a></span><span>
+</span><a href="#local-6989586621679665380"><span class="hs-identifier hs-var">refl</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Set Point
+</span><a href="#local-6989586621679665388"><span class="hs-identifier hs-var">letters</span></a></span><span>
+</span><span id="line-61"></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Sum</span></span><span> </span><span id="local-6989586621679665383"><span class="annot"><span class="annottext">score :: Int
+</span><a href="#local-6989586621679665383"><span class="hs-identifier hs-var">score</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679665382"><span class="annot"><span class="annottext">res :: String
+</span><a href="#local-6989586621679665382"><span class="hs-identifier hs-var">res</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; (Sum Int, String)
+</span><a href="#local-6989586621679665372"><span class="hs-identifier hs-var">tryMe</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
+</span><a href="#local-6989586621679665374"><span class="hs-identifier hs-var">ls</span></a></span><span>
 </span><span id="line-62"></span><span>        </span><span class="hs-special">]</span><span>
-</span><span id="line-63"></span><span>    </span><span id="local-6989586621679668853"><span class="annot"><span class="annottext">tryMe :: Set Point -&gt; (Sum Int, String)
-</span><a href="#local-6989586621679668853"><span class="hs-identifier hs-var hs-var">tryMe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NESet Point -&gt; (Sum Int, Char))
+</span><span id="line-63"></span><span>    </span><span id="local-6989586621679665372"><span class="annot"><span class="annottext">tryMe :: Set Point -&gt; (Sum Int, String)
+</span><a href="#local-6989586621679665372"><span class="hs-identifier hs-var hs-var">tryMe</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(NESet Point -&gt; (Sum Int, Char))
 -&gt; [NESet Point] -&gt; (Sum Int, String)
 forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
 (Traversable t, Applicative f) =&gt;
 (a -&gt; f b) -&gt; t a -&gt; f (t b)
-</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679668851"><span class="annot"><span class="annottext">c :: NESet Point
-</span><a href="#local-6989586621679668851"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Sum Int, Char)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679665370"><span class="annot"><span class="annottext">c :: NESet Point
+</span><a href="#local-6989586621679665370"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(Sum Int, Char)
 -&gt; (Char -&gt; (Sum Int, Char)) -&gt; Maybe Char -&gt; (Sum Int, Char)
 forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
 </span><span class="hs-identifier hs-var">maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Sum Int
@@ -227,7 +227,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">NESet Point -&gt; Map (NESet Point) Char -&gt; Maybe Char
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">M.lookup</span></span><span> </span><span class="annot"><span class="annottext">NESet Point
-</span><a href="#local-6989586621679668851"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">(Map (NESet Point) Char -&gt; (Sum Int, Char))
+</span><a href="#local-6989586621679665370"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">(Map (NESet Point) Char -&gt; (Sum Int, Char))
 -&gt; Map (NESet Point) Char -&gt; (Sum Int, Char)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Map (NESet Point) Char
@@ -260,9 +260,9 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-73"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
 </span><span id="line-74"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-75"></span><span id="parseLettersSafe"><span class="annot"><span class="annottext">parseLettersSafe :: Set Point -&gt; Maybe String
-</span><a href="AOC.Common.OCR.html#parseLettersSafe"><span class="hs-identifier hs-var hs-var">parseLettersSafe</span></a></span></span><span> </span><span id="local-6989586621679668845"><span class="annot"><span class="annottext">pts :: Set Point
-</span><a href="#local-6989586621679668845"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679668844"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe () -&gt; Maybe String
+</span><a href="AOC.Common.OCR.html#parseLettersSafe"><span class="hs-identifier hs-var hs-var">parseLettersSafe</span></a></span></span><span> </span><span id="local-6989586621679665364"><span class="annot"><span class="annottext">pts :: Set Point
+</span><a href="#local-6989586621679665364"><span class="hs-identifier hs-var">pts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679665363"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe () -&gt; Maybe String
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Maybe ()
 forall (f :: * -&gt; *). Alternative f =&gt; Bool -&gt; f ()
@@ -271,15 +271,15 @@ forall a. NESet a -&gt; Int
 </span><span class="hs-identifier hs-var">NES.size</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">NonEmpty String -&gt; NESet String
 forall a. Ord a =&gt; NonEmpty a -&gt; NESet a
 </span><span class="hs-identifier hs-var">NES.fromList</span></span><span> </span><span class="annot"><span class="annottext">NonEmpty String
-</span><a href="#local-6989586621679668840"><span class="hs-identifier hs-var">ls</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679665359"><span class="hs-identifier hs-var">ls</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-77"></span><span>    </span><span id="local-6989586621679668840"><span class="annot"><span class="annottext">ls :: NonEmpty String
-</span><a href="#local-6989586621679668840"><span class="hs-identifier hs-var">ls</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span id="local-6989586621679668844"><span class="annot"><span class="annottext">x :: String
-</span><a href="#local-6989586621679668844"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; NonEmpty String
+</span><span id="line-77"></span><span>    </span><span id="local-6989586621679665359"><span class="annot"><span class="annottext">ls :: NonEmpty String
+</span><a href="#local-6989586621679665359"><span class="hs-identifier hs-var">ls</span></a></span></span><span class="hs-glyph">@</span><span class="hs-special">(</span><span id="local-6989586621679665363"><span class="annot"><span class="annottext">x :: String
+</span><a href="#local-6989586621679665363"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:|</span></span><span> </span><span class="hs-identifier">_</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Set Point -&gt; NonEmpty String
 </span><a href="AOC.Common.OCR.html#parseLettersAll"><span class="hs-identifier hs-var">parseLettersAll</span></a></span><span> </span><span class="annot"><span class="annottext">Set Point
-</span><a href="#local-6989586621679668845"><span class="hs-identifier hs-var">pts</span></a></span><span>
+</span><a href="#local-6989586621679665364"><span class="hs-identifier hs-var">pts</span></a></span><span>
 </span><span id="line-78"></span><span>
 </span><span id="line-79"></span><span>
 </span><span id="line-80"></span><span class="hs-comment">-- | A map of a set of &quot;on&quot; points (for a 4x6 grid) to the letter they</span><span>
