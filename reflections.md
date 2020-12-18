@@ -37,6 +37,7 @@ Table of Contents
 * [Day 15](#day-15)
 * [Day 16](#day-16)
 * [Day 17](#day-17)
+* [Day 18](#day-18) *(no reflection yet)*
 
 Day 1
 ------
@@ -2955,21 +2956,65 @@ And that's it --- code that should work for both parts :)
 ```
 >> Day 17a
 benchmarking...
-time                 4.119 ms   (3.998 ms .. 4.260 ms)
-                     0.988 R²   (0.974 R² .. 0.994 R²)
-mean                 3.914 ms   (3.806 ms .. 4.016 ms)
-std dev              337.6 μs   (245.1 μs .. 479.8 μs)
-variance introduced by outliers: 56% (severely inflated)
+time                 4.025 ms   (3.914 ms .. 4.168 ms)
+                     0.989 R²   (0.976 R² .. 0.996 R²)
+mean                 4.028 ms   (3.934 ms .. 4.153 ms)
+std dev              338.7 μs   (256.8 μs .. 461.4 μs)
+variance introduced by outliers: 54% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 17b
 benchmarking...
-time                 19.62 ms   (18.63 ms .. 20.69 ms)
-                     0.965 R²   (0.897 R² .. 0.997 R²)
-mean                 20.21 ms   (19.62 ms .. 22.05 ms)
-std dev              2.263 ms   (815.5 μs .. 4.346 ms)
-variance introduced by outliers: 51% (severely inflated)
+time                 18.76 ms   (17.61 ms .. 20.33 ms)
+                     0.968 R²   (0.936 R² .. 0.991 R²)
+mean                 19.49 ms   (18.95 ms .. 20.16 ms)
+std dev              1.440 ms   (1.108 ms .. 2.085 ms)
+variance introduced by outliers: 31% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 18
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day18.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d18p]* / *[Code][d18g]* / *[Rendered][d18h]* / *[Standalone Reflection Page][d18r]*
+
+[d18p]: https://adventofcode.com/2020/day/18
+[d18g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day18.hs
+[d18h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day18.html
+[d18r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day18.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 18 Benchmarks
+
+```
+>> Day 18a
+benchmarking...
+time                 5.031 ms   (4.832 ms .. 5.244 ms)
+                     0.984 R²   (0.972 R² .. 0.992 R²)
+mean                 4.883 ms   (4.762 ms .. 5.012 ms)
+std dev              435.2 μs   (368.4 μs .. 539.7 μs)
+variance introduced by outliers: 55% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 18b
+benchmarking...
+time                 14.06 ms   (12.64 ms .. 14.77 ms)
+                     0.976 R²   (0.936 R² .. 0.996 R²)
+mean                 14.07 ms   (13.55 ms .. 14.47 ms)
+std dev              1.122 ms   (818.9 μs .. 1.567 ms)
+variance introduced by outliers: 41% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

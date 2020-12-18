@@ -97,6 +97,7 @@ module AOC.Common (
   , pWord
   , pHWord
   , pDecimal
+  , pTok
   , parseLines
   -- * Graph
   , Graph
@@ -994,13 +995,16 @@ parseTokStreamT_ p = fmap eitherToMaybe . parseTokStreamT p
 type CharParser = P.Parsec Void String
 
 pWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
-pWord = P.many (P.satisfy (not . isSpace)) <* P.space
+pWord = pTok $ P.many (P.satisfy (not . isSpace))
 
 pHWord :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s String
 pHWord = P.many (P.satisfy (not . isSpace)) <* P.many (P.satisfy (== ' '))
 
-pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s Int
+pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e, Num a) => P.Parsec e s a
 pDecimal = PL.signed P.space PL.decimal
+
+pTok :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s a -> P.Parsec e s a
+pTok p = p <* P.space
 
 parseMaybeLenient :: P.Parsec Void s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
