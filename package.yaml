@@ -79,7 +79,6 @@ library:
   - advent-of-code-api >= 0.2.7
   - aeson
   - ansi-terminal
-  - ghc-typelits-knownnat
   - arithmoi
   - barbies
   - bitvec
@@ -102,6 +101,7 @@ library:
   - finite-typelits
   - foldl
   - generic-lens
+  - ghc-typelits-knownnat
   - ghc-typelits-natnormalise
   - groups
   - hashable
@@ -114,6 +114,7 @@ library:
   - linear
   - megaparsec >= 8.0
   - monad-loops
+  - monoidal-containers
   - mtl
   - nonempty-containers
   - one-liner-instances

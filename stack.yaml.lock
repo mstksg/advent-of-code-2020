@@ -96,6 +96,13 @@ packages:
   original:
     hackage: vinyl-0.13.0
 - completed:
+    hackage: monoidal-containers-0.6.0.1@sha256:ffdfae0fde7a08e9e314667a78d86454d2d23137d85f226ec6e757c190fb28ad,2583
+    pantry-tree:
+      size: 569
+      sha256: 61d5a73cb768aa4d59db7365418a2fc1bb24b8c3e53ca496372656b6ba4d31ab
+  original:
+    hackage: monoidal-containers-0.6.0.1
+- completed:
     size: 406938
     subdir: vec
     url: https://github.com/mstksg/vec/archive/d2dedab44fa49b4ed903fac6b9189c4d62835e1b.tar.gz
