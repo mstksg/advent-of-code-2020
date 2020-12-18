@@ -10,24 +10,29 @@ module AOC.Challenge.Day17 (
   , day17b
   , abszyy
   , weight
+  , explode
   ) where
 
+import           AOC.Common
 import           AOC.Common               (fullNeighbsSet, (!!!), asciiGrid, foldMapParChunk)
 import           AOC.Solver               ((:~>)(..))
 import           Control.DeepSeq          (NFData)
 import           Control.Lens
 import           Control.Lens             (iover, traversed, set, to, asIndex, filtered)
+import           Data.Bifunctor
 import           Data.Coerce              (coerce)
 import           Data.Foldable            (toList)
+import           Data.List
 import           Data.Map                 (Map)
-import           Data.Semigroup           (Sum(..))
+import           Data.Semigroup           (Sum(..), First(..))
 import           Data.Set                 (Set)
 import           Data.Set.Lens            (setOf)
 import           Linear                   (R2(..), V3(..), V4(..))
 import qualified Data.Map.Monoidal.Strict as MM
-import           Data.List
 import qualified Data.Map.Strict          as M
 import qualified Data.Set                 as S
+import           Data.These
+import qualified Data.Vector.Sized        as V
 
 stepper
     :: forall f a.
@@ -60,6 +65,51 @@ stepper cs = stayAlive <> comeAlive
 abszyy :: (Traversable f, Num a, Ord a) => f a -> f a
 abszyy = over (partsOf (traversed .> indices (> 1))) (reverse . sort . map abs)
 
+absz :: (Traversable f, Num a, Ord a) => f a -> f a
+absz = iover traversed (\i x -> if i > 1 then abs x else x)
+
+explode :: (Traversable f, Num a, Ord a, Applicative f, Ord (f a)) => f a -> _
+-- explode :: (Traversable f, Num a, Ord a, Applicative f, Ord (f a)) => f a -> Map (Bool, [a]) Int
+-- explode c = M.mapKeysWith (+) (first match2 . splitAt 2 . toList)
+--           . M.mapKeysWith (+) absz
+--           . fmap (lookupFreq c)
+--           . M.mapKeysWith (M.unionWith (+)) absz
+--           . M.fromSet (freqs . fullNeighbs)
+--           $ fullNeighbsSet c
+-- explode c = M.mapKeysWith (+) (first match2 . splitAt 2 . toList)
+          -- . M.mapKeysWith (+) absz
+          -- . fmap (lookupFreq c)
+explode c = gatherSame
+          . M.mapKeysWith const (first match2 . splitAt 2 . toList)
+          . M.mapKeysWith (+) abszyy
+          . fmap (lookupFreq c)
+          . M.fromSet (freqs . fullNeighbs)
+          $ fullNeighbsSet c
+  where
+    match2 xs = xs == take 2 (toList c)
+    -- absz2 = first match2 . splitAt 2 . toList . absz
+
+        -- freqs . map abszyy . S.toList . fullNeighbsSet
+
+data Count = CNoCheck Int
+           | CDepends (These Int Int)
+  deriving Show
+
+gatherSame :: Ord a => Map (Bool, a) Int -> Map a Count
+gatherSame = fmap toCount
+           . M.fromListWith (<>)
+           . map (\((b,k), v) -> (k, if b then This (First v) else That (First v)))
+           . M.toList
+  where
+    toCount = \case
+      This (First v) -> CDepends $ This v
+      That (First v) -> CDepends $ That v
+      These (First u) (First v)
+        | u == v -> CNoCheck u
+        | otherwise -> CDepends (These u v)
+
+
+
 weight
     :: (Foldable f, Num a, Ord a, Eq (f a))
     => Bool         -- ^ consider self-reflections
@@ -67,11 +117,15 @@ weight
     -> f a
     -> Int
 weight ss x y
-    | ss && xs == ys = selfSym1 * selfSym2 + (if x == y then 0 else 1)
+    | ss && xs == ys = 
+        if x0 == y0
+          then 0
+          else selfSym1 * selfSym2 + 1
+    -- selfSym1 * selfSym2 + (if x == y then 0 else 1)
     | otherwise      = product (zipWith go xs ys) * sym2
   where
-    xs = drop 2 (toList x)
-    ys = drop 2 (toList y)
+    (x0, xs) = splitAt 2 (toList x)
+    (y0, ys) = splitAt 2 (toList y)
     go i j
       | i /= 0 && j == 0 = 2
       | otherwise        = 1
@@ -112,8 +166,13 @@ day17 = MkSol
 day17a :: Set (V3 Int) :~> Int
 day17a = day17
 
-day17b :: Set (V4 Int) :~> Int
+day17b :: Set (V.Vector 5 Int) :~> Int
 day17b = day17
+
+-- d=5: 5760 / 16736
+-- d=6: 35936 / 95584
+-- d=7: 178720 / 502240
+
 
 parseMap
     :: (Applicative f, R2 f, Ord (f Int))
