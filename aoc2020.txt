@@ -99,6 +99,9 @@ traceShowMsg :: Show a => String -> a -> b -> b
 -- | Common functions for solutions
 module AOC.Common
 
+-- | trace but only after something has evaluated to WHNF
+trace' :: String -> a -> a
+
 -- | Iterate until a <a>Nothing</a> is produced
 iterateMaybe :: (a -> Maybe a) -> a -> [a]
 
@@ -408,6 +411,10 @@ instance GHC.Base.Monoid AOC.Common.Dir
 instance Data.Group.Group AOC.Common.Dir
 instance Data.Group.Abelian AOC.Common.Dir
 instance (Control.Lens.At.Ixed (v a), Control.Lens.At.Index (v a) GHC.Types.~ GHC.Types.Int, Control.Lens.At.IxValue (v a) GHC.Types.~ a) => Control.Lens.At.Ixed (Data.Vector.Generic.Sized.Internal.Vector v n a)
+instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 1 GHC.TypeNats.<= n) => Linear.V1.R1 (Data.Vector.Generic.Sized.Internal.Vector v n)
+instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 2 GHC.TypeNats.<= n) => Linear.V2.R2 (Data.Vector.Generic.Sized.Internal.Vector v n)
+instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 3 GHC.TypeNats.<= n) => Linear.V3.R3 (Data.Vector.Generic.Sized.Internal.Vector v n)
+instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 4 GHC.TypeNats.<= n) => Linear.V4.R4 (Data.Vector.Generic.Sized.Internal.Vector v n)
 instance (GHC.Classes.Ord k, GHC.Classes.Ord p) => Control.Lens.At.Ixed (Data.OrdPSQ.Internal.OrdPSQ k p v)
 instance Control.Lens.Indexed.FunctorWithIndex k (Data.Map.NonEmpty.Internal.NEMap k)
 instance Control.Lens.Indexed.FoldableWithIndex k (Data.Map.NonEmpty.Internal.NEMap k)
@@ -7472,6 +7479,9 @@ type Point = V2 Int
 type Graph v e = Map v (Map v e)
 type Letter = Finite 26
 
+-- | trace but only after something has evaluated to WHNF
+trace' :: String -> a -> a
+
 -- | Strict (!!)
 (!!!) :: [a] -> Int -> a
 
@@ -8299,14 +8309,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2g8R
-mainRunOpts :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R MainRunOpts
-mroActual :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R Bool
-mroBench :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R Bool
-mroInput :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R Bool
-mroSpec :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R TestSpec
-mroTest :: HasMainRunOpts c_a2g8R => Lens' c_a2g8R Bool
+class HasMainRunOpts c_a2htp
+mainRunOpts :: HasMainRunOpts c_a2htp => Lens' c_a2htp MainRunOpts
+mroActual :: HasMainRunOpts c_a2htp => Lens' c_a2htp Bool
+mroBench :: HasMainRunOpts c_a2htp => Lens' c_a2htp Bool
+mroInput :: HasMainRunOpts c_a2htp => Lens' c_a2htp (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2htp => Lens' c_a2htp Bool
+mroSpec :: HasMainRunOpts c_a2htp => Lens' c_a2htp TestSpec
+mroTest :: HasMainRunOpts c_a2htp => Lens' c_a2htp Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8319,10 +8329,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2ggk
-mainViewOpts :: HasMainViewOpts c_a2ggk => Lens' c_a2ggk MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2ggk => Lens' c_a2ggk TestSpec
-mvoWait :: HasMainViewOpts c_a2ggk => Lens' c_a2ggk Bool
+class HasMainViewOpts c_a2hAS
+mainViewOpts :: HasMainViewOpts c_a2hAS => Lens' c_a2hAS MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2hAS => Lens' c_a2hAS TestSpec
+mvoWait :: HasMainViewOpts c_a2hAS => Lens' c_a2hAS Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8347,13 +8357,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2gkS
-mainSubmitOpts :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS Bool
-msoLock :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS Bool
-msoRetry :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS Bool
-msoSpec :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2gkS => Lens' c_a2gkS Bool
+class HasMainSubmitOpts c_a2hFq
+mainSubmitOpts :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq Bool
+msoLock :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq Bool
+msoRetry :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq Bool
+msoSpec :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2hFq => Lens' c_a2hFq Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
