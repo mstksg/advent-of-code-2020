@@ -7963,6 +7963,25 @@ module AOC.Challenge.Day19
 --   will recommend what should go in place of the underscores.</li>
 --   </ul>
 module AOC.Challenge.Day18
+data Expr
+Mul :: Expr -> Expr -> Expr
+Add :: Expr -> Expr -> Expr
+Lit :: Int -> Expr
+parseLit :: CharParser Expr
+parsePrim :: CharParser Expr
+parseExpr :: CharParser Expr
+tok :: forall f e s a. (MonadParsec e s f, Token s ~ Char) => f a -> f a
+eval :: Expr -> Int
+day18a :: _ :~> _
+parsePrim2 :: CharParser Expr
+parsePrim22 :: CharParser Expr
+parseExpr2 :: CharParser Expr
+day18b :: _ :~> _
+instance GHC.Generics.Generic AOC.Challenge.Day18.Expr
+instance GHC.Show.Show AOC.Challenge.Day18.Expr
+instance GHC.Classes.Ord AOC.Challenge.Day18.Expr
+instance GHC.Classes.Eq AOC.Challenge.Day18.Expr
+instance Control.DeepSeq.NFData AOC.Challenge.Day18.Expr
 
 
 -- | Template Haskell for discovering all named challenges in a given
@@ -8309,14 +8328,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2hEg
-mainRunOpts :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg MainRunOpts
-mroActual :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg Bool
-mroBench :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg Bool
-mroInput :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg Bool
-mroSpec :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg TestSpec
-mroTest :: HasMainRunOpts c_a2hEg => Lens' c_a2hEg Bool
+class HasMainRunOpts c_a2jDl
+mainRunOpts :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl MainRunOpts
+mroActual :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl Bool
+mroBench :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl Bool
+mroInput :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl Bool
+mroSpec :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl TestSpec
+mroTest :: HasMainRunOpts c_a2jDl => Lens' c_a2jDl Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8329,10 +8348,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2hLJ
-mainViewOpts :: HasMainViewOpts c_a2hLJ => Lens' c_a2hLJ MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2hLJ => Lens' c_a2hLJ TestSpec
-mvoWait :: HasMainViewOpts c_a2hLJ => Lens' c_a2hLJ Bool
+class HasMainViewOpts c_a2jKO
+mainViewOpts :: HasMainViewOpts c_a2jKO => Lens' c_a2jKO MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2jKO => Lens' c_a2jKO TestSpec
+mvoWait :: HasMainViewOpts c_a2jKO => Lens' c_a2jKO Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8357,13 +8376,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2hQh
-mainSubmitOpts :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh Bool
-msoLock :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh Bool
-msoRetry :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh Bool
-msoSpec :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2hQh => Lens' c_a2hQh Bool
+class HasMainSubmitOpts c_a2jPm
+mainSubmitOpts :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm Bool
+msoLock :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm Bool
+msoRetry :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm Bool
+msoSpec :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2jPm => Lens' c_a2jPm Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
