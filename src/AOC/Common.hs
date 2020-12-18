@@ -164,6 +164,7 @@ import           Data.Monoid                        (Ap(..))
 import           Data.Ord
 import           Data.Semigroup
 import           Data.Semigroup.Foldable
+import           Data.Maybe
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
 import           Data.Set.Lens
@@ -1008,7 +1009,7 @@ parseOrFail :: (P.Stream s, P.ShowErrorComponent e) => P.Parsec e s a -> s -> a
 parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeLenient"
 
 parseLines :: P.Parsec Void String a -> String -> Maybe [a]
-parseLines p = traverse (parseMaybeLenient p) . lines
+parseLines p = Just . mapMaybe (parseMaybeLenient p) . lines
 
 parseWords :: P.Parsec Void (TokStream String) a -> String -> Maybe a
 parseWords p = parseMaybeLenient p . TokStream . words

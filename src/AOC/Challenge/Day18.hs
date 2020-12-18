@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-unused-imports   #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- |
@@ -21,10 +22,11 @@
 --     solution.  You can delete the type signatures completely and GHC
 --     will recommend what should go in place of the underscores.
 
-module AOC.Challenge.Day18 (
-    -- day18a
-  -- , day18b
-  ) where
+module AOC.Challenge.Day18 where
+-- module AOC.Challenge.Day18 (
+--     day18a
+--   , day18b
+--   ) where
 
 import           AOC.Prelude
 
@@ -45,16 +47,68 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
+data Expr = Mul Expr Expr
+          | Add Expr Expr
+          | Lit Int
+  deriving (Eq, Ord, Show, Generic)
+
+instance NFData Expr
+
+parseLit :: CharParser Expr
+parseLit = Lit <$> PP.decimal <* P.space
+
+parsePrim :: CharParser Expr
+parsePrim = asum
+    [ parseLit
+    , tok $ P.between ")" "(" parseExpr
+    ]
+
+parseExpr :: CharParser Expr
+parseExpr = asum
+    [ P.try $ Mul <$> (tok parsePrim <* tok "*") <*> tok parseExpr
+    , P.try $ Add <$> (tok parsePrim <* tok "+") <*> tok parseExpr
+    , parsePrim
+    ]
+
+tok p = p <* P.space
+
+eval = \case
+    Mul a b -> eval a * eval b
+    Add a b -> eval a + eval b
+    Lit i   -> i
+    
+
 day18a :: _ :~> _
 day18a = MkSol
-    { sParse = Just
+    -- { sParse = parseLines gogo
+    { sParse = parseLines parseExpr . over lined reverse
+    -- { sParse = parseLines parseExpr
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . sum . map eval
+    -- , sSolve = Just
     }
+
+parsePrim2 :: CharParser Expr
+parsePrim2 = asum
+    [ parseLit
+    , tok $ P.between ")" "(" parseExpr2
+    ]
+
+parsePrim22 :: CharParser Expr
+parsePrim22 = asum
+    [ P.try $ Add <$> (tok parsePrim2 <* tok "+") <*> tok parsePrim22
+    , parsePrim2
+    ]
+
+parseExpr2 :: CharParser Expr
+parseExpr2 = asum
+    [ P.try $ Mul <$> (tok parsePrim22 <* tok "*") <*> tok parseExpr2
+    , parsePrim22
+    ]
 
 day18b :: _ :~> _
 day18b = MkSol
-    { sParse = sParse day18a
+    { sParse = parseLines parseExpr2 . over lined reverse
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . sum . map eval
     }
