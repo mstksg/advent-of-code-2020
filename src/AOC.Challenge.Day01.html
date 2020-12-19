@@ -25,21 +25,21 @@
 </span><span id="line-25"></span><span class="hs-comment">-- numbers in the set that add to the goal sum.  The number of items</span><span>
 </span><span id="line-26"></span><span class="hs-comment">-- desired is inferred from the desired length of the return type.</span><span>
 </span><span id="line-27"></span><span class="annot"><a href="AOC.Challenge.Day01.html#knapsack"><span class="hs-identifier hs-type">knapsack</span></a></span><span>
-</span><span id="line-28"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679681985"><span class="annot"><a href="#local-6989586621679681985"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNatI</span></span><span> </span><span class="annot"><a href="#local-6989586621679681985"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679677663"><span class="annot"><a href="#local-6989586621679677663"><span class="hs-identifier hs-type">n</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNatI</span></span><span> </span><span class="annot"><a href="#local-6989586621679677663"><span class="hs-identifier hs-type">n</span></a></span><span>
 </span><span id="line-29"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>                             </span><span class="hs-comment">-- ^ goal sum</span><span>
 </span><span id="line-30"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntSet</span></span><span>                          </span><span class="hs-comment">-- ^ set of options</span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Vec.Vec</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span class="annot"><a href="#local-6989586621679681985"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>      </span><span class="hs-comment">-- ^ resulting n items that sum to the goal</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Vec.Vec</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span> </span><span class="annot"><a href="#local-6989586621679677663"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>      </span><span class="hs-comment">-- ^ resulting n items that sum to the goal</span><span>
 </span><span id="line-32"></span><span id="knapsack"><span class="annot"><span class="annottext">knapsack :: Int -&gt; IntSet -&gt; Maybe (Vec ('S n) Int)
 </span><a href="AOC.Challenge.Day01.html#knapsack"><span class="hs-identifier hs-var hs-var">knapsack</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">SNat n
 forall (n :: Nat). SNatI n =&gt; SNat n
-</span><span class="hs-identifier hs-var">snat</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679681985"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-33"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">SZ</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679681956"><span class="annot"><span class="annottext">goal :: Int
-</span><a href="#local-6989586621679681956"><span class="hs-identifier hs-var">goal</span></a></span></span><span> </span><span id="local-6989586621679681955"><span class="annot"><span class="annottext">xs :: IntSet
-</span><a href="#local-6989586621679681955"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span class="hs-identifier hs-var">snat</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">SNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679677663"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-33"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">SZ</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679677634"><span class="annot"><span class="annottext">goal :: Int
+</span><a href="#local-6989586621679677634"><span class="hs-identifier hs-var">goal</span></a></span></span><span> </span><span id="local-6989586621679677633"><span class="annot"><span class="annottext">xs :: IntSet
+</span><a href="#local-6989586621679677633"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-34"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681956"><span class="hs-identifier hs-var">goal</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntSet -&gt; Bool
+</span><a href="#local-6989586621679677634"><span class="hs-identifier hs-var">goal</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntSet -&gt; Bool
 </span><span class="hs-operator hs-var">`IS.member`</span></span><span> </span><span class="annot"><span class="annottext">IntSet
-</span><a href="#local-6989586621679681955"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679677633"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-35"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Vec ('S 'Z) Int -&gt; Maybe (Vec ('S n) Int)
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Vec ('S 'Z) Int -&gt; Maybe (Vec ('S n) Int))
@@ -48,13 +48,13 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Vec ('S 'Z) Int
 forall a. a -&gt; Vec ('S 'Z) a
 </span><span class="hs-identifier hs-var">Vec.singleton</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681956"><span class="hs-identifier hs-var">goal</span></a></span><span>
+</span><a href="#local-6989586621679677634"><span class="hs-identifier hs-var">goal</span></a></span><span>
 </span><span id="line-36"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Maybe (Vec ('S n) Int)
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
-</span><span id="line-37"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">SS</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679681951"><span class="annot"><span class="annottext">goal :: Int
-</span><a href="#local-6989586621679681951"><span class="hs-identifier hs-var">goal</span></a></span></span><span> </span><span id="local-6989586621679681950"><span class="annot"><span class="annottext">xs :: IntSet
-</span><a href="#local-6989586621679681950"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Maybe (Vec ('S ('S n1)) Int))
+</span><span id="line-37"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">SS</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679677629"><span class="annot"><span class="annottext">goal :: Int
+</span><a href="#local-6989586621679677629"><span class="hs-identifier hs-var">goal</span></a></span></span><span> </span><span id="local-6989586621679677628"><span class="annot"><span class="annottext">xs :: IntSet
+</span><a href="#local-6989586621679677628"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Maybe (Vec ('S ('S n1)) Int))
  -&gt; [Int] -&gt; Maybe (Vec ('S ('S n1)) Int))
 -&gt; [Int]
 -&gt; (Int -&gt; Maybe (Vec ('S ('S n1)) Int))
@@ -67,24 +67,24 @@ Foldable t =&gt;
 (a -&gt; Maybe b) -&gt; t a -&gt; Maybe b
 </span><a href="AOC.Util.html#firstJust"><span class="hs-identifier hs-var">firstJust</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntSet -&gt; [Int]
 </span><span class="hs-identifier hs-var">IS.toList</span></span><span> </span><span class="annot"><span class="annottext">IntSet
-</span><a href="#local-6989586621679681950"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Maybe (Vec ('S ('S n1)) Int)) -&gt; Maybe (Vec ('S n) Int))
+</span><a href="#local-6989586621679677628"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Int -&gt; Maybe (Vec ('S ('S n1)) Int)) -&gt; Maybe (Vec ('S n) Int))
 -&gt; (Int -&gt; Maybe (Vec ('S ('S n1)) Int)) -&gt; Maybe (Vec ('S n) Int)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679681947"><span class="annot"><span class="annottext">x :: Int
-</span><a href="#local-6989586621679681947"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-38"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679681946"><span class="annot"><span class="annottext">goal' :: Int
-</span><a href="#local-6989586621679681946"><span class="hs-identifier hs-var hs-var">goal'</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681951"><span class="hs-identifier hs-var">goal</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679677625"><span class="annot"><span class="annottext">x :: Int
+</span><a href="#local-6989586621679677625"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-38"></span><span>      </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679677624"><span class="annot"><span class="annottext">goal' :: Int
+</span><a href="#local-6989586621679677624"><span class="hs-identifier hs-var hs-var">goal'</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679677629"><span class="hs-identifier hs-var">goal</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681947"><span class="hs-identifier hs-var">x</span></a></span><span>
-</span><span id="line-39"></span><span>          </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679681945"><span class="annot"><span class="annottext">ys :: IntSet
-</span><a href="#local-6989586621679681945"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntSet -&gt; (IntSet, IntSet)
+</span><a href="#local-6989586621679677625"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><span id="line-39"></span><span>          </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span class="hs-special">,</span><span> </span><span id="local-6989586621679677623"><span class="annot"><span class="annottext">ys :: IntSet
+</span><a href="#local-6989586621679677623"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IntSet -&gt; (IntSet, IntSet)
 </span><span class="hs-identifier hs-var">IS.split</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681947"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">IntSet
-</span><a href="#local-6989586621679681950"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679677625"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">IntSet
+</span><a href="#local-6989586621679677628"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-40"></span><span>      </span><span class="hs-keyword">in</span><span>  </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681947"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Vec ('S n1) Int -&gt; Vec ('S ('S n1)) Int
+</span><a href="#local-6989586621679677625"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Vec ('S n1) Int -&gt; Vec ('S ('S n1)) Int
 forall a (n1 :: Nat). a -&gt; Vec n1 a -&gt; Vec ('S n1) a
 </span><span class="hs-operator hs-var">Vec.:::</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Vec ('S n1) Int -&gt; Vec ('S ('S n1)) Int)
 -&gt; Maybe (Vec ('S n1) Int) -&gt; Maybe (Vec ('S ('S n1)) Int)
@@ -94,8 +94,8 @@ forall (n :: Nat).
 SNatI n =&gt;
 Int -&gt; IntSet -&gt; Maybe (Vec ('S n) Int)
 </span><a href="AOC.Challenge.Day01.html#knapsack"><span class="hs-identifier hs-var">knapsack</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679681946"><span class="hs-identifier hs-var">goal'</span></a></span><span> </span><span class="annot"><span class="annottext">IntSet
-</span><a href="#local-6989586621679681945"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><a href="#local-6989586621679677624"><span class="hs-identifier hs-var">goal'</span></a></span><span> </span><span class="annot"><span class="annottext">IntSet
+</span><a href="#local-6989586621679677623"><span class="hs-identifier hs-var">ys</span></a></span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span class="annot"><a href="AOC.Challenge.Day01.html#day01a"><span class="hs-identifier hs-type">day01a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-43"></span><span id="day01a"><span class="annot"><span class="annottext">day01a :: [Int] :~&gt; Int
