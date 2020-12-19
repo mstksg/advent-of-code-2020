@@ -98,6 +98,7 @@ module AOC.Common (
   , pHWord
   , pDecimal
   , pTok
+  , pSpace
   , parseLines
   -- * Graph
   , Graph
@@ -1004,7 +1005,10 @@ pDecimal :: (P.Stream s, P.Token s ~ Char, Ord e, Num a) => P.Parsec e s a
 pDecimal = PL.signed P.space PL.decimal
 
 pTok :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s a -> P.Parsec e s a
-pTok p = p <* P.space
+pTok p = p <* pSpace
+
+pSpace :: (P.Stream s, P.Token s ~ Char, Ord e) => P.Parsec e s ()
+pSpace = P.skipMany (P.char ' ')
 
 parseMaybeLenient :: P.Parsec Void s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"

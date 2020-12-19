@@ -100,6 +100,8 @@ library:
   - finitary
   - finite-typelits
   - foldl
+  - free
+  - deriving-compat
   - generic-lens
   - ghc-typelits-knownnat
   - ghc-typelits-natnormalise
