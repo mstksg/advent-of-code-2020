@@ -14,24 +14,19 @@ module AOC.Challenge.Day19 (
   , day19b
   ) where
 
-import           AOC.Common                 (countTrue, pTok)
-import           AOC.Solver                 ((:~>)(..))
-import           Control.DeepSeq            (NFData)
-import           Control.Monad              ((>=>), guard, ap)
-import           Data.Bifunctor             (first)
-import           Data.Functor               ((<&>))
-import           Data.Maybe
-import           Data.Functor.Foldable
-import           Data.Functor.Foldable.TH
-import           Data.IntMap.Strict         (IntMap)
-import           Data.Map.Strict            (Map)
-import           Data.Void                  (Void)
-import           GHC.Generics               (Generic)
-import qualified Data.IntMap.Strict         as IM
-import qualified Data.Map.Strict            as M
-import qualified Text.Megaparsec            as P
-import qualified Text.Megaparsec.Char       as P
-import qualified Text.Megaparsec.Char.Lexer as PP
+import           AOC.Common                  (countTrue, pTok)
+import           AOC.Solver                  ((:~>)(..))
+import           Control.DeepSeq             (NFData)
+import           Control.Monad               ((>=>), guard, ap)
+import           Data.Bifunctor              (first)
+import           Data.Functor                ((<&>))
+import           Data.IntMap                 (IntMap)
+import           Data.Void                   (Void)
+import           GHC.Generics                (Generic)
+import qualified Data.IntMap                 as IM
+import qualified Text.Megaparsec             as P
+import qualified Text.Megaparsec.Char        as P
+import qualified Text.Megaparsec.Char.Lexer  as PP
 
 data Rule = Simple Char
           | Compound (AndOr Int)
