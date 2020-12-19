@@ -8,32 +8,25 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
-  , abszyy
-  , weight
-  , explode
-  , testExplode
-  , allZs
+  , getWeight
   , neighborWeights
+  , duplicands
+  , finalWeight
   ) where
 
 import           AOC.Common
-import           AOC.Common               (fullNeighbsSet, (!!!), asciiGrid, foldMapParChunk)
 import           AOC.Solver               ((:~>)(..))
 import           Control.DeepSeq          (NFData)
 import           Control.Lens
-import           Control.Lens             (iover, traversed, set, to, asIndex, filtered)
 import           Control.Monad.State
-import           Data.Bifunctor
 import           Data.Coerce              (coerce)
 import           Data.Foldable
-import           Data.Foldable            (toList)
 import           Data.List
 import           Data.Map                 (Map)
 import           Data.Maybe
-import           Data.Semigroup           (Sum(..), First(..))
+import           Data.Semigroup           (Sum(..))
 import           Data.Set                 (Set)
 import           Data.Set.Lens            (setOf)
-import           Data.These
 import           Debug.Trace
 import           Linear                   (R2(..), V3(..), V4(..))
 import qualified Data.Map.Monoidal.Strict as MM
@@ -49,7 +42,6 @@ stepper
      , Ord a
      , Ord (f a)
      , NFData (f a)
-     , Show a
      )
     => Map [a] (Map [a] Int)    -- ^ symmetry map
     -> Set (f a)
@@ -60,7 +52,7 @@ stepper syms cs = stayAlive <> comeAlive
     chnk = min 1000 (max 10 (S.size cs `div` 100))
     neighborCounts :: Map (f a) Int
     neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (f a) (Sum Int)) chnk id)
-      [ M.fromSet (getWeight c) (S.map symmer (fullNeighbsSet c))
+      [ M.fromSet (getWeight syms c) (S.map symmer (fullNeighbsSet c))
       | c <- S.toList cs
       ]
     stayAlive = M.keysSet . M.filter (\n -> n == 2 || n == 3) $
@@ -68,58 +60,19 @@ stepper syms cs = stayAlive <> comeAlive
     comeAlive = M.keysSet . M.filter (== 3) $
                   neighborCounts `M.withoutKeys`  cs
     symmer = over (partsOf (traversed .> indices (> 1))) (sort . map abs)
-    getWeight x y = zWeight + selfWeight
-      where
-        (x0, xs) = splitAt 2 $ toList x
-        (y0, ys) = splitAt 2 $ toList y
-        zWeight = fromMaybe 0 $
-          M.lookup ys =<< M.lookup xs syms
-        selfWeight
-          | xs == ys && x0 /= y0  = 1
-          | otherwise             = 0
 {-# INLINE stepper #-}
 
-abszyy :: (Traversable f, Num a, Ord a) => f a -> f a
-abszyy = over (partsOf (traversed .> indices (> 1))) (reverse . sort . map abs)
-
-absz :: (Traversable f, Num a, Ord a) => f a -> f a
-absz = iover traversed (\i x -> if i > 1 then abs x else x)
-
-testExplode :: (Traversable f, Num a, Ord a, Applicative f, Ord (f a)) => f a -> _
-testExplode c = gatherSame
-              . M.mapKeysWith const (first match2 . splitAt 2 . toList)
-              . M.fromSet (weight True c)
-              . S.map abszyy
-              $ fullNeighbsSet c
+getWeight :: (Ord a, Foldable f) => Map [a] (Map [a] Int) -> f a -> f a -> Int
+getWeight syms x y = zWeight + selfWeight
   where
-    match2 xs = xs == take 2 (toList c)
-
-explode :: (Traversable f, Num a, Ord a, Applicative f, Ord (f a)) => f a -> _
-explode c = gatherSame
-          . M.mapKeysWith const (first match2 . splitAt 2 . toList)
-          . M.mapKeysWith (+) abszyy
-          . fmap (lookupFreq c)
-          . M.fromSet (freqs . fullNeighbs)
-          $ fullNeighbsSet c
-  where
-    match2 xs = xs == take 2 (toList c)
-
-data Count = CNoCheck Int
-           | CDepends (These Int Int)
-  deriving (Show, Eq)
-
-gatherSame :: Ord a => Map (Bool, a) Int -> Map a Count
-gatherSame = fmap toCount
-           . M.fromListWith (<>)
-           . map (\((b,k), v) -> (k, if b then This (First v) else That (First v)))
-           . M.toList
-  where
-    toCount = \case
-      This (First v) -> CDepends $ This v
-      That (First v) -> CDepends $ That v
-      These (First u) (First v)
-        | u == v -> CNoCheck u
-        | otherwise -> CDepends (These u v)
+    (x0, xs) = splitAt 2 $ toList x
+    (y0, ys) = splitAt 2 $ toList y
+    zWeight = fromMaybe 0 $
+      M.lookup xs =<< M.lookup ys syms
+    selfWeight
+      | xs == ys && x0 /= y0  = 1
+      | otherwise             = 0
+{-# INLINE getWeight #-}
 
 neighborWeights
     :: (Num a, Ord a, Enum a)
@@ -131,61 +84,39 @@ neighborWeights mx n =
                   . M.fromSet (const (1 :: Int))
                   . neighbs
                   )
-      $ allZs mx n
+      $ allZs
   where
     deltas    = tail $ replicateM n [0,-1,1]
     neighbs p = S.fromList $ map (zipWith (+) p) deltas
     symmer    = sort . map abs
+    allZs     = S.fromList . flip evalStateT 0 $ replicateM n go
+      where
+        go = StateT $ \i -> map dup [i .. mx]
 
-allZs
+duplicands
     :: (Ord a, Num a, Enum a)
     => a      -- ^ maximum
     -> Int    -- ^ length (dimension)
-    -> Set [a]
-allZs mx n = S.fromList . flip evalStateT 0 $ replicateM n go
+    -> Map [a] Int
+duplicands mx n = freqs . map symmer $ replicateM n [-mx .. mx]
   where
-    go = StateT $ \i -> map dup [i .. mx]
+    symmer    = sort . map abs
 
--- weight
---     :: (Foldable f, Num a, Ord a, Eq (f a))
---     => Bool         -- ^ consider self-reflections
---     -> f a
---     -> f a
---     -> Int
--- weight ss x y
---     | ss && xs == ys =
---         if x0 == y0
---           then selfSym1 * selfSym2
---           else selfSym1 * selfSym2 + 1
---     -- selfSym1 * selfSym2 + (if x == y then 0 else 1)
---     | otherwise      = product (zipWith go xs ys) * sym2
---   where
---     (x0, xs) = splitAt 2 (toList x)
---     (y0, ys) = splitAt 2 (toList y)
---     go i j
---       | i /= 0 && j == 0 = 2
---       | otherwise        = 1
---     sym2
---       | not (allSame xs) && allSame ys = 2
---       | otherwise                      = 1
---     selfSym1 = sum (zipWith (\i j -> if i == j - 1 then 1 else 0) (drop 1 xs) xs)
---     selfSym2 = product (map (\i -> if i == 0 then 2 else 1) xs)
--- {-# INLINE weight #-}
+finalWeight
+    :: (Foldable f, Num a, Ord a)
+    => f a
+    -> Int
+finalWeight x = process . freqs . drop 2 . toList $ x
+  where
+    n = length x - 2
+    process mp = (2 ^ numNonZeroes) * perms
+      where
+        numNonZeroes = n - lookupFreq 0 mp
+        perms = factorial n
+          `div` product (factorial <$> mp)
 
--- finalWeight
---     :: (Foldable f, Num a, Ord a, Eq (f a))
---     => Map [a] (Map [a] Int)    -- ^ symmetry map
---     -> f a
---     -> Int
--- finalWeight syms = zWeight
---   where
---     (x0, xs) = splitAt 2 $ toList x
---     zWeight = fromMaybe 0 $
---       M.lookup ys =<< M.lookup xs syms
-
-allSame :: Eq a => [a] -> Bool
-allSame []     = True
-allSame (x:xs) = all (== x) xs
+factorial :: Int -> Int
+factorial i = foldl' (*) 1 [1 .. i]
 
 day17
     :: forall f. (Applicative f, R2 f, Ord (f Int), Traversable f, NFData (f Int))
@@ -195,8 +126,9 @@ day17 = MkSol
     , sShow  = show
     , sSolve = Just
              . sum
-             . M.fromSet (finalWeight wts)
+             . M.fromSet finalWeight
              . (!!! 6)
+             . zipWith traceShow [0..]
              . iterate (stepper wts)
     }
   where
@@ -207,12 +139,14 @@ day17 = MkSol
 day17a :: Set (V3 Int) :~> Int
 day17a = day17
 
-day17b :: Set (V.Vector 4 Int) :~> Int
+day17b :: Set (V.Vector 10 Int) :~> Int
 day17b = day17
 
 -- d=5: 5760 / 16736
 -- d=6: 35936 / 95584
 -- d=7: 178720 / 502240
+-- d=8: ? / 2567360
+-- d=9: 4333056 / 12764416
 
 
 parseMap
