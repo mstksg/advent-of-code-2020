@@ -14,20 +14,20 @@ module AOC.Challenge.Day17 (
   -- , finalWeight
   ) where
 
-import           AOC.Common
+import           AOC.Common               (asciiGrid, (!!!), factorial, freqs, lookupFreq, dup, foldMapParChunk, fullNeighbsSet)
 import           AOC.Solver               ((:~>)(..))
 import           Control.DeepSeq          (NFData)
-import           Control.Lens
-import           Control.Monad.State
+import           Control.Lens             (set, to, asIndex, filtered, indices, (.>), traversed, partsOf, over)
+import           Control.Monad            (replicateM)
+import           Control.Monad.State      (StateT(..), evalStateT)
 import           Data.Coerce              (coerce)
-import           Data.Foldable
-import           Data.List
+import           Data.Foldable            (toList)
+import           Data.List                (sort)
 import           Data.Map                 (Map)
-import           Data.Maybe
+import           Data.Maybe               (fromMaybe)
 import           Data.Semigroup           (Sum(..))
 import           Data.Set                 (Set)
 import           Data.Set.Lens            (setOf)
-import           Debug.Trace
 import           Linear                   (R2(..), V3(..), V4(..))
 import qualified Data.Map.Monoidal.Strict as MM
 import qualified Data.Map.Strict          as M
