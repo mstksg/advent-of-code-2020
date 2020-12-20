@@ -284,6 +284,7 @@ caeser :: Finite 26 -> Char -> Char
 eitherItem :: Lens' (Either a a) a
 getDown :: Down a -> a
 toNatural :: Integral a => a -> Maybe Natural
+factorial :: Int -> Int
 
 -- | Use a stream of tokens <tt>a</tt> as the underlying parser stream.
 --   Note that error messages for parser errors are going necessarily to be
@@ -7726,6 +7727,7 @@ parseWords :: Parsec Void (TokStream String) a -> String -> Maybe a
 -- | Skip every result until this token matches
 nextMatch :: MonadParsec e s m => m a -> m a
 toNatural :: Integral a => a -> Maybe Natural
+factorial :: Int -> Int
 
 -- | Lattice points for line between points, not including endpoints
 lineTo :: Point -> Point -> [Point]
@@ -8297,14 +8299,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2kyB
-mainRunOpts :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB MainRunOpts
-mroActual :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB Bool
-mroBench :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB Bool
-mroInput :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB Bool
-mroSpec :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB TestSpec
-mroTest :: HasMainRunOpts c_a2kyB => Lens' c_a2kyB Bool
+class HasMainRunOpts c_a2liX
+mainRunOpts :: HasMainRunOpts c_a2liX => Lens' c_a2liX MainRunOpts
+mroActual :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
+mroBench :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
+mroInput :: HasMainRunOpts c_a2liX => Lens' c_a2liX (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
+mroSpec :: HasMainRunOpts c_a2liX => Lens' c_a2liX TestSpec
+mroTest :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8317,10 +8319,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2kG4
-mainViewOpts :: HasMainViewOpts c_a2kG4 => Lens' c_a2kG4 MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2kG4 => Lens' c_a2kG4 TestSpec
-mvoWait :: HasMainViewOpts c_a2kG4 => Lens' c_a2kG4 Bool
+class HasMainViewOpts c_a2lqq
+mainViewOpts :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq TestSpec
+mvoWait :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8345,13 +8347,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2kKC
-mainSubmitOpts :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC Bool
-msoLock :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC Bool
-msoRetry :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC Bool
-msoSpec :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2kKC => Lens' c_a2kKC Bool
+class HasMainSubmitOpts c_a2luY
+mainSubmitOpts :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
+msoLock :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
+msoRetry :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
+msoSpec :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
