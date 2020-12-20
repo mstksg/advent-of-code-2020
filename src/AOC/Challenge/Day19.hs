@@ -69,9 +69,15 @@ extraRules = IM.fromList [
   , (11, Compound [[42,31],[42,11,31]])
   ]
 
-type Parser = P.Parsec Void String
+-- for fun: generate all matching strings
+_genAlg :: Rule [String] -> [String]
+_genAlg = \case
+    Simple c -> [[c]]
+    Compound xs -> concatMap (fmap concat . sequence) xs
 
-ruleParser :: Parser (Int, Rule Int)
+type Parser' = P.Parsec Void String
+
+ruleParser :: Parser' (Int, Rule Int)
 ruleParser = do
     i <- pTok $ PP.decimal <* ":"
     r <- P.choice
@@ -83,7 +89,7 @@ ruleParser = do
     simpleParser   = P.between "\"" "\"" P.letterChar
     compoundParser = P.many (pTok PP.decimal) `P.sepBy` pTok "|"
 
-inputParser :: Parser (IntMap (Rule Int), [String])
+inputParser :: Parser' (IntMap (Rule Int), [String])
 inputParser = do
     rs <- IM.fromList <$> P.many (ruleParser <* P.newline)
     P.newline

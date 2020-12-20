@@ -97,8 +97,8 @@ as
 
 ```haskell
 Fix $ Compound [
-    [Fix $ Compoud [[Fix $ Leaf 'a']], Fix $ Compound [[Fix $ Leaf 'a', Fix $ Leaf 'a']]]
-  , [Fix $ Leaf 'a']
+    [Fix $ Compoud [[Fix (Leaf 'a')]], Fix $ Compound [[Fix (Leaf 'a'), Fix (Leaf 'a')]]]
+  , [Fix (Leaf 'a')]
   ]
 ```
 
@@ -115,12 +115,40 @@ Well, in our case, our "expansion" function is `Int -> Rule Int`: "To expand an
 to fully expand any rule number:
 
 ```haskell
-expandRule :: IntMap (Rule Int) -> Int -> ExpandedRule
+expandRule :: IntMap (Rule Int) -> Int -> Fix Rule
 expandRule rs = ana (rs IM.!)
 ```
 
 Neat, huh?  That will fully expand the rule at any index by repeatedly
 re-expanding it with `(rs IM.!)` until we are out of things to expand.
+
+Another fun thing we can write that we could actually use for part 1 is to turn
+an `Fix Rule` into a list of all possible strings to match.  We want to
+write a `Fix Rule -> [String]` function by tearing down our recursive data
+type, and this could be nicely expressed with a catamorphism (`cata :: (Rule a
+-> a) -> Fix Rule -> a`), where we specify how to tear down a "single layer" of
+our `Rule` type, and `cata` will generalize that to tear down the entire
+structure.  I talk about this a bit [in my recursion schemes blog
+post](https://blog.jle.im/entry/tries-with-recursion-schemes.html), and the
+explanation I give is "The `a` values in the `Rule` become the very things we
+swore to create." --- in this case, the `[String]`
+
+So let's write our `Rule [String] -> [String]`:
+
+```haskell
+generateAlg :: Rule [String] -> [String]
+generateAlg = \case
+    Simple c   -> [[c]]                                   -- the single single-char string is created
+    Compoud xs -> concatMap (fmap concat . sequence) xs   -- concat/sequence all options
+```
+
+And now `cata generateAlg` will generate all possible matches from a ruleset
+
+```haskell
+ghci> cata generateAlg
+    (Fix $ Compound [[Fix (Leaf 'h'), Fix (Leaf 'e')], [Fix (Leaf 'h')], [Fix (Leaf 'q')]])
+["he","h","q"]
+```
 
 Okay, that's enough playing around for now...time to find our real solution :)
 
@@ -132,15 +160,9 @@ that return empty leftovers.
 
 For aid in thinking, let's imagine turning a `Fix Rule` into a `String ->
 [String]`.  We can do that with the help of `cata :: (Rule a -> a) -> Fix Rule
--> a`.  The essence is that you are given a `Rule a` to use to make an `a`, in
-which each `a` is "the thing itself you are trying to produce, already given to
-you".  I talk about this a bit [in my recursion schemes blog
-post](https://blog.jle.im/entry/tries-with-recursion-schemes.html), and the
-explanation I give is "The `a` values in the `Rule` become the very things we
-swore to create."
-
-Because we want to write a `Fix Rule -> (String -> [String])`, our catamorphism
-function ("algebra") is `Rule (String -> [String]) -> (String -> [String])`:
+-> a`.  Because we want to write a `Fix Rule -> (String -> [String])`, our
+catamorphism function ("algebra") is `Rule (String -> [String]) -> (String ->
+[String])`:
 
 ```haskell
 matchAlg :: Rule (String -> [String]) -> String -> [String]
@@ -159,7 +181,6 @@ match :: Fix Rule -> String -> [String]
 match = cata matchAlg
 ```
 
-
 We want to fail on our input string (return no matches) if we see a `Simple c`
 with either an empty input string or one that doesn't match the `c`.  Then for
 the `Compound` case with our `xs :: [[String -> [String]]]`, we take a choice
@@ -167,13 +188,14 @@ the `Compound` case with our `xs :: [[String -> [String]]]`, we take a choice
 [String]]` sequences.
 
 ```haskell
-ghci> match (Fix $ Compound [[Fix $ Leaf 'h', Fix $ Leaf 'e'], [Fix $ Leaf 'h'], [Fix $ Leaf 'q']]) "hello"
+ghci> match (Fix $ Compound [[Fix (Leaf 'h'), Fix (Leaf 'e')], [Fix (Leaf 'h')], [Fix (Leaf 'q')]])
+                "hello"
 ["llo", "ello"]
 ```
 
 Alright, so now how do we solve the final puzzle?
 
-It looks like we need to "generate" a `Fix Rule`, and immediately tear it down
+It looks like we need to "generate" a `Fix Rule`, and *immediately* tear it down
 into a `String -> [String]` to use it to match a string.  "Generate recursively
 and immediately tear down recursively"...that's a hylomorphism!
 
@@ -239,6 +261,15 @@ extraRules = IM.fromList [
     (8 , Compound [[42],[42,8]])
   , (11, Compound [[42,31],[42,11,31]])
   ]
+```
+
+As a nice little bonus, we can also use `generateAlg` with a hylomorphism to
+also turn an `IntMap (Rule Int)` into a list of all possible strings, which
+works for part 1 but would return an infinite list for part 2.
+
+```haskell
+generateAll :: IntMap (Rule Int) -> Int -> [String]
+generateAll rules = hylo generateAlg (rules IM.!) 0
 ```
 
 
