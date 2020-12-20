@@ -144,8 +144,8 @@ mainRun Cfg{..} MRO{..} =  do
       testRes <- fmap join . forM (guard _mroTest) $ \_ ->
         runTestSuite c cd
 
-      let inp1 = maybe _cdInput  Right           inp0
-          ans1 = maybe _cdAnswer (const Nothing) inp0
+      let inp1 = strip <$> maybe _cdInput  Right           inp0
+          ans1 = strip <$> maybe _cdAnswer (const Nothing) inp0
       case inp1 of
         Right inp
           | _mroBench -> do
@@ -375,7 +375,7 @@ testCase emph c inp TM{..} = do
       Left SEParse -> "ERROR: No parse"
       Left SESolve -> "ERROR: No solution"
     (mark, showAns, status) = case _tmAnswer of
-      Just (strip->ex)    -> case res of
+      Just ex    -> case res of
         Right (strip->r)
           | r == ex   -> ('✓', Nothing, Just True )
           | otherwise -> ('✗', Just ex, Just False)

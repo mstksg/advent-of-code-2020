@@ -869,9 +869,9 @@ instance Monoid Dir where
     mempty = North
 
 instance Group Dir where
-    invert = \case North -> South
+    invert = \case North -> North
                    East  -> West
-                   South -> North
+                   South -> South
                    West  -> East
     pow = flip stimes
 
