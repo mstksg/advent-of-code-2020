@@ -24,7 +24,6 @@
 module AOC.Challenge.Day20 (
     day20a
   , day20b
-  , horizFlip
   ) where
 
 import           AOC.Prelude
@@ -46,131 +45,56 @@ import qualified Linear                         as L
 import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
+import qualified Data.Set.NonEmpty as NES
 
--- rotSet :: Set Point -> Set Point
--- rotSet = mulPloint
-
--- mulPoint :: Num a => V2 a -> V2 a -> V2 a
--- mulPoint (V2 x y) (V2 u v) = V2 (x*u - y*v) (x*v + y*u)
-
-edges :: Set Point -> Map (Dir, Bool) IntSet
-edges ps = M.fromList 
-    [ ((r, flp), topBorder $ S.map (flpfunc . mulPoint (dirPoint r)) ps)
-    | r <- [ North ..  ]
-    , flp <- [ False, True ]
-    , let flpfunc = if flp then id else over _x negate
-    ]
-  where
-    Just (V2 (V2 xmn ymn) (V2 xmx ymx)) = boundingBox' ps
-
-edges2
-    :: Set Point
-    -> Map IntSet (Set Point) -- edge and map after edge
-edges2 ps = M.fromList 
+edges
+    :: NESet Point
+    -> Map IntSet (NESet Point) -- edge and map after edge
+edges ps = M.fromList
     [ (tbord, ps')
-    -- ((r, flp), IS.fromList . topBorder $ S.map (flpfunc . mulPoint (dirPoint r)) ps)
     | r <- [ North ..  ]
     , flp <- [ False, True ]
     , let flpfunc = if flp then id else over _x negate
-          ps' = shiftToZero . S.map (flpfunc . mulPoint (dirPoint r)) $ ps
-          tbord = IS.fromList .mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $  S.toList ps'
+          ps' = shiftToZero . NES.map (flpfunc . mulPoint (dirPoint r)) $ ps
+          tbord = IS.fromList . mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $ toList ps'
     ]
-  -- where
-  --   Just (V2 (V2 xmn ymn) _) = boundingBox' ps
 
-shiftToZero :: Set Point -> Set Point
-shiftToZero ps = S.map (subtract mn) ps
+-- | Get the x positions of the minimal ("top") y line
+topBorder :: NESet Point -> IntSet
+topBorder ps = IS.fromDistinctAscList
+             . mapMaybe (\(V2 x y) -> (x - xmn) <$ guard (y == ymn))
+             . toList
+             $ ps
   where
-    Just (V2 mn _) = boundingBox' ps
+    V2 xmn ymn = minCorner ps
 
-
-topBorder :: Set Point -> IntSet
-topBorder ps = IS.fromList . mapMaybe (\(V2 x y) -> (x - xmn) <$ guard (y == ymn)) . S.toList $ ps
-  where
-    Just (V2 (V2 xmn ymn) (V2 xmx ymx)) = boundingBox' ps
-
--- inOut :: Map (Dir, Bool) IntSet -> []
-
--- assemble :: [Inpointt]
---          -> Map IntSet ( Int, (Dir, Bool) )
---          -> IntMap Point
--- assemble (i:is) edges = go (IM.singletion i 0)
---   -- where
---   --   go seen newPoint
-
--- assemble :: IntMap (Map (Dir, Bool) IntSet)
---          -> Map IntSet ( Int, (Dir, Bool) )
---          -> IntMap Point
--- assemble (IM.deleteFindMin->((i0,e0),is)) edgs = go 
-
+-- | From a map of id's to edges of that id, return a map of id's to the
+-- id's of all neighbors.
 pairUp :: IntMap (Set IntSet) -> IntMap IntSet
 pairUp im0 = flip IM.mapWithKey im0 $ \i es ->
-    let im = IM.delete i im0
-    in  IM.keysSet $ IM.filter (\ei -> not $ S.null $ es `S.intersection` ei) im
-    -- countTrue (\e -> e `S.member` im) es
-  where
+        IM.keysSet
+      . IM.filter (\ei -> not $ S.null $ es `S.intersection` ei)
+      $ IM.delete i im0
 
--- pairUp :: IntMap (Set IntSet) -> IntMap IntSet
--- pairUp im0 = flip IM.mapWithKey im0 $ \i es ->
---     let im = IM.delete i im0
---     in  IM.filter (\ei -> not $ S.null $ es `S.intersection` ei) im
---     -- countTrue (\e -> e `S.member` im) es
---   where
-
--- pairUp2 :: IntMap (Map (Dir, Bool) IntSet) -> IntMap ((Dir, Bool), Map 
--- pairUp2 im0 = flip IM.mapWithKey im0 $ \i es ->
---     let im = fold $ IM.delete i im0
---     in  countTrue (\e -> e `S.member` im) es
---   where
-
-
- -- (IM.singleton i0 0) 0 e0
- --  where
- --    go seen currPoint currEdge = case firstJust
-
--- -- Returns @'V3' (V2 xMin yMin) (V2 xMax yMax)@.
--- boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
--- boundingBox = (\(T2 (Ap mn) (Ap mx)) -> V2 (getMin <$> mn) (getMax <$> mx))
---             . foldMap1 (\p -> T2 (Ap (Min <$> p)) (Ap (Max <$> p)))
-
--- -- | A version of 'boundingBox' that works for normal possibly-empty lists.
--- boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
--- boundingBox' = fmap boundingBox . NE.nonEmpty . toList
-
--- growRow
---     :: IntMap 
-
+-- | shift the corner point by a direction
 topPointOf :: Dir -> Point
 topPointOf = \case
     North -> V2 0 (-8)
     East  -> V2 8 0
     South -> V2 0  8
     West  -> V2 (-8) 0
-    -- North -> V2 0 (-11)
-    -- East  -> V2 11 0
-    -- South -> V2 0  11
-    -- West  -> V2 (-11) 0
 
-horizFlip :: Dir -> Dir
-horizFlip = \case
-    North -> North
-    East  -> West
-    West  -> East
-    South -> South
-
-
-removeBorders :: Set Point -> Set Point
-removeBorders ps = S.fromList . mapMaybe go . S.toList $ ps
-        -- S.map (subtract mn) ps
+-- | assume corner at 0,0
+removeBorders :: NESet Point -> Set Point
+removeBorders = S.fromDistinctAscList . mapMaybe go . toList
   where
-    Just (V2 (V2 xmn ymn) (V2 xmx ymx)) = boundingBox' ps
-    go (V2 x y) = V2 (x - 1) (y - 1) <$
-        guard (x /= xmn && x /= xmx && y /= ymn && y /= ymx)
-
-
+    go p = do
+      guard . and $ (/=) <$> p <*> V2 0 0
+      guard . and $ (/=) <$> p <*> V2 9 9
+      pure $ p - 1
 
 assembleMap
-    :: IntMap (Map IntSet (Set Point))
+    :: IntMap (Map IntSet (NESet Point))
     -> Set Point
 assembleMap pts0 = case IM.minViewWithKey pts0 of
     Nothing -> S.empty
@@ -180,98 +104,79 @@ assembleMap pts0 = case IM.minViewWithKey pts0 of
         let q0 = M.fromList
                 [ (topBorder mp1', (topPointOf dd, dd))
                 | dd <- [North ..]
-                , let mp1' = mulPoint (dirPoint (dd <> East)) `S.map` mp1
+                , let mp1' = mulPoint (dirPoint (dd <> East)) `NES.map` mp1
                 ]
-        -- in  trace "hi" $ traceShow q0 mp1
         in  go q0 pts1 (removeBorders mp1)
--- go M.empty pts0 S.empty
-
   where
-    -- go  :: IntMap (Map Dir IntSet)
-    -- -- queue: edge -> top corner, orientation
-    go  :: Map IntSet (Point, Dir)
-        -> IntMap (Map IntSet (Set Point))  -- leftover
-        -> Set Point    -- current map
+    go  :: Map IntSet (Point, Dir)          -- queue: edge -> top corner, orientation
+        -> IntMap (Map IntSet (NESet Point))  -- leftover
+        -> Set Point                        -- current map
         -> Set Point
     go q pts mp = case M.minViewWithKey q of
       Nothing -> mp
       Just ((e, (mnpt, d)), q') ->
-        let nxtcand = mapMaybe (\(i, ls) ->
+        let nxt = firstJust (\(i, ls) ->
                     case M.lookup e ls of
                       Nothing   -> Nothing
                       Just npts -> Just (i, npts)
                 ) $ IM.toList pts
-            nxt = case nxtcand of
-              [] -> Nothing
-              [x] -> Just x
-              x:_ -> error "more than one candidate"
         in  case nxt of
               Nothing -> go q' pts mp
               Just (k, npts) ->
-              -- Just (trace "hi".traceShowId->k, npts) ->
-                -- let rotated = shiftToZero npts
-                let rotated = shiftToZero $ mulPoint (dirPoint (invert $ horizFlip d <> East)) `S.map` S.map (over _x negate) npts
-                    shifted = removeBorders $ S.map (+ mnpt) rotated
+                let rotated = shiftToZero $ mulPoint (dirPoint (invert $ horizDirFlip d <> East)) `NES.map` NES.map (over _x negate) npts
+                    shifted = S.map (+ mnpt) (removeBorders rotated)
                     mp'     = shifted <> mp
                     newQueue = M.fromList
                         [ (topBorder npts', (topPointOf dd + mnpt, dd))
                         | dd <- [North ..]
                         , dd /= invert d
-                        , let npts' = mulPoint (dirPoint (dd <> East)) `S.map` rotated
+                        , let npts' = mulPoint (dirPoint (dd <> East)) `NES.map` rotated
                         ]
                 in  go (newQueue <> q') (IM.delete k pts) mp'
 
-    -- -> Map IntSet (Set Point) -- edge and map after edge
-
-day20a :: _ :~> _
+day20a :: IntMap (NESet Point) :~> Int
 day20a = MkSol
-    { sParse = fmap IM.fromList
-              . traverse (fmap  (bimap (read . filter isDigit) (parseAsciiSet (== '#') . unlines)) . uncons . lines)
+    { sParse = traverse NES.nonEmptySet
+             . IM.fromList
+             . mapMaybe (fmap (bimap (read . filter isDigit) (parseAsciiSet (== '#') . unlines)) . uncons . lines)
              . splitOn "\n\n"
     , sShow  = show
-    , sSolve = Just . product . IM.keys . IM.filter ((== 2) . IS.size)
-                . pairUp . fmap (S.fromList . toList . edges)
+    , sSolve = Just
+             . product
+             . mapMaybe (\(k, xs) -> k <$ guard (IS.size xs == 2))
+             . IM.toList
+             . pairUp
+             . fmap (M.keysSet . edges)
     }
 
-day20b :: _ :~> _
+day20b :: IntMap (NESet Point) :~> Int
 day20b = MkSol
     { sParse = sParse day20a
     , sShow  = show
-    -- , sShow  = ('\n':) . displayAsciiMap '.' . M.fromSet (\_ -> '#')
     , sSolve = \pp ->
-        let mp = assembleMap $ edges2 <$> pp
+        let mp = assembleMap $ edges <$> pp
         in  listToMaybe
-              [ S.size mp - numdrag * S.size dragon
+              [ S.size mp - numdrag * NES.size dragon
               | r <- [ North ..  ]
               , flp <- [ False, True ]
               , let flpfunc = if flp then id else over _x negate
-                    mp' = shiftToZero $ S.map (flpfunc . mulPoint (dirPoint r)) mp
-                    numdrag = findDragon mp'
+                    dragon' = shiftToZero $ NES.map (flpfunc . mulPoint (dirPoint r)) dragon
+                    numdrag = findPattern (NES.toSet dragon') mp
               , numdrag /= 0
               ]
     }
 
--- findDragon :: Set Point -> Int
--- findDragon ps = countTrue (S.null . (`S.difference` ps)) candidates
---   where
---     Just (V2 mn mx) = boundingBox' ps
---     candidates =
---       [ S.map (+ d) dragon
---       | d <- range (mn, mx)
---       ]
-
-
-findDragon :: Set Point -> Int
-findDragon ps = countTrue (S.null . (`S.difference` ps)) candidates
+findPattern :: Set Point -> Set Point -> Int
+findPattern pat ps = countTrue (S.null . (`S.difference` ps)) candidates
   where
     Just (V2 mn mx) = boundingBox' ps
     candidates =
-      [ S.map (+ d) dragon
+      [ S.map (+ d) pat
       | d <- range (mn, mx)
       ]
 
-dragon :: Set Point
-dragon = parseAsciiSet (== '#') $ unlines
+dragon :: NESet Point
+Just dragon = NES.nonEmptySet . parseAsciiSet (== '#') $ unlines
   [ "                  # "
   , "#    ##    ##    ###"
   , " #  #  #  #  #  #   "

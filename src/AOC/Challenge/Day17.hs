@@ -32,7 +32,6 @@ import           Linear                   (R2(..), V3(..), V4(..))
 import qualified Data.Map.Monoidal.Strict as MM
 import qualified Data.Map.Strict          as M
 import qualified Data.Set                 as S
-import qualified Data.Vector.Sized        as V
 
 stepper
     :: forall f a.

@@ -83,6 +83,7 @@ module AOC.Common (
   , getDown
   , toNatural
   , factorial
+  , mapMaybeSet
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -120,11 +121,16 @@ module AOC.Common (
   , dirPoint'
   , rotPoint
   , mulDir
+  , horizDirFlip
+  , vertDirFlip
   -- * 2D Maps
   , memoPoint
   , boundingBox
   , boundingBox'
   , inBoundingBox
+  , minCorner, minCorner'
+  , shiftToZero
+  , shiftToZero'
   , parseAsciiMap
   , asciiGrid
   , parseAsciiSet
@@ -699,6 +705,29 @@ boundingBox = (\(T2 (Ap mn) (Ap mx)) -> V2 (getMin <$> mn) (getMax <$> mx))
 boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
 boundingBox' = fmap boundingBox . NE.nonEmpty . toList
 
+minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
+minCorner = fmap getMin . getAp . foldMap1 (Ap . fmap Min)
+
+minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
+minCorner' = fmap minCorner . NE.nonEmpty . toList
+
+-- | Shift corner to (0,0)
+shiftToZero
+    :: (Applicative f, Num a, Ord a)
+    => NESet (f a) -> NESet (f a)
+shiftToZero ps = NES.mapMonotonic (liftA2 subtract mn) ps
+  where
+    mn = minCorner ps
+
+-- | Shift corner to (0,0)
+shiftToZero'
+    :: (Applicative f, Num a, Ord a)
+    => Set (f a) -> Set (f a)
+shiftToZero' ps = case minCorner' ps of
+    Nothing -> ps
+    Just mn -> S.mapMonotonic (liftA2 subtract mn) ps
+
+
 inBoundingBox
     :: (Applicative g, Foldable g, Ord a)
     => V2 (g a)
@@ -808,6 +837,24 @@ mulDir West  = \case North -> West
                      East  -> North
                      South -> East
                      West  -> South
+
+
+-- | Flip a 'Dir' about North/South axis.
+horizDirFlip :: Dir -> Dir
+horizDirFlip = \case
+    North -> North
+    East  -> West
+    West  -> East
+    South -> South
+
+-- | Flip a 'Dir' about East/West axis.
+vertDirFlip :: Dir -> Dir
+vertDirFlip = \case
+    North -> South
+    East  -> East
+    West  -> West
+    South -> North
+
 
 -- | '<>' is 'mulDir'.
 instance Semigroup Dir where
@@ -1038,6 +1085,9 @@ factorial n = go 2 1
     go i !x
       | i > n     = x
       | otherwise = go (i + 1) (x * i)
+
+mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
+mapMaybeSet f = S.fromList . mapMaybe f . S.toList
 
 -- | Lattice points for line between points, not including endpoints
 lineTo :: Point -> Point -> [Point]
