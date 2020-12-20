@@ -142,10 +142,10 @@ pairUp im0 = flip IM.mapWithKey im0 $ \i es ->
 
 topPointOf :: Dir -> Point
 topPointOf = \case
-    North -> V2 0 (-9)
-    East  -> V2 9 0
-    South -> V2 0  9
-    West  -> V2 (-9) 0
+    North -> V2 0 (-8)
+    East  -> V2 8 0
+    South -> V2 0  8
+    West  -> V2 (-8) 0
     -- North -> V2 0 (-11)
     -- East  -> V2 11 0
     -- South -> V2 0  11
@@ -157,6 +157,15 @@ horizFlip = \case
     East  -> West
     West  -> East
     South -> South
+
+
+removeBorders :: Set Point -> Set Point
+removeBorders ps = S.fromList . mapMaybe go . S.toList $ ps
+        -- S.map (subtract mn) ps
+  where
+    Just (V2 (V2 xmn ymn) (V2 xmx ymx)) = boundingBox' ps
+    go (V2 x y) = V2 (x - 1) (y - 1) <$
+        guard (x /= xmn && x /= xmx && y /= ymn && y /= ymx)
 
 
 
@@ -174,7 +183,7 @@ assembleMap pts0 = case IM.minViewWithKey pts0 of
                 , let mp1' = mulPoint (dirPoint (dd <> East)) `S.map` mp1
                 ]
         -- in  trace "hi" $ traceShow q0 mp1
-        in  go q0 pts1 mp1
+        in  go q0 pts1 (removeBorders mp1)
 -- go M.empty pts0 S.empty
 
   where
@@ -202,7 +211,7 @@ assembleMap pts0 = case IM.minViewWithKey pts0 of
               -- Just (trace "hi".traceShowId->k, npts) ->
                 -- let rotated = shiftToZero npts
                 let rotated = shiftToZero $ mulPoint (dirPoint (invert $ horizFlip d <> East)) `S.map` S.map (over _x negate) npts
-                    shifted = S.map (+ mnpt) rotated
+                    shifted = removeBorders $ S.map (+ mnpt) rotated
                     mp'     = shifted <> mp
                     newQueue = M.fromList
                         [ (topBorder npts', (topPointOf dd + mnpt, dd))
