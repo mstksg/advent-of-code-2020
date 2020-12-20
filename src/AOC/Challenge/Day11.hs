@@ -12,7 +12,8 @@ module AOC.Challenge.Day11 (
   , day11b
   ) where
 
-import           AOC.Common                        (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap, countTrue)
+import           AOC.Common                        (countTrue)
+import           AOC.Common.Point                  (Point, boundingBox', inBoundingBox, fullNeighbs, fullNeighbsSet, parseAsciiMap)
 import           AOC.Solver                        ((:~>)(..))
 import           Control.Monad.Loops               (whileM_)
 import           Control.Monad.Primitive           (PrimMonad, PrimState)

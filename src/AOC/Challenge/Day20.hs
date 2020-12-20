@@ -150,8 +150,7 @@ day20a = MkSol
     , sShow  = show
     , sSolve = Just
              . product
-             . mapMaybe (\(k, xs) -> k <$ guard (IS.size xs == 2))
-             . IM.toList
+             . mapMaybe (\(k, xs) -> k <$ guard (IS.size xs == 2)) . IM.toList
              . pairUp
              . fmap (NES.toSet . NEM.keysSet . edges)
     }

@@ -14,7 +14,8 @@ module AOC.Challenge.Day17 (
   -- , finalWeight
   ) where
 
-import           AOC.Common               (asciiGrid, (!!!), factorial, freqs, lookupFreq, dup, foldMapParChunk, fullNeighbsSet)
+import           AOC.Common               ((!!!), factorial, freqs, lookupFreq, dup, foldMapParChunk)
+import           AOC.Common.Point         (asciiGrid, fullNeighbsSet)
 import           AOC.Solver               ((:~>)(..))
 import           Control.DeepSeq          (NFData)
 import           Control.Lens             (set, to, asIndex, filtered, indices, (.>), traversed, partsOf, over)

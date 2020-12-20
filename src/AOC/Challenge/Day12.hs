@@ -12,16 +12,16 @@ module AOC.Challenge.Day12 (
   , day12b
   ) where
 
-import           AOC.Common      (Point, Dir(..), dirPoint, rotPoint, mannDist)
-import           AOC.Solver      ((:~>)(..))
-import           Control.DeepSeq (NFData)
-import           Data.Group      (pow)
-import           Data.List       (foldl')
-import           Data.Map        (Map)
-import           GHC.Generics    (Generic)
-import           Linear          (V2(..), (*^))
-import           Text.Read       (readMaybe)
-import qualified Data.Map        as M
+import           AOC.Common.Point (Point, Dir(..), dirPoint, rotPoint, mannDist)
+import           AOC.Solver       ((:~>)(..))
+import           Control.DeepSeq  (NFData)
+import           Data.Group       (pow)
+import           Data.List        (foldl')
+import           Data.Map         (Map)
+import           GHC.Generics     (Generic)
+import           Linear           (V2(..), (*^))
+import           Text.Read        (readMaybe)
+import qualified Data.Map         as M
 
 data Instr = Forward Int
            | Turn Dir

@@ -18,6 +18,7 @@ module AOC.Prelude (
   ) where
 
 import           AOC.Common                 as P
+import           AOC.Common.Point           as P
 import           AOC.Solver                 as P
 import           AOC.Util                   as P
 import           Control.Applicative        as P
