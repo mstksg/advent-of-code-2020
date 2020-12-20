@@ -285,6 +285,7 @@ eitherItem :: Lens' (Either a a) a
 getDown :: Down a -> a
 toNatural :: Integral a => a -> Maybe Natural
 factorial :: Int -> Int
+mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
 
 -- | Use a stream of tokens <tt>a</tt> as the underlying parser stream.
 --   Note that error messages for parser errors are going necessarily to be
@@ -356,6 +357,12 @@ rotPoint :: Num a => Dir -> V2 a -> V2 a
 --   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
 --   identity is <a>North</a> and the inverse is the opposite direction.
 mulDir :: Dir -> Dir -> Dir
+
+-- | Flip a <a>Dir</a> about North/South axis.
+horizDirFlip :: Dir -> Dir
+
+-- | Flip a <a>Dir</a> about East/West axis.
+vertDirFlip :: Dir -> Dir
 memoPoint :: Memo Point
 
 -- | Find the minimum and maximum x and y from a collection of points.
@@ -367,6 +374,14 @@ boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
 --   lists.
 boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
 inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
+minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
+minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
+
+-- | Shift corner to (0,0)
+shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
+
+-- | Shift corner to (0,0)
+shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
 parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
 asciiGrid :: IndexedTraversal Point String [a] Char a
 parseAsciiSet :: (Char -> Bool) -> String -> Set Point
@@ -7669,6 +7684,14 @@ boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
 -- | A version of <a>boundingBox</a> that works for normal possibly-empty
 --   lists.
 boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
+minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
+minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
+
+-- | Shift corner to (0,0)
+shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
+
+-- | Shift corner to (0,0)
+shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
 inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbsSet :: Point -> Set Point
@@ -7695,6 +7718,12 @@ parseDir :: Char -> Maybe Dir
 --   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
 --   identity is <a>North</a> and the inverse is the opposite direction.
 mulDir :: Dir -> Dir -> Dir
+
+-- | Flip a <a>Dir</a> about North/South axis.
+horizDirFlip :: Dir -> Dir
+
+-- | Flip a <a>Dir</a> about East/West axis.
+vertDirFlip :: Dir -> Dir
 parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
 parseAsciiSet :: (Char -> Bool) -> String -> Set Point
 asciiGrid :: IndexedTraversal Point String [a] Char a
@@ -7728,6 +7757,7 @@ parseWords :: Parsec Void (TokStream String) a -> String -> Maybe a
 nextMatch :: MonadParsec e s m => m a -> m a
 toNatural :: Integral a => a -> Maybe Natural
 factorial :: Int -> Int
+mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
 
 -- | Lattice points for line between points, not including endpoints
 lineTo :: Point -> Point -> [Point]
@@ -7935,6 +7965,8 @@ module AOC.Challenge.Day21
 --   will recommend what should go in place of the underscores.</li>
 --   </ul>
 module AOC.Challenge.Day20
+day20a :: IntMap (NESet Point) :~> Int
+day20b :: IntMap (NESet Point) :~> Int
 
 
 -- | Template Haskell for discovering all named challenges in a given
@@ -8299,14 +8331,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2liX
-mainRunOpts :: HasMainRunOpts c_a2liX => Lens' c_a2liX MainRunOpts
-mroActual :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
-mroBench :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
-mroInput :: HasMainRunOpts c_a2liX => Lens' c_a2liX (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
-mroSpec :: HasMainRunOpts c_a2liX => Lens' c_a2liX TestSpec
-mroTest :: HasMainRunOpts c_a2liX => Lens' c_a2liX Bool
+class HasMainRunOpts c_a2nRQ
+mainRunOpts :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ MainRunOpts
+mroActual :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ Bool
+mroBench :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ Bool
+mroInput :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ Bool
+mroSpec :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ TestSpec
+mroTest :: HasMainRunOpts c_a2nRQ => Lens' c_a2nRQ Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8319,10 +8351,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2lqq
-mainViewOpts :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq TestSpec
-mvoWait :: HasMainViewOpts c_a2lqq => Lens' c_a2lqq Bool
+class HasMainViewOpts c_a2nZj
+mainViewOpts :: HasMainViewOpts c_a2nZj => Lens' c_a2nZj MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2nZj => Lens' c_a2nZj TestSpec
+mvoWait :: HasMainViewOpts c_a2nZj => Lens' c_a2nZj Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8347,13 +8379,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2luY
-mainSubmitOpts :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
-msoLock :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
-msoRetry :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
-msoSpec :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2luY => Lens' c_a2luY Bool
+class HasMainSubmitOpts c_a2o3R
+mainSubmitOpts :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R Bool
+msoLock :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R Bool
+msoRetry :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R Bool
+msoSpec :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2o3R => Lens' c_a2o3R Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
