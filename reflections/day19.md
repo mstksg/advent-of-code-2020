@@ -1,140 +1,201 @@
-So this is *yet another* puzzle where recursive knot tying was useful!  This
-happened this year already in [day
-7](https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day07.md)
-and [day
-10](https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day10.md)...it's
-a nice progression of techniques!
+I had originally solved this puzzle using recursive knot tying and a funky
+custom Monad --- the writeup for that is [available online
+here](https://github.com/mstksg/advent-of-code-2020/blob/5065aad720f6996386e9c94fbd7904a6fa9f2d9d/reflections-out/day19.md).
+But after some thought and reflection, I saw that things might be a little
+cleaner as a hylomorphism from
+*[recursion-schemes](https://hackage.haskell.org/package/recursion-schemes)*,
+so I did a rewrite based on it!  It also ended up being about 25% faster to
+run, which was a nice bonus.  Note that I do have a [blog post on hylomorphisms
+and recurion schemes]()
+(https://blog.jle.im/entry/tries-with-recursion-schemes.html), if you'd like to
+investigate more about the topic :)
 
-Most of my solution revolves around this tree monad, `AndOr`:
+The central type ("base functor") is `Rule`:
 
 ```haskell
-data AndOr a = Leaf a
-             | And [AndOr a]
-             | Or  [AndOr a]
+data Rule a = Simple Char
+            | Compound [[a]]
   deriving (Show, Eq, Ord, Generic, Functor)
-
-instance Monad AndOr where
-    return  = Leaf
-    ao >>= f = case ao of
-      Leaf x -> f x
-      And xs -> And $ map (>>= f) xs
-      Or  xs -> Or  $ map (>>= f) xs
 ```
 
-An `AndOr` is a nested/recursive list of and's and or's; for example, I parse a
-nested rule as `AndOr Int`, so
+A `Rule a` is either a "base" `Char` match, or it is a list of options of sequences
+(a list of "or"'s of "and then"'s) of `a`.  The choice of `a` gives us
+our interesting behavior.
 
-```
-1 2 | 3 4 6
-```
+For example, our initial ruleset from the input file is a list of `Rule Int`s:
+either they are a simple `Char`, or they contain a list of options of sequences
+of rule id's (`Int`).  We can load it all as an `IntMap (Rule Int)`, where each
+`Rule Int` is stored under its rule ID.
 
-gets parsed into
+Just to help us get an intuition for this type, let's look at what happens if
+we want to "expand" out a rule all the way to only leaves at the end of a bunch
+of nested choices and sequences.  This isn't required for the solve, but could
+be pretty fun.
+
+For that, we can use the `Fix` data type:
 
 ```haskell
-Or [
-    And [Leaf 1, Leaf 2]
-  , And [Leaf 3, Leaf 4, Leaf 6]
+newtype Fix f = Fix (f (Fix f))
+
+type ExpandedRule = Fix Rule
+```
+
+A `Fix Rule` is infinite nested `Rule`s: it's essentially `Rule (Rule (Rule
+(Rule ...)))` forever, meaning underneath each `Compound` are new rules, and at
+the end of it all we only have `Leaf Char`s, and no more `Int`s.  For example,
+we could represent rule 0 of
+
+```
+0: 1 2 | 3
+1: 3
+2: 3 3
+3: "a"
+```
+
+as
+
+```haskell
+Fix $ Compound [
+    [Fix $ Compoud [[Fix $ Leaf 'a']], Fix $ Compound [[Fix $ Leaf 'a', Fix $ Leaf 'a']]]
+  , [Fix $ Leaf 'a']
   ]
 ```
 
-And an *expanded* rule like `ab|ba` would be parsed as an `AndOr Char`:
+But, given an `IntMap (Rule Int)` (the "unexpanded" raw rules as they are in
+the input file), how do we get our `Fix Rule`?
+
+We can use the handy `ana` function, which, given an expansion function `a ->
+Rule a`, returns a `a -> Fix Rule`: It runs the `a -> Rule a` expansion
+function on the "seed" `a`, and then runs it again on all the `a`s in the
+result, and again, and again, etc., until there are no more `a`s to expand.
+
+Well, in our case, our "expansion" function is `Int -> Rule Int`: "To expand an
+`Int`, look it up in the `IntMap Int (RuleInt)`".  And that gives us a function
+to fully expand any rule number:
 
 ```haskell
-Or [
-    And [Leaf 'a', Leaf 'b']
-  , And [Leaf 'b', Leaf 'a']
-  ]
+expandRule :: IntMap (Rule Int) -> Int -> ExpandedRule
+expandRule rs = ana (rs IM.!)
 ```
 
-First we can parse the rules into an `IntMap Rule`, indexed by the rule number:
+Neat, huh?  That will fully expand the rule at any index by repeatedly
+re-expanding it with `(rs IM.!)` until we are out of things to expand.
+
+Okay, that's enough playing around for now...time to find our real solution :)
+
+Note that we can "interpret" a rule to match it on a string by turning it into
+a `String -> [String]`: it'll take a string and return a list of the leftovers
+of every possible match.  For example, running the rules `(he)|h|q` on `"hello"`
+*should* give us `["llo","ello"]`.  Then we can just see if we have any matches
+that return empty leftovers.
+
+For aid in thinking, let's imagine turning a `Fix Rule` into a `String ->
+[String]`.  We can do that with the help of `cata :: (Rule a -> a) -> Fix Rule
+-> a`.  The essence is that you are given a `Rule a` to use to make an `a`, in
+which each `a` is "the thing itself you are trying to produce, already given to
+you".  I talk about this a bit [in my recursion schemes blog
+post](https://blog.jle.im/entry/tries-with-recursion-schemes.html), and the
+explanation I give is "The `a` values in the `Rule` become the very things we
+swore to create."
+
+Because we want to write a `Fix Rule -> (String -> [String])`, our catamorphism
+function ("algebra") is `Rule (String -> [String]) -> (String -> [String])`:
 
 ```haskell
-data Rule = Simple Char
-          | Compound (AndOr Int)
-  deriving (Show, Eq, Ord, Generic)
-```
-
-for simple rules that are a single `Char`, and a compound rule that is a
-combination of `Int`s.
-
-The knot-tying comes in when we turn the `IntMap Rule` into an `IntMap (AndOr
-Char)`: the fully-expanded `AndOr Char` rule:
-
-```haskell
-expandRules :: IntMap Rule -> IntMap (AndOr Char)
-expandRules rules = res
+matchAlg :: Rule (String -> [String]) -> String -> [String]
+matchAlg = \case
+    Simple c -> \case
+      []   -> []
+      d:ds -> if c == d then [ds] else []
+    Compound xs -> \str ->
+      concatMap (sequenceAll str) xs
   where
-    res = rules <&> \case
-      Simple c    -> Leaf c
-      Compound cs -> cs >>= (res IM.!)
--- again, <&> is flip fmap
+    -- run the String -> [String]s on an input String one after the other
+    sequenceAll :: String -> [String -> [String]] -> [String]
+    sequenceAll s0 fs = foldr (>=>) pure fs s0
+
+match :: Fix Rule -> String -> [String]
+match = cata matchAlg
 ```
 
-So, the final `IntMap (AndOr Char)` comes from the rule at the original
-`IntMap Rule`: if it's a `Simple` rule, the result is just that `Leaf c` simple
-single-char match.  If it's a `Compond cs`, then we replace every `Int` in the
-`AndOr Int` with the `AndOr Char` stored in `res` at that `Int` index.
 
-Let's just take some time to remember what the `Monad` instance for `AndOr`
-does: `(>>=) :: AndOr a -> (a -> AndOr b) -> AndOr b` will take an `AndOr a`
-and replace every `Leaf (x :: a)` with the *application* of the `a -> AndOr b`
-to `x :: a`.  This allows us to fully transform an `AndOr a` into an `AndOr b`
-simply by telling us what to expand each `a` into.
-
-Anyway, now we write a function to actually *run* the `AndOr Char` on a
-`String` to check if it matches.  This can be written as a `AndOr Char ->
-(String -> [String])`, which takes a `String` and returns the leftovers that
-could be returned from each possible parse:
+We want to fail on our input string (return no matches) if we see a `Simple c`
+with either an empty input string or one that doesn't match the `c`.  Then for
+the `Compound` case with our `xs :: [[String -> [String]]]`, we take a choice
+(`concatMap`) of all of the possible full sequences of the inner `[String ->
+[String]]` sequences.
 
 ```haskell
-match :: AndOr Char -> String -> [String]
-match = \case
-    Leaf c -> \case
-      []     -> []
-      q : qs -> qs <$ guard (q == c)
-    And xs -> foldr (>=>) pure (match <$> xs)
-    Or  xs -> \str -> concatMap (`match` str) xs
-```
-
-Our `And` branch will sequence each `String -> [String]` on each `AndOr Char`
-in `xs`, and our `Or` branch will concat all the possible parses from each
-`AndOr Char` in `xs`.
-
-```haskell
-ghci> match (And [Leaf 'h', Leaf 'e']) "hello"
-["llo"]
-ghci> match (Or [And [Leaf 'h', Leaf 'e'], And [Leaf 'h'], Leaf 'q']) "hello"
+ghci> match (Fix $ Compound [[Fix $ Leaf 'h', Fix $ Leaf 'e'], [Fix $ Leaf 'h'], [Fix $ Leaf 'q']]) "hello"
 ["llo", "ello"]
 ```
 
-It's written in a way such that hitting a `Leaf` at the end of a string or at a
-non-matching `Char` will kill that branch.
+Alright, so now how do we solve the final puzzle?
 
-We know our match "succeeds" on a complete string if there is at least one
-empty string in the resulting list (`any null`).
-
-And that should be it!
+It looks like we need to "generate" a `Fix Rule`, and immediately tear it down
+into a `String -> [String]` to use it to match a string.  "Generate recursively
+and immediately tear down recursively"...that's a hylomorphism!
 
 ```haskell
-solver :: IntMap Rule -> [String] -> Maybe Int
-solver rs ss = do
-    rule <- IM.lookup 0 (expandRules rs)
-    pure . length $ filter (any null . match rule) ss
+hylo :: Functor f => (f b -> b) -> (a -> f a) -> a -> b
 
-part1 :: IntMap Rule -> [String] -> Bool
-part1 = solver
+-- which we use as...
+hylo :: (Rule b -> b) -> (a -> Rule a) -> a -> b
 
-part2 :: IntMap Rule -> [String] -> Bool
-part2 rs = solver (extraRules <> rs)
-
-extraRules :: IntMap Rule
-extraRules = IM.fromList [
-    (8 , Compound $ Or [ Leaf 42 , And [Leaf 42, Leaf 8] ])
-  , (11, Compound $ Or [ And [Leaf 42, Leaf 31] , And [Leaf 42, Leaf 11, Leaf 31] ])
-  ]
+-- which we use as...
+hylo  :: (Rule (String -> [String]) -> (String -> [String]))
+      -> (Int -> Rule Int)
+      -> Int
+      -> (String -> [String])
 ```
 
-Part 2 works without any extra work because `AndOr` is lazy, so it will
-recursively expand its rules forever as long as you demand it :D  In practice
-we actually will always *stop* demanding items (and so things will terminate)
-because the strings we are testing are finite.
+If we give `hylo` a way to "break down nested `Rule`s" and a way to "build up
+nested `Rule`s", then it can actually iteratively expand up `Rule`s while
+immediately tearing them down.  The nice thing about this is that it's
+very lazy: it'll only *call* the generator function if you ever *need* the
+thing during your teardown function.  Since our teardown function (the `String
+-> [String]`) will terminate whenever we encounter an empty string or no
+matches, `hylo` will only run the build-up function until the point that we hit
+one of those conditions.  You can also think of it as running it on a `Rule
+Int` where each `Int` is dynamically looked up as you need it from the rules map.
+
+The neat thing about this is that we don't ever need `Fix` at all: it's all
+built up and torn down "in-place", and we never built up any intermediate
+value.  That's why I mentioned that the `Fix` part earlier was more of a
+side-tangent!  But it definitely helps us understand the big picture, I feel.
+
+Our final code (the whole of it, minus the parser) ends up being:
+
+```haskell
+data Rule a = Simple Char
+            | Compound [[a]]
+  deriving (Show, Eq, Ord, Generic, Functor)
+
+matchAlg :: Rule (String -> [String]) -> String -> [String]
+matchAlg = \case
+    Simple c -> \case
+      []   -> []
+      d:ds -> if c == d then [ds] else []
+    Compound xs -> \str ->
+      concatMap (sequenceAll str) xs
+  where
+    sequenceAll s0 fs = foldr (>=>) pure fs s0
+
+matcher :: IntMap (Rule Int) -> String -> [String]
+matcher rules = hylo matchAlg (rules IM.!) 0
+
+solver :: IntMap (Rule Int) -> [String] -> Int
+solver rules = length . filter (any null . matcher rules)
+
+part1 :: IntMap Rule -> [String] -> Int
+part1 = solver
+
+part2 :: IntMap Rule -> [String] -> Int
+part2 rs = solver (extraRules <> rs)
+
+extraRules :: IntMap (Rule Int)
+extraRules = IM.fromList [
+    (8 , Compound [[42],[42,8]])
+  , (11, Compound [[42,31],[42,11,31]])
+  ]
+```
