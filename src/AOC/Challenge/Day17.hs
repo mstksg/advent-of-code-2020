@@ -8,10 +8,10 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
-  , getWeight
-  , neighborWeights
-  , duplicands
-  , finalWeight
+  -- , getWeight
+  -- , neighborWeights
+  -- , duplicands
+  -- , finalWeight
   ) where
 
 import           AOC.Common
@@ -93,12 +93,13 @@ neighborWeights mx n =
       where
         go = StateT $ \i -> map dup [i .. mx]
 
-duplicands
+-- used to test finalWeights
+_duplicands
     :: (Ord a, Num a, Enum a)
     => a      -- ^ maximum
     -> Int    -- ^ length (dimension)
     -> Map [a] Int
-duplicands mx n = freqs . map symmer $ replicateM n [-mx .. mx]
+_duplicands mx n = freqs . map symmer $ replicateM n [-mx .. mx]
   where
     symmer    = sort . map abs
 
@@ -115,9 +116,6 @@ finalWeight x = process . freqs . drop 2 . toList $ x
         perms = factorial n
           `div` product (factorial <$> mp)
 
-factorial :: Int -> Int
-factorial i = foldl' (*) 1 [1 .. i]
-
 day17
     :: forall f. (Applicative f, R2 f, Ord (f Int), Traversable f, NFData (f Int))
     => Set (f Int) :~> Int
@@ -128,7 +126,7 @@ day17 = MkSol
              . sum
              . M.fromSet finalWeight
              . (!!! 6)
-             . zipWith traceShow [0..]
+             -- . zipWith traceShow [0..]
              . iterate (stepper wts)
     }
   where
@@ -139,17 +137,16 @@ day17 = MkSol
 day17a :: Set (V3 Int) :~> Int
 day17a = day17
 
-day17b :: Set (V.Vector 11 Int) :~> Int
+day17b :: Set (V4 Int) :~> Int
 day17b = day17
 
--- d=5: 5760 / 16736
--- d=6: 35936 / 95584
--- d=7: 178720 / 502240
+-- d=5: 5760 / 16736; 274ms
+-- d=6: 35936 / 95584; 1.5s
+-- d=7: 178720 / 502240; 7.7s
 -- d=8: ? / 2567360; 30s
 -- d=9: 4333056 / 12764416; 2m20s
 -- d=10: ? / 62771200; 8m58s
 -- d=11: ? / 309176832; 43m54s
-
 
 parseMap
     :: (Applicative f, R2 f, Ord (f Int))
@@ -159,25 +156,3 @@ parseMap = setOf $ asciiGrid
                  . filtered (== '#')
                  . asIndex
                  . to (\p -> set _xy p (pure 0))
-
--- stepper
---     :: forall f a. (Applicative f, Num a, Ord (f a), Ord a, Traversable f, NFData (f a), NFData (f Int))
---     => Set (f a)
---     -> Set (f a)
--- stepper cs = trace ("size: " <> show (S.size cs)) $
---              trace ("neighbor size: " <> show (M.size neighborCounts)) $
---     trace' "stayAlive" stayAlive <> trace' "comeAlive" comeAlive
---   where
---     neighborCounts :: Map (f a) Int
---     neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (f a) (Sum Int)) 500 id)
---       [ M.fromSet (weight c) (S.map abszy (fullNeighbsSet c))
---       | c <- S.toList cs
---       ]
---     stayAlive = M.keysSet . M.filter (\n -> n == 2 || n == 3) $
---                   trace' ("raw stayAlive") $ neighborCounts `M.restrictKeys` cs
---     comeAlive = M.keysSet . M.filter (== 3) $
---                   trace' ("raw comeAlive") $ neighborCounts `M.withoutKeys`  cs
---     abszy = iover traversed (\i x -> if i > 1 then abs x else x)
--- {-# INLINE stepper #-}
-
-    -- , sSolve = Just . sum . M.fromSet (`weight` pure 0)  . (!!! 6) . zipWith traceShow [0..] . iterate stepper
