@@ -82,6 +82,7 @@ module AOC.Common (
   , eitherItem
   , getDown
   , toNatural
+  , factorial
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -1030,6 +1031,13 @@ nextMatch = P.try . fmap snd . P.manyTill_ (P.try P.anySingle)
 
 toNatural :: Integral a => a -> Maybe Natural
 toNatural x = fromIntegral x <$ guard (x >= 0)
+
+factorial :: Int -> Int
+factorial n = go 2 1
+  where
+    go i !x
+      | i > n     = x
+      | otherwise = go (i + 1) (x * i)
 
 -- | Lattice points for line between points, not including endpoints
 lineTo :: Point -> Point -> [Point]

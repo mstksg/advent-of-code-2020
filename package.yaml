@@ -91,6 +91,7 @@ library:
   - data-interval
   - data-memocombinators
   - deepseq
+  - deriving-compat
   - directory
   - distributive
   - extended-reals
@@ -101,7 +102,6 @@ library:
   - finite-typelits
   - foldl
   - free
-  - deriving-compat
   - generic-lens
   - ghc-typelits-knownnat
   - ghc-typelits-natnormalise
@@ -136,6 +136,7 @@ library:
   - template-haskell
   - text
   - th-abstraction
+  - these
   - time
   - transformers
   - typelits-witnesses
