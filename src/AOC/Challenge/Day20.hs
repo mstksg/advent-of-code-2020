@@ -236,6 +236,43 @@ day20a = MkSol
 day20b :: _ :~> _
 day20b = MkSol
     { sParse = sParse day20a
-    , sShow  = ('\n':) . displayAsciiMap '.' . M.fromSet (\_ -> '#')
-    , sSolve = Just . assembleMap . fmap edges2
+    , sShow  = show
+    -- , sShow  = ('\n':) . displayAsciiMap '.' . M.fromSet (\_ -> '#')
+    , sSolve = \pp ->
+        let mp = assembleMap $ edges2 <$> pp
+        in  listToMaybe
+              [ S.size mp - numdrag * S.size dragon
+              | r <- [ North ..  ]
+              , flp <- [ False, True ]
+              , let flpfunc = if flp then id else over _x negate
+                    mp' = shiftToZero $ S.map (flpfunc . mulPoint (dirPoint r)) mp
+                    numdrag = findDragon mp'
+              , numdrag /= 0
+              ]
     }
+
+-- findDragon :: Set Point -> Int
+-- findDragon ps = countTrue (S.null . (`S.difference` ps)) candidates
+--   where
+--     Just (V2 mn mx) = boundingBox' ps
+--     candidates =
+--       [ S.map (+ d) dragon
+--       | d <- range (mn, mx)
+--       ]
+
+
+findDragon :: Set Point -> Int
+findDragon ps = countTrue (S.null . (`S.difference` ps)) candidates
+  where
+    Just (V2 mn mx) = boundingBox' ps
+    candidates =
+      [ S.map (+ d) dragon
+      | d <- range (mn, mx)
+      ]
+
+dragon :: Set Point
+dragon = parseAsciiSet (== '#') $ unlines
+  [ "                  # "
+  , "#    ##    ##    ###"
+  , " #  #  #  #  #  #   "
+  ]
