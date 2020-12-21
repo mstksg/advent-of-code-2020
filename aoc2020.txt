@@ -10,10 +10,54 @@
 @package aoc2020
 @version 0.1.0.0
 
+module AOC.Common.FinitarySet
+newtype FinitarySet a
+FinitarySet :: Vector (Cardinality a) Bit -> FinitarySet a
+empty :: KnownNat (Cardinality a) => FinitarySet a
+singleton :: Finitary a => a -> FinitarySet a
+insert :: Finitary a => a -> FinitarySet a -> FinitarySet a
+delete :: Finitary a => a -> FinitarySet a -> FinitarySet a
+fromList :: Finitary a => [a] -> FinitarySet a
+toList :: Finitary a => FinitarySet a -> [a]
+intersection :: FinitarySet a -> FinitarySet a -> FinitarySet a
+union :: FinitarySet a -> FinitarySet a -> FinitarySet a
+unions :: Finitary a => [FinitarySet a] -> FinitarySet a
+difference :: FinitarySet a -> FinitarySet a -> FinitarySet a
+(\\) :: FinitarySet a -> FinitarySet a -> FinitarySet a
+infixl 9 \\
+isSubsetOf :: FinitarySet a -> FinitarySet a -> Bool
+isProperSubsetOf :: FinitarySet a -> FinitarySet a -> Bool
+disjoint :: FinitarySet a -> FinitarySet a -> Bool
+size :: FinitarySet a -> Int
+member :: Finitary a => a -> FinitarySet a -> Bool
+notMember :: Finitary a => a -> FinitarySet a -> Bool
+null :: FinitarySet a -> Bool
+cartesianProduct :: (KnownNat (Cardinality a), KnownNat (Cardinality a * Cardinality b)) => FinitarySet a -> FinitarySet b -> FinitarySet (a, b)
+disjointUnion :: FinitarySet a -> FinitarySet b -> FinitarySet (Either a b)
+foldr :: Finitary a => (a -> b -> b) -> b -> FinitarySet a -> b
+foldr' :: Finitary a => (a -> b -> b) -> b -> FinitarySet a -> b
+foldl :: Finitary a => (b -> a -> b) -> b -> FinitarySet a -> b
+foldl' :: Finitary a => (b -> a -> b) -> b -> FinitarySet a -> b
+map :: (Finitary a, Finitary b) => (a -> b) -> FinitarySet a -> FinitarySet b
+foldMap :: (Finitary a, Monoid m) => (a -> m) -> FinitarySet a -> m
+filter :: Finitary a => (a -> Bool) -> FinitarySet a -> FinitarySet a
+alterF :: (Finitary a, Functor f) => (Bool -> f Bool) -> a -> FinitarySet a -> f (FinitarySet a)
+generate :: Finitary a => (a -> Bool) -> FinitarySet a
+powerSet :: (Finitary a, KnownNat (2 ^ Cardinality a)) => FinitarySet a -> FinitarySet (FinitarySet a)
+mapMaybe :: (Finitary a, Finitary b) => (a -> Maybe b) -> FinitarySet a -> FinitarySet b
+partition :: Finitary a => (a -> Bool) -> FinitarySet a -> (FinitarySet a, FinitarySet a)
+instance GHC.Classes.Ord (AOC.Common.FinitarySet.FinitarySet a)
+instance GHC.Classes.Eq (AOC.Common.FinitarySet.FinitarySet a)
+instance GHC.Generics.Generic (AOC.Common.FinitarySet.FinitarySet a)
+instance GHC.Show.Show (AOC.Common.FinitarySet.FinitarySet a)
+instance (Data.Finitary.Finitary a, GHC.TypeNats.KnownNat (2 GHC.TypeNats.^ Data.Finitary.Cardinality a)) => Data.Finitary.Finitary (AOC.Common.FinitarySet.FinitarySet a)
+instance Control.DeepSeq.NFData (AOC.Common.FinitarySet.FinitarySet a)
+
 module AOC.Common.Point
 
 -- | 2D Coordinate
 type Point = V2 Int
+type FinPoint n = V2 (Finite n)
 cardinalNeighbs :: Point -> [Point]
 cardinalNeighbsSet :: Point -> Set Point
 fullNeighbs :: (Applicative f, Num a, Traversable f) => f a -> [f a]
@@ -39,6 +83,9 @@ dirPoint' :: Num a => Dir -> V2 a
 -- | Rotate a point by a direction
 rotPoint :: Num a => Dir -> V2 a -> V2 a
 
+-- | Rotate a point by a direction
+rotFin :: KnownNat n => Dir -> FinPoint n -> FinPoint n
+
 -- | Multiply headings, taking North as straight, East as clockwise turn,
 --   West as counter-clockwise turn, and South as reverse.
 --   
@@ -60,6 +107,7 @@ mulD8 :: D8 -> D8 -> D8
 
 -- | Rotate and flip a point by a <a>D8</a>
 orientPoint :: Num a => D8 -> V2 a -> V2 a
+orientFin :: KnownNat n => D8 -> FinPoint n -> FinPoint n
 allD8 :: NonEmpty D8
 allD8Set :: NESet D8
 memoPoint :: Memo Point
@@ -91,6 +139,7 @@ newtype ScanPoint
 SP :: Point -> ScanPoint
 [_getSP] :: ScanPoint -> Point
 displayAsciiMap :: Char -> Map Point Char -> String
+centeredFinite :: forall n. KnownNat n => Iso' (Finite n) Rational
 instance GHC.Num.Num AOC.Common.Point.ScanPoint
 instance GHC.Generics.Generic AOC.Common.Point.ScanPoint
 instance GHC.Show.Show AOC.Common.Point.ScanPoint
@@ -6499,6 +6548,17 @@ data CalendarDiffDays
 CalendarDiffDays :: Integer -> Integer -> CalendarDiffDays
 [cdMonths] :: CalendarDiffDays -> Integer
 [cdDays] :: CalendarDiffDays -> Integer
+data Finite (n :: Nat)
+finites :: forall (n :: Nat). KnownNat n => [Finite n]
+modulo :: forall (n :: Nat). KnownNat n => Integer -> Finite n
+packFinite :: forall (n :: Nat). KnownNat n => Integer -> Maybe (Finite n)
+getFinite :: forall (n :: Nat). Finite n -> Integer
+class Profunctor (p :: Type -> Type -> Type)
+dimap :: Profunctor p => (a -> b) -> (c -> d) -> p b c -> p a d
+lmap :: Profunctor p => (a -> b) -> p b c -> p a c
+rmap :: Profunctor p => (b -> c) -> p a b -> p a c
+class (Foldable1 t, Traversable t) => Traversable1 (t :: Type -> Type)
+traverse1 :: (Traversable1 t, Apply f) => (a -> f b) -> t a -> f (t b)
 iat :: At m => Index m -> IndexedLens' (Index m) m (Maybe (IxValue m))
 icontains :: Contains m => Index m -> IndexedLens' (Index m) m Bool
 iix :: Ixed m => Index m -> IndexedTraversal' (Index m) m (IxValue m)
@@ -7349,14 +7409,6 @@ type family Zoomed (m :: Type -> Type) :: Type -> Type -> Type
 class Profunctor p => Choice (p :: Type -> Type -> Type)
 left' :: Choice p => p a b -> p (Either a c) (Either b c)
 right' :: Choice p => p a b -> p (Either c a) (Either c b)
-class Profunctor (p :: Type -> Type -> Type)
-dimap :: Profunctor p => (a -> b) -> (c -> d) -> p b c -> p a d
-lmap :: Profunctor p => (a -> b) -> p b c -> p a c
-rmap :: Profunctor p => (b -> c) -> p a b -> p a c
-class (Foldable1 t, Traversable t) => Traversable1 (t :: Type -> Type)
-traverse1 :: (Traversable1 t, Apply f) => (a -> f b) -> t a -> f (t b)
-data Finite (n :: Nat)
-finites :: forall (n :: Nat). KnownNat n => [Finite n]
 data NESet a
 class R1 (t :: Type -> Type)
 _x :: R1 t => Lens' (t a) a
@@ -7378,7 +7430,6 @@ _xyzw :: R4 t => Lens' (t a) (V4 a)
 data V4 a
 V4 :: !a -> !a -> !a -> !a -> V4 a
 data NEMap k a
-getFinite :: forall (n :: Nat). Finite n -> Integer
 
 -- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
 --   that sorts by y first, then x
@@ -7396,6 +7447,7 @@ North :: Dir
 East :: Dir
 South :: Dir
 West :: Dir
+type FinPoint n = V2 (Finite n)
 
 -- | 2D Coordinate
 type Point = V2 Int
@@ -7433,6 +7485,10 @@ dirPoint' :: Num a => Dir -> V2 a
 
 -- | Rotate a point by a direction
 rotPoint :: Num a => Dir -> V2 a -> V2 a
+
+-- | Rotate a point by a direction
+rotFin :: KnownNat n => Dir -> FinPoint n -> FinPoint n
+centeredFinite :: forall n. KnownNat n => Iso' (Finite n) Rational
 parseDir :: Char -> Maybe Dir
 
 -- | Multiply headings, taking North as straight, East as clockwise turn,
@@ -7452,6 +7508,7 @@ allD8Set :: NESet D8
 
 -- | Rotate and flip a point by a <a>D8</a>
 orientPoint :: Num a => D8 -> V2 a -> V2 a
+orientFin :: KnownNat n => D8 -> FinPoint n -> FinPoint n
 parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
 parseAsciiSet :: (Char -> Bool) -> String -> Set Point
 asciiGrid :: IndexedTraversal Point String [a] Char a
@@ -7487,8 +7544,6 @@ traceShowIdMsg :: Show a => String -> a -> a
 
 -- | Like <a>traceShow</a> but with an extra message
 traceShowMsg :: Show a => String -> a -> b -> b
-modulo :: forall (n :: Nat). KnownNat n => Integer -> Finite n
-packFinite :: forall (n :: Nat). KnownNat n => Integer -> Maybe (Finite n)
 chop :: ([a] -> (b, [a])) -> [a] -> [b]
 chunk :: Int -> [e] -> [[e]]
 chunksOf :: Int -> [e] -> [[e]]
@@ -8030,8 +8085,9 @@ day21b :: [(Set String, Set String)] :~> [String]
 
 -- | Day 20. See <a>AOC.Solver</a> for the types used in this module!
 module AOC.Challenge.Day20
-day20a :: IntMap (NESet Point) :~> Int
-day20b :: IntMap (NESet Point) :~> Int
+day20a :: IntMap (NESet (FinPoint 10)) :~> Int
+day20b :: IntMap (NESet (FinPoint 10)) :~> _
+instance GHC.Show.Show AOC.Challenge.Day20.Tile
 
 
 -- | Day 19. See <a>AOC.Solver</a> for the types used in this module!
@@ -8341,14 +8397,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2phQ
-mainRunOpts :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ MainRunOpts
-mroActual :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ Bool
-mroBench :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ Bool
-mroInput :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ Bool
-mroSpec :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ TestSpec
-mroTest :: HasMainRunOpts c_a2phQ => Lens' c_a2phQ Bool
+class HasMainRunOpts c_a2sgJ
+mainRunOpts :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ MainRunOpts
+mroActual :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ Bool
+mroBench :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ Bool
+mroInput :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ Bool
+mroSpec :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ TestSpec
+mroTest :: HasMainRunOpts c_a2sgJ => Lens' c_a2sgJ Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8361,10 +8417,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2ppj
-mainViewOpts :: HasMainViewOpts c_a2ppj => Lens' c_a2ppj MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2ppj => Lens' c_a2ppj TestSpec
-mvoWait :: HasMainViewOpts c_a2ppj => Lens' c_a2ppj Bool
+class HasMainViewOpts c_a2soc
+mainViewOpts :: HasMainViewOpts c_a2soc => Lens' c_a2soc MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2soc => Lens' c_a2soc TestSpec
+mvoWait :: HasMainViewOpts c_a2soc => Lens' c_a2soc Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8389,13 +8445,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2ptR
-mainSubmitOpts :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR Bool
-msoLock :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR Bool
-msoRetry :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR Bool
-msoSpec :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2ptR => Lens' c_a2ptR Bool
+class HasMainSubmitOpts c_a2ssK
+mainSubmitOpts :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK Bool
+msoLock :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK Bool
+msoRetry :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK Bool
+msoSpec :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2ssK => Lens' c_a2ssK Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
