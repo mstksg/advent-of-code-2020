@@ -12,6 +12,115 @@
 
 module AOC.Common.Point
 
+-- | 2D Coordinate
+type Point = V2 Int
+cardinalNeighbs :: Point -> [Point]
+cardinalNeighbsSet :: Point -> Set Point
+fullNeighbs :: (Applicative f, Num a, Traversable f) => f a -> [f a]
+fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
+mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
+
+-- | Treat as complex number multiplication. useful for rotations
+mulPoint :: Num a => V2 a -> V2 a -> V2 a
+
+-- | Lattice points for line between points, not including endpoints
+lineTo :: Point -> Point -> [Point]
+data Dir
+North :: Dir
+East :: Dir
+South :: Dir
+West :: Dir
+parseDir :: Char -> Maybe Dir
+dirPoint :: Num a => Dir -> V2 a
+
+-- | <a>dirPoint</a> but with inverted y axis
+dirPoint' :: Num a => Dir -> V2 a
+
+-- | Rotate a point by a direction
+rotPoint :: Num a => Dir -> V2 a -> V2 a
+
+-- | Multiply headings, taking North as straight, East as clockwise turn,
+--   West as counter-clockwise turn, and South as reverse.
+--   
+--   Should be a commutative group; it's essentially complex number
+--   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
+--   identity is <a>North</a> and the inverse is the opposite direction.
+mulDir :: Dir -> Dir -> Dir
+allDir :: NonEmpty Dir
+allDirSet :: NESet Dir
+
+-- | Represents an orientation of a 2d tile.
+data D8
+D8 :: !Dir -> !Bool -> D8
+[d8Rot] :: D8 -> !Dir
+[d8Flip] :: D8 -> !Bool
+
+-- | <tt>a <a>mulD8</a> b</tt> represents applying b, then a.
+mulD8 :: D8 -> D8 -> D8
+
+-- | Rotate and flip a point by a <a>D8</a>
+orientPoint :: Num a => D8 -> V2 a -> V2 a
+allD8 :: NonEmpty D8
+allD8Set :: NESet D8
+memoPoint :: Memo Point
+
+-- | Find the minimum and maximum x and y from a collection of points.
+--   
+--   Returns <tt><a>V2</a> (V2 xMin yMin) (V2 xMax yMax)</tt>.
+boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
+
+-- | A version of <a>boundingBox</a> that works for normal possibly-empty
+--   lists.
+boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
+inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
+minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
+minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
+
+-- | Shift corner to (0,0)
+shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
+
+-- | Shift corner to (0,0)
+shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
+parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
+asciiGrid :: IndexedTraversal Point String [a] Char a
+parseAsciiSet :: (Char -> Bool) -> String -> Set Point
+
+-- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
+--   that sorts by y first, then x
+newtype ScanPoint
+SP :: Point -> ScanPoint
+[_getSP] :: ScanPoint -> Point
+displayAsciiMap :: Char -> Map Point Char -> String
+instance GHC.Num.Num AOC.Common.Point.ScanPoint
+instance GHC.Generics.Generic AOC.Common.Point.ScanPoint
+instance GHC.Show.Show AOC.Common.Point.ScanPoint
+instance GHC.Classes.Eq AOC.Common.Point.ScanPoint
+instance GHC.Generics.Generic AOC.Common.Point.D8
+instance GHC.Classes.Ord AOC.Common.Point.D8
+instance GHC.Classes.Eq AOC.Common.Point.D8
+instance GHC.Show.Show AOC.Common.Point.D8
+instance GHC.Enum.Enum AOC.Common.Point.Dir
+instance GHC.Generics.Generic AOC.Common.Point.Dir
+instance GHC.Classes.Ord AOC.Common.Point.Dir
+instance GHC.Classes.Eq AOC.Common.Point.Dir
+instance GHC.Show.Show AOC.Common.Point.Dir
+instance Data.Hashable.Class.Hashable AOC.Common.Point.ScanPoint
+instance Control.DeepSeq.NFData AOC.Common.Point.ScanPoint
+instance GHC.Classes.Ord AOC.Common.Point.ScanPoint
+instance Data.Hashable.Class.Hashable AOC.Common.Point.D8
+instance Control.DeepSeq.NFData AOC.Common.Point.D8
+instance Data.Finitary.Finitary AOC.Common.Point.D8
+instance GHC.Base.Semigroup AOC.Common.Point.D8
+instance GHC.Base.Monoid AOC.Common.Point.D8
+instance Data.Group.Group AOC.Common.Point.D8
+instance Data.Hashable.Class.Hashable AOC.Common.Point.Dir
+instance Control.DeepSeq.NFData AOC.Common.Point.Dir
+instance Data.Finitary.Finitary AOC.Common.Point.Dir
+instance GHC.Base.Semigroup AOC.Common.Point.Dir
+instance GHC.Base.Monoid AOC.Common.Point.Dir
+instance Data.Group.Group AOC.Common.Point.Dir
+instance Data.Group.Abelian AOC.Common.Point.Dir
+
 module AOC.Common.Search
 
 -- | A* Search
@@ -324,76 +433,6 @@ pSpace :: (Stream s, Token s ~ Char, Ord e) => Parsec e s ()
 parseLines :: Parsec Void String a -> String -> Maybe [a]
 type Graph v e = Map v (Map v e)
 toFGL :: (Graph gr, Ord v) => Graph v e -> (gr v e, Set v)
-
--- | 2D Coordinate
-type Point = V2 Int
-cardinalNeighbs :: Point -> [Point]
-cardinalNeighbsSet :: Point -> Set Point
-fullNeighbs :: (Applicative f, Num a, Traversable f) => f a -> [f a]
-fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
-mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
-
--- | Treat as complex number multiplication. useful for rotations
-mulPoint :: Num a => V2 a -> V2 a -> V2 a
-
--- | Lattice points for line between points, not including endpoints
-lineTo :: Point -> Point -> [Point]
-data Dir
-North :: Dir
-East :: Dir
-South :: Dir
-West :: Dir
-parseDir :: Char -> Maybe Dir
-dirPoint :: Num a => Dir -> V2 a
-
--- | <a>dirPoint</a> but with inverted y axis
-dirPoint' :: Num a => Dir -> V2 a
-
--- | Rotate a point by a direction
-rotPoint :: Num a => Dir -> V2 a -> V2 a
-
--- | Multiply headings, taking North as straight, East as clockwise turn,
---   West as counter-clockwise turn, and South as reverse.
---   
---   Should be a commutative group; it's essentially complex number
---   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
---   identity is <a>North</a> and the inverse is the opposite direction.
-mulDir :: Dir -> Dir -> Dir
-
--- | Flip a <a>Dir</a> about North/South axis.
-horizDirFlip :: Dir -> Dir
-
--- | Flip a <a>Dir</a> about East/West axis.
-vertDirFlip :: Dir -> Dir
-memoPoint :: Memo Point
-
--- | Find the minimum and maximum x and y from a collection of points.
---   
---   Returns <tt><a>V2</a> (V2 xMin yMin) (V2 xMax yMax)</tt>.
-boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
-
--- | A version of <a>boundingBox</a> that works for normal possibly-empty
---   lists.
-boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
-inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
-minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
-minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
-
--- | Shift corner to (0,0)
-shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
-
--- | Shift corner to (0,0)
-shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
-parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
-asciiGrid :: IndexedTraversal Point String [a] Char a
-parseAsciiSet :: (Char -> Bool) -> String -> Set Point
-
--- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
---   that sorts by y first, then x
-newtype ScanPoint
-SP :: Point -> ScanPoint
-[_getSP] :: ScanPoint -> Point
-displayAsciiMap :: Char -> Map Point Char -> String
 anaM :: (Monad m, Corecursive t, Traversable (Base t)) => (a -> m (Base t a)) -> a -> m t
 data TreeF a b
 NodeF :: a -> ForestF a b -> TreeF a b
@@ -406,30 +445,12 @@ instance GHC.Generics.Generic (AOC.Common.TokStream a)
 instance GHC.Show.Show a => GHC.Show.Show (AOC.Common.TokStream a)
 instance GHC.Classes.Eq a => GHC.Classes.Eq (AOC.Common.TokStream a)
 instance GHC.Classes.Ord a => GHC.Classes.Ord (AOC.Common.TokStream a)
-instance GHC.Generics.Generic AOC.Common.ScanPoint
-instance GHC.Num.Num AOC.Common.ScanPoint
-instance GHC.Show.Show AOC.Common.ScanPoint
-instance GHC.Classes.Eq AOC.Common.ScanPoint
-instance GHC.Enum.Enum AOC.Common.Dir
-instance GHC.Generics.Generic AOC.Common.Dir
-instance GHC.Classes.Ord AOC.Common.Dir
-instance GHC.Classes.Eq AOC.Common.Dir
-instance GHC.Show.Show AOC.Common.Dir
 instance (Control.DeepSeq.NFData a, Control.DeepSeq.NFData b) => Control.DeepSeq.NFData (AOC.Common.TreeF a b)
 instance Data.Functor.Foldable.Recursive (Data.Tree.Tree a)
 instance Data.Functor.Foldable.Corecursive (Data.Tree.Tree a)
 instance Data.Hashable.Class.Hashable a => Data.Hashable.Class.Hashable (AOC.Common.TokStream a)
 instance Control.DeepSeq.NFData a => Control.DeepSeq.NFData (AOC.Common.TokStream a)
 instance (GHC.Classes.Ord a, GHC.Show.Show a) => Text.Megaparsec.Stream.Stream (AOC.Common.TokStream a)
-instance Data.Hashable.Class.Hashable AOC.Common.ScanPoint
-instance Control.DeepSeq.NFData AOC.Common.ScanPoint
-instance GHC.Classes.Ord AOC.Common.ScanPoint
-instance Data.Hashable.Class.Hashable AOC.Common.Dir
-instance Control.DeepSeq.NFData AOC.Common.Dir
-instance GHC.Base.Semigroup AOC.Common.Dir
-instance GHC.Base.Monoid AOC.Common.Dir
-instance Data.Group.Group AOC.Common.Dir
-instance Data.Group.Abelian AOC.Common.Dir
 instance (Control.Lens.At.Ixed (v a), Control.Lens.At.Index (v a) GHC.Types.~ GHC.Types.Int, Control.Lens.At.IxValue (v a) GHC.Types.~ a) => Control.Lens.At.Ixed (Data.Vector.Generic.Sized.Internal.Vector v n a)
 instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 1 GHC.TypeNats.<= n) => Linear.V1.R1 (Data.Vector.Generic.Sized.Internal.Vector v n)
 instance (GHC.TypeNats.KnownNat n, forall a. Data.Vector.Generic.Base.Vector v a, 2 GHC.TypeNats.<= n) => Linear.V2.R2 (Data.Vector.Generic.Sized.Internal.Vector v n)
@@ -439,15 +460,6 @@ instance (GHC.Classes.Ord k, GHC.Classes.Ord p) => Control.Lens.At.Ixed (Data.Or
 instance Control.Lens.Indexed.FunctorWithIndex k (Data.Map.NonEmpty.Internal.NEMap k)
 instance Control.Lens.Indexed.FoldableWithIndex k (Data.Map.NonEmpty.Internal.NEMap k)
 instance Control.Lens.Indexed.TraversableWithIndex k (Data.Map.NonEmpty.Internal.NEMap k)
-
-module AOC.Common.OCR
-parseLetters :: Set Point -> String
-parseLettersSafe :: Set Point -> Maybe String
-parseLettersAll :: Set Point -> NonEmpty String
-
--- | The set of unconnected shapes, indexed by their original center of
---   mass
-contiguousShapes :: Set Point -> Map (V2 Double) (NESet Point)
 
 module AOC.Util.DynoMap
 newtype DynoMap
@@ -6482,34 +6494,6 @@ data CalendarDiffDays
 CalendarDiffDays :: Integer -> Integer -> CalendarDiffDays
 [cdMonths] :: CalendarDiffDays -> Integer
 [cdDays] :: CalendarDiffDays -> Integer
-
--- | Strip trailing and leading whitespace.
-strip :: String -> String
-
--- | Strip trailing newline
-stripNewline :: String -> String
-
--- | Convert an <a>Either</a> into a <a>Maybe</a>, or any
---   <a>Alternative</a> instance, forgetting the error value.
-eitherToMaybe :: Alternative m => Either e a -> m a
-
--- | Convert a <a>Maybe</a> into an <a>Either</a>, or any <a>MonadError</a>
---   instance, by providing an error value in case <a>Nothing</a> was
---   given.
-maybeToEither :: MonadError e m => e -> Maybe a -> m a
-
--- | Like <a>find</a>, but instead of taking an <tt>a -&gt; Bool</tt>,
---   takes an <tt>a -&gt; Maybe b</tt> and returns the first success.
-firstJust :: Foldable t => (a -> Maybe b) -> t a -> Maybe b
-
--- | Generalize a <a>Maybe</a> to any <a>Alternative</a>
-maybeAlt :: Alternative m => Maybe a -> m a
-
--- | Like <a>traceShowId</a> but with an extra message
-traceShowIdMsg :: Show a => String -> a -> a
-
--- | Like <a>traceShow</a> but with an extra message
-traceShowMsg :: Show a => String -> a -> b -> b
 iat :: At m => Index m -> IndexedLens' (Index m) m (Maybe (IxValue m))
 icontains :: Contains m => Index m -> IndexedLens' (Index m) m Bool
 iix :: Ixed m => Index m -> IndexedTraversal' (Index m) m (IxValue m)
@@ -7366,11 +7350,140 @@ lmap :: Profunctor p => (a -> b) -> p b c -> p a c
 rmap :: Profunctor p => (b -> c) -> p a b -> p a c
 class (Foldable1 t, Traversable t) => Traversable1 (t :: Type -> Type)
 traverse1 :: (Traversable1 t, Apply f) => (a -> f b) -> t a -> f (t b)
+data Finite (n :: Nat)
 finites :: forall (n :: Nat). KnownNat n => [Finite n]
+data NESet a
+class R1 (t :: Type -> Type)
+_x :: R1 t => Lens' (t a) a
+newtype V1 a
+V1 :: a -> V1 a
+class R1 t => R2 (t :: Type -> Type)
+_y :: R2 t => Lens' (t a) a
+_xy :: R2 t => Lens' (t a) (V2 a)
+data V2 a
+V2 :: !a -> !a -> V2 a
+class R2 t => R3 (t :: Type -> Type)
+_z :: R3 t => Lens' (t a) a
+_xyz :: R3 t => Lens' (t a) (V3 a)
+data V3 a
+V3 :: !a -> !a -> !a -> V3 a
+class R3 t => R4 (t :: Type -> Type)
+_w :: R4 t => Lens' (t a) a
+_xyzw :: R4 t => Lens' (t a) (V4 a)
+data V4 a
+V4 :: !a -> !a -> !a -> !a -> V4 a
+data NEMap k a
+getFinite :: forall (n :: Nat). Finite n -> Integer
+
+-- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
+--   that sorts by y first, then x
+newtype ScanPoint
+SP :: Point -> ScanPoint
+[_getSP] :: ScanPoint -> Point
+
+-- | Represents an orientation of a 2d tile.
+data D8
+D8 :: !Dir -> !Bool -> D8
+[d8Rot] :: D8 -> !Dir
+[d8Flip] :: D8 -> !Bool
+data Dir
+North :: Dir
+East :: Dir
+South :: Dir
+West :: Dir
+
+-- | 2D Coordinate
+type Point = V2 Int
+
+-- | Find the minimum and maximum x and y from a collection of points.
+--   
+--   Returns <tt><a>V2</a> (V2 xMin yMin) (V2 xMax yMax)</tt>.
+boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
+
+-- | A version of <a>boundingBox</a> that works for normal possibly-empty
+--   lists.
+boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
+minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
+minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
+
+-- | Shift corner to (0,0)
+shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
+
+-- | Shift corner to (0,0)
+shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
+inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
+cardinalNeighbs :: Point -> [Point]
+cardinalNeighbsSet :: Point -> Set Point
+fullNeighbs :: (Applicative f, Num a, Traversable f) => f a -> [f a]
+fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
+memoPoint :: Memo Point
+mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
+
+-- | Treat as complex number multiplication. useful for rotations
+mulPoint :: Num a => V2 a -> V2 a -> V2 a
+dirPoint :: Num a => Dir -> V2 a
+
+-- | <a>dirPoint</a> but with inverted y axis
+dirPoint' :: Num a => Dir -> V2 a
+
+-- | Rotate a point by a direction
+rotPoint :: Num a => Dir -> V2 a -> V2 a
+parseDir :: Char -> Maybe Dir
+
+-- | Multiply headings, taking North as straight, East as clockwise turn,
+--   West as counter-clockwise turn, and South as reverse.
+--   
+--   Should be a commutative group; it's essentially complex number
+--   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
+--   identity is <a>North</a> and the inverse is the opposite direction.
+mulDir :: Dir -> Dir -> Dir
+allDir :: NonEmpty Dir
+allDirSet :: NESet Dir
+
+-- | <tt>a <a>mulD8</a> b</tt> represents applying b, then a.
+mulD8 :: D8 -> D8 -> D8
+allD8 :: NonEmpty D8
+allD8Set :: NESet D8
+
+-- | Rotate and flip a point by a <a>D8</a>
+orientPoint :: Num a => D8 -> V2 a -> V2 a
+parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
+parseAsciiSet :: (Char -> Bool) -> String -> Set Point
+asciiGrid :: IndexedTraversal Point String [a] Char a
+displayAsciiMap :: Char -> Map Point Char -> String
+
+-- | Lattice points for line between points, not including endpoints
+lineTo :: Point -> Point -> [Point]
+
+-- | Strip trailing and leading whitespace.
+strip :: String -> String
+
+-- | Strip trailing newline
+stripNewline :: String -> String
+
+-- | Convert an <a>Either</a> into a <a>Maybe</a>, or any
+--   <a>Alternative</a> instance, forgetting the error value.
+eitherToMaybe :: Alternative m => Either e a -> m a
+
+-- | Convert a <a>Maybe</a> into an <a>Either</a>, or any <a>MonadError</a>
+--   instance, by providing an error value in case <a>Nothing</a> was
+--   given.
+maybeToEither :: MonadError e m => e -> Maybe a -> m a
+
+-- | Like <a>find</a>, but instead of taking an <tt>a -&gt; Bool</tt>,
+--   takes an <tt>a -&gt; Maybe b</tt> and returns the first success.
+firstJust :: Foldable t => (a -> Maybe b) -> t a -> Maybe b
+
+-- | Generalize a <a>Maybe</a> to any <a>Alternative</a>
+maybeAlt :: Alternative m => Maybe a -> m a
+
+-- | Like <a>traceShowId</a> but with an extra message
+traceShowIdMsg :: Show a => String -> a -> a
+
+-- | Like <a>traceShow</a> but with an extra message
+traceShowMsg :: Show a => String -> a -> b -> b
 modulo :: forall (n :: Nat). KnownNat n => Integer -> Finite n
 packFinite :: forall (n :: Nat). KnownNat n => Integer -> Maybe (Finite n)
-getFinite :: forall (n :: Nat). Finite n -> Integer
-data Finite (n :: Nat)
 chop :: ([a] -> (b, [a])) -> [a] -> [b]
 chunk :: Int -> [e] -> [[e]]
 chunksOf :: Int -> [e] -> [[e]]
@@ -7404,27 +7517,6 @@ unintercalate :: Eq a => [a] -> [a] -> [[a]]
 whenElt :: (a -> Bool) -> Splitter a
 wordsBy :: (a -> Bool) -> [a] -> [[a]]
 data Splitter a
-data NEMap k a
-data NESet a
-class R1 (t :: Type -> Type)
-_x :: R1 t => Lens' (t a) a
-newtype V1 a
-V1 :: a -> V1 a
-class R1 t => R2 (t :: Type -> Type)
-_y :: R2 t => Lens' (t a) a
-_xy :: R2 t => Lens' (t a) (V2 a)
-data V2 a
-V2 :: !a -> !a -> V2 a
-class R2 t => R3 (t :: Type -> Type)
-_z :: R3 t => Lens' (t a) a
-_xyz :: R3 t => Lens' (t a) (V3 a)
-data V3 a
-V3 :: !a -> !a -> !a -> V3 a
-class R3 t => R4 (t :: Type -> Type)
-_w :: R4 t => Lens' (t a) a
-_xyzw :: R4 t => Lens' (t a) (V4 a)
-data V4 a
-V4 :: !a -> !a -> !a -> !a -> V4 a
 between :: Applicative m => m open -> m close -> m a -> m a
 choice :: (Foldable f, Alternative m) => f (m a) -> m a
 eitherP :: Alternative m => m a -> m b -> m (Either a b)
@@ -7482,20 +7574,6 @@ type CharParser = Parsec Void String
 newtype TokStream a
 TokStream :: [a] -> TokStream a
 [getTokStream] :: TokStream a -> [a]
-
--- | It's <a>Point</a>, but with a newtype wrapper so we have an <a>Ord</a>
---   that sorts by y first, then x
-newtype ScanPoint
-SP :: Point -> ScanPoint
-[_getSP] :: ScanPoint -> Point
-data Dir
-North :: Dir
-East :: Dir
-South :: Dir
-West :: Dir
-
--- | 2D Coordinate
-type Point = V2 Int
 type Graph v e = Map v (Map v e)
 type Letter = Finite 26
 
@@ -7677,59 +7755,6 @@ floodFill :: Ord a => (a -> Set a) -> Set a -> Set a
 -- | Flood fill from a starting set, counting the number of steps
 floodFillCount :: Ord a => (a -> Set a) -> Set a -> (Int, Set a)
 toFGL :: (Graph gr, Ord v) => Graph v e -> (gr v e, Set v)
-
--- | Find the minimum and maximum x and y from a collection of points.
---   
---   Returns <tt><a>V2</a> (V2 xMin yMin) (V2 xMax yMax)</tt>.
-boundingBox :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> V2 (g a)
-
--- | A version of <a>boundingBox</a> that works for normal possibly-empty
---   lists.
-boundingBox' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (V2 (g a))
-minCorner :: (Foldable1 f, Applicative g, Ord a) => f (g a) -> g a
-minCorner' :: (Foldable f, Applicative g, Ord a) => f (g a) -> Maybe (g a)
-
--- | Shift corner to (0,0)
-shiftToZero :: (Applicative f, Num a, Ord a) => NESet (f a) -> NESet (f a)
-
--- | Shift corner to (0,0)
-shiftToZero' :: (Applicative f, Num a, Ord a) => Set (f a) -> Set (f a)
-inBoundingBox :: (Applicative g, Foldable g, Ord a) => V2 (g a) -> g a -> Bool
-cardinalNeighbs :: Point -> [Point]
-cardinalNeighbsSet :: Point -> Set Point
-fullNeighbs :: (Applicative f, Num a, Traversable f) => f a -> [f a]
-fullNeighbsSet :: (Applicative f, Num a, Ord (f a), Traversable f) => f a -> Set (f a)
-memoPoint :: Memo Point
-mannDist :: (Foldable f, Num a, Num (f a)) => f a -> f a -> a
-
--- | Treat as complex number multiplication. useful for rotations
-mulPoint :: Num a => V2 a -> V2 a -> V2 a
-dirPoint :: Num a => Dir -> V2 a
-
--- | <a>dirPoint</a> but with inverted y axis
-dirPoint' :: Num a => Dir -> V2 a
-
--- | Rotate a point by a direction
-rotPoint :: Num a => Dir -> V2 a -> V2 a
-parseDir :: Char -> Maybe Dir
-
--- | Multiply headings, taking North as straight, East as clockwise turn,
---   West as counter-clockwise turn, and South as reverse.
---   
---   Should be a commutative group; it's essentially complex number
---   multiplication like <a>mulPoint</a>, with North = 1, West = i. The
---   identity is <a>North</a> and the inverse is the opposite direction.
-mulDir :: Dir -> Dir -> Dir
-
--- | Flip a <a>Dir</a> about North/South axis.
-horizDirFlip :: Dir -> Dir
-
--- | Flip a <a>Dir</a> about East/West axis.
-vertDirFlip :: Dir -> Dir
-parseAsciiMap :: (Char -> Maybe a) -> String -> Map Point a
-parseAsciiSet :: (Char -> Bool) -> String -> Set Point
-asciiGrid :: IndexedTraversal Point String [a] Char a
-displayAsciiMap :: Char -> Map Point Char -> String
 sortSizedBy :: Vector v a => (a -> a -> Ordering) -> Vector v n a -> Vector v n a
 withAllSized :: Vector v a => NonEmpty [a] -> (forall n. KnownNat n => NonEmpty (Vector v n a) -> Maybe r) -> Maybe r
 
@@ -7760,9 +7785,6 @@ nextMatch :: MonadParsec e s m => m a -> m a
 toNatural :: Integral a => a -> Maybe Natural
 factorial :: Int -> Int
 mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
-
--- | Lattice points for line between points, not including endpoints
-lineTo :: Point -> Point -> [Point]
 anaM :: (Monad m, Corecursive t, Traversable (Base t)) => (a -> m (Base t a)) -> a -> m t
 
 -- | Errors that might happen when running a <a>:~&gt;</a> on some input.
@@ -8333,14 +8355,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2nVP
-mainRunOpts :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP MainRunOpts
-mroActual :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP Bool
-mroBench :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP Bool
-mroInput :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP Bool
-mroSpec :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP TestSpec
-mroTest :: HasMainRunOpts c_a2nVP => Lens' c_a2nVP Bool
+class HasMainRunOpts c_a2oqw
+mainRunOpts :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw MainRunOpts
+mroActual :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw Bool
+mroBench :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw Bool
+mroInput :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw Bool
+mroSpec :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw TestSpec
+mroTest :: HasMainRunOpts c_a2oqw => Lens' c_a2oqw Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8353,10 +8375,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2o3i
-mainViewOpts :: HasMainViewOpts c_a2o3i => Lens' c_a2o3i MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2o3i => Lens' c_a2o3i TestSpec
-mvoWait :: HasMainViewOpts c_a2o3i => Lens' c_a2o3i Bool
+class HasMainViewOpts c_a2oxZ
+mainViewOpts :: HasMainViewOpts c_a2oxZ => Lens' c_a2oxZ MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2oxZ => Lens' c_a2oxZ TestSpec
+mvoWait :: HasMainViewOpts c_a2oxZ => Lens' c_a2oxZ Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8381,13 +8403,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2o7Q
-mainSubmitOpts :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q Bool
-msoLock :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q Bool
-msoRetry :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q Bool
-msoSpec :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2o7Q => Lens' c_a2o7Q Bool
+class HasMainSubmitOpts c_a2oCx
+mainSubmitOpts :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx Bool
+msoLock :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx Bool
+msoRetry :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx Bool
+msoSpec :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2oCx => Lens' c_a2oCx Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
