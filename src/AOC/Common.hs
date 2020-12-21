@@ -282,14 +282,14 @@ countTrue p = length . filter p . toList
 
 -- | Given a map of @k@ to possible @a@s for that @k@, find possible
 -- configurations where each @k@ is given its own unique @a@.
-pickUnique :: (Ord k, Ord a) => Map k (Set a) -> [Map k a]
+pickUnique :: (Ord k, Ord a) => [(k, Set a)] -> [Map k a]
 pickUnique mp = flip evalStateT S.empty $ do
     fmap M.fromList . for opts . traverse $ \poss -> do
       seen <- get
       pick <- lift $ S.toList (poss `S.difference` seen)
       pick <$ modify (S.insert pick)
   where
-    opts = sortOn (S.size . snd) (M.toList mp)
+    opts = sortOn (S.size . snd) mp
 
 
 -- | Build a frequency map

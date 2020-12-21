@@ -14,24 +14,21 @@ module AOC.Challenge.Day16 (
   , day16b
   ) where
 
-import           AOC.Common                 (CharParser, sortSizedBy, withAllSized)
+import           AOC.Common                 (CharParser, withAllSized, pickUnique)
 import           AOC.Solver                 ((:~>)(..), dyno_)
 import           Control.DeepSeq            (NFData)
-import           Control.Monad.State        (lift, modify, get, evalStateT)
 import           Data.Char                  (isAlpha, isSpace)
 import           Data.Distributive          (distribute)
-import           Data.Foldable              (toList)
 import           Data.IntervalMap.Strict    (IntervalMap)
 import           Data.List.NonEmpty         (NonEmpty(..))
 import           Data.Maybe                 (listToMaybe, mapMaybe)
-import           Data.Ord                   (comparing)
 import           Data.Set                   (Set)
 import           Data.Text                  (Text)
-import           Data.Traversable           (for)
 import           GHC.Generics               (Generic)
 import qualified Data.ExtendedReal          as ER
 import qualified Data.Interval              as I
 import qualified Data.IntervalMap.Strict    as IM
+import qualified Data.Map                   as M
 import qualified Data.Set                   as S
 import qualified Data.Text                  as T
 import qualified Data.Vector.Sized          as V
@@ -68,19 +65,13 @@ day16b = MkSol
         th : ths <- pure $ mapMaybe (traverse (`IM.lookup` iFields)) iTheirs
         withAllSized (th :| ths) $ \vths -> do
           yours      <- V.fromList iYours
-          let candidates = sortSizedBy (comparing (S.size . snd)) . V.indexed
+          let candidates = V.toList . V.indexed
                          . fmap (foldl1 S.intersection)
                          $ distribute vths
-          -- we technically don't need a backtracking search, but it feels
-          -- cleaner to write one
-          validMap <- listToMaybe . flip evalStateT S.empty $ do
-            for candidates $ \(i, cands) -> do
-              soFar <- get
-              pick  <- lift . toList $ cands S.\\ soFar
-              (i, pick) <$ modify (S.insert pick)
+          validMap   <- listToMaybe $ pickUnique candidates
           pure
             [ yours `V.index` i
-            | (i, k) <- toList validMap
+            | (i, k) <- M.toList validMap
             , dyno_ "prefix" "departure" `T.isPrefixOf` k
             ]
     }

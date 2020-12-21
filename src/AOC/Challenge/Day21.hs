@@ -19,7 +19,6 @@ import           AOC.Solver           ((:~>)(..))
 import           Data.Foldable        (toList)
 import           Data.Functor         ((<&>))
 import           Data.List            (intercalate)
-import           Data.Map             (Map)
 import           Data.Maybe           (listToMaybe)
 import           Data.Set             (Set)
 import           Data.Void            (Void)
@@ -31,8 +30,8 @@ import qualified Text.Megaparsec.Char as P
 assembleOptions
     :: (Ord k, Ord a)
     => [(Set a, Set k)]
-    -> Map k (Set a)
-assembleOptions info = M.unionsWith S.intersection $
+    -> [(k, Set a)]
+assembleOptions info = M.toList . M.unionsWith S.intersection $
     info <&> \(igr, alg) -> M.fromSet (const igr) alg
 
 day21a :: [(Set String, Set String)] :~> Int
