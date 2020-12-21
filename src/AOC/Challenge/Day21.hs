@@ -44,17 +44,67 @@ import qualified Linear                         as L
 import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
+import           Control.Monad.State
+
+parseLine :: String -> (Set String, Set String)
+parseLine str = case splitOn "(contains" str of
+    [igs, rs] -> (S.fromList (words igs), S.fromList (words $ filter go rs))
+  where
+    go c = isAlpha c || isSpace c
+
+legal :: Map String String -> (Set String, Set String) -> Bool
+legal igrs (fd, alg) = inHere `S.isSubsetOf` fd
+  where
+    inHere = S.fromList . toList $ igrs `M.restrictKeys` alg
 
 day21a :: _ :~> _
 day21a = MkSol
-    { sParse = Just
+    { sParse = Just . map parseLine . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = \igrsalg -> do
+        let (fold->igr, fold->alg) = unzip igrsalg
+            pairings = searchMe igrsalg
+        pickMe <- listToMaybe $ flip evalStateT S.empty $ do
+                traverse (\poss -> do
+                      seen <- get
+                      pick <- lift $ S.toList (poss `S.difference` seen)
+                      modify $ S.insert pick
+                      pure pick
+                    )
+                  pairings
+        let goodFoods = igr `S.difference` (S.fromList $ toList pickMe)
+        pure $ sum $ 
+            [ S.size $ is `S.intersection` goodFoods
+            | (is, _) <- igrsalg
+            ]
     }
+
+searchMe
+    :: [(Set String, Set String)]
+    -> Map String (Set String)
+searchMe xs = foldl' go (M.fromSet (const igr) alg) xs
+  where
+    (fold->igr, fold->alg) = unzip xs
+    go    :: Map String (Set String)
+           -> (Set String, Set String)
+           -> (Map String (Set String))
+    go (opts) (ig, al) =
+        M.unionWith S.intersection opts (M.fromSet (const ig) al)
 
 day21b :: _ :~> _
 day21b = MkSol
     { sParse = sParse day21a
-    , sShow  = show
-    , sSolve = Just
+    , sShow  = intercalate "," . toList
+    , sSolve = \igrsalg -> do
+        let (fold->igr, fold->alg) = unzip igrsalg
+            pairings = searchMe igrsalg
+        pickMe <- listToMaybe $ flip evalStateT S.empty $ do
+                traverse (\poss -> do
+                      seen <- get
+                      pick <- lift $ S.toList (poss `S.difference` seen)
+                      modify $ S.insert pick
+                      pure pick
+                    )
+                  pairings
+        pure pickMe
     }
