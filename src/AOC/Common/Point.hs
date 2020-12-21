@@ -2,6 +2,7 @@
 module AOC.Common.Point (
   -- * Points
     Point
+  , FinPoint
   , cardinalNeighbs
   , cardinalNeighbsSet
   , fullNeighbs
@@ -15,6 +16,7 @@ module AOC.Common.Point (
   , dirPoint
   , dirPoint'
   , rotPoint
+  , rotFin
   , mulDir
   , allDir
   , allDirSet
@@ -22,6 +24,7 @@ module AOC.Common.Point (
   , D8(..)
   , mulD8
   , orientPoint
+  , orientFin
   , allD8
   , allD8Set
   -- * 2D Maps
@@ -37,6 +40,8 @@ module AOC.Common.Point (
   , parseAsciiSet
   , ScanPoint(..)
   , displayAsciiMap
+  -- * Util
+  , centeredFinite
   ) where
 
 import           Control.Applicative
@@ -44,6 +49,8 @@ import           Control.DeepSeq
 import           Control.Lens
 import           Data.Char
 import           Data.Finitary
+import           Data.Finite
+import           Data.Finite.Internal
 import           Data.Foldable
 import           Data.Group
 import           Data.Hashable
@@ -53,6 +60,8 @@ import           Data.Map.Lens
 import           Data.MemoCombinators    (Memo)
 import           Data.Monoid
 import           Data.Ord
+import           Data.Proxy
+import           Data.Ratio
 import           Data.Semigroup
 import           Data.Semigroup.Foldable
 import           Data.Set                (Set)
@@ -60,6 +69,7 @@ import           Data.Set.Lens
 import           Data.Set.NonEmpty       (NESet)
 import           Data.Tuple.Strict
 import           GHC.Generics
+import           GHC.TypeNats
 import           Linear
 import qualified Data.List.NonEmpty      as NE
 import qualified Data.Map                as M
@@ -70,6 +80,8 @@ import qualified Data.Set.NonEmpty       as NES
 
 -- | 2D Coordinate
 type Point = V2 Int
+
+type FinPoint n = V2 (Finite n)
 
 -- | Find the minimum and maximum x and y from a collection of points.
 --
@@ -187,6 +199,17 @@ rotPoint = \case
     West  -> \(V2 x y) -> V2 (-y)   x
     South -> negate
 
+-- | Rotate a point by a direction
+rotFin :: KnownNat n => Dir -> FinPoint n -> FinPoint n
+rotFin d = over (mapping centeredFinite) (rotPoint d)
+
+centeredFinite :: forall n. KnownNat n => Iso' (Finite n) Rational
+centeredFinite = iso (subtract d . (% 1) . getFinite)
+                     (Finite . numerator . (+ d))
+-- Finite . numerator . (+ d) <$> f ((getFinite i % 1) - d)
+  where
+    d = fromIntegral (natVal (Proxy @n) - 1) % 2
+
 parseDir :: Char -> Maybe Dir
 parseDir = flip M.lookup dirMap . toUpper
   where
@@ -285,15 +308,8 @@ orientPoint = \case
     D8 West  True  -> \(V2 x y) -> V2 (-y) (-x)
     D8 South True  -> \(V2 x y) -> V2   x  (-y)
 
--- -- | Rotate a point by a direction
--- rotPoint :: Num a => Dir -> V2 a -> V2 a
--- rotPoint = \case
---     North -> id
---     East  -> \(V2 x y) -> V2   y  (-x)
---     West  -> \(V2 x y) -> V2 (-y)   x
---     South -> negate
-
-
+orientFin :: KnownNat n => D8 -> FinPoint n -> FinPoint n
+orientFin d = over (mapping centeredFinite) (orientPoint d)
 
 -- | It's 'Point', but with a newtype wrapper so we have an 'Ord' that
 -- sorts by y first, then x
