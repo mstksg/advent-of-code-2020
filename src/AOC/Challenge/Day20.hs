@@ -7,12 +7,10 @@
 --
 -- Day 20.  See "AOC.Solver" for the types used in this module!
 
-module AOC.Challenge.Day20 where
-
--- module AOC.Challenge.Day20 (
---     day20a
---   , day20b
---   ) where
+module AOC.Challenge.Day20 (
+    day20a
+  , day20b
+  ) where
 
 import           AOC.Common
 import           AOC.Common.FinitarySet    (FinitarySet)
@@ -68,7 +66,7 @@ cutTile :: NESet (FinPoint 10) -> Tile
 cutTile ps = Tile
     { tPoints = S.fromDistinctAscList . mapMaybe (traverse (strengthen <=< unshift)) . toList $ ps
     , tEdges  = V.generate $ \i ->
-        let ps' = orientFin (fromFinite i) `NES.map` ps
+        let ps' = orientFin (invert (fromFinite i)) `NES.map` ps
         in  VU.generate $ \j -> Bit $ V2 j 0 `NES.member` ps'
     }
 
@@ -84,7 +82,7 @@ fromTile :: Tile -> Set (FinPoint 10)
 fromTile Tile{..} = S.mapMonotonic (fmap (weaken . shift)) tPoints
                  <> foldMap (\d ->
                               S.fromList
-                            . map (rotFin (invert d))
+                            . map (rotFin d)
                             . mapMaybe (\(j, Bit b) -> V2 j 0 <$ guard b)
                             . zip [0..]
                             . VU.toList
@@ -96,34 +94,8 @@ orientTile :: D8 -> Tile -> Tile
 orientTile o Tile{..} = Tile
     { tPoints = S.map (orientFin o) tPoints
     , tEdges  = V.generate $ \i ->
-        tEdges `V.index` toFinite (fromFinite i <> o)
-        -- y(i) = ith orientation after applying o to x
-        -- x(j) = jth orientation after appyling j to x
-        --
-        -- apply o, then i
-        -- = apply (i <> o)
-        --
-        -- o(x) = j(x)
-        -- original(o)
-        -- toFinite (invert $ fromFinite i <> invert o <> invert (fromFinite i))
-        
-        -- let D8 oD oF = D8 (fromFinite i) True <> o
-        --     flipper = if oF then id else VU.reverse
-        -- in  flipper $ tEdges `V.index` toFinite (invert oD <> South)
+        tEdges `V.index` toFinite (invert o <> fromFinite i)
     }
-
-testOrient
-    :: D8
-    -> NESet (FinPoint 10)
-    -> IO ()
-testOrient o ps = do
-    putStrLn "Direct"
-    putStrLn . displayTile $ NES.map (orientFin o) ps
-    putStrLn "Direct + Cut"
-    putStrLn . displayTile . fromTile . cutTile $ NES.map (orientFin o) ps
-    putStrLn "Cut + Orient"
-    putStrLn . displayTile . fromTile . orientTile o . cutTile $ ps
-
 
 countNeighbors :: IntMap (Set Edge) -> IntMap Int
 countNeighbors im0 = flip IM.mapWithKey im0 $ \i es ->
@@ -133,104 +105,15 @@ countNeighbors im0 = flip IM.mapWithKey im0 $ \i es ->
   where
     im0List = IM.toList im0
 
--- edges
---     :: NESet Point
---     -> NEMap IntSet (NESet Point) -- edge and map after edge
--- edges ps = NEM.fromList $
---     allD8 <&> \o ->
---       let ps'   = shiftToZero . NES.map (orientPoint o) $ ps
---           tbord = IS.fromList . mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $ toList ps'
---       in  (tbord, ps')
-
--- | Get the x positions of the minimal ("top") y line
-topBorder :: NESet Point -> IntSet
-topBorder ps = IS.fromDistinctAscList
-             . mapMaybe (\(V2 x y) -> (x - xmn) <$ guard (y == ymn))
-             . toList
-             $ ps
-  where
-    V2 xmn ymn = minCorner ps
-
--- | From a map of id's to edges of that id, return a map of id's to the
--- id's of all neighbors.
-pairUp :: IntMap (Set IntSet) -> IntMap IntSet
-pairUp im0 = flip IM.mapWithKey im0 $ \i es ->
-             IM.keysSet
-           . IM.filter (\ei -> not $ S.null $ es `S.intersection` ei)
-           $ IM.delete i im0
-
 -- | shift the corner point by a direction
 topPointOf :: Dir -> Point
-topPointOf = \case
-    North -> V2 0 (-9)
-    East  -> V2 9 0
-    South -> V2 0  9
-    West  -> V2 (-9) 0
-    -- North -> V2 0 (-8)
-    -- East  -> V2 8 0
-    -- South -> V2 0  8
-    -- West  -> V2 (-8) 0
-
--- | assume corner at 0,0
-removeBorders :: NESet Point -> Set Point
-removeBorders = S.fromDistinctAscList . mapMaybe go . toList
-  where
-    go p = do
-      guard $ all (/= 0) p
-      guard $ all (/= 9) p
-      pure $ p - 1
-
--- -- | For a given image, add the given edges into the queue
--- toQueue
---     :: Foldable f
---     => Point            -- ^ location of corner
---     -> NESet Point      -- ^ image to extract edges from
---     -> f Dir            -- ^ edges to insert
---     -> Map IntSet (Point, Dir)
--- toQueue p0 pts ds = M.fromList
---     [ (topBorder pts', (p0 + topPointOf d, d))
---     | d <- toList ds
---     , let pts' = rotPoint d `NES.map` pts
---     ]
+topPointOf = (`rotPoint` V2 0 (-8))
 
 findKey
     :: (k -> Bool)
     -> NEMap k a
     -> Maybe (k, a)
 findKey p = find (p . fst) . NEM.toList
-
--- assembleMap
---     :: NEIntMap (NEMap IntSet (NESet Point))
---     -> Set Point
--- assembleMap tiles0 = go (toQueue 0 tile0 allDir)
---                         (IM.keysSet tiles1)
---                         (removeBorders tile0)
---   where
---     ((_, t0Map), tiles1) = NEIM.deleteFindMin tiles0
---     ((_, tile0), _     ) = NEM.deleteFindMin  t0Map
---     tileCache :: NEMap IntSet (NEMap Int (NESet Point))
---     tileCache = NEM.fromListWith (<>)
---       [ (edge, NEM.singleton tileId tile)
---       | (tileId, tileEdges) <- NEIM.toList tiles0
---       , (edge  , tile     ) <- NEM.toList  tileEdges
---       ]
---     go  :: Map IntSet (Point, Dir)   -- ^ queue: edge -> top corner, orientation
---         -> IntSet                    -- ^ leftover points
---         -> Set Point                 -- ^ current map
---         -> Set Point                 -- ^ sweet tail rescursion
---     go !queue !tiles !mp = case M.minViewWithKey queue of
---       Nothing                            -> mp
---       Just ((edge, (corner, d)), queue') ->
---         case findKey (`IS.member` tiles) (tileCache NEM.! edge) of
---           Nothing             -> go queue' tiles mp
---           Just (tileId, tile) ->
---             let rotated  = shiftToZero $ orientPoint (D8 (invert d <> South) True)
---                                `NES.map` tile
---                 shifted  = (+ corner) `S.mapMonotonic` removeBorders rotated
---                 newQueue = toQueue corner rotated (NE.filter (/= invert d) allDir)
---             in  go (newQueue <> queue)
---                    (IS.delete tileId tiles)
---                    (shifted <> mp)
 
 -- | For a given image, add the given edges into the queue
 toQueue
@@ -271,9 +154,9 @@ assembleMap tiles0 = go (toQueue 0 tile0 allDir)
         case findKey (`IS.member` tiles) (tileCache NEM.! edge) of
           Nothing             -> go queue' tiles mp
           Just (tileId, tile) ->
-            let rotated  = orientTile (D8 (invert d <> South) True) tile
-                toBlit   = ((+ corner) . fmap fromIntegral) `S.map` tPoints tile
-                newQueue = toQueue corner rotated (NE.filter (/= (d <> South)) allDir)
+            let rotated  = orientTile (D8 (d <> South) True) tile
+                toBlit   = ((+ corner) . fmap fromIntegral) `S.map` tPoints rotated
+                newQueue = toQueue corner rotated allDir
             in  go (newQueue <> queue)
                    (IS.delete tileId tiles)
                    (toBlit <> mp)
@@ -281,7 +164,7 @@ assembleMap tiles0 = go (toQueue 0 tile0 allDir)
 
 day20a :: IntMap (NESet (FinPoint 10)) :~> Int
 day20a = MkSol
-    { sParse = parseTiles_
+    { sParse = parseTiles
     , sShow  = show
     , sSolve = fmap product
              . V.fromList @4
@@ -293,18 +176,16 @@ day20a = MkSol
 
 day20b :: IntMap (NESet (FinPoint 10)) :~> _
 day20b = MkSol
-    { sParse = parseTiles_
-    , sShow  = ('\n':) . displayAsciiMap '.' . M.fromSet (const '#')
-    -- , sShow  = show
+    { sParse = parseTiles
+    , sShow  = show
     , sSolve = \pp -> do
         mp <- assembleMap <$> NEIM.nonEmptyMap (toTiles <$> pp)
-        pure mp
-        -- listToMaybe
-        --   [ res
-        --   | drgn <- toList dragons
-        --   , let res = S.size $ pokePattern (NES.toSet drgn) mp
-        --   , res /= S.size mp
-        --   ]
+        listToMaybe
+          [ res
+          | drgn <- toList dragons
+          , let res = S.size $ pokePattern (NES.toSet drgn) mp
+          , res /= S.size mp
+          ]
     }
 
 pokePattern
@@ -330,19 +211,10 @@ Just dragon = NES.nonEmptySet . parseAsciiSet (== '#') $ unlines
   , " #  #  #  #  #  #   "
   ]
 
-parseTiles :: String -> Maybe (IntMap (NESet Point))
+parseTiles :: String -> Maybe (IntMap (NESet (FinPoint 10)))
 parseTiles = fmap IM.fromList
            . traverse (uncurry go <=< uncons . lines)
            . splitOn "\n\n"
-  where
-    go tname tiles =
-      (,) <$> readMaybe (filter isDigit tname)
-          <*> NES.nonEmptySet (parseAsciiSet (== '#') (unlines tiles))
-
-parseTiles_ :: String -> Maybe (IntMap (NESet (FinPoint 10)))
-parseTiles_ = fmap IM.fromList
-            . traverse (uncurry go <=< uncons . lines)
-            . splitOn "\n\n"
   where
     go tname tiles =
       (,) <$> readMaybe (filter isDigit tname)
@@ -350,8 +222,11 @@ parseTiles_ = fmap IM.fromList
       where
         tileset = parseAsciiSet (== '#') (unlines tiles)
 
-testTile :: NESet (FinPoint 10)
-Just testTile = NES.nonEmptySet . mapMaybeSet (traverse (packFinite . fromIntegral)) . parseAsciiSet (== '#') $ unlines
+displayTile :: (Foldable f, Integral a) => f (V2 a) -> String
+displayTile = displayAsciiMap '.' . M.fromSet (const '#') . S.fromList . map (fmap fromIntegral) . toList
+
+_testTile :: NESet (FinPoint 10)
+Just _testTile = NES.nonEmptySet . mapMaybeSet (traverse (packFinite . fromIntegral)) . parseAsciiSet (== '#') $ unlines
   [ "..##.#..#."
   , "##..#....."
   , "#...##..#."
@@ -364,5 +239,16 @@ Just testTile = NES.nonEmptySet . mapMaybeSet (traverse (packFinite . fromIntegr
   , "..###..###"
   ]
 
-displayTile :: (Foldable f, Integral a) => f (V2 a) -> String
-displayTile = displayAsciiMap '.' . M.fromSet (const '#') . S.fromList . map (fmap fromIntegral) . toList
+_testOrient
+    :: D8
+    -> NESet (FinPoint 10)
+    -> IO ()
+_testOrient o ps = do
+    putStrLn "Direct"
+    putStrLn . displayTile $ NES.map (orientFin o) ps
+    putStrLn "Direct + Cut"
+    putStrLn . displayTile . fromTile . cutTile $ NES.map (orientFin o) ps
+    putStrLn "Cut + Orient"
+    putStrLn . displayTile . fromTile . orientTile o . cutTile $ ps
+
+
