@@ -265,6 +265,11 @@ floodFillCount :: Ord a => (a -> Set a) -> Set a -> (Int, Set a)
 -- | Count the number of items in a container where the predicate is true.
 countTrue :: Foldable f => (a -> Bool) -> f a -> Int
 
+-- | Given a map of <tt>k</tt> to possible <tt>a</tt>s for that <tt>k</tt>,
+--   find possible configurations where each <tt>k</tt> is given its own
+--   unique <tt>a</tt>.
+pickUnique :: (Ord k, Ord a) => Map k (Set a) -> [Map k a]
+
 -- | Build a frequency map
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
 
@@ -322,7 +327,7 @@ clearOut :: (Char -> Bool) -> String -> String
 -- | <a>foldMap</a>, but in parallel.
 foldMapPar :: Monoid b => (a -> b) -> [a] -> b
 
--- | <a>foldMap1</a>, but in parallel.
+-- | <tt>foldMap1</tt>, but in parallel.
 foldMapPar1 :: Semigroup b => (a -> b) -> NonEmpty a -> b
 foldMapParChunk :: (NFData m, Monoid m) => Int -> (a -> m) -> [a] -> m
 
@@ -7622,6 +7627,11 @@ fixedPoint :: Eq a => (a -> a) -> a -> a
 -- | Count the number of items in a container where the predicate is true.
 countTrue :: Foldable f => (a -> Bool) -> f a -> Int
 
+-- | Given a map of <tt>k</tt> to possible <tt>a</tt>s for that <tt>k</tt>,
+--   find possible configurations where each <tt>k</tt> is given its own
+--   unique <tt>a</tt>.
+pickUnique :: (Ord k, Ord a) => Map k (Set a) -> [Map k a]
+
 -- | Build a frequency map
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
 
@@ -7743,7 +7753,7 @@ deleteFinite :: KnownNat n => Finite (n + 1) -> Finite (n + 1) -> Maybe (Finite 
 -- | <a>foldMap</a>, but in parallel.
 foldMapPar :: Monoid b => (a -> b) -> [a] -> b
 
--- | <a>foldMap1</a>, but in parallel.
+-- | <tt>foldMap1</tt>, but in parallel.
 foldMapPar1 :: Semigroup b => (a -> b) -> NonEmpty a -> b
 
 -- | <a>Fold</a> for computing mean and variance
@@ -7957,25 +7967,6 @@ module AOC.Challenge.Day23
 module AOC.Challenge.Day22
 
 
--- | Day 21. See <a>AOC.Solver</a> for the types used in this module!
---   
---   After completing the challenge, it is recommended to:
---   
---   <ul>
---   <li>Replace <a>AOC.Prelude</a> imports to specific modules (with
---   explicit imports) for readability.</li>
---   <li>Remove the <tt>-Wno-unused-imports</tt> and
---   <tt>-Wno-unused-top-binds</tt> pragmas.</li>
---   <li>Replace the partial type signatures underscores in the solution
---   types <tt>_ :~&gt; _</tt> with the actual types of inputs and outputs
---   of the solution. You can delete the type signatures completely and GHC
---   will recommend what should go in place of the underscores.</li>
---   </ul>
-module AOC.Challenge.Day21
-day21a :: _ :~> _
-day21b :: _ :~> _
-
-
 -- | Template Haskell for discovering all named challenges in a given
 --   directory.
 module AOC.Discover
@@ -8029,6 +8020,12 @@ instance GHC.Classes.Ord AOC.Discover.ChallengeSpec
 instance GHC.Classes.Eq AOC.Discover.ChallengeSpec
 instance GHC.Show.Show AOC.Discover.ChallengeSpec
 instance Data.String.IsString AOC.Discover.ChallengeSpec
+
+
+-- | Day 21. See <a>AOC.Solver</a> for the types used in this module!
+module AOC.Challenge.Day21
+day21a :: [(Set String, Set String)] :~> Int
+day21b :: [(Set String, Set String)] :~> [String]
 
 
 -- | Day 20. See <a>AOC.Solver</a> for the types used in this module!
@@ -8344,14 +8341,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2oDZ
-mainRunOpts :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ MainRunOpts
-mroActual :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ Bool
-mroBench :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ Bool
-mroInput :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ Bool
-mroSpec :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ TestSpec
-mroTest :: HasMainRunOpts c_a2oDZ => Lens' c_a2oDZ Bool
+class HasMainRunOpts c_a2pvg
+mainRunOpts :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg MainRunOpts
+mroActual :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg Bool
+mroBench :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg Bool
+mroInput :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg Bool
+mroSpec :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg TestSpec
+mroTest :: HasMainRunOpts c_a2pvg => Lens' c_a2pvg Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8364,10 +8361,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2oLs
-mainViewOpts :: HasMainViewOpts c_a2oLs => Lens' c_a2oLs MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2oLs => Lens' c_a2oLs TestSpec
-mvoWait :: HasMainViewOpts c_a2oLs => Lens' c_a2oLs Bool
+class HasMainViewOpts c_a2pCJ
+mainViewOpts :: HasMainViewOpts c_a2pCJ => Lens' c_a2pCJ MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2pCJ => Lens' c_a2pCJ TestSpec
+mvoWait :: HasMainViewOpts c_a2pCJ => Lens' c_a2pCJ Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8392,13 +8389,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2oQ0
-mainSubmitOpts :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 Bool
-msoLock :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 Bool
-msoRetry :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 Bool
-msoSpec :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2oQ0 => Lens' c_a2oQ0 Bool
+class HasMainSubmitOpts c_a2pHh
+mainSubmitOpts :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh Bool
+msoLock :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh Bool
+msoRetry :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh Bool
+msoSpec :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2pHh => Lens' c_a2pHh Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
