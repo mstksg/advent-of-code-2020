@@ -1,3 +1,5 @@
+{-# LANGUAGE NoStarIsType    #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module AOC.Common.Point (
   -- * Points
@@ -40,6 +42,7 @@ module AOC.Common.Point (
   , parseAsciiSet
   , ScanPoint(..)
   , displayAsciiMap
+  , displayAsciiSet
   -- * Util
   , centeredFinite
   ) where
@@ -357,6 +360,12 @@ displayAsciiMap d (NEM.IsNonEmpty mp) = unlines
     V2 xMin yMin `V2` V2 xMax yMax = boundingBox $ NEM.keysSet mp
 displayAsciiMap _ _ = ""
 
+displayAsciiSet
+    :: Char      -- ^ missing tile
+    -> Char      -- ^ present tile
+    -> Set Point -- ^ tile set
+    -> String
+displayAsciiSet x y = displayAsciiMap x . M.fromSet (const y)
 
 -- | Lattice points for line between points, not including endpoints
 lineTo :: Point -> Point -> [Point]
@@ -366,3 +375,6 @@ lineTo p0 p1 = [ p0 + t *^ step | t <- [1 .. gcf  - 1] ]
     gcf          = gcd dx dy
     step         = (`div` gcf) <$> d
 
+instance (Finitary a, KnownNat (Cardinality a), KnownNat (Cardinality a * Cardinality a)) => Finitary (V2 a)
+instance (Finitary a, KnownNat (Cardinality a), KnownNat (Cardinality a * (Cardinality a * Cardinality a))) => Finitary (V3 a)
+instance (Finitary a, KnownNat (Cardinality a), KnownNat ((Cardinality a * Cardinality a) * (Cardinality a * Cardinality a))) => Finitary (V4 a)

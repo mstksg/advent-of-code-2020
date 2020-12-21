@@ -12,23 +12,20 @@ module AOC.Challenge.Day20 (
   , day20b
   ) where
 
-import           AOC.Common
-import           AOC.Common.FinitarySet    (FinitarySet)
-import           AOC.Common.Point
-import           Data.Finitary
-import           AOC.Common.Point          (Point, Dir(..), allDir, rotPoint, orientPoint, shiftToZero, D8(..), allD8, boundingBox', minCorner, parseAsciiSet)
+import           AOC.Common                (mapMaybeSet, countTrue)
+import           AOC.Common.Point          (Point, FinPoint, Dir(..), allDir, rotFin, orientFin, rotPoint, orientPoint, shiftToZero, D8(..), allD8, boundingBox', parseAsciiSet, displayAsciiSet)
 import           AOC.Solver                ((:~>)(..))
+import           Control.Lens hiding       (uncons)
 import           Control.Monad             (guard, (<=<))
-import           Data.Bit
+import           Data.Bit                  (Bit(..))
 import           Data.Char                 (isDigit)
-import           Data.Finite
+import           Data.Finitary             (toFinite, fromFinite)
+import           Data.Finite               (weaken, strengthen, shift, unshift, packFinite)
 import           Data.Foldable             (toList, find)
-import           Data.Functor              ((<&>))
 import           Data.Group                (invert)
 import           Data.IntMap               (IntMap)
 import           Data.IntMap.NonEmpty      (NEIntMap)
 import           Data.IntSet               (IntSet)
-import           Control.Lens hiding (uncons)
 import           Data.Ix                   (range)
 import           Data.List                 (foldl', uncons)
 import           Data.List.NonEmpty        (NonEmpty(..))
@@ -40,25 +37,21 @@ import           Data.Set                  (Set)
 import           Data.Set.NonEmpty         (NESet)
 import           Linear                    (V2(..))
 import           Text.Read                 (readMaybe)
-import qualified AOC.Common.FinitarySet    as FS
 import qualified Data.IntMap.NonEmpty      as NEIM
 import qualified Data.IntMap.Strict        as IM
 import qualified Data.IntSet               as IS
-import           Data.Tuple.Strict
-import qualified Data.List.NonEmpty        as NE
 import qualified Data.Map                  as M
 import qualified Data.Map.NonEmpty         as NEM
 import qualified Data.Set                  as S
 import qualified Data.Set.NonEmpty         as NES
 import qualified Data.Vector.Sized         as V
-import qualified Data.Vector.Generic.Sized as VG
 import qualified Data.Vector.Unboxed.Sized as VU
 
 type Edge = VU.Vector 10 Bit
 
 data Tile = Tile
     { tPoints :: Set (FinPoint 8)
-    , tEdges  :: V.Vector 8 Edge
+    , tEdges  :: !(V.Vector 8 Edge)
     }
   deriving (Show)
 
@@ -77,18 +70,6 @@ toTiles ps = NEM.fromList $
     allD8 <&> \o ->
       let tile = cutTile $ orientFin o `NES.map` ps
       in  (tEdges tile `V.index` 0, tile)
-
-fromTile :: Tile -> Set (FinPoint 10)
-fromTile Tile{..} = S.mapMonotonic (fmap (weaken . shift)) tPoints
-                 <> foldMap (\d ->
-                              S.fromList
-                            . map (rotFin d)
-                            . mapMaybe (\(j, Bit b) -> V2 j 0 <$ guard b)
-                            . zip [0..]
-                            . VU.toList
-                            $ tEdges `V.index` toFinite (D8 d False)
-                        )
-                      allDir
 
 orientTile :: D8 -> Tile -> Tile
 orientTile o Tile{..} = Tile
@@ -223,7 +204,7 @@ parseTiles = fmap IM.fromList
         tileset = parseAsciiSet (== '#') (unlines tiles)
 
 displayTile :: (Foldable f, Integral a) => f (V2 a) -> String
-displayTile = displayAsciiMap '.' . M.fromSet (const '#') . S.fromList . map (fmap fromIntegral) . toList
+displayTile = displayAsciiSet '.' '#' . S.fromList . map (fmap fromIntegral) . toList
 
 _testTile :: NESet (FinPoint 10)
 Just _testTile = NES.nonEmptySet . mapMaybeSet (traverse (packFinite . fromIntegral)) . parseAsciiSet (== '#') $ unlines
@@ -247,8 +228,18 @@ _testOrient o ps = do
     putStrLn "Direct"
     putStrLn . displayTile $ NES.map (orientFin o) ps
     putStrLn "Direct + Cut"
-    putStrLn . displayTile . fromTile . cutTile $ NES.map (orientFin o) ps
+    putStrLn . displayTile . _fromTile . cutTile $ NES.map (orientFin o) ps
     putStrLn "Cut + Orient"
-    putStrLn . displayTile . fromTile . orientTile o . cutTile $ ps
+    putStrLn . displayTile . _fromTile . orientTile o . cutTile $ ps
 
-
+_fromTile :: Tile -> Set (FinPoint 10)
+_fromTile Tile{..} = S.mapMonotonic (fmap (weaken . shift)) tPoints
+                  <> foldMap (\d ->
+                               S.fromList
+                             . map (rotFin d)
+                             . mapMaybe (\(j, Bit b) -> V2 j 0 <$ guard b)
+                             . zip [0..]
+                             . VU.toList
+                             $ tEdges `V.index` toFinite (D8 d False)
+                         )
+                       allDir
