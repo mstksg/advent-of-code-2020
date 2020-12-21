@@ -16,8 +16,14 @@ module AOC.Common.Point (
   , dirPoint'
   , rotPoint
   , mulDir
-  , horizDirFlip
-  , vertDirFlip
+  , allDir
+  , allDirSet
+  -- * Orientations
+  , D8(..)
+  , mulD8
+  , orientPoint
+  , allD8
+  , allD8Set
   -- * 2D Maps
   , memoPoint
   , boundingBox
@@ -37,9 +43,11 @@ import           Control.Applicative
 import           Control.DeepSeq
 import           Control.Lens
 import           Data.Char
+import           Data.Finitary
 import           Data.Foldable
 import           Data.Group
 import           Data.Hashable
+import           Data.List.NonEmpty      (NonEmpty(..))
 import           Data.Map                (Map)
 import           Data.Map.Lens
 import           Data.MemoCombinators    (Memo)
@@ -154,6 +162,7 @@ data Dir = North | East | South | West
 
 instance Hashable Dir
 instance NFData Dir
+instance Finitary Dir
 
 dirPoint :: Num a => Dir -> V2 a
 dirPoint = \case
@@ -207,23 +216,11 @@ mulDir West  = \case North -> West
                      South -> East
                      West  -> South
 
+allDir :: NonEmpty Dir
+allDir = North :| [ East .. ]
 
--- | Flip a 'Dir' about North/South axis.
-horizDirFlip :: Dir -> Dir
-horizDirFlip = \case
-    North -> North
-    East  -> West
-    West  -> East
-    South -> South
-
--- | Flip a 'Dir' about East/West axis.
-vertDirFlip :: Dir -> Dir
-vertDirFlip = \case
-    North -> South
-    East  -> East
-    West  -> West
-    South -> North
-
+allDirSet :: NESet Dir
+allDirSet = NES.fromDistinctAscList allDir
 
 -- | '<>' is 'mulDir'.
 instance Semigroup Dir where
@@ -245,6 +242,57 @@ instance Group Dir where
     pow = flip stimes
 
 instance Abelian Dir
+
+-- | Represents an orientation of a 2d tile.
+data D8 = D8 { d8Rot :: !Dir, d8Flip :: !Bool }
+  deriving (Show, Eq, Ord, Generic)
+
+instance Hashable D8
+instance NFData D8
+instance Finitary D8
+
+-- | '<>' is 'mulDir'.
+instance Semigroup D8 where
+    D8 x1 False <> D8 x2 y2 = D8 (x1 <> x2) y2
+    D8 x1 True  <> D8 x2 y2 = D8 (x1 <> invert x2) (not y2)
+
+instance Monoid D8 where
+    mempty = D8 North False
+
+instance Group D8 where
+    invert (D8 x False) = D8 (invert x) False
+    invert (D8 x True ) = D8 x          True
+
+-- | @a `mulD8` b@ represents applying b, then a.
+mulD8 :: D8 -> D8 -> D8
+mulD8 = (<>)
+
+allD8 :: NonEmpty D8
+allD8 = D8 <$> allDir <*> (False :| [ True ])
+
+allD8Set :: NESet D8
+allD8Set = NES.fromDistinctAscList allD8
+
+-- | Rotate and flip a point by a 'D8'
+orientPoint :: Num a => D8 -> V2 a -> V2 a
+orientPoint = \case
+    D8 North False -> id
+    D8 East  False -> \(V2 x y) -> V2   y  (-x)
+    D8 West  False -> \(V2 x y) -> V2 (-y)   x
+    D8 South False -> \(V2 x y) -> V2 (-x) (-y)
+    D8 North True  -> \(V2 x y) -> V2 (-x)   y
+    D8 East  True  -> \(V2 x y) -> V2   y    x
+    D8 West  True  -> \(V2 x y) -> V2 (-y) (-x)
+    D8 South True  -> \(V2 x y) -> V2   x  (-y)
+
+-- -- | Rotate a point by a direction
+-- rotPoint :: Num a => Dir -> V2 a -> V2 a
+-- rotPoint = \case
+--     North -> id
+--     East  -> \(V2 x y) -> V2   y  (-x)
+--     West  -> \(V2 x y) -> V2 (-y)   x
+--     South -> negate
+
 
 
 -- | It's 'Point', but with a newtype wrapper so we have an 'Ord' that

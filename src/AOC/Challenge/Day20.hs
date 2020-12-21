@@ -28,10 +28,12 @@ module AOC.Challenge.Day20 (
 
 import           AOC.Prelude
 
+-- import qualified Data.Vector                 as V
 import           Data.Bitraversable
 import           Data.Group
 import qualified Data.Graph.Inductive           as G
 import qualified Data.IntMap                    as IM
+import qualified Data.IntMap.NonEmpty           as NEIM
 import qualified Data.IntSet                    as IS
 import qualified Data.List.NonEmpty             as NE
 import qualified Data.List.PointedList          as PL
@@ -43,7 +45,7 @@ import qualified Data.Sequence                  as Seq
 import qualified Data.Set                       as S
 import qualified Data.Set.NonEmpty              as NES
 import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
+import qualified Data.Vector.Sized              as V
 import qualified Linear                         as L
 import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
@@ -53,9 +55,8 @@ edges
     :: NESet Point
     -> NEMap IntSet (NESet Point) -- edge and map after edge
 edges ps = NEM.fromList $ do
-    r   <- North :| [ East .. ]
-    flp <- id    :| [ over _x negate ]
-    let ps'   = shiftToZero . NES.map (flp . mulPoint (dirPoint r)) $ ps
+    o <- allD8
+    let ps'   = shiftToZero . NES.map (orientPoint o) $ ps
         tbord = IS.fromList . mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $ toList ps'
     pure (tbord, ps')
 
@@ -93,19 +94,25 @@ removeBorders = S.fromDistinctAscList . mapMaybe go . toList
       guard . and $ (/=) <$> p <*> V2 9 9
       pure $ p - 1
 
+
+toQueue
+    :: Foldable f
+    => Point            -- ^ corner
+    -> NESet Point
+    -> f Dir
+    -> Map IntSet (Point, Dir)
+toQueue p0 pts ds = M.fromList
+    [ (topBorder pts', (p0 + topPointOf d, d))
+    | d <- toList ds
+    , let pts' = rotPoint d `NES.map` pts
+    ]
+
 assembleMap
-    :: IntMap (NEMap IntSet (NESet Point))
+    :: NEIntMap (NEMap IntSet (NESet Point))
     -> Set Point
-assembleMap pts0 = case IM.minViewWithKey pts0 of
-    Nothing -> S.empty
-    Just ((_, s0), pts1) -> case NEM.deleteFindMin s0 of
-      ((_, mp1), _) ->
-        let q0 = M.fromList
-                [ (topBorder mp1', (topPointOf dd, dd))
-                | dd <- [North ..]
-                , let mp1' = rotPoint dd `NES.map` mp1
-                ]
-        in  go q0 pts1 (removeBorders mp1)
+assembleMap pts0 = case NEIM.deleteFindMin pts0 of
+    ((_, s0), pts1) -> case NEM.deleteFindMin s0 of
+      ((_, mp1), _) -> go (toQueue 0 mp1 allDir) pts1 (removeBorders mp1)
   where
     go  :: Map IntSet (Point, Dir)            -- queue: edge -> top corner, orientation
         -> IntMap (NEMap IntSet (NESet Point))  -- leftover
@@ -114,25 +121,17 @@ assembleMap pts0 = case IM.minViewWithKey pts0 of
     go q pts mp = case M.minViewWithKey q of
       Nothing -> mp
       Just ((e, (mnpt, d)), q') ->
-        let nxt = firstJust (\(i, ls) ->
-                    case NEM.lookup e ls of
-                      Nothing   -> Nothing
-                      Just npts -> Just (i, npts)
-                ) $ IM.toList pts
+        let nxt = firstJust (traverse (NEM.lookup e)) (IM.toList pts)
         in  case nxt of
-              Nothing -> go q' pts mp
+              Nothing        -> go q' pts mp
               Just (k, npts) ->
-                let rotated = shiftToZero $ (rotPoint (invert d <> South) . over _x negate)
-                                  `NES.map` npts
-                    shifted = (+ mnpt) `S.map` removeBorders rotated
-                    mp'     = shifted <> mp
-                    newQueue = M.fromList
-                        [ (topBorder npts', (topPointOf dd + mnpt, dd))
-                        | dd <- [North ..]
-                        , dd /= invert d
-                        , let npts' = mulPoint (dirPoint (dd <> East)) `NES.map` rotated
-                        ]
-                in  go (newQueue <> q') (IM.delete k pts) mp'
+                let rotated  = shiftToZero $ orientPoint (D8 (invert d <> South) True)
+                                   `NES.map` npts
+                    shifted  = (+ mnpt) `S.map` removeBorders rotated
+                    newQueue = toQueue mnpt rotated (NE.filter (/= invert d) allDir)
+                in  go (newQueue <> q')
+                       (IM.delete k pts)
+                       (shifted <> mp)
 
 parseTiles :: String -> Maybe (IntMap (NESet Point))
 parseTiles = fmap IM.fromList
@@ -148,8 +147,8 @@ day20a :: IntMap (NESet Point) :~> Int
 day20a = MkSol
     { sParse = parseTiles
     , sShow  = show
-    , sSolve = Just
-             . product
+    , sSolve = fmap product
+             . V.fromList @4
              . mapMaybe (\(k, xs) -> k <$ guard (IS.size xs == 2)) . IM.toList
              . pairUp
              . fmap (NES.toSet . NEM.keysSet . edges)
@@ -159,17 +158,15 @@ day20b :: IntMap (NESet Point) :~> Int
 day20b = MkSol
     { sParse = parseTiles
     , sShow  = show
-    , sSolve = \pp ->
-        let mp = assembleMap $ edges <$> pp
-        in  listToMaybe
-              [ S.size mp - numdrag * NES.size dragon
-              | r <- [ North ..  ]
-              , flp <- [ False, True ]
-              , let flpfunc = if flp then id else over _x negate
-                    dragon' = shiftToZero $ NES.map (flpfunc . mulPoint (dirPoint r)) dragon
-                    numdrag = findPattern (NES.toSet dragon') mp
-              , numdrag /= 0
-              ]
+    , sSolve = \pp -> do
+        mp <- assembleMap <$> NEIM.nonEmptyMap (edges <$> pp)
+        listToMaybe
+          [ S.size mp - numdrag * NES.size dragon
+          | o   <- toList allD8
+          , let dragon' = NES.map (orientPoint o) dragon
+                numdrag = findPattern (NES.toSet dragon') mp
+          , numdrag /= 0
+          ]
     }
 
 findPattern :: Set Point -> Set Point -> Int
