@@ -110,7 +110,7 @@ inBoundingBox
     => V2 (g a)
     -> g a
     -> Bool
-inBoundingBox (V2 mn mx) x = all id $ go <$> x <*> mn <*> mx
+inBoundingBox (V2 mn mx) x = and $ go <$> x <*> mn <*> mx
   where
     go x' mn' mx' = x' >= mn' && x' <= mx'
 

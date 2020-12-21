@@ -26,7 +26,6 @@ import           Data.Ix              (range)
 import           Data.List            (foldl', uncons)
 import           Data.List.NonEmpty   (NonEmpty(..))
 import           Data.List.Split      (splitOn)
-import           Data.List.Split      (splitOn)
 import           Data.Map             (Map)
 import           Data.Map.NonEmpty    (NEMap)
 import           Data.Maybe           (mapMaybe, listToMaybe)
@@ -83,8 +82,8 @@ removeBorders :: NESet Point -> Set Point
 removeBorders = S.fromDistinctAscList . mapMaybe go . toList
   where
     go p = do
-      guard . and $ (/=) <$> p <*> V2 0 0
-      guard . and $ (/=) <$> p <*> V2 9 9
+      guard $ all (/= 0) p
+      guard $ all (/= 9) p
       pure $ p - 1
 
 -- | For a given image, add the given edges into the queue
