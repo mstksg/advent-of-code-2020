@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day20
 -- License     : BSD3
@@ -9,56 +6,52 @@
 -- Portability : non-portable
 --
 -- Day 20.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day20 (
     day20a
   , day20b
   ) where
 
-import           AOC.Prelude
-
--- import qualified Data.Vector                 as V
-import           Data.Bitraversable
-import           Data.Group
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntMap.NonEmpty           as NEIM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.Map.NonEmpty              as NEM
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Set.NonEmpty              as NES
-import qualified Data.Text                      as T
-import qualified Data.Vector.Sized              as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+import           AOC.Common.Point     (Point, Dir(..), allDir, rotPoint, orientPoint, shiftToZero, D8(..), allD8, boundingBox', minCorner, parseAsciiSet)
+import           AOC.Solver           ((:~>)(..))
+import           Control.Monad        (guard, (<=<))
+import           Data.Char            (isDigit)
+import           Data.Foldable        (toList, find)
+import           Data.Functor         ((<&>))
+import           Data.Group           (invert)
+import           Data.IntMap          (IntMap)
+import           Data.IntMap.NonEmpty (NEIntMap)
+import           Data.IntSet          (IntSet)
+import           Data.Ix              (range)
+import           Data.List            (foldl', uncons)
+import           Data.List.NonEmpty   (NonEmpty(..))
+import           Data.List.Split      (splitOn)
+import           Data.List.Split      (splitOn)
+import           Data.Map             (Map)
+import           Data.Map.NonEmpty    (NEMap)
+import           Data.Maybe           (mapMaybe, listToMaybe)
+import           Data.Set             (Set)
+import           Data.Set.NonEmpty    (NESet)
+import           Linear               (V2(..))
+import           Text.Read            (readMaybe)
+import qualified Data.IntMap.NonEmpty as NEIM
+import qualified Data.IntMap.Strict   as IM
+import qualified Data.IntSet          as IS
+import qualified Data.List.NonEmpty   as NE
+import qualified Data.Map             as M
+import qualified Data.Map.NonEmpty    as NEM
+import qualified Data.Set             as S
+import qualified Data.Set.NonEmpty    as NES
+import qualified Data.Vector.Sized    as V
 
 edges
     :: NESet Point
     -> NEMap IntSet (NESet Point) -- edge and map after edge
 edges ps = NEM.fromList $ do
-    o <- allD8
-    let ps'   = shiftToZero . NES.map (orientPoint o) $ ps
-        tbord = IS.fromList . mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $ toList ps'
-    pure (tbord, ps')
+    allD8 <&> \o ->
+      let ps'   = shiftToZero . NES.map (orientPoint o) $ ps
+          tbord = IS.fromList . mapMaybe (\(V2 x y) -> x <$ guard (y == 0)) $ toList ps'
+      in  (tbord, ps')
 
 -- | Get the x positions of the minimal ("top") y line
 topBorder :: NESet Point -> IntSet
@@ -73,9 +66,9 @@ topBorder ps = IS.fromDistinctAscList
 -- id's of all neighbors.
 pairUp :: IntMap (Set IntSet) -> IntMap IntSet
 pairUp im0 = flip IM.mapWithKey im0 $ \i es ->
-        IM.keysSet
-      . IM.filter (\ei -> not $ S.null $ es `S.intersection` ei)
-      $ IM.delete i im0
+             IM.keysSet
+           . IM.filter (\ei -> not $ S.null $ es `S.intersection` ei)
+           $ IM.delete i im0
 
 -- | shift the corner point by a direction
 topPointOf :: Dir -> Point
@@ -94,12 +87,12 @@ removeBorders = S.fromDistinctAscList . mapMaybe go . toList
       guard . and $ (/=) <$> p <*> V2 9 9
       pure $ p - 1
 
-
+-- | For a given image, add the given edges into the queue
 toQueue
     :: Foldable f
-    => Point            -- ^ corner
-    -> NESet Point
-    -> f Dir
+    => Point            -- ^ location of corner
+    -> NESet Point      -- ^ image to extract edges from
+    -> f Dir            -- ^ edges to insert
     -> Map IntSet (Point, Dir)
 toQueue p0 pts ds = M.fromList
     [ (topBorder pts', (p0 + topPointOf d, d))
@@ -107,31 +100,44 @@ toQueue p0 pts ds = M.fromList
     , let pts' = rotPoint d `NES.map` pts
     ]
 
+findKey
+    :: (k -> Bool)
+    -> NEMap k a
+    -> Maybe (k, a)
+findKey p = find (p . fst) . NEM.toList
+
 assembleMap
     :: NEIntMap (NEMap IntSet (NESet Point))
     -> Set Point
-assembleMap pts0 = case NEIM.deleteFindMin pts0 of
-    ((_, s0), pts1) -> case NEM.deleteFindMin s0 of
-      ((_, mp1), _) -> go (toQueue 0 mp1 allDir) pts1 (removeBorders mp1)
+assembleMap tiles0 = go (toQueue 0 tile0 allDir)
+                        (IM.keysSet tiles1)
+                        (removeBorders tile0)
   where
-    go  :: Map IntSet (Point, Dir)            -- queue: edge -> top corner, orientation
-        -> IntMap (NEMap IntSet (NESet Point))  -- leftover
-        -> Set Point                          -- current map
-        -> Set Point
-    go q pts mp = case M.minViewWithKey q of
-      Nothing -> mp
-      Just ((e, (mnpt, d)), q') ->
-        let nxt = firstJust (traverse (NEM.lookup e)) (IM.toList pts)
-        in  case nxt of
-              Nothing        -> go q' pts mp
-              Just (k, npts) ->
-                let rotated  = shiftToZero $ orientPoint (D8 (invert d <> South) True)
-                                   `NES.map` npts
-                    shifted  = (+ mnpt) `S.map` removeBorders rotated
-                    newQueue = toQueue mnpt rotated (NE.filter (/= invert d) allDir)
-                in  go (newQueue <> q')
-                       (IM.delete k pts)
-                       (shifted <> mp)
+    ((_, t0Map), tiles1) = NEIM.deleteFindMin tiles0
+    ((_, tile0), _     ) = NEM.deleteFindMin  t0Map
+    tileCache :: NEMap IntSet (NEMap Int (NESet Point))
+    tileCache = NEM.fromListWith (<>)
+      [ (edge, NEM.singleton tileId tile)
+      | (tileId, tileEdges) <- NEIM.toList tiles0
+      , (edge  , tile     ) <- NEM.toList  tileEdges
+      ]
+    go  :: Map IntSet (Point, Dir)   -- ^ queue: edge -> top corner, orientation
+        -> IntSet                    -- ^ leftover points
+        -> Set Point                 -- ^ current map
+        -> Set Point                 -- ^ sweet tail rescursion
+    go !queue !tiles !mp = case M.minViewWithKey queue of
+      Nothing                            -> mp
+      Just ((edge, (corner, d)), queue') ->
+        case findKey (`IS.member` tiles) (tileCache NEM.! edge) of
+          Nothing             -> go queue' tiles mp
+          Just (tileId, tile) ->
+            let rotated  = shiftToZero $ orientPoint (D8 (invert d <> South) True)
+                               `NES.map` tile
+                shifted  = (+ corner) `S.mapMonotonic` removeBorders rotated
+                newQueue = toQueue corner rotated (NE.filter (/= invert d) allDir)
+            in  go (newQueue <> queue)
+                   (IS.delete tileId tiles)
+                   (shifted <> mp)
 
 parseTiles :: String -> Maybe (IntMap (NESet Point))
 parseTiles = fmap IM.fromList
@@ -149,6 +155,7 @@ day20a = MkSol
     , sShow  = show
     , sSolve = fmap product
              . V.fromList @4
+             . take 4
              . mapMaybe (\(k, xs) -> k <$ guard (IS.size xs == 2)) . IM.toList
              . pairUp
              . fmap (NES.toSet . NEM.keysSet . edges)
@@ -161,22 +168,28 @@ day20b = MkSol
     , sSolve = \pp -> do
         mp <- assembleMap <$> NEIM.nonEmptyMap (edges <$> pp)
         listToMaybe
-          [ S.size mp - numdrag * NES.size dragon
-          | o   <- toList allD8
-          , let dragon' = NES.map (orientPoint o) dragon
-                numdrag = findPattern (NES.toSet dragon') mp
-          , numdrag /= 0
+          [ res
+          | drgn <- toList dragons
+          , let res = S.size $ pokePattern (NES.toSet drgn) mp
+          , res /= S.size mp
           ]
     }
 
-findPattern :: Set Point -> Set Point -> Int
-findPattern pat ps = countTrue (S.null . (`S.difference` ps)) candidates
+pokePattern
+    :: Set Point
+    -> Set Point
+    -> Set Point
+pokePattern pat ps0 = foldl' go ps0 (range (mn, mx))
   where
-    Just (V2 mn mx) = boundingBox' ps
-    candidates =
-      [ S.map (+ d) pat
-      | d <- range (mn, mx)
-      ]
+    Just (V2 mn mx) = boundingBox' ps0
+    go ps d
+        | pat' `S.isSubsetOf` ps = ps S.\\ pat'
+        | otherwise              = ps
+      where
+        pat' = S.mapMonotonic (+ d) pat
+
+dragons :: NonEmpty (NESet Point)
+dragons = allD8 <&> \o -> shiftToZero $ NES.map (orientPoint o) dragon
 
 dragon :: NESet Point
 Just dragon = NES.nonEmptySet . parseAsciiSet (== '#') $ unlines
