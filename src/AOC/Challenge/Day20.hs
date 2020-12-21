@@ -51,13 +51,15 @@ type Edge = VU.Vector 10 Bit
 
 data Tile = Tile
     { tPoints :: Set (FinPoint 8)
-    , tEdges  :: !(V.Vector 8 Edge)
+    , tFlip   :: D8
+    , tEdges  :: V.Vector 8 Edge
     }
   deriving (Show)
 
 cutTile :: NESet (FinPoint 10) -> Tile
 cutTile ps = Tile
     { tPoints = S.fromDistinctAscList . mapMaybe (traverse (strengthen <=< unshift)) . toList $ ps
+    , tFlip   = mempty
     , tEdges  = V.generate $ \i ->
         let ps' = orientFin (invert (fromFinite i)) `NES.map` ps
         in  VU.generate $ \j -> Bit $ V2 j 0 `NES.member` ps'
@@ -68,14 +70,22 @@ cutTile ps = Tile
 toTiles :: NESet (FinPoint 10) -> NEMap Edge Tile
 toTiles ps = NEM.fromList $
     allD8 <&> \o ->
-      let tile = cutTile $ orientFin o `NES.map` ps
-      in  (tEdges tile `V.index` 0, tile)
+        let t = orientTile o t0
+        in  (tileEdge t mempty, t)
+  where
+    t0 = cutTile ps
+
+tilePoints :: Tile -> Set (FinPoint 8)
+tilePoints Tile{..} = orientFin tFlip `S.map` tPoints
+
+tileEdge :: Tile -> D8 -> Edge
+tileEdge Tile{..} o = tEdges `V.index` toFinite (invert tFlip <> o)
 
 orientTile :: D8 -> Tile -> Tile
 orientTile o Tile{..} = Tile
-    { tPoints = S.map (orientFin o) tPoints
-    , tEdges  = V.generate $ \i ->
-        tEdges `V.index` toFinite (invert o <> fromFinite i)
+    { tPoints = tPoints
+    , tFlip   = o <> tFlip
+    , tEdges  = tEdges
     }
 
 countNeighbors :: IntMap (Set Edge) -> IntMap Int
@@ -103,8 +113,8 @@ toQueue
     -> Tile             -- ^ image to extract edges from
     -> f Dir            -- ^ edges to insert
     -> Map Edge (Point, Dir)
-toQueue p0 tile ds = M.fromList
-    [ ( tEdges tile `V.index` toFinite (D8 d False)
+toQueue p0 t ds = M.fromList
+    [ ( tileEdge t (D8 d False)
       , (p0 + topPointOf d, d)
       )
     | d <- toList ds
@@ -115,7 +125,7 @@ assembleMap
     -> Set Point
 assembleMap tiles0 = go (toQueue 0 tile0 allDir)
                         (IM.keysSet tiles1)
-                        (S.mapMonotonic (fmap fromIntegral) (tPoints tile0))
+                        (S.mapMonotonic (fmap fromIntegral) (tilePoints tile0))
   where
     ((_, t0Map), tiles1) = NEIM.deleteFindMin tiles0
     ((_, tile0), _     ) = NEM.deleteFindMin  t0Map
@@ -136,7 +146,7 @@ assembleMap tiles0 = go (toQueue 0 tile0 allDir)
           Nothing             -> go queue' tiles mp
           Just (tileId, tile) ->
             let rotated  = orientTile (D8 (d <> South) True) tile
-                toBlit   = ((+ corner) . fmap fromIntegral) `S.map` tPoints rotated
+                toBlit   = ((+ corner) . fmap fromIntegral) `S.map` tilePoints rotated
                 newQueue = toQueue corner rotated allDir
             in  go (newQueue <> queue)
                    (IS.delete tileId tiles)
