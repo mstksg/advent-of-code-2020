@@ -40,6 +40,7 @@ Table of Contents
 * [Day 18](#day-18)
 * [Day 19](#day-19)
 * [Day 20](#day-20) *(no reflection yet)*
+* [Day 21](#day-21) *(no reflection yet)*
 
 Day 1
 ------
@@ -3447,6 +3448,50 @@ time                 53.32 ms   (50.26 ms .. 55.66 ms)
 mean                 53.69 ms   (51.90 ms .. 55.42 ms)
 std dev              3.375 ms   (2.442 ms .. 4.541 ms)
 variance introduced by outliers: 21% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 21
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day21.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d21p]* / *[Code][d21g]* / *[Rendered][d21h]* / *[Standalone Reflection Page][d21r]*
+
+[d21p]: https://adventofcode.com/2020/day/21
+[d21g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day21.hs
+[d21h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day21.html
+[d21r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day21.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 21 Benchmarks
+
+```
+>> Day 21a
+benchmarking...
+time                 280.2 μs   (272.4 μs .. 285.6 μs)
+                     0.997 R²   (0.996 R² .. 0.998 R²)
+mean                 276.8 μs   (272.6 μs .. 279.7 μs)
+std dev              10.59 μs   (9.458 μs .. 12.38 μs)
+variance introduced by outliers: 34% (moderately inflated)
+
+* parsing and formatting times excluded
+
+>> Day 21b
+benchmarking...
+time                 166.9 μs   (166.0 μs .. 167.9 μs)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 163.5 μs   (161.5 μs .. 165.5 μs)
+std dev              6.839 μs   (5.702 μs .. 9.109 μs)
+variance introduced by outliers: 41% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

@@ -1,5 +1,4 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
+{-# LANGUAGE OverloadedStrings        #-}
 
 -- |
 -- Module      : AOC.Challenge.Day21
@@ -9,102 +8,60 @@
 -- Portability : non-portable
 --
 -- Day 21.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day21 (
     day21a
   , day21b
   ) where
 
-import           AOC.Prelude
+import           AOC.Common           (parseLines, pickUnique, countTrue)
+import           AOC.Solver           ((:~>)(..))
+import           Data.Foldable        (toList)
+import           Data.Functor         ((<&>))
+import           Data.List            (intercalate)
+import           Data.Map             (Map)
+import           Data.Maybe           (listToMaybe)
+import           Data.Set             (Set)
+import           Data.Void            (Void)
+import qualified Data.Map             as M
+import qualified Data.Set             as S
+import qualified Text.Megaparsec      as P
+import qualified Text.Megaparsec.Char as P
 
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
-import           Control.Monad.State
+assembleOptions
+    :: (Ord k, Ord a)
+    => [(Set a, Set k)]
+    -> Map k (Set a)
+assembleOptions info = M.unionsWith S.intersection $
+    info <&> \(igr, alg) -> M.fromSet (const igr) alg
 
-parseLine :: String -> (Set String, Set String)
-parseLine str = case splitOn "(contains" str of
-    [igs, rs] -> (S.fromList (words igs), S.fromList (words $ filter go rs))
-  where
-    go c = isAlpha c || isSpace c
-
-legal :: Map String String -> (Set String, Set String) -> Bool
-legal igrs (fd, alg) = inHere `S.isSubsetOf` fd
-  where
-    inHere = S.fromList . toList $ igrs `M.restrictKeys` alg
-
-day21a :: _ :~> _
+day21a :: [(Set String, Set String)] :~> Int
 day21a = MkSol
-    { sParse = Just . map parseLine . lines
+    { sParse = parseLines lineParser
     , sShow  = show
-    , sSolve = \igrsalg -> do
-        let (fold->igr, fold->alg) = unzip igrsalg
-            pairings = searchMe igrsalg
-        pickMe <- listToMaybe $ flip evalStateT S.empty $ do
-                traverse (\poss -> do
-                      seen <- get
-                      pick <- lift $ S.toList (poss `S.difference` seen)
-                      modify $ S.insert pick
-                      pure pick
-                    )
-                  pairings
-        let goodFoods = igr `S.difference` (S.fromList $ toList pickMe)
-        pure $ sum $ 
-            [ S.size $ is `S.intersection` goodFoods
-            | (is, _) <- igrsalg
-            ]
+    , sSolve = \igrsAlgs ->
+          fmap (countNotIn (concatMap (toList . fst) igrsAlgs))
+        . listToMaybe
+        . map (S.fromList . toList)
+        . pickUnique
+        $ assembleOptions igrsAlgs
     }
-
-searchMe
-    :: [(Set String, Set String)]
-    -> Map String (Set String)
-searchMe xs = foldl' go (M.fromSet (const igr) alg) xs
   where
-    (fold->igr, fold->alg) = unzip xs
-    go    :: Map String (Set String)
-           -> (Set String, Set String)
-           -> (Map String (Set String))
-    go (opts) (ig, al) =
-        M.unionWith S.intersection opts (M.fromSet (const ig) al)
+    countNotIn xs bad = countTrue (`S.notMember` bad) xs
 
-day21b :: _ :~> _
+day21b :: [(Set String, Set String)] :~> [String]
 day21b = MkSol
-    { sParse = sParse day21a
-    , sShow  = intercalate "," . toList
-    , sSolve = \igrsalg -> do
-        let (fold->igr, fold->alg) = unzip igrsalg
-            pairings = searchMe igrsalg
-        pickMe <- listToMaybe $ flip evalStateT S.empty $ do
-                traverse (\poss -> do
-                      seen <- get
-                      pick <- lift $ S.toList (poss `S.difference` seen)
-                      modify $ S.insert pick
-                      pure pick
-                    )
-                  pairings
-        pure pickMe
+    { sParse = parseLines lineParser
+    , sShow  = intercalate ","
+    , sSolve = fmap toList . listToMaybe . pickUnique . assembleOptions
     }
+
+type Parser = P.Parsec Void String
+
+lineParser :: Parser (Set String, Set String)
+lineParser =
+    (,) <$> (S.fromList <$> P.many (P.some P.letterChar <* " "))
+        <*> (S.fromList <$> P.between "(" ")"
+                ("contains " *> P.some P.letterChar `P.sepBy` ", ")
+            )
+

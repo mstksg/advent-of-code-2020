@@ -37,6 +37,7 @@ module AOC.Common (
   , floodFill
   , floodFillCount
   , countTrue
+  , pickUnique
   -- * Lists
   , freqs
   , lookupFreq
@@ -112,13 +113,13 @@ module AOC.Common (
 #endif
   ) where
 
--- import qualified Data.Functor.Foldable.TH        as R
 import           AOC.Util
 import           Control.Applicative
 import           Control.Comonad.Store
 import           Control.Lens
 import           Control.Monad
 import           Control.Monad.ST
+import           Control.Monad.State
 import           Control.Parallel.Strategies
 import           Data.Bifunctor
 import           Data.Char
@@ -128,35 +129,28 @@ import           Data.Finite.Internal
 import           Data.Foldable
 import           Data.Function
 import           Data.Functor.Compose
-import           Data.Group
 import           Data.Hashable
 import           Data.IntMap                        (IntMap)
 import           Data.List
 import           Data.List.NonEmpty                 (NonEmpty(..))
 import           Data.List.Split
 import           Data.Map                           (Map)
-import           Data.Map.Lens
 import           Data.Map.NonEmpty                  (NEMap)
-import           Data.MemoCombinators               (Memo)
-import           Data.Monoid                        (Ap(..))
+import           Data.Maybe
 import           Data.Ord
 import           Data.Semigroup
-import           Data.Semigroup.Foldable
-import           Data.Maybe
 import           Data.Sequence                      (Seq(..))
 import           Data.Set                           (Set)
-import           Data.Set.Lens
 import           Data.Set.NonEmpty                  (NESet)
+import           Data.Traversable
 import           Data.Tree                          (Tree(..))
 import           Data.Tuple
-import           Data.Tuple.Strict
 import           Data.Void
 import           Data.Word
 import           Debug.Trace
 import           GHC.Generics                       (Generic)
 import           GHC.TypeNats
 import           Linear                             (V2(..), V3(..), V4(..), R1(..), R2(..), R3(..), R4(..))
-import           Linear.Vector
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
@@ -168,7 +162,6 @@ import qualified Data.IntPSQ                        as IntPSQ
 import qualified Data.List.NonEmpty                 as NE
 import qualified Data.Map                           as M
 import qualified Data.Map.NonEmpty                  as NEM
-import qualified Data.MemoCombinators               as Memo
 import qualified Data.OrdPSQ                        as OrdPSQ
 import qualified Data.Sequence                      as Seq
 import qualified Data.Set                           as S
@@ -286,6 +279,18 @@ fixedPoint f = go
 -- | Count the number of items in a container where the predicate is true.
 countTrue :: Foldable f => (a -> Bool) -> f a -> Int
 countTrue p = length . filter p . toList
+
+-- | Given a map of @k@ to possible @a@s for that @k@, find possible
+-- configurations where each @k@ is given its own unique @a@.
+pickUnique :: (Ord k, Ord a) => Map k (Set a) -> [Map k a]
+pickUnique mp = flip evalStateT S.empty $ do
+    fmap M.fromList . for opts . traverse $ \poss -> do
+      seen <- get
+      pick <- lift $ S.toList (poss `S.difference` seen)
+      pick <$ modify (S.insert pick)
+  where
+    opts = sortOn (S.size . snd) (M.toList mp)
+
 
 -- | Build a frequency map
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
