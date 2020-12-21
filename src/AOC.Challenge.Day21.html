@@ -19,69 +19,75 @@
 </span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">toList</span></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span>         </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">intercalate</span></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Map</span></span><span class="hs-special">)</span><span>
-</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">listToMaybe</span></span><span class="hs-special">)</span><span>
-</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Set</span></span><span class="hs-special">)</span><span>
-</span><span id="line-25"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">)</span><span>
-</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
-</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
-</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span id="local-6989586621679693058"><span id="local-6989586621679693059"><span class="annot"><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-type">assembleOptions</span></a></span><span>
-</span><span id="line-32"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679693059"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679693058"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-33"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679693058"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679693059"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
-</span><span id="line-34"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><a href="#local-6989586621679693059"><span class="hs-identifier hs-type">k</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679693058"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
-</span><span id="line-35"></span><span id="assembleOptions"><span class="annot"><span class="annottext">assembleOptions :: [(Set a, Set k)] -&gt; Map k (Set a)
-</span><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-var hs-var">assembleOptions</span></a></span></span><span> </span><span id="local-6989586621679693014"><span class="annot"><span class="annottext">info :: [(Set a, Set k)]
-</span><a href="#local-6989586621679693014"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Set a -&gt; Set a -&gt; Set a) -&gt; [Map k (Set a)] -&gt; Map k (Set a)
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>           </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">listToMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Set</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Void</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Void</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span id="local-6989586621679692227"><span id="local-6989586621679692228"><span class="annot"><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-type">assembleOptions</span></a></span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679692228"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ord</span></span><span> </span><span class="annot"><a href="#local-6989586621679692227"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679692227"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679692228"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679692228"><span class="hs-identifier hs-type">k</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="#local-6989586621679692227"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span></span><span>
+</span><span id="line-34"></span><span id="assembleOptions"><span class="annot"><span class="annottext">assembleOptions :: [(Set a, Set k)] -&gt; [(k, Set a)]
+</span><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-var hs-var">assembleOptions</span></a></span></span><span> </span><span id="local-6989586621679692183"><span class="annot"><span class="annottext">info :: [(Set a, Set k)]
+</span><a href="#local-6989586621679692183"><span class="hs-identifier hs-var">info</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Map k (Set a) -&gt; [(k, Set a)]
+forall k a. Map k a -&gt; [(k, a)]
+</span><span class="hs-identifier hs-var">M.toList</span></span><span> </span><span class="annot"><span class="annottext">(Map k (Set a) -&gt; [(k, Set a)])
+-&gt; ([Map k (Set a)] -&gt; Map k (Set a))
+-&gt; [Map k (Set a)]
+-&gt; [(k, Set a)]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Set a -&gt; Set a -&gt; Set a) -&gt; [Map k (Set a)] -&gt; Map k (Set a)
 forall (f :: * -&gt; *) k a.
 (Foldable f, Ord k) =&gt;
 (a -&gt; a -&gt; a) -&gt; f (Map k a) -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.unionsWith</span></span><span> </span><span class="annot"><span class="annottext">Set a -&gt; Set a -&gt; Set a
 forall a. Ord a =&gt; Set a -&gt; Set a -&gt; Set a
-</span><span class="hs-identifier hs-var">S.intersection</span></span><span> </span><span class="annot"><span class="annottext">([Map k (Set a)] -&gt; Map k (Set a))
--&gt; [Map k (Set a)] -&gt; Map k (Set a)
+</span><span class="hs-identifier hs-var">S.intersection</span></span><span> </span><span class="annot"><span class="annottext">([Map k (Set a)] -&gt; [(k, Set a)])
+-&gt; [Map k (Set a)] -&gt; [(k, Set a)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span>
-</span><span id="line-36"></span><span>    </span><span class="annot"><span class="annottext">[(Set a, Set k)]
-</span><a href="#local-6989586621679693014"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="annot"><span class="annottext">[(Set a, Set k)]
+</span><span id="line-35"></span><span>    </span><span class="annot"><span class="annottext">[(Set a, Set k)]
+</span><a href="#local-6989586621679692183"><span class="hs-identifier hs-var">info</span></a></span><span> </span><span class="annot"><span class="annottext">[(Set a, Set k)]
 -&gt; ((Set a, Set k) -&gt; Map k (Set a)) -&gt; [Map k (Set a)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
-</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679693011"><span class="annot"><span class="annottext">igr :: Set a
-</span><a href="#local-6989586621679693011"><span class="hs-identifier hs-var">igr</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679693010"><span class="annot"><span class="annottext">alg :: Set k
-</span><a href="#local-6989586621679693010"><span class="hs-identifier hs-var">alg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(k -&gt; Set a) -&gt; Set k -&gt; Map k (Set a)
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679692178"><span class="annot"><span class="annottext">igr :: Set a
+</span><a href="#local-6989586621679692178"><span class="hs-identifier hs-var">igr</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679692177"><span class="annot"><span class="annottext">alg :: Set k
+</span><a href="#local-6989586621679692177"><span class="hs-identifier hs-var">alg</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(k -&gt; Set a) -&gt; Set k -&gt; Map k (Set a)
 forall k a. (k -&gt; a) -&gt; Set k -&gt; Map k a
 </span><span class="hs-identifier hs-var">M.fromSet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set a -&gt; k -&gt; Set a
 forall a b. a -&gt; b -&gt; a
 </span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="annot"><span class="annottext">Set a
-</span><a href="#local-6989586621679693011"><span class="hs-identifier hs-var">igr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Set k
-</span><a href="#local-6989586621679693010"><span class="hs-identifier hs-var">alg</span></a></span><span>
-</span><span id="line-37"></span><span>
-</span><span id="line-38"></span><span class="annot"><a href="AOC.Challenge.Day21.html#day21a"><span class="hs-identifier hs-type">day21a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
-</span><span id="line-39"></span><span id="day21a"><span class="annot"><span class="annottext">day21a :: [(Set String, Set String)] :~&gt; Int
+</span><a href="#local-6989586621679692178"><span class="hs-identifier hs-var">igr</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Set k
+</span><a href="#local-6989586621679692177"><span class="hs-identifier hs-var">alg</span></a></span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="annot"><a href="AOC.Challenge.Day21.html#day21a"><span class="hs-identifier hs-type">day21a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-38"></span><span id="day21a"><span class="annot"><span class="annottext">day21a :: [(Set String, Set String)] :~&gt; Int
 </span><a href="AOC.Challenge.Day21.html#day21a"><span class="hs-identifier hs-var hs-var">day21a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-40"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [(Set String, Set String)]
+</span><span id="line-39"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [(Set String, Set String)]
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Set String, Set String)
 -&gt; String -&gt; Maybe [(Set String, Set String)]
 forall a. Parsec Void String a -&gt; String -&gt; Maybe [a]
 </span><a href="AOC.Common.html#parseLines"><span class="hs-identifier hs-var">parseLines</span></a></span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Set String, Set String)
 </span><a href="AOC.Challenge.Day21.html#lineParser"><span class="hs-identifier hs-var">lineParser</span></a></span><span>
-</span><span id="line-41"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
+</span><span id="line-40"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: Int -&gt; String
 </span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-42"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [(Set String, Set String)] -&gt; Maybe Int
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679693000"><span class="annot"><span class="annottext">igrsAlgs :: [(Set String, Set String)]
-</span><a href="#local-6989586621679693000"><span class="hs-identifier hs-var">igrsAlgs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-43"></span><span>          </span><span class="annot"><span class="annottext">(Set String -&gt; Int) -&gt; Maybe (Set String) -&gt; Maybe Int
+</span><span id="line-41"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [(Set String, Set String)] -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679692167"><span class="annot"><span class="annottext">igrsAlgs :: [(Set String, Set String)]
+</span><a href="#local-6989586621679692167"><span class="hs-identifier hs-var">igrsAlgs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-42"></span><span>          </span><span class="annot"><span class="annottext">(Set String -&gt; Int) -&gt; Maybe (Set String) -&gt; Maybe Int
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[String] -&gt; Set String -&gt; Int
 forall (f :: * -&gt; *) a. (Foldable f, Ord a) =&gt; f a -&gt; Set a -&gt; Int
-</span><a href="#local-6989586621679692999"><span class="hs-identifier hs-var">countNotIn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((Set String, Set String) -&gt; [String])
+</span><a href="#local-6989586621679692166"><span class="hs-identifier hs-var">countNotIn</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">((Set String, Set String) -&gt; [String])
 -&gt; [(Set String, Set String)] -&gt; [String]
 forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
 </span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Set String -&gt; [String]
@@ -94,18 +100,18 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Set String, Set String) -&gt; Set String
 forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)]
-</span><a href="#local-6989586621679693000"><span class="hs-identifier hs-var">igrsAlgs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>        </span><span class="annot"><span class="annottext">(Maybe (Set String) -&gt; Maybe Int)
--&gt; (Map String (Set String) -&gt; Maybe (Set String))
--&gt; Map String (Set String)
+</span><a href="#local-6989586621679692167"><span class="hs-identifier hs-var">igrsAlgs</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>        </span><span class="annot"><span class="annottext">(Maybe (Set String) -&gt; Maybe Int)
+-&gt; ([(String, Set String)] -&gt; Maybe (Set String))
+-&gt; [(String, Set String)]
 -&gt; Maybe Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Set String] -&gt; Maybe (Set String)
 forall a. [a] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">listToMaybe</span></span><span>
-</span><span id="line-45"></span><span>        </span><span class="annot"><span class="annottext">([Set String] -&gt; Maybe (Set String))
--&gt; (Map String (Set String) -&gt; [Set String])
--&gt; Map String (Set String)
+</span><span id="line-44"></span><span>        </span><span class="annot"><span class="annottext">([Set String] -&gt; Maybe (Set String))
+-&gt; ([(String, Set String)] -&gt; [Set String])
+-&gt; [(String, Set String)]
 -&gt; Maybe (Set String)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Map String String -&gt; Set String)
@@ -121,51 +127,51 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Map String String -&gt; [String]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>        </span><span class="annot"><span class="annottext">([Map String String] -&gt; [Set String])
--&gt; (Map String (Set String) -&gt; [Map String String])
--&gt; Map String (Set String)
+</span><span id="line-45"></span><span>        </span><span class="annot"><span class="annottext">([Map String String] -&gt; [Set String])
+-&gt; ([(String, Set String)] -&gt; [Map String String])
+-&gt; [(String, Set String)]
 -&gt; [Set String]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Map String (Set String) -&gt; [Map String String]
-forall k a. (Ord k, Ord a) =&gt; Map k (Set a) -&gt; [Map k a]
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[(String, Set String)] -&gt; [Map String String]
+forall k a. (Ord k, Ord a) =&gt; [(k, Set a)] -&gt; [Map k a]
 </span><a href="AOC.Common.html#pickUnique"><span class="hs-identifier hs-var">pickUnique</span></a></span><span>
-</span><span id="line-47"></span><span>        </span><span class="annot"><span class="annottext">(Map String (Set String) -&gt; Maybe Int)
--&gt; Map String (Set String) -&gt; Maybe Int
+</span><span id="line-46"></span><span>        </span><span class="annot"><span class="annottext">([(String, Set String)] -&gt; Maybe Int)
+-&gt; [(String, Set String)] -&gt; Maybe Int
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)] -&gt; Map String (Set String)
-forall k a. (Ord k, Ord a) =&gt; [(Set a, Set k)] -&gt; Map k (Set a)
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)] -&gt; [(String, Set String)]
+forall k a. (Ord k, Ord a) =&gt; [(Set a, Set k)] -&gt; [(k, Set a)]
 </span><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-var">assembleOptions</span></a></span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)]
-</span><a href="#local-6989586621679693000"><span class="hs-identifier hs-var">igrsAlgs</span></a></span><span>
-</span><span id="line-48"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-49"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-50"></span><span>    </span><span id="local-6989586621679692999"><span class="annot"><span class="annottext">countNotIn :: f a -&gt; Set a -&gt; Int
-</span><a href="#local-6989586621679692999"><span class="hs-identifier hs-var hs-var">countNotIn</span></a></span></span><span> </span><span id="local-6989586621679692995"><span class="annot"><span class="annottext">xs :: f a
-</span><a href="#local-6989586621679692995"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679692994"><span class="annot"><span class="annottext">bad :: Set a
-</span><a href="#local-6989586621679692994"><span class="hs-identifier hs-var">bad</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Bool) -&gt; f a -&gt; Int
+</span><a href="#local-6989586621679692167"><span class="hs-identifier hs-var">igrsAlgs</span></a></span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-49"></span><span>    </span><span id="local-6989586621679692166"><span class="annot"><span class="annottext">countNotIn :: f a -&gt; Set a -&gt; Int
+</span><a href="#local-6989586621679692166"><span class="hs-identifier hs-var hs-var">countNotIn</span></a></span></span><span> </span><span id="local-6989586621679692163"><span class="annot"><span class="annottext">xs :: f a
+</span><a href="#local-6989586621679692163"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679692162"><span class="annot"><span class="annottext">bad :: Set a
+</span><a href="#local-6989586621679692162"><span class="hs-identifier hs-var">bad</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; Bool) -&gt; f a -&gt; Int
 forall (f :: * -&gt; *) a. Foldable f =&gt; (a -&gt; Bool) -&gt; f a -&gt; Int
 </span><a href="AOC.Common.html#countTrue"><span class="hs-identifier hs-var">countTrue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">a -&gt; Set a -&gt; Bool
 forall a. Ord a =&gt; a -&gt; Set a -&gt; Bool
 </span><span class="hs-operator hs-var">`S.notMember`</span></span><span> </span><span class="annot"><span class="annottext">Set a
-</span><a href="#local-6989586621679692994"><span class="hs-identifier hs-var">bad</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f a
-</span><a href="#local-6989586621679692995"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-51"></span><span>
-</span><span id="line-52"></span><span class="annot"><a href="AOC.Challenge.Day21.html#day21b"><span class="hs-identifier hs-type">day21b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
-</span><span id="line-53"></span><span id="day21b"><span class="annot"><span class="annottext">day21b :: [(Set String, Set String)] :~&gt; [String]
+</span><a href="#local-6989586621679692162"><span class="hs-identifier hs-var">bad</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">f a
+</span><a href="#local-6989586621679692163"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="annot"><a href="AOC.Challenge.Day21.html#day21b"><span class="hs-identifier hs-type">day21b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
+</span><span id="line-52"></span><span id="day21b"><span class="annot"><span class="annottext">day21b :: [(Set String, Set String)] :~&gt; [String]
 </span><a href="AOC.Challenge.Day21.html#day21b"><span class="hs-identifier hs-var hs-var">day21b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-54"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [(Set String, Set String)]
+</span><span id="line-53"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe [(Set String, Set String)]
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Set String, Set String)
 -&gt; String -&gt; Maybe [(Set String, Set String)]
 forall a. Parsec Void String a -&gt; String -&gt; Maybe [a]
 </span><a href="AOC.Common.html#parseLines"><span class="hs-identifier hs-var">parseLines</span></a></span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Set String, Set String)
 </span><a href="AOC.Challenge.Day21.html#lineParser"><span class="hs-identifier hs-var">lineParser</span></a></span><span>
-</span><span id="line-55"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: [String] -&gt; String
+</span><span id="line-54"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: [String] -&gt; String
 </span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; String
 forall a. [a] -&gt; [[a]] -&gt; [a]
 </span><span class="hs-identifier hs-var">intercalate</span></span><span> </span><span class="annot"><span class="hs-string">&quot;,&quot;</span></span><span>
-</span><span id="line-56"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [(Set String, Set String)] -&gt; Maybe [String]
+</span><span id="line-55"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; [(Set String, Set String)] -&gt; Maybe [String]
 </span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Map String String -&gt; [String])
 -&gt; Maybe (Map String String) -&gt; Maybe [String]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -183,24 +189,24 @@ forall a. [a] -&gt; Maybe a
 -&gt; [(Set String, Set String)]
 -&gt; Maybe (Map String String)
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Map String (Set String) -&gt; [Map String String]
-forall k a. (Ord k, Ord a) =&gt; Map k (Set a) -&gt; [Map k a]
-</span><a href="AOC.Common.html#pickUnique"><span class="hs-identifier hs-var">pickUnique</span></a></span><span> </span><span class="annot"><span class="annottext">(Map String (Set String) -&gt; [Map String String])
--&gt; ([(Set String, Set String)] -&gt; Map String (Set String))
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[(String, Set String)] -&gt; [Map String String]
+forall k a. (Ord k, Ord a) =&gt; [(k, Set a)] -&gt; [Map k a]
+</span><a href="AOC.Common.html#pickUnique"><span class="hs-identifier hs-var">pickUnique</span></a></span><span> </span><span class="annot"><span class="annottext">([(String, Set String)] -&gt; [Map String String])
+-&gt; ([(Set String, Set String)] -&gt; [(String, Set String)])
 -&gt; [(Set String, Set String)]
 -&gt; [Map String String]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)] -&gt; Map String (Set String)
-forall k a. (Ord k, Ord a) =&gt; [(Set a, Set k)] -&gt; Map k (Set a)
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[(Set String, Set String)] -&gt; [(String, Set String)]
+forall k a. (Ord k, Ord a) =&gt; [(Set a, Set k)] -&gt; [(k, Set a)]
 </span><a href="AOC.Challenge.Day21.html#assembleOptions"><span class="hs-identifier hs-var">assembleOptions</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-58"></span><span>
-</span><span id="line-59"></span><span class="hs-keyword">type</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day21.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-60"></span><span>
-</span><span id="line-61"></span><span class="annot"><a href="AOC.Challenge.Day21.html#lineParser"><span class="hs-identifier hs-type">lineParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day21.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
-</span><span id="line-62"></span><span id="lineParser"><span class="annot"><span class="annottext">lineParser :: Parsec Void String (Set String, Set String)
+</span><span id="line-56"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">type</span><span> </span><span id="Parser"><span class="annot"><a href="AOC.Challenge.Day21.html#Parser"><span class="hs-identifier hs-var">Parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span class="annot"><a href="AOC.Challenge.Day21.html#lineParser"><span class="hs-identifier hs-type">lineParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day21.html#Parser"><span class="hs-identifier hs-type">Parser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span id="lineParser"><span class="annot"><span class="annottext">lineParser :: Parsec Void String (Set String, Set String)
 </span><a href="AOC.Challenge.Day21.html#lineParser"><span class="hs-identifier hs-var hs-var">lineParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-63"></span><span>    </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Set String -&gt; Set String -&gt; (Set String, Set String))
+</span><span id="line-62"></span><span>    </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Set String -&gt; Set String -&gt; (Set String, Set String))
 -&gt; ParsecT Void String Identity (Set String)
 -&gt; ParsecT
      Void String Identity (Set String -&gt; (Set String, Set String))
@@ -226,7 +232,7 @@ m (Token s)
 -&gt; ParsecT Void String Identity String
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="hs-string">&quot; &quot;</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-64"></span><span>        </span><span class="annot"><span class="annottext">ParsecT
+</span><span id="line-63"></span><span>        </span><span class="annot"><span class="annottext">ParsecT
   Void String Identity (Set String -&gt; (Set String, Set String))
 -&gt; ParsecT Void String Identity (Set String)
 -&gt; Parsec Void String (Set String, Set String)
@@ -245,7 +251,7 @@ forall (m :: * -&gt; *) open close a.
 Applicative m =&gt;
 m open -&gt; m close -&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">P.between</span></span><span> </span><span class="annot"><span class="hs-string">&quot;(&quot;</span></span><span> </span><span class="annot"><span class="hs-string">&quot;)&quot;</span></span><span>
-</span><span id="line-65"></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;contains &quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><span id="line-64"></span><span>                </span><span class="hs-special">(</span><span class="annot"><span class="hs-string">&quot;contains &quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity [String]
 -&gt; ParsecT Void String Identity [String]
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
@@ -261,6 +267,6 @@ m (Token s)
 -&gt; ParsecT Void String Identity [String]
 forall (m :: * -&gt; *) a sep. MonadPlus m =&gt; m a -&gt; m sep -&gt; m [a]
 </span><span class="hs-operator hs-var">`P.sepBy`</span></span><span> </span><span class="annot"><span class="hs-string">&quot;, &quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-66"></span><span>            </span><span class="hs-special">)</span><span>
-</span><span id="line-67"></span><span>
-</span><span id="line-68"></span></pre></body></html>
+</span><span id="line-65"></span><span>            </span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span></pre></body></html>
