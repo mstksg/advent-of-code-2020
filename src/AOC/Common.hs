@@ -837,6 +837,10 @@ anaM
     -> m t
 anaM f = R.hylo (fmap R.embed . join . fmap sequenceA . getCompose) (Compose . f)
 
+instance Hashable a => Hashable (Seq a) where
+    hashWithSalt s = hashWithSalt s . toList
+    hash = hash . toList
+
 instance FunctorWithIndex k (NEMap k) where
     imap = NEM.mapWithKey
 instance FoldableWithIndex k (NEMap k) where

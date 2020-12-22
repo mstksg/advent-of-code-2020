@@ -3522,21 +3522,21 @@ that file instead!
 ```
 >> Day 22a
 benchmarking...
-time                 1.542 ms   (1.478 ms .. 1.621 ms)
-                     0.983 R²   (0.959 R² .. 0.998 R²)
-mean                 1.510 ms   (1.480 ms .. 1.573 ms)
-std dev              160.2 μs   (72.02 μs .. 256.8 μs)
-variance introduced by outliers: 73% (severely inflated)
+time                 307.9 μs   (297.8 μs .. 317.7 μs)
+                     0.988 R²   (0.981 R² .. 0.995 R²)
+mean                 305.1 μs   (296.6 μs .. 312.3 μs)
+std dev              26.06 μs   (19.57 μs .. 31.52 μs)
+variance introduced by outliers: 72% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 22b
 benchmarking...
-time                 1.731 s    (1.651 s .. 1.870 s)
-                     0.999 R²   (0.998 R² .. 1.000 R²)
-mean                 1.707 s    (1.640 s .. 1.736 s)
-std dev              48.45 ms   (18.42 ms .. 66.44 ms)
-variance introduced by outliers: 19% (moderately inflated)
+time                 17.76 ms   (17.12 ms .. 18.32 ms)
+                     0.984 R²   (0.960 R² .. 0.996 R²)
+mean                 18.56 ms   (17.84 ms .. 18.97 ms)
+std dev              1.291 ms   (824.6 μs .. 2.091 ms)
+variance introduced by outliers: 30% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

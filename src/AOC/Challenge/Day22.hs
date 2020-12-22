@@ -18,13 +18,14 @@ import           AOC.Solver                 ((:~>)(..))
 import           Control.DeepSeq            (NFData)
 import           Control.Monad              (guard)
 import           Data.Foldable              (toList)
+import           Data.Hashable              (hash)
+import           Data.IntSet                (IntSet)
 import           Data.Sequence              (Seq(..))
 import           Data.Sequence.NonEmpty     (NESeq(..))
-import           Data.Set                   (Set)
 import           Data.Void                  (Void)
 import           GHC.Generics               (Generic)
+import qualified Data.IntSet                as IS
 import qualified Data.Sequence              as Seq
-import qualified Data.Set                   as S
 import qualified Text.Megaparsec            as P
 import qualified Text.Megaparsec.Char       as P
 import qualified Text.Megaparsec.Char.Lexer as PP
@@ -44,11 +45,11 @@ playGameWith
     -> Deck
     -> Deck
     -> (Player, Deck)
-playGameWith f = go S.empty
+playGameWith f = go IS.empty
   where
-    go :: Set (Deck, Deck) -> Deck -> Deck -> (Player, Deck)
+    go :: IntSet -> Deck -> Deck -> (Player, Deck)
     go !seen !xs0 !ys0
-        | (xs0, ys0) `S.member` seen = (P1, xs0)
+        | hashHand xs0 ys0 `IS.member` seen = (P1, xs0)
         | otherwise                  = case (xs0, ys0) of
             (x :<| xs, y :<| ys) ->
               let winner = case f (x :<|| xs) (y :<|| ys) of
@@ -60,8 +61,17 @@ playGameWith f = go S.empty
             (Empty, _    ) -> (P2, ys0)
             (_    , Empty) -> (P1, xs0)
       where
-        seen' = S.insert (xs0, ys0) seen
+        seen' = IS.insert (hashHand xs0 ys0) seen
 {-# INLINE playGameWith #-}
+
+hashHand :: Deck -> Deck -> Int
+hashHand xs ys = hash [headMay xs, lastMay xs, headMay ys, lastMay ys]
+  where
+    headMay (r :<| _) = Just r
+    headMay _         = Nothing
+    lastMay (_ :|> r) = Just r
+    lastMay _         = Nothing
+{-# INLINE hashHand #-}
 
 game1 :: Deck -> Deck -> (Player, Deck)
 game1 = playGameWith $ \_ _ -> Nothing
