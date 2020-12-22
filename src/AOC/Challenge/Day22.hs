@@ -50,7 +50,7 @@ playGameWith f = go IS.empty
     go :: IntSet -> Deck -> Deck -> (Player, Deck)
     go !seen !xs0 !ys0
         | hashHand xs0 ys0 `IS.member` seen = (P1, xs0)
-        | otherwise                  = case (xs0, ys0) of
+        | otherwise                         = case (xs0, ys0) of
             (x :<| xs, y :<| ys) ->
               let winner = case f (x :<|| xs) (y :<|| ys) of
                     Nothing -> if x > y then P1 else P2
