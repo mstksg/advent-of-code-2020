@@ -41,6 +41,7 @@ Table of Contents
 * [Day 19](#day-19)
 * [Day 20](#day-20) *(no reflection yet)*
 * [Day 21](#day-21) *(no reflection yet)*
+* [Day 22](#day-22) *(no reflection yet)*
 
 Day 1
 ------
@@ -3433,21 +3434,21 @@ that file instead!
 ```
 >> Day 20a
 benchmarking...
-time                 44.72 ms   (40.31 ms .. 49.07 ms)
-                     0.967 R²   (0.922 R² .. 0.992 R²)
-mean                 45.86 ms   (43.75 ms .. 47.69 ms)
-std dev              4.095 ms   (2.879 ms .. 5.099 ms)
-variance introduced by outliers: 34% (moderately inflated)
+time                 33.33 ms   (31.40 ms .. 35.37 ms)
+                     0.987 R²   (0.974 R² .. 0.998 R²)
+mean                 31.84 ms   (31.15 ms .. 32.72 ms)
+std dev              1.720 ms   (1.143 ms .. 2.525 ms)
+variance introduced by outliers: 17% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 20b
 benchmarking...
-time                 53.32 ms   (50.26 ms .. 55.66 ms)
-                     0.991 R²   (0.975 R² .. 0.998 R²)
-mean                 53.69 ms   (51.90 ms .. 55.42 ms)
-std dev              3.375 ms   (2.442 ms .. 4.541 ms)
-variance introduced by outliers: 21% (moderately inflated)
+time                 79.49 ms   (71.01 ms .. 88.15 ms)
+                     0.973 R²   (0.931 R² .. 0.997 R²)
+mean                 80.41 ms   (77.07 ms .. 84.98 ms)
+std dev              6.588 ms   (5.023 ms .. 8.934 ms)
+variance introduced by outliers: 28% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
@@ -3492,6 +3493,50 @@ time                 166.9 μs   (166.0 μs .. 167.9 μs)
 mean                 163.5 μs   (161.5 μs .. 165.5 μs)
 std dev              6.839 μs   (5.702 μs .. 9.109 μs)
 variance introduced by outliers: 41% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 22
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day22.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d22p]* / *[Code][d22g]* / *[Rendered][d22h]* / *[Standalone Reflection Page][d22r]*
+
+[d22p]: https://adventofcode.com/2020/day/22
+[d22g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day22.hs
+[d22h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day22.html
+[d22r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 22 Benchmarks
+
+```
+>> Day 22a
+benchmarking...
+time                 1.542 ms   (1.478 ms .. 1.621 ms)
+                     0.983 R²   (0.959 R² .. 0.998 R²)
+mean                 1.510 ms   (1.480 ms .. 1.573 ms)
+std dev              160.2 μs   (72.02 μs .. 256.8 μs)
+variance introduced by outliers: 73% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 22b
+benchmarking...
+time                 1.731 s    (1.651 s .. 1.870 s)
+                     0.999 R²   (0.998 R² .. 1.000 R²)
+mean                 1.707 s    (1.640 s .. 1.736 s)
+std dev              48.45 ms   (18.42 ms .. 66.44 ms)
+variance introduced by outliers: 19% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
