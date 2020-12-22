@@ -65,7 +65,11 @@ playGameWith f = go IS.empty
 {-# INLINE playGameWith #-}
 
 hashHand :: Deck -> Deck -> Int
-hashHand xs ys = hash [headMay xs, lastMay xs, headMay ys, lastMay ys]
+hashHand xs ys = hash
+    ( headMay xs, lastMay xs
+    , headMay ys, lastMay ys
+    , Seq.length xs
+    )
   where
     headMay (r :<| _) = Just r
     headMay _         = Nothing

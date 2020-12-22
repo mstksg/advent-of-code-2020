@@ -28,7 +28,6 @@ import           Data.IntMap               (IntMap)
 import           Data.IntMap.NonEmpty      (NEIntMap)
 import           Data.IntSet               (IntSet)
 import           Data.Ix                   (range)
-import qualified Data.List.NonEmpty as NE
 import           Data.List                 (foldl', uncons)
 import           Data.List.NonEmpty        (NonEmpty(..))
 import           Data.List.Split           (splitOn)
@@ -42,6 +41,7 @@ import           Text.Read                 (readMaybe)
 import qualified Data.IntMap.NonEmpty      as NEIM
 import qualified Data.IntMap.Strict        as IM
 import qualified Data.IntSet               as IS
+import qualified Data.List.NonEmpty        as NE
 import qualified Data.Map                  as M
 import qualified Data.Map.NonEmpty         as NEM
 import qualified Data.Set                  as S
