@@ -54,8 +54,8 @@ type Core = Set (FinPoint 8)
 
 -- | Convert a set of points into all the orientations of tiles it could
 -- be, indexed by the north edge of that orientation.
-toTiles_ :: NESet (FinPoint 10) -> ((Core, V.Vector 8 Edge), NEMap Edge D8)
-toTiles_ ps = ((core, edges), edgeMap)
+toTiles :: NESet (FinPoint 10) -> ((Core, V.Vector 8 Edge), NEMap Edge D8)
+toTiles ps = ((core, edges), edgeMap)
   where
     core   = S.fromDistinctAscList . mapMaybe (traverse (strengthen <=< unshift)) . toList $ ps
     edges  = V.generate $ \i ->
@@ -114,18 +114,26 @@ assembleMap tileMap tiles0 =
         , (p0 + rotPoint d (V2 0 (-1)), d)
         )
 
-
+solve
+    :: NEIntMap (NESet (FinPoint 10))
+    -> (Map Point Placement, Set Point)
+solve ts = (mp, blitted)
+  where
+    info = toTiles <$> ts
+    edgeMap = flip NEIM.mapWithKey info \i (_, e) -> (i,) <$> e
+    edges   = snd . fst <$> info
+    mp      = assembleMap edges edgeMap
+    blitted = flip M.foldMapWithKey mp $ \p (tileId, o) ->
+      let core = fst . fst $ info NEIM.! tileId
+      in  S.map ((+ (p * 8)) . fmap fromIntegral . orientFin o) core
 
 day20a :: IntMap (NESet (FinPoint 10)) :~> Int
 day20a = MkSol
     { sParse = parseTiles
     , sShow  = show
-    , sSolve = \pp -> do
-        info <- NEIM.nonEmptyMap (toTiles_ <$> pp)
-        let edgeMap = flip NEIM.mapWithKey info \i (_, e) -> (i,) <$> e
-            edges   = snd . fst <$> info
-            mp      = assembleMap edges edgeMap
-        bb <- distribute <$> boundingBox' (M.keys mp)
+    , sSolve = \ts -> do
+        (mp, _) <- solve <$> NEIM.nonEmptyMap ts
+        bb      <- distribute <$> boundingBox' (M.keys mp)
         pure $ product
           [ fst $ mp M.! p
           | p <- traverse toList bb
@@ -136,14 +144,8 @@ day20b :: IntMap (NESet (FinPoint 10)) :~> Int
 day20b = MkSol
     { sParse = parseTiles
     , sShow  = show
-    , sSolve = \pp -> do
-        info <- NEIM.nonEmptyMap (toTiles_ <$> pp)
-        let edgeMap = flip NEIM.mapWithKey info \i (_, e) -> (i,) <$> e
-            edges   = snd . fst <$> info
-            mp      = assembleMap edges edgeMap
-            blitted = flip M.foldMapWithKey mp $ \p (tileId, o) ->
-                let core = fst . fst $ info NEIM.! tileId
-                in  S.map ((+ (p * 8)) . fmap fromIntegral . orientFin o) core
+    , sSolve = \ts -> do
+        (_, blitted) <- solve <$> NEIM.nonEmptyMap ts
         listToMaybe
           [ res
           | drgn <- toList dragons
