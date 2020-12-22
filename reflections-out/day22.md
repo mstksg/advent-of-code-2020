@@ -87,7 +87,7 @@ game1 = playGameWith $ \_ _ -> Nothing
 ```
 
 For part 2, we want to play a game with the tops of the decks given to us, but
-only if we have enough cards.  
+only if we have enough cards.
 
 ```haskell
 game2 :: Deck -> Deck -> (Player, Deck)
@@ -142,7 +142,21 @@ Most of this implementation follows the logic straightforwardly, remembering to
 use `f` to give the callback a chance to "intercept" the "highest card win"
 rule if it wants to.  We get a lot of mileage here out of the `:<|`, `:|>` and
 `Empty` constructors for `Seq`, which allows us to match on the head and tail
-or an empty `Seq` as a pattern.
+or an empty `Seq` as a pattern.  Note that this isn't *perfectly*
+tail-recursive -- we do get another layer deeper into the stack on every call
+of `f`, when we play a "recursive game".  It's tail-recursive within the same
+game, however.
+
+It should be possible to make this completely tail recursive by keeping an
+explicit stack of decks/caches, but overall I'm happy with this O(d) space ont
+he depth of the game recursion, because I don't think a fully tail recursive
+version would be any better space-wise!
+
+Note that this talk about tail recursion isn't because we are afraid of
+overflowing the call stack like in other languages (and trying to take
+advantage of tail-call optimization) --- the value in tail recursion is that we
+can stay constant-space on the heap (since haskell function calls go on the
+heap, not a call stack).
 
 One gotcha when computing the score of a deck...remember that `sum . Seq.zipWith (*)
 (Seq.fromList [1..])`, while tempting, is not going to work very well because
