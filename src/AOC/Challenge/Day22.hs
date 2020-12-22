@@ -85,7 +85,12 @@ game2 :: Deck -> Deck -> (Player, Deck)
 game2 = playGameWith $ \(x :<|| xs) (y :<|| ys) -> do
     xs' <- takeExactly x xs
     ys' <- takeExactly y ys
-    pure . fst $ game2 xs' ys'
+    let xMax = maximum xs'
+        yMax = maximum ys'
+        -- P1 has unbeatable card, and cannot be recursed without it
+    pure if xMax > yMax && xMax > (x+y)
+      then P1
+      else fst $ game2 xs' ys'
 {-# INLINE game2 #-}
 
 day22a :: (Deck, Deck) :~> Deck

@@ -177,21 +177,21 @@ score = sum . zipWith (*) [1..] . reverse . toList
 ```
 >> Day 22a
 benchmarking...
-time                 262.5 μs   (245.9 μs .. 273.6 μs)
-                     0.992 R²   (0.983 R² .. 0.999 R²)
-mean                 263.3 μs   (255.5 μs .. 267.3 μs)
-std dev              16.91 μs   (12.60 μs .. 22.59 μs)
-variance introduced by outliers: 60% (severely inflated)
+time                 261.6 μs   (241.7 μs .. 281.1 μs)
+                     0.975 R²   (0.963 R² .. 0.990 R²)
+mean                 256.6 μs   (249.5 μs .. 262.9 μs)
+std dev              25.71 μs   (20.07 μs .. 33.93 μs)
+variance introduced by outliers: 78% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 22b
 benchmarking...
-time                 20.18 ms   (19.19 ms .. 21.41 ms)
-                     0.987 R²   (0.977 R² .. 0.995 R²)
-mean                 19.77 ms   (19.01 ms .. 20.58 ms)
-std dev              1.791 ms   (1.228 ms .. 2.591 ms)
-variance introduced by outliers: 44% (moderately inflated)
+time                 2.445 ms   (2.351 ms .. 2.525 ms)
+                     0.985 R²   (0.974 R² .. 0.992 R²)
+mean                 2.368 ms   (2.292 ms .. 2.435 ms)
+std dev              223.2 μs   (195.5 μs .. 250.5 μs)
+variance introduced by outliers: 65% (severely inflated)
 
 * parsing and formatting times excluded
 ```
