@@ -140,6 +140,7 @@ library:
   - time
   - transformers
   - typelits-witnesses
+  - unordered-containers
   - vec
   - vector
   - vector-algorithms

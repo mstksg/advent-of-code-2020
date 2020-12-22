@@ -18,16 +18,14 @@ import           AOC.Solver                 ((:~>)(..))
 import           Control.DeepSeq            (NFData)
 import           Control.Monad              (guard)
 import           Data.Foldable              (toList)
-import           Data.Hashable              (hash)
-import           Data.IntMap                (IntMap)
+import           Data.HashSet               (HashSet)
+import           Data.Hashable              (Hashable(..))
 import           Data.Sequence              (Seq(..))
 import           Data.Sequence.NonEmpty     (NESeq(..))
-import           Data.Set                   (Set)
 import           Data.Void                  (Void)
 import           GHC.Generics               (Generic)
-import qualified Data.IntMap                as IM
+import qualified Data.HashSet               as HS
 import qualified Data.Sequence              as Seq
-import qualified Data.Set                   as S
 import qualified Text.Megaparsec            as P
 import qualified Text.Megaparsec.Char       as P
 import qualified Text.Megaparsec.Char.Lexer as PP
@@ -39,6 +37,16 @@ data Player = P1 | P2
   deriving (Show, Eq, Ord, Generic)
 instance NFData Player
 
+data GameState = GS Deck Deck
+  deriving Eq
+instance Hashable GameState where
+    hashWithSalt s (GS xs ys) =
+      hashWithSalt s
+        ( take 2 (toList xs)
+        , take 2 (toList ys)
+        , Seq.length xs
+        )
+
 score :: Deck -> Int
 score = sum . zipWith (*) [1..] . reverse . toList
 
@@ -47,12 +55,12 @@ playGameWith
     -> Deck
     -> Deck
     -> (Player, Deck)
-playGameWith f = go IM.empty
+playGameWith f = go HS.empty
   where
-    go :: IntMap (Set (Deck, Deck)) -> Deck -> Deck -> (Player, Deck)
-    go !seen !xs0 !ys0 = case addSeen of
-        Nothing    -> (P1, xs0)
-        Just seen' -> case (xs0, ys0) of
+    go :: HashSet GameState -> Deck -> Deck -> (Player, Deck)
+    go !seen !xs0 !ys0
+      | GS xs0 ys0 `HS.member` seen = (P1, xs0)
+      | otherwise = case (xs0, ys0) of
           (x :<| xs, y :<| ys) ->
             let winner = case f (x :<|| xs) (y :<|| ys) of
                   Nothing -> if x > y then P1 else P2
@@ -63,22 +71,8 @@ playGameWith f = go IM.empty
           (Empty, _    ) -> (P2, ys0)
           (_    , Empty) -> (P1, xs0)
       where
-        handTup = (xs0, ys0)
-        addSeen = IM.alterF
-          (\case Nothing -> Just (Just (S.singleton handTup))
-                 Just s  -> Just (S.insert handTup s) <$ guard (handTup `S.notMember` s)
-          )
-          (hashHand xs0 ys0)
-          seen
+        seen' = HS.insert (GS xs0 ys0) seen
 {-# INLINE playGameWith #-}
-
-hashHand :: Deck -> Deck -> Int
-hashHand xs ys = hash
-    ( take 2 (toList xs)
-    , take 2 (toList ys)
-    , Seq.length xs
-    )
-{-# INLINE hashHand #-}
 
 game1 :: Deck -> Deck -> (Player, Deck)
 game1 = playGameWith $ \_ _ -> Nothing
