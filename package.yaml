@@ -79,6 +79,7 @@ library:
   - advent-of-code-api >= 0.2.7
   - semialign
   - witherable
+  - mutable
   - aeson
   - ansi-terminal
   - arithmoi

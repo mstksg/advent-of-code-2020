@@ -26,6 +26,13 @@ packages:
   original:
     hackage: parser-combinators-1.2.1
 - completed:
+    hackage: mutable-0.2.2.0@sha256:def2840c9d572a37bcf21440d2fc94d2b7f8aeb78c7166c0e0d4e7acb47c3ca2,2603
+    pantry-tree:
+      size: 786
+      sha256: ae7019c25a140ab33e9e8f0dfdcb753c8ddafe7a5f3c6f5bb3231acffd24d3df
+  original:
+    hackage: mutable-0.2.2.0
+- completed:
     hackage: finitary-2.0.0.0@sha256:1044c9048ef920787fc9600634e6a66c890dada612cfda1d4820669306324c43,2373
     pantry-tree:
       size: 438
