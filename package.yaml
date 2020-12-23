@@ -77,6 +77,8 @@ library:
   source-dirs: src
   dependencies:
   - advent-of-code-api >= 0.2.7
+  - semialign
+  - witherable
   - aeson
   - ansi-terminal
   - arithmoi
