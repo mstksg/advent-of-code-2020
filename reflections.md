@@ -3516,10 +3516,15 @@ that file instead!
 [d22r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day22.md
 
 This one can be a fun exercise in explicit/direct tail recursion :)  It's a
-straightforward implementation of an "imperative" algorithm, but the purity in
-Haskell offers an advantage in that we don't have to worry about cloning decks
-or caches --- it's given to us automatically!  We get the advantages
-of imperative programming without most of the drawbacks of implicit mutation.
+straightforward implementation of an "imperative" algorithm, but we actually
+gain a lot from implementing our imperative algorithm in a purely functional
+setting, and can write something that runs faster than we might write in a
+language with implicit mutation.  Immutability can be an optimization, since
+our data structures are designed around sharing and avoiding deep clones, so
+storing references and caches to old values are extremely cheap.  I explain
+more about this at the end, but it's nice that we can get the advantages of
+imperative programming without most of the drawbacks of implicit mutation
+slowing down our code.
 
 This problem is also a nice showcase of Haskell's standard "queue" data type,
 `Seq` from
@@ -3577,7 +3582,10 @@ takeExactly n xs = Seq.take n xs <$ guard (Seq.length xs >= n)
 
 If we don't have enough items to take exactly `x` items from `xs`, then we fail
 and defer to higher-card-wins rules (and same for `y` and `ys`).  Otherwise, we
-play a `game2` with the exactly-sized deck tops to determine the winner.
+play a `game2` with the exactly-sized deck tops to determine the winner.  The
+way the recursion is structured here is pretty night because there is a loop
+between the two function pointers (`game2`, and the lambda passed to it), so we
+can go back and forth between them without allocating new functions.
 
 Now the only thing left is to actually write `playGameWith` :D  This one is not
 too bad if we use a helper function to make sure things stay tail-recursive so
@@ -3596,7 +3604,7 @@ playGameWith
     -> (Player, Deck)                           -- ^ winner and deck
 playGameWith f = go S.empty
   where
-    go :: Set -> Deck -> Deck -> (Player, Deck)
+    go :: Set (Deck, Deck) -> Deck -> Deck -> (Player, Deck)
     go !seen !xs0 !ys0
         | (xs0, ys0) `S.member` seen = (P1, xs0)
         | otherwise                  = case (xs0, ys0) of
@@ -3617,15 +3625,10 @@ Most of this implementation follows the logic straightforwardly, remembering to
 use `f` to give the callback a chance to "intercept" the "highest card win"
 rule if it wants to.  We get a lot of mileage here out of the `:<|`, `:|>` and
 `Empty` constructors for `Seq`, which allows us to match on the head and tail
-or an empty `Seq` as a pattern.  Note that this isn't *perfectly*
-tail-recursive -- we do get another layer deeper into the stack on every call
-of `f`, when we play a "recursive game".  It's tail-recursive within the same
-game, however.
+or an empty `Seq` as a pattern. Note that this isn't *perfectly*
+tail-recursive -- we do get another layer of data allocated whenever we
+recurse into a game.  But at least it's tail-recursive within the same game.
 
-It should be possible to make this completely tail recursive by keeping an
-explicit stack of decks/caches, but overall I'm happy with this O(d) space ont
-he depth of the game recursion, because I don't think a fully tail recursive
-version would be any better space-wise!
 
 Note that this talk about tail recursion isn't because we are afraid of
 overflowing the call stack like in other languages (and trying to take
@@ -3633,16 +3636,72 @@ advantage of tail-call optimization) --- the value in tail recursion is that we
 can stay constant-space on the heap (since haskell function calls go on the
 heap, not a call stack).
 
-One gotcha when computing the score of a deck...remember that `sum . Seq.zipWith (*)
-(Seq.fromList [1..])`, while tempting, is not going to work very well because
-`Seq` is strict on its spline, and so has to build its whole internal
-fingertree before returning anything.   Just remember to only use `[1..]` on
-spline-lazy things like lists :)
+This works, but we can make it a little faster in a way that only purely
+functional languages can benefit from.  Checking for seen decks in a `Set
+(Deck, Deck)` can be pretty expensive in such a tight loop, and it's definitely
+the bottleneck of our loop.  One quick optimization we can do is use an
+`IntSet` instead of a `Set`, and store a "hash" (really, partition index) of
+our data:
 
 ```haskell
-score :: Deck -> Int
-score = sum . zipWith (*) [1..] . reverse . toList
+hashHand ;: Deck -> Deck -> Int
+hashHand xs ys = hash (take 2 (toList xs), take 2 (toList ys), length xs)
 ```
+
+So instead of checking if a hand pair has been seen before, we can only check
+``hashHand xs0 ys0 `IS.member` seen``, and `IS.insert (hashHand xs0 ys0) seen`
+at every step.  This becomes very efficient (takes my time from 1.8s down to
+8ms), effectively eliminating the main bottleneck.
+
+However, this method is mathematically unsound because it's possible for two
+different decks to "hash" to the same `Int`.  It didn't happen in my own input,
+but it happened when solving the game for one of my friend's inputs.
+
+Instead what we can do is implement "hash set", with easy negative checks, and
+expensive positive checks --- but those should only happen basically once per
+*game*, and not once per round.  We can store a `IntMap (Set (Deck, Deck))`:
+
+```haskell
+go :: IntMap (Set (Deck, Deck)) -> Deck -> Deck -> (Player, Deck)
+go !seen !xs0 !ys0
+    | collision = (P1, xs0)
+    | otherwise = case (xs0, ys0) of
+        (x :<| xs, y :<| ys) ->
+          let winner = case f (x :<|| xs) (y :<|| ys) of
+                Nothing -> if x > y then P1 else P2
+                Just p  -> p
+          in  case winner of
+                P1 -> go seen' (xs :|> x :|> y) ys
+                P2 -> go seen' xs (ys :|> y :|> x)
+        (Empty, _    ) -> (P2, ys0)
+        (_    , Empty) -> (P1, xs0)
+  where
+    collision = case IM.lookup (hashHand xs0 ys0) seen of
+      Nothing -> False
+      Just s  -> (xs0, ys0) `S.member` s
+    seen' = IM.insertWith (<>) (hashHand xs0 ys0) (S.singleton (xs0, ys0)) seen
+```
+
+Note storing the `(Deck, Deck)` in our `IntMap` is very expensive if we are
+using in-place mutation for our decks: we'd have to do a full copy of our
+decks *every round* to store them into our set, because mutating them will
+change them.  In the purely functional case, we don't have to do anything
+special because no values are ever mutated --- the reference to our old data is
+already there!
+
+In addition, inserting/popping values off of a `Seq` does *not* require a full
+copy: because `Seq` is internally a [finger
+tree](https://en.wikipedia.org/wiki/Finger_tree) (a purely functional
+persistent data structure optimized for these operations), adding a new value
+does not require a full copy, but instead allocates very little because most of
+your "new" tree's internal nodes are pointing at references to the original
+tree.  So no copying is ever made, and storing these `Seq`s in our `IntMap` is
+essentially just storing a pointer.
+
+This is one of the nice ways which immutability can give us performance
+increases!  These are always fun to highlight because there's some common
+fantasy that immutability = slower, when in reality it's often an
+*optimization*.
 
 
 ### Day 22 Benchmarks
