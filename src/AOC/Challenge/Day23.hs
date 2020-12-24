@@ -62,62 +62,224 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
-data Entry s = Entry { eVal :: Int, ePrev :: MutVar s Int }
+-- data Node n = Node { nLeft :: Finite n, nRight :: Finite n, nPrev :: Finite n }
 
-solver
-    :: (PrimMonad m, PrimState m ~ s)
-    => Int      -- ^ max
-    -> Int      -- ^ n
-    -> NonEmpty Int
-    -> m (DLLC.List s Int)
-solver mx n xs = do
-    lst <- DLLC.fromList xs
-    for [1..n] $ \i -> do
-      step mx lst
-      when (i `mod` 10000 == 0) $ do
-        bef <- C.runPipe $ DLLC.sourceLeft  lst C..| C.take 9 C..| (C.drop 1 >> C.sinkList)
-        x   <- DLLC.readFocus lst
-        aft <- C.runPipe $ DLLC.sourceRight lst C..| C.take 9 C..| (C.drop 1 >> C.sinkList)
-        traceM $ show (i, reverse bef, x, aft)
-    pure lst
+-- type State n s = MV.Vector n s Node
+
+data CrabState n s = CrabState
+    { csRight  :: MV.MVector n s (Finite n)
+    , csActive :: MutVar s (Finite n)
+    }
+
+readCrabState
+    :: (KnownNat n, PrimMonad m, PrimState m ~ s)
+    => CrabState n s
+    -> m (V.Vector n (Finite n))
+readCrabState CrabState{..} = do
+    i <- readMutVar csActive
+    evalStateT (V.replicateM go) i
+  where
+    go = StateT $ \i -> do
+      j <- MV.read csRight i
+      pure (i, j)
 
 step
-    :: forall m s. (PrimMonad m, PrimState m ~ s)
-    => Int
-    -> DLLC.List s Int
+    :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
+    => CrabState n s
     -> m ()
-step mx lst = do
-    e0 <- DLLC.readFocus lst
-    DLLC.rotateRight lst
-    grabbed  <- replicateM 3 (DLLC.popRight lst)
-    seeker   <- DLLC.cloneTop lst
-    let target = until (`notElem` grabbed) subWrap (subWrap e0)
-    _ <- DLLC.seek (== target) seeker
-    traverse_ (`DLLC.insertRight` seeker) (reverse grabbed)
+step CrabState{..} = do
+    lab <- readMutVar csActive
+    (traceShowId->grabbed, lab') <- pullN 3 lab
+    MV.write csRight lab lab'
+    let target = until (`notElem` grabbed) (subtract 1) (lab - 1)
+    aftertag <- MV.read csRight target
+    MV.write csRight target (head grabbed)
+    MV.write csRight (last grabbed) aftertag
+    writeMutVar csActive lab'
   where
-    subWrap x
-      | x == 1    = mx
-      | otherwise = x - 1
+    pullN :: Int -> Finite n -> m ([Finite n], Finite n)
+    pullN n i
+      | n == 0    = do
+          j <- MV.read csRight i
+          pure ([], j)
+      | otherwise = do
+          j <- MV.read csRight i
+          first (j:) <$> pullN (n - 1) j
 
-day23a :: _ :~> _
-day23a = MkSol
-    { sParse = NE.nonEmpty . map digitToInt
-    , sShow  = fmap intToDigit
-    , sSolve = \xs -> Just $ runST $ do
-        lst <- solver 9 100 xs
-        _ <- DLLC.seek (== 1) lst
-        tail <$> DLLC.readOut lst
-    }
+initialize
+    :: (KnownNat n, PrimMonad m, PrimState m ~ s)
+    => V.Vector n (Finite n)
+    -> m (CrabState n s)
+initialize v0 = do
+    csRight <- MV.new
+    for finites $ \i -> MV.write csRight (v0 `V.index` (i - 1)) (v0 `V.index` i)
+    csActive <- newMutVar $ v0 `V.index` 0
+    pure CrabState{..}
 
-day23b :: _ :~> _
-day23b = MkSol
-    { sParse = NE.nonEmpty . take 1_000_000 . (++ [10..]) . map digitToInt
-    , sShow  = show
-    , sSolve = \xs -> Just $ runST $ do
-        lst <- solver 1_000_000 10_000_000 xs
-        _ <- DLLC.seek (== 1) lst
-        (*) <$> DLLC.readAt (-1) lst <*> DLLC.readAt 1 lst
-    }
+
+
+
+
+-- data Node s = Node
+--     { nLeft  :: MutVar s (Node s)
+--     , nItem  :: Int
+--     , nRight :: MutVar s (Node s)
+--     , nPrev  :: MutVar s (Node s)
+--     }
+--   deriving Eq
+
+-- data Core s = Core { cItem :: Int, cPrev :: MutVar s (Node s) }
+
+-- newtype List s = List { getList :: MutVar s (MutVar s (Node s)) }
+--   deriving Eq
+
+-- popNode
+--     :: (PrimMonad m, PrimState m ~ s)
+--     => List s
+--     -> m (Core s)
+-- popNode lst = do
+--     r0 <- readMutVar (getList lst)
+--     n0 <- readMutVar r0
+--     writeMutVar (getList lst) (nRight n0)
+--     modifyMutVar (nRight n0) $ \nr -> nr { nLeft  = nLeft n0 }
+--     modifyMutVar (nLeft  n0) $ \nl -> nl { nRight = nRight n0 }
+--     pure $ Core { cItem = nItem n0, cPrev = nPrev n0 }
+
+-- insertNode
+--     :: (PrimMonad m, PrimState m ~ s)
+--     => Core s
+--     -> List s
+--     -> m ()
+-- insertNode c lst = do
+--     r0 <- readMutVar (getList lst)
+--     n0 <- readMutVar r0
+--     newNode <- newMutVar $ Node
+--         { nLeft  = r0
+--         , nRight =
+--         }
+--         { nLeft = r0, nRight = nRight n0 }
+--     writeMutVar r0 $ n0 { nRight = newNode }
+--     modifyMutVar (nRight n0) $ \nr -> nr { nLeft = newNode }
+
+-- insertRight
+--     :: (PrimMonad m, PrimState m ~ s)
+--     => a
+--     -> List s a
+--     -> m ()
+-- insertRight x lst = do
+--     r0      <- readMutVar (getList lst)
+--     n0      <- readMutVar r0
+--     newNode <- newMutVar $ Node r0 x (nRight n0)
+--     writeMutVar r0 $ n0 { nRight = newNode }
+--     modifyMutVar (nRight n0) $ \nr -> nr { nLeft = newNode }
+
+
+-- data Entry s = Entry { eVal :: Int, ePrev :: DLLC.List s (Entry s) }
+
+-- -- 394618527
+
+-- step
+--     :: forall m s. (PrimMonad m, PrimState m ~ s)
+--     => DLLC.List s (Entry s)
+--     -> m ()
+-- step lst = do
+--     e0 <- DLLC.readFocus lst
+--     DLLC.rotateRight lst
+--     grabbed  <- replicateM 3 (DLLC.popRight lst)
+--     toAdd    <- DLLC.cloneTop (ePrev e0)
+--     seekLast toAdd (eVal <$> grabbed)
+--     traverse_ (`DLLC.insertRight` toAdd) (reverse grabbed)
+--   where
+--     seekLast :: DLLC.List s (Entry s) -> [Int] -> m ()
+--     seekLast lst' grabbed = go
+--       where
+--         go = do
+--           i <- DLLC.readFocus lst'
+--           if eVal i `elem` grabbed
+--             then do
+--               writeMutVar (DLLC.getList lst') =<< readMutVar (DLLC.getList (ePrev i))
+--               seekLast lst' grabbed
+--             else pure ()
+
+-- solver
+--     :: (PrimMonad m, PrimState m ~ s)
+--     => Int      -- ^ max
+--     -> Int      -- ^ n
+--     -> [Int]    -- ^ put on top
+--     -> m (DLLC.List s (Entry s))
+-- solver mx n xs = do
+--     lst <- DLLC.fromList $ (`Entry` undefined) <$> (1 :| [2..mx])
+--     seeker <- DLLC.cloneTop lst
+--     DLLC.rotateLeft seeker
+--     for_ [1..mx] $ \_ -> do
+--       newList <- DLLC.cloneTop seeker
+--       DLLC.modifyFocus (\e -> e { ePrev = newList }) seeker
+--       DLLC.rotateRight seeker
+--     -- flip execStateT seeker $ do
+--     --   DLLC.rotateLeft seeker
+--     -- lst    <- DLLC.singleton $ Entry 1 undefined
+--     -- ll <- flip execStateT lst $ do
+--     --   for_ [2..mx] $ \i -> StateT $ \lastList -> do
+--     --     newList <- DLLC.cloneTop lastList
+--     --     DLLC.insertLeft (Entry i newList) lst
+--     --     DLLC.rotateLeft newList
+--     --     pure ((), newList)
+--     -- r0 <- readMutVar $ DLLC.getList lst
+--     -- modifyMutVar r0 $ \n0 -> n0 { DLLC.nItem = (DLLC.nItem n0) { ePrev = ll } }
+--     -- DLLC.readFocus lst >>= \e -> wri
+--     -- for [2..n] $ \i -> do
+--     pure lst
+
+    -- let ixSet = IS.fromList $ zipWith const [1..] xs
+    -- lopped <- sequenceA $ IM.fromSet (const (DLLC.popRight lst)) ixSet
+    -- for_ (reverse xs) $ \x ->
+    --   DLLC.insertRight x lst
+    -- for [1..n] $ \i -> do
+    --   step mx lst
+    --   -- when (i `mod` 10000 == 0) $ do
+    --   --   bef <- C.runPipe $ DLLC.sourceLeft  lst C..| C.take 9 C..| (C.drop 1 >> C.sinkList)
+    --   --   x   <- DLLC.readFocus lst
+    --   --   aft <- C.runPipe $ DLLC.sourceRight lst C..| C.take 9 C..| (C.drop 1 >> C.sinkList)
+    --   --   traceM $ show (i, reverse bef, x, aft)
+    -- pure lst
+
+-- step
+--     :: forall m s. (PrimMonad m, PrimState m ~ s)
+--     => Int
+--     -> DLLC.List s Int
+--     -> m ()
+-- step mx lst = do
+--     e0 <- DLLC.readFocus lst
+--     DLLC.rotateRight lst
+--     grabbed  <- replicateM 3 (DLLC.popRight lst)
+--     seeker   <- DLLC.cloneTop lst
+--     let target = until (`notElem` grabbed) subWrap (subWrap e0)
+--     _ <- DLLC.seek (== target) seeker
+--     traverse_ (`DLLC.insertRight` seeker) (reverse grabbed)
+--   where
+--     subWrap x
+--       | x == 1    = mx
+--       | otherwise = x - 1
+
+-- day23a :: _ :~> _
+-- day23a = MkSol
+--     { sParse = NE.nonEmpty . map digitToInt
+--     , sShow  = fmap intToDigit
+--     , sSolve = \xs -> Just $ runST $ do
+--         lst <- solver 9 100 xs
+--         _ <- DLLC.seek (== 1) lst
+--         tail <$> DLLC.readOut lst
+--     }
+
+-- day23b :: _ :~> _
+-- day23b = MkSol
+--     { sParse = NE.nonEmpty . take 1_000_000 . (++ [10..]) . map digitToInt
+--     , sShow  = show
+--     , sSolve = \xs -> Just $ runST $ do
+--         lst <- solver 1_000_000 10_000_000 xs
+--         _ <- DLLC.seek (== 1) lst
+--         (*) <$> DLLC.readAt (-1) lst <*> DLLC.readAt 1 lst
+--     }
 
 
 

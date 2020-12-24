@@ -25,7 +25,7 @@ newtype List s a = List { getList :: MutVar s (MutVar s (Node s a)) }
 
 cloneTop :: (PrimMonad m, PrimState m ~ s) => List s a -> m (List s a)
 cloneTop (List x) = List <$> do
-    newMutVar =<< readMutVar x
+    newMutVar =<< newMutVar =<< readMutVar =<< readMutVar x
 
 singleton
     :: (PrimMonad m, PrimState m ~ s)
@@ -136,6 +136,11 @@ readOut lst = C.runPipe $ sourceRight lst
 readFocus :: (PrimMonad m, PrimState m ~ s) => List s a -> m a
 readFocus = fmap nItem . readMutVar <=< readMutVar . getList
 
+modifyFocus :: (PrimMonad m, PrimState m ~ s) => (a -> a) -> List s a -> m ()
+modifyFocus f lst = do
+    r <- readMutVar (getList lst)
+    modifyMutVar' r $ \n -> let !x = f (nItem n) in n { nItem = x }
+
 readAt :: (PrimMonad m, PrimState m ~ s) => Int -> List s a -> m a
 readAt n lst = case compare n 0 of
     LT -> C.runPipe $ sourceLeftForever lst
@@ -185,6 +190,7 @@ seek p lst = do
     --           n <- readMutVar r
     --           (nItem n:) <$> go (nRight n)
 
+-- insert to the right of focus
 insertRight
     :: (PrimMonad m, PrimState m ~ s)
     => a
@@ -205,7 +211,7 @@ insertLeft
 insertLeft x lst = do
     r0      <- readMutVar (getList lst)
     n0      <- readMutVar r0
-    newNode <- newMutVar $ Node r0 x (nLeft n0)
+    newNode <- newMutVar $ Node (nLeft n0) x r0
     writeMutVar r0 $ n0 { nLeft = newNode }
     modifyMutVar (nLeft n0) $ \nl -> nl { nRight = newNode }
 
