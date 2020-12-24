@@ -19,20 +19,18 @@ import           Control.Monad.ST            (runST)
 import           Control.Monad.Trans.Class   (lift)
 import           Data.Char                   (digitToInt, intToDigit)
 import           Data.Foldable               (for_)
-import           Data.Proxy                  (Proxy(..))
 import           Data.Vector.Unboxed         (Vector)
 import           Data.Vector.Unboxed.Mutable (MVector)
-import           GHC.TypeNats                (Nat, KnownNat, natVal)
 import qualified Data.Conduino               as C
 import qualified Data.Conduino.Combinators   as C
 import qualified Data.Vector.Unboxed         as V
 import qualified Data.Vector.Unboxed.Mutable as MV
 
-newtype CrabState (n :: Nat) s = CrabState { csRight  :: MVector s Int }
+newtype CrabState s = CrabState { csRight  :: MVector s Int }
 
 sourceCrabState
     :: (PrimMonad m, PrimState m ~ s)
-    => CrabState n s
+    => CrabState s
     -> Int              -- ^ item to start from
     -> C.Pipe i Int u m ()
 sourceCrabState CrabState{..} i0 = go i0
@@ -44,8 +42,8 @@ sourceCrabState CrabState{..} i0 = go i0
         go j
 
 step
-    :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
-    => CrabState n s
+    :: forall m s. (PrimMonad m, PrimState m ~ s)
+    => CrabState s
     -> Int
     -> m Int
 step CrabState{..} lab = do
@@ -57,7 +55,7 @@ step CrabState{..} lab = do
     MV.unsafeWrite csRight g3 aftertarg
     pure lab'
   where
-    n = fromIntegral (natVal (Proxy @n))
+    n = MV.length csRight
     subWrap x
       | x == 0    = n - 1
       | otherwise = x - 1
@@ -74,9 +72,9 @@ step CrabState{..} lab = do
 {-# INLINE step #-}
 
 initialize
-    :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
+    :: forall m s. (PrimMonad m, PrimState m ~ s)
     => Vector Int
-    -> m (Int, CrabState n s)      -- ^ initial pointer
+    -> m (Int, CrabState s)      -- ^ initial pointer
 initialize v0 = do
     csRight <- MV.unsafeNew n
     for_ [0 .. n-1] $ \i ->
@@ -84,16 +82,16 @@ initialize v0 = do
     let i0 = v0 V.! 0
     pure (i0, CrabState{..})
   where
-    n = fromIntegral (natVal (Proxy @n))
+    n = V.length v0
     subWrap x
-      | x == 0    = fromIntegral (natVal (Proxy @n)) - 1
+      | x == 0    = n - 1
       | otherwise = x - 1
 {-# INLINE initialize #-}
 
-run :: (KnownNat n, PrimMonad m, PrimState m ~ s)
+run :: (PrimMonad m, PrimState m ~ s)
     => Int
     -> Int
-    -> CrabState n s
+    -> CrabState s
     -> m ()
 run n i0 cs = go 0 i0
   where
@@ -108,7 +106,7 @@ day23a = MkSol
     { sParse = Just . V.fromList . map toIx
     , sShow  = fmap intToDigit
     , sSolve = \v0 -> Just $ runST $ do
-        (i0, cs) <- initialize @9 v0
+        (i0, cs) <- initialize v0
         run 100 i0 cs
         C.runPipe $ sourceCrabState cs 0
                C..| C.map fromIx
@@ -120,7 +118,7 @@ day23b = MkSol
     { sParse = Just . V.fromListN 1000000 . (++ [9 .. ]) . map toIx
     , sShow  = show . product
     , sSolve = \v0 -> Just $ runST $ do
-        (i0, cs) <- initialize @1000000 v0
+        (i0, cs) <- initialize v0
         run 10000000 i0 cs
         C.runPipe $ sourceCrabState cs 0
                C..| C.map fromIx

@@ -23,7 +23,6 @@ import           Linear.V2                            (V2(..))
 import           Math.Geometry.Grid.HexagonalInternal (HexDirection(..))
 import qualified Data.Map.Strict                      as M
 import qualified Data.Set                             as S
-import qualified Math.Geometry.Grid                   as G
 
 neighbors :: Point -> Set Point
 neighbors (V2 x y) = S.fromDistinctAscList
