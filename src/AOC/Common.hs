@@ -832,7 +832,7 @@ mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
 mapMaybeSet f = S.fromList . mapMaybe f . S.toList
 
 symDiff :: Ord a => Set a -> Set a -> Set a
-symDiff x y = (x S.\\ y) `S.union` (y S.\\ x)
+symDiff x y = (x `S.union` y) S.\\ (x `S.intersection` y)
 
 anaM
     :: (Monad m, R.Corecursive t, Traversable (R.Base t))

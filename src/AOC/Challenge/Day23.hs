@@ -13,15 +13,14 @@ module AOC.Challenge.Day23 (
   ) where
 
 import           AOC.Solver                ((:~>)(..))
-import           Control.Monad             ((<=<), replicateM_, unless)
+import           Control.Monad             ((<=<), unless)
 import           Control.Monad.Primitive   (PrimMonad, PrimState)
 import           Control.Monad.ST          (runST)
 import           Control.Monad.Trans.Class (lift)
 import           Data.Bifunctor            (first)
 import           Data.Char                 (digitToInt, intToDigit)
 import           Data.Finite               (Finite, packFinite, getFinite, finites)
-import           Data.Primitive.MutVar     (MutVar, newMutVar, writeMutVar, readMutVar)
-import           Data.Traversable          (for)
+import           Data.Foldable             (for_)
 import           Data.Vector.Mutable.Sized (MVector)
 import           Data.Vector.Sized         (Vector)
 import           GHC.TypeNats              (KnownNat)
@@ -30,10 +29,7 @@ import qualified Data.Conduino.Combinators as C
 import qualified Data.Vector.Mutable.Sized as MV
 import qualified Data.Vector.Sized         as V
 
-data CrabState n s = CrabState
-    { csRight  :: MVector n s (Finite n)
-    , csActive :: MutVar s (Finite n)
-    }
+newtype CrabState n s = CrabState { csRight  :: MVector n s (Finite n) }
 
 sourceCrabState
     :: (PrimMonad m, PrimState m ~ s)
@@ -51,44 +47,59 @@ sourceCrabState CrabState{..} i0 = go i0
 step
     :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
     => CrabState n s
-    -> m ()
-step CrabState{..} = do
-    lab <- readMutVar csActive
+    -> Finite n
+    -> m (Finite n)
+step CrabState{..} lab = do
     (grabbed, lab') <- pullN 3 lab
     MV.write csRight lab lab'
     let target = until (`notElem` grabbed) (subtract 1) (lab - 1)
     aftertarg <- MV.read csRight target
     MV.write csRight target (head grabbed)
     MV.write csRight (last grabbed) aftertarg
-    writeMutVar csActive lab'
+    pure lab'
   where
     pullN :: Int -> Finite n -> m ([Finite n], Finite n)
-    pullN n i
-      | n == 0    = do
-          j <- MV.read csRight i
-          pure ([], j)
-      | otherwise = do
-          j <- MV.read csRight i
-          first (j:) <$> pullN (n - 1) j
+    pullN n i = do
+      j <- MV.read csRight i
+      if n == 0
+        then pure ([], j)
+        else first (j:) <$> pullN (n - 1) j
+{-# INLINE step #-}
 
 initialize
     :: (KnownNat n, PrimMonad m, PrimState m ~ s)
     => Vector n (Finite n)
-    -> m (CrabState n s)
+    -> m (Finite n, CrabState n s)      -- ^ initial pointer
 initialize v0 = do
     csRight <- MV.new
-    for finites $ \i -> MV.write csRight (v0 `V.index` (i - 1)) (v0 `V.index` i)
-    csActive <- newMutVar $ v0 `V.index` 0
-    pure CrabState{..}
+    for_ finites $ \i ->
+      MV.write csRight (v0 `V.index` (i - 1)) (v0 `V.index` i)
+    let i0 = v0 `V.index` 0
+    pure (i0, CrabState{..})
+{-# INLINE initialize #-}
 
-day23a :: _ :~> _
+run :: (KnownNat n, PrimMonad m, PrimState m ~ s)
+    => Int
+    -> Finite n
+    -> CrabState n s
+    -> m ()
+run n i0 cs = go 0 i0
+  where
+    go !m !i
+      | m == n    = pure ()
+      | otherwise = go (m + 1) =<< step cs i
+    {-# INLINE go #-}
+{-# INLINE run #-}
+
+
+day23a :: Vector 9 (Finite 9) :~> [Int]
 day23a = MkSol
     { sParse = V.fromList @9 <=< traverse toFin
     , sShow  = fmap intToDigit
     , sSolve = \v0 -> Just $ runST $ do
-        cs0 <- initialize v0
-        replicateM_ 100 (step cs0)
-        C.runPipe $ sourceCrabState cs0 0
+        (i0, cs) <- initialize v0
+        run 100 i0 cs
+        C.runPipe $ sourceCrabState cs 0
                C..| C.map fromFin
                C..| C.sinkList
     }
@@ -98,9 +109,9 @@ day23b = MkSol
     { sParse = V.fromList . (++ [9 .. ]) <=< traverse toFin
     , sShow  = show . product
     , sSolve = \v0 -> Just $ runST $ do
-        cs0 <- initialize v0
-        replicateM_ 10000000 (step cs0)
-        C.runPipe $ sourceCrabState cs0 0
+        (i0, cs) <- initialize v0
+        run 10000000 i0 cs
+        C.runPipe $ sourceCrabState cs 0
                C..| C.map fromFin
                C..| C.take 2
                C..| C.sinkList
