@@ -12,34 +12,33 @@ module AOC.Challenge.Day23 (
   , day23b
   ) where
 
-import           AOC.Solver                ((:~>)(..))
-import           Control.Monad             ((<=<), unless)
-import           Control.Monad.Primitive   (PrimMonad, PrimState)
-import           Control.Monad.ST          (runST)
-import           Control.Monad.Trans.Class (lift)
-import           Data.Bifunctor            (first)
-import           Data.Char                 (digitToInt, intToDigit)
-import           Data.Finite               (Finite, packFinite, getFinite, finites)
-import           Data.Foldable             (for_)
-import           Data.Vector.Mutable.Sized (MVector)
-import           Data.Vector.Sized         (Vector)
-import           GHC.TypeNats              (KnownNat)
-import qualified Data.Conduino             as C
-import qualified Data.Conduino.Combinators as C
-import qualified Data.Vector.Mutable.Sized as MV
-import qualified Data.Vector.Sized         as V
+import           AOC.Solver                  ((:~>)(..))
+import           Control.Monad               (unless)
+import           Control.Monad.Primitive     (PrimMonad, PrimState)
+import           Control.Monad.ST            (runST)
+import           Control.Monad.Trans.Class   (lift)
+import           Data.Char                   (digitToInt, intToDigit)
+import           Data.Foldable               (for_)
+import           Data.Proxy                  (Proxy(..))
+import           Data.Vector.Unboxed         (Vector)
+import           Data.Vector.Unboxed.Mutable (MVector)
+import           GHC.TypeNats                (Nat, KnownNat, natVal)
+import qualified Data.Conduino               as C
+import qualified Data.Conduino.Combinators   as C
+import qualified Data.Vector.Unboxed         as V
+import qualified Data.Vector.Unboxed.Mutable as MV
 
-newtype CrabState n s = CrabState { csRight  :: MVector n s (Finite n) }
+newtype CrabState (n :: Nat) s = CrabState { csRight  :: MVector s Int }
 
 sourceCrabState
     :: (PrimMonad m, PrimState m ~ s)
     => CrabState n s
-    -> Finite n         -- ^ item to start from
-    -> C.Pipe i (Finite n) u m ()
+    -> Int              -- ^ item to start from
+    -> C.Pipe i Int u m ()
 sourceCrabState CrabState{..} i0 = go i0
   where
     go i = do
-      j <- lift $ MV.read csRight i
+      j <- lift $ MV.unsafeRead csRight i
       unless (j == i0) $ do
         C.yield j
         go j
@@ -47,40 +46,53 @@ sourceCrabState CrabState{..} i0 = go i0
 step
     :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
     => CrabState n s
-    -> Finite n
-    -> m (Finite n)
+    -> Int
+    -> m Int
 step CrabState{..} lab = do
-    (grabbed, lab') <- pullN 3 lab
-    MV.write csRight lab lab'
-    let target = until (`notElem` grabbed) (subtract 1) (lab - 1)
-    aftertarg <- MV.read csRight target
-    MV.write csRight target (head grabbed)
-    MV.write csRight (last grabbed) aftertarg
+    (gs@(g1,_,g3),lab') <- pull3 lab
+    MV.unsafeWrite csRight lab lab'
+    let target = until (notAny gs) subWrap (subWrap lab)
+    aftertarg <- MV.unsafeRead csRight target
+    MV.unsafeWrite csRight target g1
+    MV.unsafeWrite csRight g3 aftertarg
     pure lab'
   where
-    pullN :: Int -> Finite n -> m ([Finite n], Finite n)
-    pullN n i = do
-      j <- MV.read csRight i
-      if n == 0
-        then pure ([], j)
-        else first (j:) <$> pullN (n - 1) j
+    n = fromIntegral (natVal (Proxy @n))
+    subWrap x
+      | x == 0    = n - 1
+      | otherwise = x - 1
+    notAny (g1,g2,g3) x = x /= g1 && x /= g2 && x /= g3
+    {-# INLINE notAny #-}
+    pull3 :: Int -> m ((Int, Int, Int), Int)
+    pull3 i0 = do
+      i1 <- MV.unsafeRead csRight i0
+      i2 <- MV.unsafeRead csRight i1
+      i3 <- MV.unsafeRead csRight i2
+      i4 <- MV.unsafeRead csRight i3
+      pure ((i1,i2,i3),i4)
+    {-# INLINE pull3 #-}
 {-# INLINE step #-}
 
 initialize
-    :: (KnownNat n, PrimMonad m, PrimState m ~ s)
-    => Vector n (Finite n)
-    -> m (Finite n, CrabState n s)      -- ^ initial pointer
+    :: forall n m s. (KnownNat n, PrimMonad m, PrimState m ~ s)
+    => Vector Int
+    -> m (Int, CrabState n s)      -- ^ initial pointer
 initialize v0 = do
-    csRight <- MV.new
-    for_ finites $ \i ->
-      MV.write csRight (v0 `V.index` (i - 1)) (v0 `V.index` i)
-    let i0 = v0 `V.index` 0
+    csRight <- MV.unsafeNew n
+    for_ [0 .. n-1] $ \i ->
+      MV.unsafeWrite csRight (v0 V.! subWrap i) (v0 V.! i)
+    let i0 = v0 V.! 0
     pure (i0, CrabState{..})
+  where
+    n = fromIntegral (natVal (Proxy @n))
+    subWrap x
+      | x == 0    = fromIntegral (natVal (Proxy @n)) - 1
+      | otherwise = x - 1
 {-# INLINE initialize #-}
 
 run :: (KnownNat n, PrimMonad m, PrimState m ~ s)
     => Int
-    -> Finite n
+    -> Int
     -> CrabState n s
     -> m ()
 run n i0 cs = go 0 i0
@@ -88,37 +100,36 @@ run n i0 cs = go 0 i0
     go !m !i
       | m == n    = pure ()
       | otherwise = go (m + 1) =<< step cs i
-    {-# INLINE go #-}
 {-# INLINE run #-}
 
 
-day23a :: Vector 9 (Finite 9) :~> [Int]
+day23a :: Vector Int :~> [Int]
 day23a = MkSol
-    { sParse = V.fromList @9 <=< traverse toFin
+    { sParse = Just . V.fromList . map toIx
     , sShow  = fmap intToDigit
     , sSolve = \v0 -> Just $ runST $ do
-        (i0, cs) <- initialize v0
+        (i0, cs) <- initialize @9 v0
         run 100 i0 cs
         C.runPipe $ sourceCrabState cs 0
-               C..| C.map fromFin
+               C..| C.map fromIx
                C..| C.sinkList
     }
 
-day23b :: Vector 1000000 (Finite 1000000) :~> [Int]
+day23b :: Vector Int :~> [Int]
 day23b = MkSol
-    { sParse = V.fromList . (++ [9 .. ]) <=< traverse toFin
+    { sParse = Just . V.fromListN 1000000 . (++ [9 .. ]) . map toIx
     , sShow  = show . product
     , sSolve = \v0 -> Just $ runST $ do
-        (i0, cs) <- initialize v0
+        (i0, cs) <- initialize @1000000 v0
         run 10000000 i0 cs
         C.runPipe $ sourceCrabState cs 0
-               C..| C.map fromFin
+               C..| C.map fromIx
                C..| C.take 2
                C..| C.sinkList
     }
 
-toFin :: KnownNat n => Char -> Maybe (Finite n)
-toFin = packFinite . subtract 1 . fromIntegral . digitToInt
+toIx :: Char -> Int
+toIx = subtract 1 . digitToInt
 
-fromFin :: Finite n -> Int
-fromFin = fromIntegral . (+ 1) . getFinite
+fromIx :: Int -> Int
+fromIx = (+ 1)
