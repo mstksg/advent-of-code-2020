@@ -1,88 +1,516 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-unused-imports   #-}</span><span>
-</span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-unused-top-binds #-}</span><span>
-</span><span id="line-3"></span><span>
-</span><span id="line-4"></span><span class="hs-comment">-- |</span><span>
-</span><span id="line-5"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day23</span><span>
-</span><span id="line-6"></span><span class="hs-comment">-- License     : BSD3</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- |</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day23</span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- License     : BSD3</span><span>
+</span><span id="line-4"></span><span class="hs-comment">--</span><span>
+</span><span id="line-5"></span><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Portability : non-portable</span><span>
 </span><span id="line-7"></span><span class="hs-comment">--</span><span>
-</span><span id="line-8"></span><span class="hs-comment">-- Stability   : experimental</span><span>
-</span><span id="line-9"></span><span class="hs-comment">-- Portability : non-portable</span><span>
-</span><span id="line-10"></span><span class="hs-comment">--</span><span>
-</span><span id="line-11"></span><span class="hs-comment">-- Day 23.  See &quot;AOC.Solver&quot; for the types used in this module!</span><span>
-</span><span id="line-12"></span><span class="hs-comment">--</span><span>
-</span><span id="line-13"></span><span class="hs-comment">-- After completing the challenge, it is recommended to:</span><span>
-</span><span id="line-14"></span><span class="hs-comment">--</span><span>
-</span><span id="line-15"></span><span class="hs-comment">-- *   Replace &quot;AOC.Prelude&quot; imports to specific modules (with explicit</span><span>
-</span><span id="line-16"></span><span class="hs-comment">--     imports) for readability.</span><span>
-</span><span id="line-17"></span><span class="hs-comment">-- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@</span><span>
-</span><span id="line-18"></span><span class="hs-comment">--     pragmas.</span><span>
-</span><span id="line-19"></span><span class="hs-comment">-- *   Replace the partial type signatures underscores in the solution</span><span>
-</span><span id="line-20"></span><span class="hs-comment">--     types @_ :~&gt; _@ with the actual types of inputs and outputs of the</span><span>
-</span><span id="line-21"></span><span class="hs-comment">--     solution.  You can delete the type signatures completely and GHC</span><span>
-</span><span id="line-22"></span><span class="hs-comment">--     will recommend what should go in place of the underscores.</span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Challenge.Day23</span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-25"></span><span>    </span><span class="hs-comment">-- day23a</span><span>
-</span><span id="line-26"></span><span>  </span><span class="hs-comment">-- , day23b</span><span>
-</span><span id="line-27"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>
-</span><span id="line-29"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Prelude.html"><span class="hs-identifier">AOC.Prelude</span></a></span><span>
-</span><span id="line-30"></span><span>
-</span><span id="line-31"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Graph.Inductive</span></span><span>           </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">G</span></span><span>
-</span><span id="line-32"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.IntMap</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">IM</span></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.IntSet</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">IS</span></span><span>
-</span><span id="line-34"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.NonEmpty</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">NE</span></span><span>
-</span><span id="line-35"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.PointedList</span></span><span>          </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PL</span></span><span>
-</span><span id="line-36"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.PointedList.Circular</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PLC</span></span><span>
-</span><span id="line-37"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map</span></span><span>                       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
-</span><span id="line-38"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.OrdPSQ</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PSQ</span></span><span>
-</span><span id="line-39"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Sequence</span></span><span>                  </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Seq</span></span><span>
-</span><span id="line-40"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Set</span></span><span>                       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">S</span></span><span>
-</span><span id="line-41"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>                      </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
-</span><span id="line-42"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector</span></span><span>                    </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">V</span></span><span>
-</span><span id="line-43"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Linear</span></span><span>                         </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">L</span></span><span>
-</span><span id="line-44"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec</span></span><span>                </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-45"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span>           </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
-</span><span id="line-46"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char.Lexer</span></span><span>     </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
-</span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><a href="AOC.Challenge.Day23.html#day23a"><span class="hs-identifier hs-type">day23a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span>
-</span><span id="line-49"></span><span id="day23a"><span class="annot"><span class="annottext">day23a :: String :~&gt; String
+</span><span id="line-8"></span><span class="hs-comment">-- Day 23.  See &quot;AOC.Solver&quot; for the types used in this module!</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Challenge.Day23</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day23.html#day23a"><span class="hs-identifier">day23a</span></a></span><span>
+</span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#day23b"><span class="hs-identifier">day23b</span></a></span><span>
+</span><span id="line-13"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-14"></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><a href="AOC.Solver.html"><span class="hs-identifier">AOC.Solver</span></a></span><span>                </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator">(:~&gt;)</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;=&lt;)</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">unless</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.Primitive</span></span><span>   </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">PrimMonad</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">PrimState</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.ST</span></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">runST</span></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Class</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">lift</span></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Bifunctor</span></span><span>            </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">first</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>                 </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">digitToInt</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">intToDigit</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Finite</span></span><span>               </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Finite</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">packFinite</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getFinite</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">finites</span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Foldable</span></span><span>             </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">for_</span></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Vector.Mutable.Sized</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MVector</span></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.Vector.Sized</span></span><span>         </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Vector</span></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">GHC.TypeNats</span></span><span>              </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">KnownNat</span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Conduino</span></span><span>             </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">C</span></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Conduino.Combinators</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">C</span></span><span>
+</span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Mutable.Sized</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">MV</span></span><span>
+</span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Sized</span></span><span>         </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">V</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-keyword">newtype</span><span> </span><span id="CrabState"><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-var">CrabState</span></a></span></span><span> </span><span id="local-6989586621679739679"><span class="annot"><a href="#local-6989586621679739679"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679739678"><span class="annot"><a href="#local-6989586621679739678"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="CrabState"><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-var">CrabState</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="csRight"><span class="annot"><span class="annottext">CrabState n s -&gt; MVector n s (Finite n)
+</span><a href="AOC.Challenge.Day23.html#csRight"><span class="hs-identifier hs-var hs-var">csRight</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">MVector</span></span><span> </span><span class="annot"><a href="#local-6989586621679739679"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739678"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739679"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">}</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span id="local-6989586621679739577"><span id="local-6989586621679739578"><span id="local-6989586621679739579"><span id="local-6989586621679739580"><span id="local-6989586621679739581"><span class="annot"><a href="AOC.Challenge.Day23.html#sourceCrabState"><span class="hs-identifier hs-type">sourceCrabState</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679739581"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679739581"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><a href="#local-6989586621679739580"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739579"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739580"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739579"><span class="hs-identifier hs-type">n</span></a></span><span>         </span><span class="hs-comment">-- ^ item to start from</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">C.Pipe</span></span><span> </span><span class="annot"><a href="#local-6989586621679739578"><span class="hs-identifier hs-type">i</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739579"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="#local-6989586621679739577"><span class="hs-identifier hs-type">u</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739581"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span></span></span></span><span>
+</span><span id="line-39"></span><span id="sourceCrabState"><span class="annot"><span class="annottext">sourceCrabState :: CrabState n s -&gt; Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="AOC.Challenge.Day23.html#sourceCrabState"><span class="hs-identifier hs-var hs-var">sourceCrabState</span></a></span></span><span> </span><span id="local-6989586621679739527"><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span><span> </span><span id="local-6989586621679739526"><span class="annot"><span class="annottext">i0 :: Finite n
+</span><a href="#local-6989586621679739526"><span class="hs-identifier hs-var">i0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="#local-6989586621679739525"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739526"><span class="hs-identifier hs-var">i0</span></a></span><span>
+</span><span id="line-40"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-41"></span><span>    </span><span id="local-6989586621679739525"><span class="annot"><span class="annottext">go :: Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="#local-6989586621679739525"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span id="local-6989586621679739524"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679739524"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-42"></span><span>      </span><span id="local-6989586621679739523"><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739523"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m (Finite n) -&gt; Pipe i (Finite n) u m (Finite n)
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(m (Finite n) -&gt; Pipe i (Finite n) u m (Finite n))
+-&gt; m (Finite n) -&gt; Pipe i (Finite n) u m (Finite n)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; m (Finite n)
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; m a
+</span><span class="hs-identifier hs-var">MV.read</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739527"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739524"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-43"></span><span>      </span><span class="annot"><span class="annottext">Bool -&gt; Pipe i (Finite n) u m () -&gt; Pipe i (Finite n) u m ()
+forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
+</span><span class="hs-identifier hs-var">unless</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739523"><span class="hs-identifier hs-var">j</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739526"><span class="hs-identifier hs-var">i0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Pipe i (Finite n) u m () -&gt; Pipe i (Finite n) u m ())
+-&gt; Pipe i (Finite n) u m () -&gt; Pipe i (Finite n) u m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-44"></span><span>        </span><span class="annot"><span class="annottext">Finite n -&gt; Pipe i (Finite n) u m ()
+forall o i u (m :: * -&gt; *). o -&gt; Pipe i o u m ()
+</span><span class="hs-identifier hs-var">C.yield</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739523"><span class="hs-identifier hs-var">j</span></a></span><span>
+</span><span id="line-45"></span><span>        </span><span class="annot"><span class="annottext">Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="#local-6989586621679739525"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739523"><span class="hs-identifier hs-var">j</span></a></span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="annot"><a href="AOC.Challenge.Day23.html#step"><span class="hs-identifier hs-type">step</span></a></span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679739617"><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span></span><span> </span><span id="local-6989586621679739616"><span class="annot"><a href="#local-6989586621679739616"><span class="hs-identifier hs-type">m</span></a></span></span><span> </span><span id="local-6989586621679739615"><span class="annot"><a href="#local-6989586621679739615"><span class="hs-identifier hs-type">s</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679739616"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679739616"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><a href="#local-6989586621679739615"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739615"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-50"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-51"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679739616"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span id="step"><span class="annot"><span class="annottext">step :: CrabState n s -&gt; Finite n -&gt; m (Finite n)
+</span><a href="AOC.Challenge.Day23.html#step"><span class="hs-identifier hs-var hs-var">step</span></a></span></span><span> </span><span id="local-6989586621679739519"><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span><span> </span><span id="local-6989586621679739518"><span class="annot"><span class="annottext">lab :: Finite n
+</span><a href="#local-6989586621679739518"><span class="hs-identifier hs-var">lab</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-53"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679739517"><span class="annot"><span class="annottext">grabbed :: [Finite n]
+</span><a href="#local-6989586621679739517"><span class="hs-identifier hs-var">grabbed</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679739516"><span class="annot"><span class="annottext">lab' :: Finite n
+</span><a href="#local-6989586621679739516"><span class="hs-identifier hs-var">lab'</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n -&gt; m ([Finite n], Finite n)
+</span><a href="#local-6989586621679739515"><span class="hs-identifier hs-var">pullN</span></a></span><span> </span><span class="annot"><span class="hs-number">3</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739518"><span class="hs-identifier hs-var">lab</span></a></span><span>
+</span><span id="line-54"></span><span>    </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; Finite n -&gt; m ()
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739519"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739518"><span class="hs-identifier hs-var">lab</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739516"><span class="hs-identifier hs-var">lab'</span></a></span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679739513"><span class="annot"><span class="annottext">target :: Finite n
+</span><a href="#local-6989586621679739513"><span class="hs-identifier hs-var hs-var">target</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; Bool)
+-&gt; (Finite n -&gt; Finite n) -&gt; Finite n -&gt; Finite n
+forall a. (a -&gt; Bool) -&gt; (a -&gt; a) -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">until</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n -&gt; [Finite n] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`notElem`</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+</span><a href="#local-6989586621679739517"><span class="hs-identifier hs-var">grabbed</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Finite n
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">subtract</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739518"><span class="hs-identifier hs-var">lab</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Finite n
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>    </span><span id="local-6989586621679739509"><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739509"><span class="hs-identifier hs-var">aftertarg</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; m (Finite n)
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; m a
+</span><span class="hs-identifier hs-var">MV.read</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739519"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739513"><span class="hs-identifier hs-var">target</span></a></span><span>
+</span><span id="line-57"></span><span>    </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; Finite n -&gt; m ()
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739519"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739513"><span class="hs-identifier hs-var">target</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Finite n] -&gt; Finite n
+forall a. [a] -&gt; a
+</span><span class="hs-identifier hs-var">head</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+</span><a href="#local-6989586621679739517"><span class="hs-identifier hs-var">grabbed</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; Finite n -&gt; m ()
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739519"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Finite n] -&gt; Finite n
+forall a. [a] -&gt; a
+</span><span class="hs-identifier hs-var">last</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+</span><a href="#local-6989586621679739517"><span class="hs-identifier hs-var">grabbed</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739509"><span class="hs-identifier hs-var">aftertarg</span></a></span><span>
+</span><span id="line-59"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739516"><span class="hs-identifier hs-var">lab'</span></a></span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-61"></span><span>    </span><span class="annot"><a href="#local-6989586621679739515"><span class="hs-identifier hs-type">pullN</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679739616"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739617"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>    </span><span id="local-6989586621679739515"><span class="annot"><span class="annottext">pullN :: Int -&gt; Finite n -&gt; m ([Finite n], Finite n)
+</span><a href="#local-6989586621679739515"><span class="hs-identifier hs-var hs-var">pullN</span></a></span></span><span> </span><span id="local-6989586621679739506"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679739506"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679739505"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679739505"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-63"></span><span>      </span><span id="local-6989586621679739504"><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739504"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; m (Finite n)
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; m a
+</span><span class="hs-identifier hs-var">MV.read</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739519"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739505"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-64"></span><span>      </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739506"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-65"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">([Finite n], Finite n) -&gt; m ([Finite n], Finite n)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739504"><span class="hs-identifier hs-var">j</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">([Finite n] -&gt; [Finite n])
+-&gt; ([Finite n], Finite n) -&gt; ([Finite n], Finite n)
+forall (p :: * -&gt; * -&gt; *) a b c.
+Bifunctor p =&gt;
+(a -&gt; b) -&gt; p a c -&gt; p b c
+</span><span class="hs-identifier hs-var">first</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739504"><span class="hs-identifier hs-var">j</span></a></span><span class="annot"><span class="annottext">Finite n -&gt; [Finite n] -&gt; [Finite n]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(([Finite n], Finite n) -&gt; ([Finite n], Finite n))
+-&gt; m ([Finite n], Finite n) -&gt; m ([Finite n], Finite n)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n -&gt; m ([Finite n], Finite n)
+</span><a href="#local-6989586621679739515"><span class="hs-identifier hs-var">pullN</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739506"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739504"><span class="hs-identifier hs-var">j</span></a></span><span>
+</span><span id="line-67"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#step"><span class="hs-pragma hs-type">step</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span id="local-6989586621679739589"><span id="local-6989586621679739590"><span id="local-6989586621679739591"><span class="annot"><a href="AOC.Challenge.Day23.html#initialize"><span class="hs-identifier hs-type">initialize</span></a></span><span>
+</span><span id="line-70"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679739591"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679739590"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679739590"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><a href="#local-6989586621679739589"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Vector</span></span><span> </span><span class="annot"><a href="#local-6989586621679739591"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739591"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679739590"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739591"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739591"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739589"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>      </span><span class="hs-comment">-- ^ initial pointer</span></span></span></span><span>
+</span><span id="line-73"></span><span id="initialize"><span class="annot"><span class="annottext">initialize :: Vector n (Finite n) -&gt; m (Finite n, CrabState n s)
+</span><a href="AOC.Challenge.Day23.html#initialize"><span class="hs-identifier hs-var hs-var">initialize</span></a></span></span><span> </span><span id="local-6989586621679739501"><span class="annot"><span class="annottext">v0 :: Vector n (Finite n)
+</span><a href="#local-6989586621679739501"><span class="hs-identifier hs-var">v0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-74"></span><span>    </span><span id="local-6989586621679739500"><span class="annot"><span class="annottext">MVector n s (Finite n)
+</span><a href="#local-6989586621679739500"><span class="hs-identifier hs-var">csRight</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">m (MVector n s (Finite n))
+forall (n :: Nat) (m :: * -&gt; *) a.
+(KnownNat n, PrimMonad m) =&gt;
+m (MVector n (PrimState m) a)
+</span><span class="hs-identifier hs-var">MV.new</span></span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><span class="annottext">[Finite n] -&gt; (Finite n -&gt; m ()) -&gt; m ()
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Foldable t, Applicative f) =&gt;
+t a -&gt; (a -&gt; f b) -&gt; f ()
+</span><span class="hs-identifier hs-var">for_</span></span><span> </span><span class="annot"><span class="annottext">[Finite n]
+forall (n :: Nat). KnownNat n =&gt; [Finite n]
+</span><span class="hs-identifier hs-var">finites</span></span><span> </span><span class="annot"><span class="annottext">((Finite n -&gt; m ()) -&gt; m ()) -&gt; (Finite n -&gt; m ()) -&gt; m ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679739498"><span class="annot"><span class="annottext">i :: Finite n
+</span><a href="#local-6989586621679739498"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-76"></span><span>      </span><span class="annot"><span class="annottext">MVector n (PrimState m) (Finite n) -&gt; Finite n -&gt; Finite n -&gt; m ()
+forall (n :: Nat) (m :: * -&gt; *) a.
+PrimMonad m =&gt;
+MVector n (PrimState m) a -&gt; Finite n -&gt; a -&gt; m ()
+</span><span class="hs-identifier hs-var">MV.write</span></span><span> </span><span class="annot"><span class="annottext">MVector n s (Finite n)
+MVector n (PrimState m) (Finite n)
+</span><a href="#local-6989586621679739500"><span class="hs-identifier hs-var">csRight</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector n (Finite n)
+</span><a href="#local-6989586621679739501"><span class="hs-identifier hs-var">v0</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n (Finite n) -&gt; Finite n -&gt; Finite n
+forall (n :: Nat) a. Vector n a -&gt; Finite n -&gt; a
+</span><span class="hs-operator hs-var">`V.index`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739498"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Finite n -&gt; Finite n
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Vector n (Finite n)
+</span><a href="#local-6989586621679739501"><span class="hs-identifier hs-var">v0</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n (Finite n) -&gt; Finite n -&gt; Finite n
+forall (n :: Nat) a. Vector n a -&gt; Finite n -&gt; a
+</span><span class="hs-operator hs-var">`V.index`</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739498"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679739496"><span class="annot"><span class="annottext">i0 :: Finite n
+</span><a href="#local-6989586621679739496"><span class="hs-identifier hs-var hs-var">i0</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector n (Finite n)
+</span><a href="#local-6989586621679739501"><span class="hs-identifier hs-var">v0</span></a></span><span> </span><span class="annot"><span class="annottext">Vector n (Finite n) -&gt; Finite n -&gt; Finite n
+forall (n :: Nat) a. Vector n a -&gt; Finite n -&gt; a
+</span><span class="hs-operator hs-var">`V.index`</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><span class="annottext">(Finite n, CrabState n s) -&gt; m (Finite n, CrabState n s)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739496"><span class="hs-identifier hs-var">i0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">CrabState :: forall (n :: Nat) s. MVector n s (Finite n) -&gt; CrabState n s
+</span><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type hs-type">CrabState</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#initialize"><span class="hs-pragma hs-type">initialize</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span id="local-6989586621679739586"><span id="local-6989586621679739587"><span id="local-6989586621679739588"><span class="annot"><a href="AOC.Challenge.Day23.html#run"><span class="hs-identifier hs-type">run</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679739588"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimMonad</span></span><span> </span><span class="annot"><a href="#local-6989586621679739587"><span class="hs-identifier hs-type">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PrimState</span></span><span> </span><span class="annot"><a href="#local-6989586621679739587"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="annot"><span class="hs-glyph hs-type">~</span></span><span> </span><span class="annot"><a href="#local-6989586621679739586"><span class="hs-identifier hs-type">s</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-83"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739588"><span class="hs-identifier hs-type">n</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#CrabState"><span class="hs-identifier hs-type">CrabState</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739588"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679739586"><span class="hs-identifier hs-type">s</span></a></span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679739587"><span class="hs-identifier hs-type">m</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span></span></span></span><span>
+</span><span id="line-86"></span><span id="run"><span class="annot"><span class="annottext">run :: Int -&gt; Finite n -&gt; CrabState n s -&gt; m ()
+</span><a href="AOC.Challenge.Day23.html#run"><span class="hs-identifier hs-var hs-var">run</span></a></span></span><span> </span><span id="local-6989586621679739493"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679739493"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679739492"><span class="annot"><span class="annottext">i0 :: Finite n
+</span><a href="#local-6989586621679739492"><span class="hs-identifier hs-var">i0</span></a></span></span><span> </span><span id="local-6989586621679739491"><span class="annot"><span class="annottext">cs :: CrabState n s
+</span><a href="#local-6989586621679739491"><span class="hs-identifier hs-var">cs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n -&gt; m ()
+</span><a href="#local-6989586621679739490"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739492"><span class="hs-identifier hs-var">i0</span></a></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-keyword">where</span><span>
+</span><span id="line-88"></span><span>    </span><span id="local-6989586621679739490"><span class="annot"><span class="annottext">go :: Int -&gt; Finite n -&gt; m ()
+</span><a href="#local-6989586621679739490"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679739489"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739489"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679739488"><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739488"><span class="hs-identifier hs-var">i</span></a></span></span><span>
+</span><span id="line-89"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739489"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739493"><span class="hs-identifier hs-var">n</span></a></span><span>    </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">() -&gt; m ()
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-90"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Finite n -&gt; m ()
+</span><a href="#local-6989586621679739490"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679739489"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Finite n -&gt; m ()) -&gt; m (Finite n) -&gt; m ()
+forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; m a -&gt; m b
+</span><span class="hs-operator hs-var">=&lt;&lt;</span></span><span> </span><span class="annot"><span class="annottext">CrabState n s -&gt; Finite n -&gt; m (Finite n)
+forall (n :: Nat) (m :: * -&gt; *) s.
+(KnownNat n, PrimMonad m, PrimState m ~ s) =&gt;
+CrabState n s -&gt; Finite n -&gt; m (Finite n)
+</span><a href="AOC.Challenge.Day23.html#step"><span class="hs-identifier hs-var">step</span></a></span><span> </span><span class="annot"><span class="annottext">CrabState n s
+</span><a href="#local-6989586621679739491"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="annottext">Finite n
+</span><a href="#local-6989586621679739488"><span class="hs-identifier hs-var">i</span></a></span><span>
+</span><span id="line-91"></span><span>    </span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="#local-6989586621679739490"><span class="hs-pragma hs-type">go</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-92"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day23.html#run"><span class="hs-pragma hs-type">run</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="annot"><a href="AOC.Challenge.Day23.html#day23a"><span class="hs-identifier hs-type">day23a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Vector</span></span><span> </span><span class="annot"><span class="hs-number">9</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">9</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
+</span><span id="line-96"></span><span id="day23a"><span class="annot"><span class="annottext">day23a :: Vector 9 (Finite 9) :~&gt; [Int]
 </span><a href="AOC.Challenge.Day23.html#day23a"><span class="hs-identifier hs-var hs-var">day23a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-50"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; Maybe String
+</span><span id="line-97"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Vector 9 (Finite 9))
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. KnownNat 9 =&gt; [a] -&gt; Maybe (Vector 9 a)
+forall (n :: Nat) a. KnownNat n =&gt; [a] -&gt; Maybe (Vector n a)
+</span><span class="hs-identifier hs-var">V.fromList</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-number">9</span></span><span> </span><span class="annot"><span class="annottext">([Finite 9] -&gt; Maybe (Vector 9 (Finite 9)))
+-&gt; (String -&gt; Maybe [Finite 9])
+-&gt; String
+-&gt; Maybe (Vector 9 (Finite 9))
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Maybe (Finite 9)) -&gt; String -&gt; Maybe [Finite 9]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Maybe (Finite 9)
+forall (n :: Nat). KnownNat n =&gt; Char -&gt; Maybe (Finite n)
+</span><a href="AOC.Challenge.Day23.html#toFin"><span class="hs-identifier hs-var">toFin</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: [Int] -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Char) -&gt; [Int] -&gt; String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Char
+</span><span class="hs-identifier hs-var">intToDigit</span></span><span>
+</span><span id="line-99"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Vector 9 (Finite 9) -&gt; Maybe [Int]
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679739477"><span class="annot"><span class="annottext">v0 :: Vector 9 (Finite 9)
+</span><a href="#local-6989586621679739477"><span class="hs-identifier hs-var">v0</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Maybe [Int]
 forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: String -&gt; String
-</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
-forall a. Show a =&gt; a -&gt; String
-</span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-52"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?dyno::DynoMap) =&gt; String -&gt; Maybe String
-forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-53"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-54"></span><span>
-</span><span id="line-55"></span><span class="annot"><a href="AOC.Challenge.Day23.html#day23b"><span class="hs-identifier hs-type">day23b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier">_</span></span><span>
-</span><span id="line-56"></span><span id="day23b"><span class="annot"><span class="annottext">day23b :: String :~&gt; String
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Maybe [Int]) -&gt; [Int] -&gt; Maybe [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(forall s. ST s [Int]) -&gt; [Int]
+forall a. (forall s. ST s a) -&gt; a
+</span><span class="hs-identifier hs-var">runST</span></span><span> </span><span class="annot"><span class="annottext">((forall s. ST s [Int]) -&gt; [Int])
+-&gt; (forall s. ST s [Int]) -&gt; [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-100"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679739476"><span class="annot"><span class="annottext">i0 :: Finite 9
+</span><a href="#local-6989586621679739476"><span class="hs-identifier hs-var">i0</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679739475"><span class="annot"><span class="annottext">cs :: CrabState 9 s
+</span><a href="#local-6989586621679739475"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector 9 (Finite 9) -&gt; ST s (Finite 9, CrabState 9 s)
+forall (n :: Nat) (m :: * -&gt; *) s.
+(KnownNat n, PrimMonad m, PrimState m ~ s) =&gt;
+Vector n (Finite n) -&gt; m (Finite n, CrabState n s)
+</span><a href="AOC.Challenge.Day23.html#initialize"><span class="hs-identifier hs-var">initialize</span></a></span><span> </span><span class="annot"><span class="annottext">Vector 9 (Finite 9)
+</span><a href="#local-6989586621679739477"><span class="hs-identifier hs-var">v0</span></a></span><span>
+</span><span id="line-101"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Finite 9 -&gt; CrabState 9 s -&gt; ST s ()
+forall (n :: Nat) (m :: * -&gt; *) s.
+(KnownNat n, PrimMonad m, PrimState m ~ s) =&gt;
+Int -&gt; Finite n -&gt; CrabState n s -&gt; m ()
+</span><a href="AOC.Challenge.Day23.html#run"><span class="hs-identifier hs-var">run</span></a></span><span> </span><span class="annot"><span class="hs-number">100</span></span><span> </span><span class="annot"><span class="annottext">Finite 9
+</span><a href="#local-6989586621679739476"><span class="hs-identifier hs-var">i0</span></a></span><span> </span><span class="annot"><span class="annottext">CrabState 9 s
+</span><a href="#local-6989586621679739475"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-102"></span><span>        </span><span class="annot"><span class="annottext">Pipe () Void Any (ST s) [Int] -&gt; ST s [Int]
+forall (m :: * -&gt; *) u a. Monad m =&gt; Pipe () Void u m a -&gt; m a
+</span><span class="hs-identifier hs-var">C.runPipe</span></span><span> </span><span class="annot"><span class="annottext">(Pipe () Void Any (ST s) [Int] -&gt; ST s [Int])
+-&gt; Pipe () Void Any (ST s) [Int] -&gt; ST s [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CrabState 9 s -&gt; Finite 9 -&gt; Pipe () (Finite 9) Any (ST s) ()
+forall (m :: * -&gt; *) s (n :: Nat) i u.
+(PrimMonad m, PrimState m ~ s) =&gt;
+CrabState n s -&gt; Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="AOC.Challenge.Day23.html#sourceCrabState"><span class="hs-identifier hs-var">sourceCrabState</span></a></span><span> </span><span class="annot"><span class="annottext">CrabState 9 s
+</span><a href="#local-6989586621679739475"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-103"></span><span>               </span><span class="annot"><span class="annottext">Pipe () (Finite 9) Any (ST s) ()
+-&gt; Pipe (Finite 9) Void () (ST s) [Int]
+-&gt; Pipe () Void Any (ST s) [Int]
+forall (m :: * -&gt; *) a b u v c r.
+Monad m =&gt;
+Pipe a b u m v -&gt; Pipe b c v m r -&gt; Pipe a c u m r
+</span><span class="hs-operator hs-var">C..|</span></span><span> </span><span class="annot"><span class="annottext">(Finite 9 -&gt; Int) -&gt; Pipe (Finite 9) Int () (ST s) ()
+forall i o u (m :: * -&gt; *). (i -&gt; o) -&gt; Pipe i o u m u
+</span><span class="hs-identifier hs-var">C.map</span></span><span> </span><span class="annot"><span class="annottext">Finite 9 -&gt; Int
+forall (n :: Nat). Finite n -&gt; Int
+</span><a href="AOC.Challenge.Day23.html#fromFin"><span class="hs-identifier hs-var">fromFin</span></a></span><span>
+</span><span id="line-104"></span><span>               </span><span class="annot"><span class="annottext">Pipe (Finite 9) Int () (ST s) ()
+-&gt; Pipe Int Void () (ST s) [Int]
+-&gt; Pipe (Finite 9) Void () (ST s) [Int]
+forall (m :: * -&gt; *) a b u v c r.
+Monad m =&gt;
+Pipe a b u m v -&gt; Pipe b c v m r -&gt; Pipe a c u m r
+</span><span class="hs-operator hs-var">C..|</span></span><span> </span><span class="annot"><span class="annottext">Pipe Int Void () (ST s) [Int]
+forall i o u (m :: * -&gt; *). Pipe i o u m [i]
+</span><span class="hs-identifier hs-var">C.sinkList</span></span><span>
+</span><span id="line-105"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-106"></span><span>
+</span><span id="line-107"></span><span class="annot"><a href="AOC.Challenge.Day23.html#day23b"><span class="hs-identifier hs-type">day23b</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Vector</span></span><span> </span><span class="annot"><span class="hs-number">1000000</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">1000000</span></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span>
+</span><span id="line-108"></span><span id="day23b"><span class="annot"><span class="annottext">day23b :: Vector 1000000 (Finite 1000000) :~&gt; [Int]
 </span><a href="AOC.Challenge.Day23.html#day23b"><span class="hs-identifier hs-var hs-var">day23b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
 </span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
-</span><span id="line-57"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String :~&gt; String) -&gt; String -&gt; Maybe String
-forall a b. (a :~&gt; b) -&gt; String -&gt; Maybe a
-</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var hs-var">sParse</span></a></span><span> </span><span class="annot"><span class="annottext">String :~&gt; String
-</span><a href="AOC.Challenge.Day23.html#day23a"><span class="hs-identifier hs-var">day23a</span></a></span><span>
-</span><span id="line-58"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: String -&gt; String
-</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">String -&gt; String
+</span><span id="line-109"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Vector 1000000 (Finite 1000000))
+</span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Finite 1000000] -&gt; Maybe (Vector 1000000 (Finite 1000000))
+forall (n :: Nat) a. KnownNat n =&gt; [a] -&gt; Maybe (Vector n a)
+</span><span class="hs-identifier hs-var">V.fromList</span></span><span> </span><span class="annot"><span class="annottext">([Finite 1000000] -&gt; Maybe (Vector 1000000 (Finite 1000000)))
+-&gt; ([Finite 1000000] -&gt; [Finite 1000000])
+-&gt; [Finite 1000000]
+-&gt; Maybe (Vector 1000000 (Finite 1000000))
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Finite 1000000] -&gt; [Finite 1000000] -&gt; [Finite 1000000]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">9</span></span><span> </span><span class="hs-glyph">..</span><span> </span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">([Finite 1000000] -&gt; Maybe (Vector 1000000 (Finite 1000000)))
+-&gt; (String -&gt; Maybe [Finite 1000000])
+-&gt; String
+-&gt; Maybe (Vector 1000000 (Finite 1000000))
+forall (m :: * -&gt; *) b c a.
+Monad m =&gt;
+(b -&gt; m c) -&gt; (a -&gt; m b) -&gt; a -&gt; m c
+</span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Maybe (Finite 1000000))
+-&gt; String -&gt; Maybe [Finite 1000000]
+forall (t :: * -&gt; *) (f :: * -&gt; *) a b.
+(Traversable t, Applicative f) =&gt;
+(a -&gt; f b) -&gt; t a -&gt; f (t b)
+</span><span class="hs-identifier hs-var">traverse</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Maybe (Finite 1000000)
+forall (n :: Nat). KnownNat n =&gt; Char -&gt; Maybe (Finite n)
+</span><a href="AOC.Challenge.Day23.html#toFin"><span class="hs-identifier hs-var">toFin</span></a></span><span>
+</span><span id="line-110"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sShow :: [Int] -&gt; String
+</span><a href="AOC.Solver.html#sShow"><span class="hs-identifier hs-var">sShow</span></a></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; String
 forall a. Show a =&gt; a -&gt; String
-</span><span class="hs-identifier hs-var">show</span></span><span>
-</span><span id="line-59"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe String
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(?dyno::DynoMap) =&gt; String -&gt; Maybe String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; String) -&gt; ([Int] -&gt; Int) -&gt; [Int] -&gt; String
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Int
+forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
+</span><span class="hs-identifier hs-var">product</span></span><span>
+</span><span id="line-111"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; Vector 1000000 (Finite 1000000) -&gt; Maybe [Int]
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679739466"><span class="annot"><span class="annottext">v0 :: Vector 1000000 (Finite 1000000)
+</span><a href="#local-6989586621679739466"><span class="hs-identifier hs-var">v0</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Maybe [Int]
 forall a. a -&gt; Maybe a
-</span><span class="hs-identifier hs-var">Just</span></span><span>
-</span><span id="line-60"></span><span>    </span><span class="hs-special">}</span><span>
-</span><span id="line-61"></span></pre></body></html>
+</span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Maybe [Int]) -&gt; [Int] -&gt; Maybe [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(forall s. ST s [Int]) -&gt; [Int]
+forall a. (forall s. ST s a) -&gt; a
+</span><span class="hs-identifier hs-var">runST</span></span><span> </span><span class="annot"><span class="annottext">((forall s. ST s [Int]) -&gt; [Int])
+-&gt; (forall s. ST s [Int]) -&gt; [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-112"></span><span>        </span><span class="hs-special">(</span><span id="local-6989586621679739465"><span class="annot"><span class="annottext">i0 :: Finite 1000000
+</span><a href="#local-6989586621679739465"><span class="hs-identifier hs-var">i0</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679739464"><span class="annot"><span class="annottext">cs :: CrabState 1000000 s
+</span><a href="#local-6989586621679739464"><span class="hs-identifier hs-var">cs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Vector 1000000 (Finite 1000000)
+-&gt; ST s (Finite 1000000, CrabState 1000000 s)
+forall (n :: Nat) (m :: * -&gt; *) s.
+(KnownNat n, PrimMonad m, PrimState m ~ s) =&gt;
+Vector n (Finite n) -&gt; m (Finite n, CrabState n s)
+</span><a href="AOC.Challenge.Day23.html#initialize"><span class="hs-identifier hs-var">initialize</span></a></span><span> </span><span class="annot"><span class="annottext">Vector 1000000 (Finite 1000000)
+</span><a href="#local-6989586621679739466"><span class="hs-identifier hs-var">v0</span></a></span><span>
+</span><span id="line-113"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; Finite 1000000 -&gt; CrabState 1000000 s -&gt; ST s ()
+forall (n :: Nat) (m :: * -&gt; *) s.
+(KnownNat n, PrimMonad m, PrimState m ~ s) =&gt;
+Int -&gt; Finite n -&gt; CrabState n s -&gt; m ()
+</span><a href="AOC.Challenge.Day23.html#run"><span class="hs-identifier hs-var">run</span></a></span><span> </span><span class="annot"><span class="hs-number">10000000</span></span><span> </span><span class="annot"><span class="annottext">Finite 1000000
+</span><a href="#local-6989586621679739465"><span class="hs-identifier hs-var">i0</span></a></span><span> </span><span class="annot"><span class="annottext">CrabState 1000000 s
+</span><a href="#local-6989586621679739464"><span class="hs-identifier hs-var">cs</span></a></span><span>
+</span><span id="line-114"></span><span>        </span><span class="annot"><span class="annottext">Pipe () Void Any (ST s) [Int] -&gt; ST s [Int]
+forall (m :: * -&gt; *) u a. Monad m =&gt; Pipe () Void u m a -&gt; m a
+</span><span class="hs-identifier hs-var">C.runPipe</span></span><span> </span><span class="annot"><span class="annottext">(Pipe () Void Any (ST s) [Int] -&gt; ST s [Int])
+-&gt; Pipe () Void Any (ST s) [Int] -&gt; ST s [Int]
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CrabState 1000000 s
+-&gt; Finite 1000000 -&gt; Pipe () (Finite 1000000) Any (ST s) ()
+forall (m :: * -&gt; *) s (n :: Nat) i u.
+(PrimMonad m, PrimState m ~ s) =&gt;
+CrabState n s -&gt; Finite n -&gt; Pipe i (Finite n) u m ()
+</span><a href="AOC.Challenge.Day23.html#sourceCrabState"><span class="hs-identifier hs-var">sourceCrabState</span></a></span><span> </span><span class="annot"><span class="annottext">CrabState 1000000 s
+</span><a href="#local-6989586621679739464"><span class="hs-identifier hs-var">cs</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-115"></span><span>               </span><span class="annot"><span class="annottext">Pipe () (Finite 1000000) Any (ST s) ()
+-&gt; Pipe (Finite 1000000) Void () (ST s) [Int]
+-&gt; Pipe () Void Any (ST s) [Int]
+forall (m :: * -&gt; *) a b u v c r.
+Monad m =&gt;
+Pipe a b u m v -&gt; Pipe b c v m r -&gt; Pipe a c u m r
+</span><span class="hs-operator hs-var">C..|</span></span><span> </span><span class="annot"><span class="annottext">(Finite 1000000 -&gt; Int) -&gt; Pipe (Finite 1000000) Int () (ST s) ()
+forall i o u (m :: * -&gt; *). (i -&gt; o) -&gt; Pipe i o u m u
+</span><span class="hs-identifier hs-var">C.map</span></span><span> </span><span class="annot"><span class="annottext">Finite 1000000 -&gt; Int
+forall (n :: Nat). Finite n -&gt; Int
+</span><a href="AOC.Challenge.Day23.html#fromFin"><span class="hs-identifier hs-var">fromFin</span></a></span><span>
+</span><span id="line-116"></span><span>               </span><span class="annot"><span class="annottext">Pipe (Finite 1000000) Int () (ST s) ()
+-&gt; Pipe Int Void () (ST s) [Int]
+-&gt; Pipe (Finite 1000000) Void () (ST s) [Int]
+forall (m :: * -&gt; *) a b u v c r.
+Monad m =&gt;
+Pipe a b u m v -&gt; Pipe b c v m r -&gt; Pipe a c u m r
+</span><span class="hs-operator hs-var">C..|</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Pipe Int Int () (ST s) ()
+forall i u (m :: * -&gt; *). Int -&gt; Pipe i i u m ()
+</span><span class="hs-identifier hs-var">C.take</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span>
+</span><span id="line-117"></span><span>               </span><span class="annot"><span class="annottext">Pipe Int Int () (ST s) ()
+-&gt; Pipe Int Void () (ST s) [Int] -&gt; Pipe Int Void () (ST s) [Int]
+forall (m :: * -&gt; *) a b u v c r.
+Monad m =&gt;
+Pipe a b u m v -&gt; Pipe b c v m r -&gt; Pipe a c u m r
+</span><span class="hs-operator hs-var">C..|</span></span><span> </span><span class="annot"><span class="annottext">Pipe Int Void () (ST s) [Int]
+forall i o u (m :: * -&gt; *). Pipe i o u m [i]
+</span><span class="hs-identifier hs-var">C.sinkList</span></span><span>
+</span><span id="line-118"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-119"></span><span>
+</span><span id="line-120"></span><span id="local-6989586621679739599"><span class="annot"><a href="AOC.Challenge.Day23.html#toFin"><span class="hs-identifier hs-type">toFin</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">KnownNat</span></span><span> </span><span class="annot"><a href="#local-6989586621679739599"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739599"><span class="hs-identifier hs-type">n</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-121"></span><span id="toFin"><span class="annot"><span class="annottext">toFin :: Char -&gt; Maybe (Finite n)
+</span><a href="AOC.Challenge.Day23.html#toFin"><span class="hs-identifier hs-var hs-var">toFin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Maybe (Finite n)
+forall (n :: Nat). KnownNat n =&gt; Integer -&gt; Maybe (Finite n)
+</span><span class="hs-identifier hs-var">packFinite</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Maybe (Finite n))
+-&gt; (Char -&gt; Integer) -&gt; Char -&gt; Maybe (Finite n)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier hs-var">subtract</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer) -&gt; (Char -&gt; Integer) -&gt; Char -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Integer
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Integer) -&gt; (Char -&gt; Int) -&gt; Char -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
+</span><span class="hs-identifier hs-var">digitToInt</span></span><span>
+</span><span id="line-122"></span><span>
+</span><span id="line-123"></span><span id="local-6989586621679739565"><span class="annot"><a href="AOC.Challenge.Day23.html#fromFin"><span class="hs-identifier hs-type">fromFin</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><a href="#local-6989586621679739565"><span class="hs-identifier hs-type">n</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span></span><span>
+</span><span id="line-124"></span><span id="fromFin"><span class="annot"><span class="annottext">fromFin :: Finite n -&gt; Int
+</span><a href="AOC.Challenge.Day23.html#fromFin"><span class="hs-identifier hs-var hs-var">fromFin</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Int) -&gt; (Finite n -&gt; Integer) -&gt; Finite n -&gt; Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Integer -&gt; Integer -&gt; Integer
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; Integer)
+-&gt; (Finite n -&gt; Integer) -&gt; Finite n -&gt; Integer
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Finite n -&gt; Integer
+forall (n :: Nat). Finite n -&gt; Integer
+</span><span class="hs-identifier hs-var">getFinite</span></span><span>
+</span><span id="line-125"></span></pre></body></html>

@@ -10,6 +10,38 @@
 @package aoc2020
 @version 0.1.0.0
 
+module AOC.Common.DLLC
+data Node s a
+Node :: MutVar s (Node s a) -> a -> MutVar s (Node s a) -> Node s a
+[nLeft] :: Node s a -> MutVar s (Node s a)
+[nItem] :: Node s a -> a
+[nRight] :: Node s a -> MutVar s (Node s a)
+newtype List s a
+List :: MutVar s (MutVar s (Node s a)) -> List s a
+[getList] :: List s a -> MutVar s (MutVar s (Node s a))
+cloneTop :: (PrimMonad m, PrimState m ~ s) => List s a -> m (List s a)
+singleton :: (PrimMonad m, PrimState m ~ s) => a -> m (List s a)
+fromList :: (PrimMonad m, PrimState m ~ s) => NonEmpty a -> m (List s a)
+sourceRight :: (PrimMonad m, PrimState m ~ s) => List s a -> Pipe i a u m ()
+sourceRightForever :: (PrimMonad m, PrimState m ~ s) => List s a -> Pipe i a u m r
+sourceLeft :: (PrimMonad m, PrimState m ~ s) => List s a -> Pipe i a u m ()
+sourceLeftForever :: (PrimMonad m, PrimState m ~ s) => List s a -> Pipe i a u m r
+sourceZip :: (PrimMonad m, PrimState m ~ s) => List s a -> Pipe i (a, a) u m ()
+readOut :: (PrimMonad m, PrimState m ~ s) => List s a -> m [a]
+readFocus :: (PrimMonad m, PrimState m ~ s) => List s a -> m a
+modifyFocus :: (PrimMonad m, PrimState m ~ s) => (a -> a) -> List s a -> m ()
+readAt :: (PrimMonad m, PrimState m ~ s) => Int -> List s a -> m a
+seek :: (PrimMonad m, PrimState m ~ s) => (a -> Bool) -> List s a -> m (Maybe Int)
+insertRight :: (PrimMonad m, PrimState m ~ s) => a -> List s a -> m ()
+insertLeft :: (PrimMonad m, PrimState m ~ s) => a -> List s a -> m ()
+rotateRight :: (PrimMonad m, PrimState m ~ s) => List s a -> m ()
+rotateLeft :: (PrimMonad m, PrimState m ~ s) => List s a -> m ()
+rotateN :: (PrimMonad m, PrimState m ~ s) => Int -> List s a -> m ()
+popRight :: (PrimMonad m, PrimState m ~ s) => List s a -> m a
+popLeft :: (PrimMonad m, PrimState m ~ s) => List s a -> m a
+instance GHC.Classes.Eq (AOC.Common.DLLC.List s a)
+instance GHC.Classes.Eq a => GHC.Classes.Eq (AOC.Common.DLLC.Node s a)
+
 module AOC.Common.FinitarySet
 newtype FinitarySet a
 FinitarySet :: Vector (Cardinality a) Bit -> FinitarySet a
@@ -455,6 +487,7 @@ getDown :: Down a -> a
 toNatural :: Integral a => a -> Maybe Natural
 factorial :: Int -> Int
 mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
+symDiff :: Ord a => Set a -> Set a -> Set a
 
 -- | Use a stream of tokens <tt>a</tt> as the underlying parser stream.
 --   Note that error messages for parser errors are going necessarily to be
@@ -7856,6 +7889,7 @@ nextMatch :: MonadParsec e s m => m a -> m a
 toNatural :: Integral a => a -> Maybe Natural
 factorial :: Int -> Int
 mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
+symDiff :: Ord a => Set a -> Set a -> Set a
 anaM :: (Monad m, Corecursive t, Traversable (Base t)) => (a -> m (Base t a)) -> a -> m t
 
 -- | Errors that might happen when running a <a>:~&gt;</a> on some input.
@@ -7977,42 +8011,6 @@ data NEIntSet
 module AOC.Challenge.Day25
 
 
--- | Day 24. See <a>AOC.Solver</a> for the types used in this module!
---   
---   After completing the challenge, it is recommended to:
---   
---   <ul>
---   <li>Replace <a>AOC.Prelude</a> imports to specific modules (with
---   explicit imports) for readability.</li>
---   <li>Remove the <tt>-Wno-unused-imports</tt> and
---   <tt>-Wno-unused-top-binds</tt> pragmas.</li>
---   <li>Replace the partial type signatures underscores in the solution
---   types <tt>_ :~&gt; _</tt> with the actual types of inputs and outputs
---   of the solution. You can delete the type signatures completely and GHC
---   will recommend what should go in place of the underscores.</li>
---   </ul>
-module AOC.Challenge.Day24
-day24a :: _ :~> _
-day24b :: _ :~> _
-
-
--- | Day 23. See <a>AOC.Solver</a> for the types used in this module!
---   
---   After completing the challenge, it is recommended to:
---   
---   <ul>
---   <li>Replace <a>AOC.Prelude</a> imports to specific modules (with
---   explicit imports) for readability.</li>
---   <li>Remove the <tt>-Wno-unused-imports</tt> and
---   <tt>-Wno-unused-top-binds</tt> pragmas.</li>
---   <li>Replace the partial type signatures underscores in the solution
---   types <tt>_ :~&gt; _</tt> with the actual types of inputs and outputs
---   of the solution. You can delete the type signatures completely and GHC
---   will recommend what should go in place of the underscores.</li>
---   </ul>
-module AOC.Challenge.Day23
-
-
 -- | Template Haskell for discovering all named challenges in a given
 --   directory.
 module AOC.Discover
@@ -8066,6 +8064,18 @@ instance GHC.Classes.Ord AOC.Discover.ChallengeSpec
 instance GHC.Classes.Eq AOC.Discover.ChallengeSpec
 instance GHC.Show.Show AOC.Discover.ChallengeSpec
 instance Data.String.IsString AOC.Discover.ChallengeSpec
+
+
+-- | Day 24. See <a>AOC.Solver</a> for the types used in this module!
+module AOC.Challenge.Day24
+day24a :: [[HexDirection]] :~> Int
+day24b :: [[HexDirection]] :~> Int
+
+
+-- | Day 23. See <a>AOC.Solver</a> for the types used in this module!
+module AOC.Challenge.Day23
+day23a :: Vector 9 (Finite 9) :~> [Int]
+day23b :: Vector 1000000 (Finite 1000000) :~> [Int]
 
 
 -- | Day 22. See <a>AOC.Solver</a> for the types used in this module!
@@ -8400,14 +8410,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2vyf
-mainRunOpts :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf MainRunOpts
-mroActual :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf Bool
-mroBench :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf Bool
-mroInput :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf Bool
-mroSpec :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf TestSpec
-mroTest :: HasMainRunOpts c_a2vyf => Lens' c_a2vyf Bool
+class HasMainRunOpts c_a2Bmk
+mainRunOpts :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk MainRunOpts
+mroActual :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk Bool
+mroBench :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk Bool
+mroInput :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk Bool
+mroSpec :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk TestSpec
+mroTest :: HasMainRunOpts c_a2Bmk => Lens' c_a2Bmk Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8420,10 +8430,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2vFI
-mainViewOpts :: HasMainViewOpts c_a2vFI => Lens' c_a2vFI MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2vFI => Lens' c_a2vFI TestSpec
-mvoWait :: HasMainViewOpts c_a2vFI => Lens' c_a2vFI Bool
+class HasMainViewOpts c_a2BtN
+mainViewOpts :: HasMainViewOpts c_a2BtN => Lens' c_a2BtN MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2BtN => Lens' c_a2BtN TestSpec
+mvoWait :: HasMainViewOpts c_a2BtN => Lens' c_a2BtN Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8448,13 +8458,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2vKg
-mainSubmitOpts :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg Bool
-msoLock :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg Bool
-msoRetry :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg Bool
-msoSpec :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2vKg => Lens' c_a2vKg Bool
+class HasMainSubmitOpts c_a2Byl
+mainSubmitOpts :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl Bool
+msoLock :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl Bool
+msoRetry :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl Bool
+msoSpec :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2Byl => Lens' c_a2Byl Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
