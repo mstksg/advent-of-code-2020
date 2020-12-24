@@ -22,13 +22,16 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day24 (
-    -- day24a
-  -- , day24b
+    day24a
+  , day24b
   ) where
 
 import           AOC.Prelude
 
-import qualified Data.Graph.Inductive           as G
+-- import qualified Data.Graph.Inductive        as G
+import qualified Math.Geometry.Grid             as G
+import qualified Math.Geometry.Grid.Hexagonal   as G
+import qualified Math.Geometry.Grid.HexagonalInternal   as G
 import qualified Data.IntMap                    as IM
 import qualified Data.IntSet                    as IS
 import qualified Data.List.NonEmpty             as NE
@@ -45,16 +48,50 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
+toDirs :: String -> [G.HexDirection]
+toDirs = \case
+    [] -> []
+    'w':ds -> G.West : toDirs ds
+    'e':ds -> G.East : toDirs ds
+    'n':'e':ds -> G.Northeast : toDirs ds
+    'n':'w':ds -> G.Northwest : toDirs ds
+    's':'e':ds -> G.Southeast : toDirs ds
+    's':'w':ds -> G.Southwest : toDirs ds
+
+stepDs :: [G.HexDirection] -> (Int, Int)
+stepDs = go (0,0)
+  where
+    go :: (Int, Int) -> [G.HexDirection] -> (Int, Int)
+    go p [] = p
+    go p (d:ds) = case G.neighbour G.UnboundedHexGrid p d of
+      Just p' -> go p' ds
+      Nothing  -> error "what"
+
 day24a :: _ :~> _
 day24a = MkSol
-    { sParse = Just
+    { sParse = Just . map toDirs . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . M.size . M.filter odd . freqs . map stepDs
     }
+
+type P = (Int, Int)
 
 day24b :: _ :~> _
 day24b = MkSol
-    { sParse = sParse day24a
+    { sParse = Just . map toDirs . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = Just . S.size . (!!! 100) . iterate go . M.keysSet . M.filter odd . freqs . map stepDs
     }
+  where
+    go :: Set P -> Set P
+    go ps = stayAlive <> comeAlive
+      where
+        neighborCounts = M.fromListWith (+)
+          [ (neighb, 1::Int)
+          | p <- S.toList ps
+          , neighb <- G.neighbours G.UnboundedHexGrid p
+          ]
+        stayAlive = M.keysSet . M.filter (\n -> n == 1 || n == 2) $
+                      neighborCounts `M.restrictKeys` ps
+        comeAlive = M.keysSet . M.filter (== 2) $
+                      neighborCounts `M.withoutKeys`  ps

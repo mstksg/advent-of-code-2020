@@ -19,6 +19,13 @@ packages:
   original:
     hackage: megaparsec-8.0.0
 - completed:
+    hackage: grid-7.8.14@sha256:15956664586968bb9bc19444d2db71ddb2bcde859a86d077b050d882ed513611,2045
+    pantry-tree:
+      size: 1926
+      sha256: c8514cd556882df95ef172afb8dfafda17c6eb605d4dbbaff596ca3434725974
+  original:
+    hackage: grid-7.8.14
+- completed:
     hackage: parser-combinators-1.2.1@sha256:16c3490e007ec10b1255a2b36fb483d000156d555269107131241d9e0fa96412,1788
     pantry-tree:
       size: 725

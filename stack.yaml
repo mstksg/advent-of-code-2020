@@ -40,6 +40,7 @@ packages:
 extra-deps:
 - advent-of-code-api-0.2.7.0
 - megaparsec-8.0.0
+- grid-7.8.14
 - parser-combinators-1.2.1
 - finitary-2.0.0.0
 - typelits-witnesses-0.4.0.0

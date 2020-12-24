@@ -132,6 +132,7 @@ library:
   - safe
   - semigroupoids
   - split
+  - grid
   - strict-tuple
   - template-haskell
   - text
