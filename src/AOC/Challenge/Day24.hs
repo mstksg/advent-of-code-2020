@@ -12,15 +12,18 @@ module AOC.Challenge.Day24 (
   , day24b
   ) where
 
-import           AOC.Common                           ((!!!))
+import           AOC.Common                           ((!!!), foldMapParChunk)
 import           AOC.Common.Point                     (Point)
 import           AOC.Solver                           ((:~>)(..))
-import           Data.Bits                            (xor)
-import           Data.Functor                         ((<&>))
+import           Control.DeepSeq                      (NFData)
+import           Data.Coerce                          (coerce)
 import           Data.Map                             (Map)
+import           Data.Semigroup                       (Sum(..))
 import           Data.Set                             (Set)
+import           GHC.Generics                         (Generic)
 import           Linear.V2                            (V2(..))
 import           Math.Geometry.Grid.HexagonalInternal (HexDirection(..))
+import qualified Data.Map.Monoidal.Strict             as MM
 import qualified Data.Map.Strict                      as M
 import qualified Data.Set                             as S
 
@@ -54,9 +57,19 @@ hexOffset = \case
     Southeast -> V2   1 (-1)
     Southwest -> V2   0 (-1)
 
+newtype Xor = Xor { getXor :: Bool }
+  deriving Generic
+instance NFData Xor
+instance Semigroup Xor where
+    Xor x <> Xor y = Xor (x /= y)
+instance Monoid Xor where
+    mempty = Xor False
+
 initialize :: [[HexDirection]] -> Set Point
-initialize = M.keysSet . M.filter id . M.fromListWith xor
-           . map ((,True) . sum . map hexOffset)
+initialize = M.keysSet . M.filter getXor . coerce
+           . foldMapParChunk 125 go
+  where
+    go = MM.MonoidalMap . (`M.singleton` Xor True) . sum . map hexOffset
 
 day24a :: [[HexDirection]] :~> Int
 day24a = MkSol
@@ -76,9 +89,9 @@ step :: Set Point -> Set Point
 step ps = stayAlive <> comeAlive
   where
     neighborCounts :: Map Point Int
-    neighborCounts = M.unionsWith (+) $
-      S.toList ps <&> \p ->
-        M.fromSet (const 1) (neighbors p)
+    neighborCounts = coerce $ foldMapParChunk 75
+        (MM.MonoidalMap . M.fromSet (const (Sum (1 :: Int))) . neighbors)
+        (S.toList ps)
     stayAlive = M.keysSet . M.filter (\n -> n == 1 || n == 2) $
                   neighborCounts `M.restrictKeys` ps
     comeAlive = M.keysSet . M.filter (== 2) $

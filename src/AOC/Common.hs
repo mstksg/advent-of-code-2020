@@ -501,7 +501,7 @@ minimumValNE :: Ord b => NEMap a b -> (a, b)
 minimumValNE = minimumValByNE compare
 
 foldMapParChunk
-    :: (NFData m, Monoid m)
+    :: forall a m. (NFData m, Monoid m)
     => Int      -- ^ chunk size
     -> (a -> m)
     -> [a]
