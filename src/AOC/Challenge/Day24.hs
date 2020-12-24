@@ -12,48 +12,52 @@ module AOC.Challenge.Day24 (
   , day24b
   ) where
 
-import           AOC.Common                           (symDiff, (!!!))
+import           AOC.Common                           ((!!!))
 import           AOC.Common.Point                     (Point)
 import           AOC.Solver                           ((:~>)(..))
+import           Data.Bits                            (xor)
 import           Data.Functor                         ((<&>))
-import           Data.List                            (foldl')
 import           Data.Map                             (Map)
 import           Data.Set                             (Set)
 import           Linear.V2                            (V2(..))
-import           Math.Geometry.Grid.HexagonalInternal (HexDirection)
-import qualified Data.Map                             as M
+import           Math.Geometry.Grid.HexagonalInternal (HexDirection(..))
+import qualified Data.Map.Strict                      as M
 import qualified Data.Set                             as S
 import qualified Math.Geometry.Grid                   as G
-import qualified Math.Geometry.Grid.Hexagonal         as G
-import qualified Math.Geometry.Grid.HexagonalInternal as G
-
-neighbor :: Point -> HexDirection -> Point
-neighbor (V2 x y) = maybe (error "what") (uncurry V2)
-                  . G.neighbour G.UnboundedHexGrid (x, y)
 
 neighbors :: Point -> Set Point
-neighbors (V2 x y) = S.fromList $
-    uncurry V2 <$> G.neighbours G.UnboundedHexGrid (x, y)
+neighbors (V2 x y) = S.fromDistinctAscList
+    [ V2 (x-1) y
+    , V2 (x-1) (y+1)
+    , V2 x     (y-1)
+    , V2 x     (y+1)
+    , V2 (x+1) (y-1)
+    , V2 (x+1) y
+    ]
 
 toDirs :: String -> Maybe [HexDirection]
 toDirs = \case
     [] -> Just []
-    'w':ds -> (G.West :) <$> toDirs ds
-    'e':ds -> (G.East :) <$> toDirs ds
-    'n':'e':ds -> (G.Northeast :) <$> toDirs ds
-    'n':'w':ds -> (G.Northwest :) <$> toDirs ds
-    's':'e':ds -> (G.Southeast :) <$> toDirs ds
-    's':'w':ds -> (G.Southwest :) <$> toDirs ds
+    'w':ds -> (West:) <$> toDirs ds
+    'e':ds -> (East:) <$> toDirs ds
+    'n':'e':ds -> (Northeast:) <$> toDirs ds
+    'n':'w':ds -> (Northwest:) <$> toDirs ds
+    's':'e':ds -> (Southeast:) <$> toDirs ds
+    's':'w':ds -> (Southwest:) <$> toDirs ds
     _ -> Nothing
 
-stepDs :: [HexDirection] -> Point
-stepDs = go 0
-  where
-    go p []     = p
-    go p (d:ds) = go (neighbor p d) ds
+hexOffset :: HexDirection -> Point
+hexOffset = \case
+    West      -> V2 (-1)  0
+    Northwest -> V2 (-1)  1
+    Northeast -> V2   0   1
+    East      -> V2   1   0
+    Southeast -> V2   1 (-1)
+    Southwest -> V2   0 (-1)
 
 initialize :: [[HexDirection]] -> Set Point
-initialize = foldl' symDiff S.empty . map (S.singleton . stepDs)
+initialize = M.keysSet . M.filter id . M.fromListWith xor
+           . map ((,True) . sum . map hexOffset)
 
 day24a :: [[HexDirection]] :~> Int
 day24a = MkSol
@@ -68,7 +72,6 @@ day24b = MkSol
     , sShow  = show
     , sSolve = Just . S.size . (!!! 100) . iterate step . initialize
     }
-  where
 
 step :: Set Point -> Set Point
 step ps = stayAlive <> comeAlive

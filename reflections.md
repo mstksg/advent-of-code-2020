@@ -3799,18 +3799,18 @@ that file instead!
 ```
 >> Day 24a
 benchmarking...
-time                 5.799 ms   (5.535 ms .. 6.139 ms)
-                     0.981 R²   (0.964 R² .. 0.993 R²)
-mean                 5.741 ms   (5.601 ms .. 5.906 ms)
-std dev              466.2 μs   (356.1 μs .. 605.5 μs)
-variance introduced by outliers: 50% (moderately inflated)
+time                 2.356 ms   (2.300 ms .. 2.412 ms)
+                     0.968 R²   (0.896 R² .. 0.999 R²)
+mean                 2.432 ms   (2.346 ms .. 2.639 ms)
+std dev              467.9 μs   (160.4 μs .. 871.1 μs)
+variance introduced by outliers: 88% (severely inflated)
 
 >> Day 24b
 benchmarking...
-time                 730.1 ms   (669.7 ms .. 768.6 ms)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 757.4 ms   (743.2 ms .. 764.7 ms)
-std dev              13.57 ms   (2.511 ms .. 16.94 ms)
+time                 493.1 ms   (411.0 ms .. 582.1 ms)
+                     0.996 R²   (0.985 R² .. 1.000 R²)
+mean                 476.8 ms   (456.5 ms .. 488.2 ms)
+std dev              19.98 ms   (314.3 μs .. 25.91 ms)
 variance introduced by outliers: 19% (moderately inflated)
 ```
 

@@ -134,7 +134,7 @@ cardinalNeighbs :: Point -> [Point]
 cardinalNeighbs p = (p +) <$> [ V2 0 (-1), V2 1 0, V2 0 1, V2 (-1) 0 ]
 
 cardinalNeighbsSet :: Point -> Set Point
-cardinalNeighbsSet p = S.fromAscList . map (p +) $
+cardinalNeighbsSet p = S.fromDistinctAscList . map (p +) $
   [ V2 (-1)   0
   , V2   0  (-1)
   , V2   0    1
