@@ -42,6 +42,7 @@ extra-deps:
 - megaparsec-8.0.0
 - grid-7.8.14
 - parser-combinators-1.2.1
+- mutable-0.2.2.0
 - finitary-2.0.0.0
 - typelits-witnesses-0.4.0.0
 - dependent-sum-0.7.1.0
@@ -52,6 +53,7 @@ extra-deps:
 - barbies-2.0.2.0
 - these-skinny-0.7.4
 - vinyl-0.13.0
+- witherable-0.3.5
 - monoidal-containers-0.6.0.1
 - github: mstksg/vec
   commit: d2dedab44fa49b4ed903fac6b9189c4d62835e1b
