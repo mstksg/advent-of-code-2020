@@ -85,6 +85,7 @@ module AOC.Common (
   , toNatural
   , factorial
   , mapMaybeSet
+  , symDiff
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -829,6 +830,9 @@ factorial n = go 2 1
 
 mapMaybeSet :: Ord b => (a -> Maybe b) -> Set a -> Set b
 mapMaybeSet f = S.fromList . mapMaybe f . S.toList
+
+symDiff :: Ord a => Set a -> Set a -> Set a
+symDiff x y = (x S.\\ y) `S.union` (y S.\\ x)
 
 anaM
     :: (Monad m, R.Corecursive t, Traversable (R.Base t))

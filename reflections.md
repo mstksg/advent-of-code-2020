@@ -42,6 +42,8 @@ Table of Contents
 * [Day 20](#day-20) *(no reflection yet)*
 * [Day 21](#day-21) *(no reflection yet)*
 * [Day 22](#day-22)
+* [Day 23](#day-23) *(no reflection yet)*
+* [Day 24](#day-24) *(no reflection yet)*
 
 Day 1
 ------
@@ -3726,5 +3728,89 @@ std dev              223.2 μs   (195.5 μs .. 250.5 μs)
 variance introduced by outliers: 65% (severely inflated)
 
 * parsing and formatting times excluded
+```
+
+
+
+Day 23
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day23.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d23p]* / *[Code][d23g]* / *[Rendered][d23h]* / *[Standalone Reflection Page][d23r]*
+
+[d23p]: https://adventofcode.com/2020/day/23
+[d23g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day23.hs
+[d23h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day23.html
+[d23r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day23.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 23 Benchmarks
+
+```
+>> Day 23a
+benchmarking...
+time                 29.64 μs   (21.71 μs .. 38.16 μs)
+                     0.734 R²   (0.673 R² .. 0.993 R²)
+mean                 24.31 μs   (22.72 μs .. 28.83 μs)
+std dev              8.875 μs   (3.847 μs .. 17.18 μs)
+variance introduced by outliers: 99% (severely inflated)
+
+* parsing and formatting times excluded
+
+>> Day 23b
+benchmarking...
+time                 10.82 s    (10.25 s .. 11.43 s)
+                     1.000 R²   (NaN R² .. 1.000 R²)
+mean                 10.80 s    (10.67 s .. 10.86 s)
+std dev              95.14 ms   (36.65 ms .. 121.3 ms)
+variance introduced by outliers: 19% (moderately inflated)
+
+* parsing and formatting times excluded
+```
+
+
+
+Day 24
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day24.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d24p]* / *[Code][d24g]* / *[Rendered][d24h]* / *[Standalone Reflection Page][d24r]*
+
+[d24p]: https://adventofcode.com/2020/day/24
+[d24g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day24.hs
+[d24h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day24.html
+[d24r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day24.md
+
+*Reflection not yet written -- please check back later!*
+
+### Day 24 Benchmarks
+
+```
+>> Day 24a
+benchmarking...
+time                 5.067 ms   (2.627 ms .. 6.274 ms)
+                     0.244 R²   (0.022 R² .. 0.967 R²)
+mean                 8.364 ms   (6.856 ms .. 12.90 ms)
+std dev              7.855 ms   (1.435 ms .. 14.83 ms)
+variance introduced by outliers: 97% (severely inflated)
+
+>> Day 24b
+benchmarking...
+time                 747.9 ms   (717.2 ms .. 776.2 ms)
+                     1.000 R²   (0.999 R² .. 1.000 R²)
+mean                 742.5 ms   (736.6 ms .. 747.9 ms)
+std dev              6.312 ms   (5.172 ms .. 7.000 ms)
+variance introduced by outliers: 19% (moderately inflated)
 ```
 
