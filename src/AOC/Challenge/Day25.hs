@@ -22,8 +22,7 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day25 (
-    -- day25a
-  -- , day25b
+    day25a
   ) where
 
 import           AOC.Prelude
@@ -45,16 +44,19 @@ import qualified Text.Megaparsec                as P
 import qualified Text.Megaparsec.Char           as P
 import qualified Text.Megaparsec.Char.Lexer     as PP
 
+trans :: Int -> [Int]
+trans subj = iterate (\y -> (y * subj) `mod` 20201227) subj
+
 day25a :: _ :~> _
 day25a = MkSol
-    { sParse = Just
+    { sParse = Just . (\[x,y] -> (read @Int x, read @Int y)) . lines
     , sShow  = show
-    , sSolve = Just
-    }
-
-day25b :: _ :~> _
-day25b = MkSol
-    { sParse = sParse day25a
-    , sShow  = show
-    , sSolve = Just
+    , sSolve = \(x, y) -> do
+        lpszX <- findIndex (== x) (trans 7)
+        lpszY <- findIndex (== y) (trans 7)
+        let encs = freqs $ do
+              lpsz <- [lpszX, lpszY]
+              val  <- [x,y]
+              pure $ trans val !!! lpsz
+        fst <$> maximumVal encs
     }
