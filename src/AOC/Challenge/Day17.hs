@@ -11,12 +11,17 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
+  , pascals
+  , pascalIx
+  , ixPascal
+  , neighbs
+  , symmer
   ) where
 
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk, sortSizedBy)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
-import           Control.DeepSeq             (force)
+import           Control.DeepSeq             (force, NFData)
 import           Control.Monad               (replicateM)
 import           Control.Monad.State         (State, state, evalState)
 import           Data.Coerce                 (coerce)
@@ -24,11 +29,12 @@ import           Data.Foldable               (toList)
 import           Data.IntMap                 (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl')
-import           Data.Maybe                  (fromMaybe, fromJust)
+import           Data.Maybe                  (fromMaybe, fromJust, mapMaybe)
 import           Data.Proxy                  (Proxy(..))
 import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T2(..))
+import           GHC.Generics                (Generic)
 import           GHC.TypeNats                (KnownNat, type (+), natVal)
 import           Linear                      (V2(..))
 import qualified Data.IntMap                 as IM
@@ -92,47 +98,74 @@ ixDouble n i = V.fromTuple @_ @_ @2 (y, x) V.++ ixPascal @n a
 --         (x0, xs) = V.splitAt @2 @n x
 --         xs'      = sortSizedBy compare . V.map abs $ xs
 
+data NCount =
+      NOne
+    | NTwo
+    | NThree
+    | NMany
+  deriving (Eq, Ord, Generic)
+instance NFData NCount
+
+nValid :: NCount -> Maybe Bool
+nValid = \case
+    NTwo   -> Just False
+    NThree -> Just True
+    _      -> Nothing
+
+instance Semigroup NCount where
+    (<>) = \case
+      NOne -> \case
+        NOne   -> NTwo
+        NTwo   -> NThree
+        _      -> NMany
+      NTwo -> \case
+        NOne   -> NThree
+        _      -> NMany
+      _        -> const NMany
+
 stepper_
     :: forall n. KnownNat n
     => Int      -- ^ how big the xy plane is
-    -> IntMap (IntMap Int)        -- ^ symmetry map
+    -> IntMap (IntMap NCount)        -- ^ symmetry map
     -> IntSet
     -> IntSet
 stepper_ nxy syms cs = stayAlive <> comeAlive
   where
     chnk :: Int
     chnk = min 1000 (max 10 (IS.size cs `div` 100))
-    neighborCounts :: IntMap Int
-    neighborCounts = coerce (foldMapParChunk @(MIM.MonoidalIntMap (Sum Int)) chnk id)
-      [ IM.fromSet (getWeight_ nxy syms c)
-                   (IS.fromList . map (doubleIx nxy . symmer) $ neighbs (ixDouble nxy c))
+    neighborCounts :: IntMap Bool
+    neighborCounts = IM.mapMaybe nValid
+                   $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
+      [   IM.mapMaybe id
+        . IM.fromSet (getWeight_ nxy syms c)
+        . IS.fromList
+        . map (doubleIx nxy . symmerD)
+        $ neighbs (ixDouble nxy c)
       | c <- IS.toList cs
       ]
-    stayAlive = IM.keysSet . IM.filter (\n -> n == 2 || n == 3) $
+    stayAlive = IM.keysSet $
                   neighborCounts `IM.restrictKeys` cs
-    comeAlive = IM.keysSet . IM.filter (== 3) $
+    comeAlive = IM.keysSet . IM.filter id $
                   neighborCounts `IM.withoutKeys`  cs
-    symmer :: V.Vector (n + 2) Int -> V.Vector (n + 2) Int
-    symmer x = x0 V.++ xs'
+    symmerD :: V.Vector (n + 2) Int -> V.Vector (n + 2) Int
+    symmerD x = x0 V.++ symmer xs
       where
         (x0, xs) = V.splitAt @2 @n x
-        xs'      = sortSizedBy compare . V.map abs $ xs
 
 getWeight_
     :: Int                    -- ^ how big the xy plane is
-    -> IntMap (IntMap Int)
+    -> IntMap (IntMap NCount)
     -> Int
     -> Int
-    -> Int
-getWeight_ nxy syms x y = zWeight + selfWeight
+    -> Maybe NCount
+getWeight_ nxy syms x y = zWeight <> selfWeight
   where
     (xs, x0) = x `divMod` (nxy*nxy)
     (ys, y0) = y `divMod` (nxy*nxy)
-    zWeight = fromMaybe 0 $
-      IM.lookup xs =<< IM.lookup ys syms
+    zWeight = IM.lookup xs =<< IM.lookup ys syms
     selfWeight
-      | xs == ys && x0 /= y0  = 1
-      | otherwise             = 0
+      | xs == ys && x0 /= y0  = Just NOne
+      | otherwise             = Nothing
 
 -- getWeight
 --     :: forall n a. (Ord a, V.Unbox a)
@@ -173,19 +206,20 @@ neighbs p = tail $ V.mapM (\x -> [x,x-1,x+1]) p
 neighborWeights_
     :: forall n. KnownNat n
     => Int            -- ^ maximum
-    -> IntMap (IntMap Int)
+    -> IntMap (IntMap NCount)
 neighborWeights_ mx = IM.fromList
     [ ( x
-      ,   IM.fromListWith (+)
-        . map (\g -> (pascalIx (symmer g), 1))
-        $ neighbs (ixPascal x)
+      , IM.fromListWith (<>)
+      . map (\g -> (pascalIx (symmer @n g), NOne))
+      $ neighbs (ixPascal x)
       )
     | x <- [0 .. n - 1]
     ]
   where
     n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
-    symmer :: V.Vector n Int -> V.Vector n Int
-    symmer = sortSizedBy compare . V.map abs
+
+symmer :: V.Vector n Int -> V.Vector n Int
+symmer = sortSizedBy compare . V.map abs
 
 -- -- used to test finalWeights
 -- _duplicands
@@ -250,7 +284,3 @@ parseMap
     :: String
     -> Set Point
 parseMap = parseAsciiSet (== '#')
--- setOf $ asciiGrid
---                  . filtered (== '#')
---                  . asIndex
---                  -- . to (\(V2 x y) -> V.replicate 0 V.// [(0, x), (1, y)])
