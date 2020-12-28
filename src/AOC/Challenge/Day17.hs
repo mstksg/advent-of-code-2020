@@ -17,6 +17,7 @@ module AOC.Challenge.Day17 (
   , neighbs
   , symmer
   , neighborWeights
+  , neighborWeights_
   , neighbs2
   , ixDouble
   , doubleIx
@@ -27,15 +28,20 @@ import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
 import           Control.DeepSeq             (force, NFData)
 import           Control.Monad               (replicateM)
+import           Control.Monad.ST
 import           Control.Monad.State         (State, state, evalState)
 import           Data.Coerce                 (coerce)
+import           Data.Foldable
 import           Data.Foldable               (toList)
 import           Data.IntMap                 (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl')
-import           Data.Maybe                  (fromJust)
+import           Debug.Trace
+import           Data.Semigroup
+import           Data.Maybe                  (fromJust, fromMaybe)
 import           Data.Proxy                  (Proxy(..))
 import           Data.Set                    (Set)
+import           Data.Traversable
 import           Data.Tuple.Strict           (T2(..))
 import           GHC.Generics                (Generic)
 import           GHC.TypeNats                (KnownNat, type (+), natVal)
@@ -43,7 +49,10 @@ import           Linear                      (V2(..))
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
+import qualified Data.List.NonEmpty          as NE
 import qualified Data.Set                    as S
+import qualified Data.Vector                 as UV
+import qualified Data.Vector.Mutable         as UMV
 import qualified Data.Vector.Unboxed.Sized   as V
 
 pascals :: [[Int]]
@@ -112,7 +121,7 @@ instance Semigroup NCount where
 
 stepper
     :: Int      -- ^ how big the xy plane is
-    -> IntMap (IntMap NCount)        -- ^ symmetry map
+    -> UV.Vector (IntMap NCount)        -- ^ symmetry map
     -> IntSet
     -> IntSet
 stepper nxy syms cs = stayAlive <> comeAlive
@@ -132,13 +141,67 @@ stepper nxy syms cs = stayAlive <> comeAlive
         ]
       | c <- IS.toList cs
       , let (pIx,gIx) = c `divMod` (nxy*nxy)
-            pNeighbs = syms IM.! pIx
+            pNeighbs = syms UV.! pIx
             gNeighbs = neighbs2 nxy gIx
       ]
     stayAlive = IM.keysSet $
                   neighborCounts `IM.restrictKeys` cs
     comeAlive = IM.keysSet . IM.filter id $
                   neighborCounts `IM.withoutKeys`  cs
+
+stepper_
+    :: Int      -- ^ how big the xy plane is
+    -> UV.Vector (IntMap NCount)        -- ^ symmetry map
+    -> UV.Vector Bool
+    -> UV.Vector Bool
+stepper_ nxy syms cs = UV.imap go cs
+  where
+    go :: Int -> Bool -> Bool
+    go i self = maybe False flipper totPs
+      where
+        flipper
+          | self      = const True
+          | otherwise = id
+        (pIx,gIx) = i `divMod` (nxy*nxy)
+        pNeighbs = syms UV.! pIx
+        gNeighbs = neighbs2 nxy gIx
+        totPs    = (nValid . sconcat =<<) . NE.nonEmpty $
+          [ pnC
+          | (pnIx, pnC) <- IM.toList pNeighbs
+          , gnIx <- gNeighbs
+          , fromMaybe False $ cs UV.!? (gnIx + pnIx * (nxy*nxy))
+          -- makes sense because we have to worry simulate the points at
+          -- the borders too
+          ] <>
+          [ NOne
+          | gnIx <- tail gNeighbs
+          , fromMaybe False $ cs UV.!? (gnIx + pIx * (nxy*nxy))
+          ]
+
+  -- where
+    -- chnk :: Int
+    -- chnk = min 1000 (max 10 (IS.size cs `div` 100))
+    -- neighborCounts :: IntMap Bool
+    -- neighborCounts = IM.mapMaybe nValid
+    --                $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
+    --   [ IM.fromListWith (<>) $
+    --     [ (gnIx + pnIx * (nxy*nxy), pnC)
+    --     | (pnIx, pnC) <- IM.toList pNeighbs
+    --     , gnIx <- gNeighbs
+    --     ] <>
+    --     [ (gnIx + pIx * (nxy*nxy), NOne)
+    --     | gnIx <- tail gNeighbs
+    --     ]
+    --   | c <- IS.toList cs
+    --   , let (pIx,gIx) = c `divMod` (nxy*nxy)
+    --         pNeighbs = syms IM.! pIx
+    --         gNeighbs = neighbs2 nxy gIx
+    --   ]
+    -- stayAlive = IM.keysSet $
+    --               neighborCounts `IM.restrictKeys` cs
+    -- comeAlive = IM.keysSet . IM.filter id $
+    --               neighborCounts `IM.withoutKeys`  cs
+
 
 neighbs :: (Num a, V.Unbox a) => V.Vector n a -> [V.Vector n a]
 neighbs p = tail $ V.mapM (\x -> [x,x-1,x+1]) p
@@ -152,6 +215,7 @@ flipIM xs = IM.fromListWith (<>)
     , (y, z ) <- IM.toList ys
     ]
 
+-- should compute this directly
 neighborWeights
     :: forall n. KnownNat n
     => Int            -- ^ maximum
@@ -166,6 +230,35 @@ neighborWeights mx = flipIM . IM.fromList $
     ]
   where
     n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
+
+neighborWeights_
+    :: forall n. KnownNat n
+    => Int            -- ^ maximum
+    -> UV.Vector (IntMap NCount)
+neighborWeights_ mx = runST $ do
+    v  <- UMV.replicate n1 IM.empty
+    for_ [0 .. n - 1] $ \x -> do
+      let nmap = IM.fromListWith (<>)
+               . map (\g -> (pascalIx (symmer @n g), NOne))
+               $ neighbs (ixPascal x)
+      for_ (IM.toList nmap) $ \(i, c) ->
+        UMV.modify v (IM.insert x c) i
+    UV.freeze v
+  where
+    n  = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
+    n1 = pascals !! fromIntegral (natVal (Proxy @n)) !! (mx+1)
+
+neighborWeights2
+    :: forall n. KnownNat n
+    => Int            -- ^ maximum
+    -> UV.Vector (IntMap NCount)
+neighborWeights2 mx = UV.generate n $
+        IM.fromListWith (<>)
+      . map (\g -> (pascalIx (symmer @n g), NOne))
+      . neighbs
+      . ixPascal
+  where
+    n  = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
 
 symmer :: V.Vector n Int -> V.Vector n Int
 symmer = sortSizedBy compare . V.map abs
@@ -204,13 +297,19 @@ day17 = MkSol
             nxy = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = force $ neighborWeights @n 6
+            wts = force $ neighborWeights2 @n 6
+            nitems = UV.length wts * nxy * nxy
+            v0  = UV.generate nitems (`IS.member` shifted)
         in  Just . sum
-                 . IM.fromSet (finalWeight @(n+2) . ixDouble nxy)
+                 . UV.imap (\i b ->
+                              if b then 0
+                                   else finalWeight @(n+2) (ixDouble nxy i)
+                           )
+                 -- . IM.fromSet (finalWeight @(n+2) . ixDouble nxy)
                  . (!!! 6)
                  -- . zipWith traceShow [0..]
-                 . iterate (force . stepper nxy wts)
-                 $ shifted
+                 . iterate (force . stepper_ nxy wts)
+                 $ v0
     }
 {-# INLINE day17 #-}
 
