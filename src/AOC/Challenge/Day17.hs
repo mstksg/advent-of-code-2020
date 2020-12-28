@@ -16,6 +16,10 @@ module AOC.Challenge.Day17 (
   , ixPascal
   , neighbs
   , symmer
+  , neighborWeights
+  , neighbs2
+  , ixDouble
+  , doubleIx
   ) where
 
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk, sortSizedBy)
@@ -29,9 +33,8 @@ import           Data.Foldable               (toList)
 import           Data.IntMap                 (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl')
-import           Data.Maybe                  (fromMaybe, fromJust, mapMaybe)
+import           Data.Maybe                  (fromJust)
 import           Data.Proxy                  (Proxy(..))
-import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T2(..))
 import           GHC.Generics                (Generic)
@@ -75,35 +78,19 @@ ixDouble n i = V.fromTuple @_ @_ @2 (y, x) V.++ ixPascal @n a
     (a, b) = i `divMod` (n*n)
     (x, y) = b `divMod` n
 
--- stepper
---     :: forall n a. (Ord a, Num a, V.Unbox a)
---     => Map (V.Vector n a) (Map (V.Vector n a) Int)    -- ^ symmetry map
---     -> Set (V.Vector (n + 2) a)
---     -> Set (V.Vector (n + 2) a)
--- stepper syms cs = stayAlive <> comeAlive
---   where
---     chnk :: Int
---     chnk = min 1000 (max 10 (S.size cs `div` 100))
---     neighborCounts :: Map (V.Vector (n + 2) a) Int
---     neighborCounts = coerce (foldMapParChunk @(MM.MonoidalMap (V.Vector (n + 2) a) (Sum Int)) chnk id)
---       [ M.fromSet (getWeight syms c) (S.fromList . map symmer $ neighbs c)
---       | c <- S.toList cs
---       ]
---     stayAlive = M.keysSet . M.filter (\n -> n == 2 || n == 3) $
---                   neighborCounts `M.restrictKeys` cs
---     comeAlive = M.keysSet . M.filter (== 3) $
---                   neighborCounts `M.withoutKeys`  cs
---     symmer x = x0 V.++ xs'
---       where
---         (x0, xs) = V.splitAt @2 @n x
---         xs'      = sortSizedBy compare . V.map abs $ xs
+neighbs2 :: Int -> Int -> [Int]
+neighbs2 n i =
+    [ i + dx + n*dy
+    | dx <- [0,-1,1]
+    , dy <- [0,-1,1]
+    ]
 
 data NCount =
       NOne
     | NTwo
     | NThree
     | NMany
-  deriving (Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic)
 instance NFData NCount
 
 nValid :: NCount -> Maybe Bool
@@ -123,91 +110,53 @@ instance Semigroup NCount where
         _      -> NMany
       _        -> const NMany
 
-stepper_
-    :: forall n. KnownNat n
-    => Int      -- ^ how big the xy plane is
+stepper
+    :: Int      -- ^ how big the xy plane is
     -> IntMap (IntMap NCount)        -- ^ symmetry map
     -> IntSet
     -> IntSet
-stepper_ nxy syms cs = stayAlive <> comeAlive
+stepper nxy syms cs = stayAlive <> comeAlive
   where
     chnk :: Int
     chnk = min 1000 (max 10 (IS.size cs `div` 100))
     neighborCounts :: IntMap Bool
     neighborCounts = IM.mapMaybe nValid
                    $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
-      [   IM.mapMaybe id
-        . IM.fromSet (getWeight_ nxy syms c)
-        . IS.fromList
-        . map (doubleIx nxy . symmerD)
-        $ neighbs (ixDouble nxy c)
+      [ IM.fromListWith (<>) $
+        [ (gnIx + pnIx * (nxy*nxy), pnC)
+        | (pnIx, pnC) <- IM.toList pNeighbs
+        , gnIx <- gNeighbs
+        ] <>
+        [ (gnIx + pIx * (nxy*nxy), NOne)
+        | gnIx <- tail gNeighbs
+        ]
       | c <- IS.toList cs
+      , let (pIx,gIx) = c `divMod` (nxy*nxy)
+            pNeighbs = syms IM.! pIx
+            gNeighbs = neighbs2 nxy gIx
       ]
     stayAlive = IM.keysSet $
                   neighborCounts `IM.restrictKeys` cs
     comeAlive = IM.keysSet . IM.filter id $
                   neighborCounts `IM.withoutKeys`  cs
-    symmerD :: V.Vector (n + 2) Int -> V.Vector (n + 2) Int
-    symmerD x = x0 V.++ symmer xs
-      where
-        (x0, xs) = V.splitAt @2 @n x
-
-getWeight_
-    :: Int                    -- ^ how big the xy plane is
-    -> IntMap (IntMap NCount)
-    -> Int
-    -> Int
-    -> Maybe NCount
-getWeight_ nxy syms x y = zWeight <> selfWeight
-  where
-    (xs, x0) = x `divMod` (nxy*nxy)
-    (ys, y0) = y `divMod` (nxy*nxy)
-    zWeight = IM.lookup xs =<< IM.lookup ys syms
-    selfWeight
-      | xs == ys && x0 /= y0  = Just NOne
-      | otherwise             = Nothing
-
--- getWeight
---     :: forall n a. (Ord a, V.Unbox a)
---     => Map (V.Vector n a) (Map (V.Vector n a) Int)
---     -> V.Vector (n + 2) a
---     -> V.Vector (n + 2) a
---     -> Int
--- getWeight syms x y = zWeight + selfWeight
---   where
---     (x0, xs) = V.splitAt @2 @n x
---     (y0, ys) = V.splitAt @2 @n y
---     zWeight = fromMaybe 0 $
---       M.lookup xs =<< M.lookup ys syms
---     selfWeight
---       | xs == ys && x0 /= y0  = 1
---       | otherwise             = 0
 
 neighbs :: (Num a, V.Unbox a) => V.Vector n a -> [V.Vector n a]
 neighbs p = tail $ V.mapM (\x -> [x,x-1,x+1]) p
 
--- neighborWeights
---     :: (KnownNat n, Num a, Ord a, Enum a, V.Unbox a)
---     => a            -- ^ maximum
---     -> Map (V.Vector n a) (Map (V.Vector n a) Int)
--- neighborWeights mx =
---         M.fromSet ( M.mapKeysWith (+) symmer
---                   . M.fromList
---                   . map (,1)
---                   . neighbs
---                   )
---       $ allZs
---   where
---     symmer    = sortSizedBy compare . V.map abs
---     allZs     = S.fromList $ evalStateT (V.replicateM go) 0
---       where
---         go = StateT $ \i -> map dup [i .. mx]
+flipIM
+    :: IntMap (IntMap a)
+    -> IntMap (IntMap a)
+flipIM xs = IM.fromListWith (<>)
+    [ (y, IM.singleton x z)
+    | (x, ys) <- IM.toList xs
+    , (y, z ) <- IM.toList ys
+    ]
 
-neighborWeights_
+neighborWeights
     :: forall n. KnownNat n
     => Int            -- ^ maximum
     -> IntMap (IntMap NCount)
-neighborWeights_ mx = IM.fromList
+neighborWeights mx = flipIM . IM.fromList $
     [ ( x
       , IM.fromListWith (<>)
       . map (\g -> (pascalIx (symmer @n g), NOne))
@@ -255,12 +204,12 @@ day17 = MkSol
             nxy = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = force $ neighborWeights_ @n 6
+            wts = force $ neighborWeights @n 6
         in  Just . sum
                  . IM.fromSet (finalWeight @(n+2) . ixDouble nxy)
                  . (!!! 6)
                  -- . zipWith traceShow [0..]
-                 . iterate (force . stepper_ @n nxy wts)
+                 . iterate (force . stepper nxy wts)
                  $ shifted
     }
 {-# INLINE day17 #-}
@@ -272,13 +221,13 @@ day17b :: Set Point :~> Int
 day17b = day17 @2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms
--- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms
+-- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
 -- d=7: 178720 / 502240; 7.7s
 -- d=8: ? / 2567360; 30s
 -- d=9: 4333056 / 12764416; 2m20s
--- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s
--- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s
--- d=12: ? / 1537981440 -- with unboxed, 22m10s
+-- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s
+-- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s
+-- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s
 
 parseMap
     :: String
