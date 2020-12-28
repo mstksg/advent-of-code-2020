@@ -278,7 +278,7 @@ submitRetry opts d p ans = runExceptT go
       case status of
         SubWait i -> do
           liftIO . withColor ANSI.Vivid ANSI.Yellow $
-              printf "Automatically waiting %s seconds to re-submit...\n" i
+              printf "Automatically waiting %d seconds to re-submit...\n" i
           -- 0.1 to account for latency
           resubTime <- addUTCTime (secondsToNominalDiffTime (fromIntegral i - 0.1)) <$> liftIO getCurrentTime
           countdownWithPrint

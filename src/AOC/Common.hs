@@ -86,6 +86,7 @@ module AOC.Common (
   , factorial
   , mapMaybeSet
   , symDiff
+  , unfoldedIterate
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -167,6 +168,7 @@ import qualified Data.OrdPSQ                        as OrdPSQ
 import qualified Data.Sequence                      as Seq
 import qualified Data.Set                           as S
 import qualified Data.Set.NonEmpty                  as NES
+import qualified Data.Type.Nat                      as N
 import qualified Data.Vector.Algorithms.Intro       as VAI
 import qualified Data.Vector.Generic                as VG
 import qualified Data.Vector.Generic.Sized          as SVG
@@ -840,6 +842,21 @@ anaM
     -> a
     -> m t
 anaM f = R.hylo (fmap R.embed . join . fmap sequenceA . getCompose) (Compose . f)
+
+newtype Iterate n a = Iterate { runIterate :: a }
+
+unfoldedIterate
+    :: forall n a proxy. N.InlineInduction n
+    => proxy n
+    -> (a -> a)
+    -> a -> a
+unfoldedIterate _ f x = runIterate (N.inlineInduction1 start step :: Iterate n a)
+  where
+    start :: Iterate 'N.Z a
+    start = Iterate x
+    step :: Iterate m a -> Iterate ('N.S m) a
+    step = coerce f
+
 
 instance Hashable a => Hashable (Seq a) where
     hashWithSalt s = hashWithSalt s . toList
