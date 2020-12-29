@@ -11,76 +11,60 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
-  , pascals
-  , pascalIx
-  , ixPascal
-  , neighbs
-  , symmer
+  -- , pascals
   , neighborWeights
-  , neighbs2
-  , ixDouble
-  , doubleIx
-  , NCount(..)
+  , neighborWeightsNoCache
+  -- , NCount(..)
   ) where
 
-import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk, sortSizedBy)
+import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
 import           Control.DeepSeq             (force, NFData)
-import           Control.Monad               (replicateM)
-import           Control.Monad.State         (State, state, evalState)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList)
 import           Data.IntMap                 (IntMap)
 import           Data.IntSet                 (IntSet)
-import           Data.List                   (scanl')
-import           Data.Maybe                  (fromJust)
-import           Data.Proxy                  (Proxy(..))
+import           Data.List                   (scanl', sort)
 import           Data.Set                    (Set)
-import           Data.Tuple.Strict           (T2(..))
 import           GHC.Generics                (Generic)
-import           GHC.TypeNats                (KnownNat, type (+), natVal)
 import           Linear                      (V2(..))
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
 import qualified Data.Set                    as S
-import qualified Data.Vector.Unboxed.Sized   as V
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 
-pascalIx :: V.Vector n Int -> Int
+pascalIx :: [Int] -> Int
 pascalIx = sum
          . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
-         . V.toList
+{-# INLINE pascalIx #-}
 
-ixPascal :: forall n. KnownNat n => Int -> V.Vector n Int
-ixPascal x = fromJust . V.fromList . reverse $
-    evalState (replicateM n go) (T2 x (reverse p0))
+ixPascal
+    :: Int      -- ^ dimension
+    -> Int
+    -> [Int]
+ixPascal n x = go x (reverse p0) []
   where
-    n  = fromIntegral (natVal (Proxy @n))
     p0 = take n (tail pascals)
-    go :: State (T2 Int [[Int]]) Int
-    go = state $ \(T2 y (p:ps)) ->
-      let qs = takeWhile (<= y) (0:p)
-      in  (length qs - 1, T2 (y - last qs) ps)
+    go :: Int -> [[Int]] -> [Int] -> [Int]
+    go _ []     r = r
+    go y (p:ps) r = go (y - last qs) ps ((length qs - 1) : r)
+      where
+        qs = takeWhile (<= y) (0:p)
+{-# INLINE ixPascal #-}
 
-doubleIx :: forall n. Int -> V.Vector (n + 2) Int -> Int
-doubleIx n x = x0 `V.index` 0
-             + (x0 `V.index` 1) * n
-             + pascalIx xs * (n*n)
-  where
-    (x0, xs) = V.splitAt @2 @n x
-
-ixDouble :: forall n. KnownNat n => Int -> Int -> V.Vector (n + 2) Int
-ixDouble n i = V.fromTuple @_ @_ @2 (y, x) V.++ ixPascal @n a
+ixDouble :: Int -> Int -> Int -> [Int]
+ixDouble d n i = y : x : ixPascal d a
   where
     (a, b) = i `divMod` (n*n)
     (x, y) = b `divMod` n
+{-# INLINE ixDouble #-}
 
-neighbs2 :: Int -> Int -> [Int]
-neighbs2 n i =
+neighbs2d :: Int -> Int -> [Int]
+neighbs2d n i =
     [ i + dx + n*dy
     | dx <- [0,-1,1]
     , dy <- [0,-1,1]
@@ -134,59 +118,56 @@ stepper nxy syms cs = stayAlive <> comeAlive
       | c <- IS.toList cs
       , let (pIx,gIx) = c `divMod` (nxy*nxy)
             pNeighbs = syms IM.! pIx
-            gNeighbs = neighbs2 nxy gIx
+            gNeighbs = neighbs2d nxy gIx
       ]
     stayAlive = IM.keysSet $
                   neighborCounts `IM.restrictKeys` cs
     comeAlive = IM.keysSet . IM.filter id $
                   neighborCounts `IM.withoutKeys`  cs
 
-neighbs :: (Num a, V.Unbox a) => V.Vector n a -> [V.Vector n a]
-neighbs p = tail $ V.mapM (\x -> [x,x-1,x+1]) p
+neighbs :: Num a => [a] -> [[a]]
+neighbs = tail . traverse (\x -> [x,x-1,x+1])
+
 
 flipIM
     :: IntMap (IntMap a)
     -> IntMap (IntMap a)
-flipIM xs = IM.fromListWith (<>)
+flipIM xs = IM.fromListWith (<>) $
     [ (y, IM.singleton x z)
     | (x, ys) <- IM.toList xs
     , (y, z ) <- IM.toList ys
     ]
 
 neighborWeights
-    :: forall n. KnownNat n
-    => Int            -- ^ maximum
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
     -> IntMap (IntMap NCount)
-neighborWeights mx = flipIM . IM.fromList $
+neighborWeights d mx = flipIM . IM.fromDistinctAscList $
     [ ( x
       , IM.fromListWith (<>)
-      . map (\g -> (pascalIx (symmer @n g), NOne))
-      $ neighbs (ixPascal x)
+      . map (\g -> (pascalIx (sort (map abs g)), NOne))
+      $ neighbs (ixPascal d x)
       )
     | x <- [0 .. n - 1]
     ]
   where
-    n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
+    n = pascals !! d !! mx
 
 neighborWeightsNoCache
-    :: forall n a. KnownNat n
-    => Int            -- ^ maximum
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
     -> a
     -> IntMap (IntMap NCount)
-neighborWeightsNoCache mx q = (q `seq`) $ flipIM . IM.fromList $
+neighborWeightsNoCache d mx q = (q `seq`) $ flipIM . IM.fromDistinctAscList $
     [ ( x
       , IM.fromListWith (<>)
-      . map (\g -> (pascalIx (symmer @n g), NOne))
-      $ neighbs (ixPascal x)
+      . map (\g -> (pascalIx (sort (map abs g)), NOne))
+      $ neighbs (ixPascal d x)
       )
     | x <- [0 .. n - 1]
     ]
   where
-    n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
-
-
-symmer :: V.Vector n Int -> V.Vector n Int
-symmer = sortSizedBy compare . V.map abs
+    n = pascals !! d !! mx
 
 -- -- used to test finalWeights
 -- _duplicands
@@ -199,12 +180,12 @@ symmer = sortSizedBy compare . V.map abs
 --     symmer    = sort . map abs
 
 finalWeight
-    :: (KnownNat n, Num a, Ord a, V.Unbox a)
-    => V.Vector n a
+    :: (Num a, Ord a)
+    => Int              -- ^ dim
+    -> [a]
     -> Int
-finalWeight x = process . freqs . V.toList $ x
+finalWeight n x = process . freqs $ x
   where
-    n = V.length x
     process mp = (2 ^ numNonZeroes) * perms
       where
         numNonZeroes = n - lookupFreq 0 mp
@@ -212,19 +193,20 @@ finalWeight x = process . freqs . V.toList $ x
           `div` product (factorial <$> mp)
 
 day17
-    :: forall n. KnownNat n
-    => Set Point :~> Int
-day17 = MkSol
+    :: Int
+    -> Set Point :~> Int
+day17 d = MkSol
     { sParse = Just . parseMap
     , sShow  = show
     , sSolve = \(S.toList->x) ->
         let bounds  = maximum (concatMap toList x) + 1
-            nxy = bounds + 12
+            nxy     = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = force $ neighborWeightsNoCache @n 6 x
+            -- wts = force $ neighborWeights d 6
+            wts = force $ neighborWeightsNoCache d 6 x
         in  Just . sum
-                 . IM.fromSet (finalWeight @n . V.drop @2 . ixDouble nxy)
+                 . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
                  . (!!! 6)
                  -- . zipWith traceShow [0..]
                  . iterate (force . stepper nxy wts)
@@ -233,17 +215,19 @@ day17 = MkSol
 {-# INLINE day17 #-}
 
 day17a :: Set Point :~> Int
-day17a = day17 @1
+day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 @2
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
--- d=7: 178720 / 502240; 7.7s   -- with pre-neighbs: 356ms
--- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s
--- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s
+-- d=7: 178720 / 502240; 7.7s   -- with pre-neighbs: 356ms (no cache: 290ms)
+-- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms)
+-- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s (no cache: 1.5s)
+--                                                  no knownnat: 4.3s
 -- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
+--                                      no knownnat: 19s
 -- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)
 -- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s
 
