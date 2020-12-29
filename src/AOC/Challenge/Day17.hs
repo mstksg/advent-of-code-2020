@@ -11,7 +11,7 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
-  -- , pascals
+  , pascals
   , neighborWeights
   , neighborWeightsNoCache
   -- , NCount(..)
@@ -120,8 +120,12 @@ stepper nxy syms cs = stayAlive <> comeAlive
     stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
     comeAlive = IM.keysSet (IM.filter id neighborCounts) `IS.difference` cs
 
-neighbs :: Num a => [a] -> [[a]]
-neighbs = tail . traverse (\x -> [x,x-1,x+1])
+neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
+neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
+                                       | x == 0    -> [x,x+1,x+1]
+                                       | otherwise -> [x,x-1,x+1]
+                             )
+{-# INLINE neighbs #-}
 
 
 flipIM
@@ -140,8 +144,8 @@ neighborWeights
 neighborWeights d mx = flipIM . IM.fromDistinctAscList $
     [ ( x
       , IM.fromListWith (<>)
-      . map (\g -> (pascalIx (sort (map abs g)), NOne))
-      $ neighbs (ixPascal d x)
+      . map (\i -> (pascalIx (sort i), NOne))
+      $ neighbs mx (ixPascal d x)
       )
     | x <- [0 .. n - 1]
     ]
@@ -156,8 +160,8 @@ neighborWeightsNoCache
 neighborWeightsNoCache d mx q = (q `seq`) $ flipIM . IM.fromDistinctAscList $
     [ ( x
       , IM.fromListWith (<>)
-      . map (\g -> (pascalIx (sort (map abs g)), NOne))
-      $ neighbs (ixPascal d x)
+      . map (\i -> (pascalIx (sort i), NOne))
+      $ neighbs mx (ixPascal d x)
       )
     | x <- [0 .. n - 1]
     ]
@@ -218,12 +222,14 @@ day17b = day17 2
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
 -- d=7: 178720 / 502240; 7.7s   -- with pre-neighbs: 356ms (no cache: 290ms)
--- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms)
+-- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms) (smallcache: 920ms)
 -- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s (no cache: 1.5s)
 --                                                  no knownnat: 4.3s
 -- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
 --                                      no knownnat: 19s
+--                                      smallcache: 12s
 -- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)
+--                                      smallcache: 52s
 -- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s
 
 parseMap
