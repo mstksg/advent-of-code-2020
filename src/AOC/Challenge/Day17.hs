@@ -40,7 +40,6 @@ pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 pascalIx :: [Int] -> Int
 pascalIx = sum
          . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
-{-# INLINE pascalIx #-}
 
 ixPascal
     :: Int      -- ^ dimension
@@ -54,14 +53,12 @@ ixPascal n x = go x (reverse p0) []
     go y (p:ps) r = go (y - last qs) ps ((length qs - 1) : r)
       where
         qs = takeWhile (<= y) (0:p)
-{-# INLINE ixPascal #-}
 
 ixDouble :: Int -> Int -> Int -> [Int]
 ixDouble d n i = y : x : ixPascal d a
   where
     (a, b) = i `divMod` (n*n)
     (x, y) = b `divMod` n
-{-# INLINE ixDouble #-}
 
 neighbs2d :: Int -> Int -> [Int]
 neighbs2d n i =
@@ -120,10 +117,8 @@ stepper nxy syms cs = stayAlive <> comeAlive
             pNeighbs = syms IM.! pIx
             gNeighbs = neighbs2d nxy gIx
       ]
-    stayAlive = IM.keysSet $
-                  neighborCounts `IM.restrictKeys` cs
-    comeAlive = IM.keysSet . IM.filter id $
-                  neighborCounts `IM.withoutKeys`  cs
+    stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
+    comeAlive = IM.keysSet (IM.filter id neighborCounts) `IS.difference` cs
 
 neighbs :: Num a => [a] -> [[a]]
 neighbs = tail . traverse (\x -> [x,x-1,x+1])
