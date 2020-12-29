@@ -20,6 +20,7 @@ module AOC.Challenge.Day17 (
   , neighbs2
   , ixDouble
   , doubleIx
+  , NCount(..)
   ) where
 
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk, sortSizedBy)
@@ -167,6 +168,23 @@ neighborWeights mx = flipIM . IM.fromList $
   where
     n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
 
+neighborWeightsNoCache
+    :: forall n a. KnownNat n
+    => Int            -- ^ maximum
+    -> a
+    -> IntMap (IntMap NCount)
+neighborWeightsNoCache mx q = (q `seq`) $ flipIM . IM.fromList $
+    [ ( x
+      , IM.fromListWith (<>)
+      . map (\g -> (pascalIx (symmer @n g), NOne))
+      $ neighbs (ixPascal x)
+      )
+    | x <- [0 .. n - 1]
+    ]
+  where
+    n = pascals !! fromIntegral (natVal (Proxy @n)) !! mx
+
+
 symmer :: V.Vector n Int -> V.Vector n Int
 symmer = sortSizedBy compare . V.map abs
 
@@ -184,9 +202,9 @@ finalWeight
     :: (KnownNat n, Num a, Ord a, V.Unbox a)
     => V.Vector n a
     -> Int
-finalWeight x = process . freqs . drop 2 . V.toList $ x
+finalWeight x = process . freqs . V.toList $ x
   where
-    n = V.length x - 2
+    n = V.length x
     process mp = (2 ^ numNonZeroes) * perms
       where
         numNonZeroes = n - lookupFreq 0 mp
@@ -204,9 +222,9 @@ day17 = MkSol
             nxy = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = force $ neighborWeights @n 6
+            wts = force $ neighborWeightsNoCache @n 6 x
         in  Just . sum
-                 . IM.fromSet (finalWeight @(n+2) . ixDouble nxy)
+                 . IM.fromSet (finalWeight @n . V.drop @2 . ixDouble nxy)
                  . (!!! 6)
                  -- . zipWith traceShow [0..]
                  . iterate (force . stepper nxy wts)
@@ -220,13 +238,13 @@ day17a = day17 @1
 day17b :: Set Point :~> Int
 day17b = day17 @2
 
--- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms
+-- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
--- d=7: 178720 / 502240; 7.7s
--- d=8: ? / 2567360; 30s
--- d=9: 4333056 / 12764416; 2m20s
--- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s
--- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s
+-- d=7: 178720 / 502240; 7.7s   -- with pre-neighbs: 356ms
+-- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s
+-- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s
+-- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
+-- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)
 -- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s
 
 parseMap
