@@ -857,15 +857,16 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-224"></span><span class="hs-comment">-- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms)</span><span>
 </span><span id="line-225"></span><span class="hs-comment">-- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s (no cache: 1.5s)</span><span>
 </span><span id="line-226"></span><span class="hs-comment">-- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)</span><span>
-</span><span id="line-227"></span><span class="hs-comment">-- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)</span><span>
-</span><span id="line-228"></span><span class="hs-comment">-- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s</span><span>
-</span><span id="line-229"></span><span>
-</span><span id="line-230"></span><span class="annot"><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-type">parseMap</span></a></span><span>
-</span><span id="line-231"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-232"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.Point.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
-</span><span id="line-233"></span><span id="parseMap"><span class="annot"><span class="annottext">parseMap :: String -&gt; Set Point
+</span><span id="line-227"></span><span class="hs-comment">--                                      no knownnat: 19s</span><span>
+</span><span id="line-228"></span><span class="hs-comment">-- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)</span><span>
+</span><span id="line-229"></span><span class="hs-comment">-- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s</span><span>
+</span><span id="line-230"></span><span>
+</span><span id="line-231"></span><span class="annot"><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-type">parseMap</span></a></span><span>
+</span><span id="line-232"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-233"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Set</span></span><span> </span><span class="annot"><a href="AOC.Common.Point.html#Point"><span class="hs-identifier hs-type">Point</span></a></span><span>
+</span><span id="line-234"></span><span id="parseMap"><span class="annot"><span class="annottext">parseMap :: String -&gt; Set Point
 </span><a href="AOC.Challenge.Day17.html#parseMap"><span class="hs-identifier hs-var hs-var">parseMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; String -&gt; Set Point
 </span><a href="AOC.Common.Point.html#parseAsciiSet"><span class="hs-identifier hs-var">parseAsciiSet</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-char">'#'</span></span><span class="hs-special">)</span><span>
-</span><span id="line-234"></span></pre></body></html>
+</span><span id="line-235"></span></pre></body></html>
