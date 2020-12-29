@@ -21,9 +21,10 @@ import           AOC.Common                  ((!!!), factorial, freqs, lookupFre
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
 import           Control.DeepSeq             (force, NFData)
+import           Control.Monad.ST            (runST)
 import           Data.Coerce                 (coerce)
-import           Data.Foldable               (toList)
-import           Data.IntMap                 (IntMap)
+import           Data.Foldable               (toList, for_)
+import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.Set                    (Set)
@@ -33,6 +34,8 @@ import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
 import qualified Data.Set                    as S
+import qualified Data.Vector                 as V
+import qualified Data.Vector.Mutable         as MV
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -94,7 +97,7 @@ instance Semigroup NCount where
 
 stepper
     :: Int      -- ^ how big the xy plane is
-    -> IntMap (IntMap NCount)        -- ^ symmetry map
+    -> V.Vector (IntMap NCount)        -- ^ symmetry map
     -> IntSet
     -> IntSet
 stepper nxy syms cs = stayAlive <> comeAlive
@@ -114,7 +117,7 @@ stepper nxy syms cs = stayAlive <> comeAlive
         ]
       | c <- IS.toList cs
       , let (pIx,gIx) = c `divMod` (nxy*nxy)
-            pNeighbs = syms IM.! pIx
+            pNeighbs = syms V.! pIx
             gNeighbs = neighbs2d nxy gIx
       ]
     stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
@@ -127,28 +130,22 @@ neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
                              )
 {-# INLINE neighbs #-}
 
-
-flipIM
-    :: IntMap (IntMap a)
-    -> IntMap (IntMap a)
-flipIM xs = IM.fromListWith (<>) $
-    [ (y, IM.singleton x z)
-    | (x, ys) <- IM.toList xs
-    , (y, z ) <- IM.toList ys
-    ]
-
 neighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
-    -> IntMap (IntMap NCount)
-neighborWeights d mx = flipIM . IM.fromDistinctAscList $
-    [ ( x
-      , IM.fromListWith (<>)
-      . map (\i -> (pascalIx (sort i), NOne))
-      $ neighbs mx (ixPascal d x)
-      )
-    | x <- [0 .. n - 1]
-    ]
+    -> V.Vector (IntMap NCount)
+neighborWeights d mx = runST $ do
+    v <- MV.replicate n IM.empty
+    for_ [0 .. n-1] $ \x ->
+      -- let nmap = IM.fromListWith (<>)
+      --          . map (\i -> (pascalIx (sort i), NOne))
+      --          $ neighbs mx (ixPascal d x)
+      -- for_ (IM.toList nmap) $ \(i, c) ->
+      --   MV.unsafeModify v (IM.insert x c) i
+      for_ (neighbs mx (ixPascal d x)) $ \i -> do
+        MV.unsafeModify v (IM.insertWith (flip (<>)) x NOne) $
+          pascalIx (sort i)
+    V.freeze v
   where
     n = pascals !! d !! mx
 
@@ -156,15 +153,14 @@ neighborWeightsNoCache
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
     -> a
-    -> IntMap (IntMap NCount)
-neighborWeightsNoCache d mx q = (q `seq`) $ flipIM . IM.fromDistinctAscList $
-    [ ( x
-      , IM.fromListWith (<>)
-      . map (\i -> (pascalIx (sort i), NOne))
-      $ neighbs mx (ixPascal d x)
-      )
-    | x <- [0 .. n - 1]
-    ]
+    -> V.Vector (IntMap NCount)
+neighborWeightsNoCache d mx q = (q `seq`) $ runST $ do
+    v <- MV.replicate n IM.empty
+    for_ [0 .. n-1] $ \x ->
+      for_ (neighbs mx (ixPascal d x)) $ \i -> do
+        MV.unsafeModify v (IM.insertWith (flip (<>)) x NOne) $
+          pascalIx (sort i)
+    V.freeze v
   where
     n = pascals !! d !! mx
 
@@ -202,8 +198,8 @@ day17 d = MkSol
             nxy     = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            -- wts = force $ neighborWeights d 6
-            wts = force $ neighborWeightsNoCache d 6 x
+            wts = force $ neighborWeights d 6
+            -- wts = force $ neighborWeightsNoCache d 6 x
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
                  . (!!! 6)
@@ -228,9 +224,9 @@ day17b = day17 2
 -- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
 --                                      no knownnat: 19s
 --                                      smallcache: 12s
--- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.731?)
+-- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
--- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s
+-- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 
 parseMap
     :: String
