@@ -51,6 +51,8 @@ extra-deps:
 - constraints-extras-0.3.0.2
 - refined-0.6.1
 - barbies-2.0.2.0
+- sqlite-simple-0.4.18.0
+- direct-sqlite-2.3.26
 - these-skinny-0.7.4
 - vinyl-0.13.0
 - witherable-0.3.5
