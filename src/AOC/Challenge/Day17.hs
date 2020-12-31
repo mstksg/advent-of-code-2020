@@ -12,7 +12,7 @@ module AOC.Challenge.Day17 (
   , day17b
   , pascals
   , neighborWeights
-  , neighborWeightsNoCache
+  , oldNeighborWeights
   , loadNeighborWeights
   -- , NCount(..)
   ) where
@@ -26,15 +26,17 @@ import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
 import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
-import           Control.Monad               (unless, void, when)
+import           Control.Monad               (unless, void, when, mfilter)
 import           Control.Monad.ST            (runST)
-import           Data.Bifunctor              (second)
+import           Control.Monad.State         (StateT(..), evalStateT, get)
+import           Data.Bifunctor              (bimap, second)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.Split             (chunksOf)
+import           Data.Map                    (Map)
 import           Data.Set                    (Set)
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
@@ -42,6 +44,7 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
+import qualified Data.Map                    as M
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -140,26 +143,11 @@ neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
                              )
 {-# INLINE neighbs #-}
 
-neighborWeights
+oldNeighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
     -> V.Vector (IntMap NCount)
-neighborWeights d mx = runST $ do
-    v <- MV.replicate n IM.empty
-    for_ [0 .. n-1] $ \x ->
-      for_ (neighbs mx (ixPascal d x)) $ \i -> do
-        MV.unsafeModify v (IM.insertWith (flip (<>)) x NOne) $
-          pascalIx (sort i)
-    V.freeze v
-  where
-    n = pascals !! d !! mx
-
-neighborWeightsNoCache
-    :: Int            -- ^ dimension
-    -> Int            -- ^ maximum
-    -> a
-    -> V.Vector (IntMap NCount)
-neighborWeightsNoCache d mx q = (q `seq`) $ runST $ do
+oldNeighborWeights d mx = runST $ do
     v <- MV.replicate n IM.empty
     for_ [0 .. n-1] $ \x ->
       for_ (neighbs mx (ixPascal d x)) $ \i -> do
@@ -191,6 +179,93 @@ finalWeight n x = process . freqs $ x
         numNonZeroes = n - lookupFreq 0 mp
         perms = factorial n
           `div` product (factorial <$> mp)
+
+-- | Calculate the neighbors and weights from a continuous run of the same
+-- number
+continuousRunNeighbors
+    :: Int      -- ^ max
+    -> Int      -- ^ number
+    -> Int      -- ^ run length
+    -> [(IntMap Int, Int)]    -- ^ neighbors run map, and weight
+continuousRunNeighbors mx n r = map wt . flip evalStateT r $ do
+    xs <- sequenceA (IM.fromSet (const go) opts)
+    lastCall <- get
+    pure . IM.filter (> 0) $ IM.insert lastVal lastCall xs
+  where
+    go :: StateT Int [] Int
+    go = StateT $ \i ->
+      [ (j, i - j)
+      | j <- [0..i]
+      ]
+    wt :: IntMap Int -> (IntMap Int, Int)
+    wt mp = (mp', factorial r `div` product (factorial <$> mp))
+      where
+        mp' = IM.mapKeysWith (+) abs mp
+    (opts, lastVal)
+      | n == mx   = (IS.fromList [n-1], n)
+      | otherwise = (IS.fromList [n-1, n], n+1)
+
+-- | All point runs for a given dim and max
+allPointRuns
+    :: Int    -- ^ dim
+    -> Int    -- ^ max
+    -> [IntMap Int]
+allPointRuns d mx = flip evalStateT d $ do
+    xs <- sequenceA (IM.fromSet (const go) (IS.fromList [0..mx-1]))
+    lastCall <- get
+    pure . IM.filter (> 0) $ IM.insert mx lastCall xs
+  where
+    go :: StateT Int [] Int
+    go = StateT $ \i ->
+      [ (j, i - j)
+      | j <- [0..i]
+      ]
+
+-- | All neighbors (and weights) for a given point run
+pointRunNeighbs
+    :: Int    -- ^ max
+    -> IntMap Int     -- ^ point runs
+    -> Map (IntMap Int) Int     -- ^ neighbs and weights
+pointRunNeighbs mx p = M.update (mfilter (> 0) . Just . subtract 1) p   -- how to not need to do this heh
+                     . M.fromListWith (+)
+                     . map (bimap (IM.unionsWith (+)) product . unzip)
+                     . traverse (\(n, r) -> continuousRunNeighbors mx n r)
+                     . IM.toList
+                     $ p
+
+neighborPairs
+    :: Int    -- ^ dimension
+    -> Int    -- ^ maximum
+    -> [(Int, (Int, NCount))]
+neighborPairs d mx =
+    [ (pG, (pX, w'))
+    | x <- allPointRuns d mx
+    , let pX = pascalIx (unFreq x)
+    , (g, w) <- M.toList (pointRunNeighbs mx x)
+    , let pG = pascalIx (unFreq g)
+          w' = toNCount w
+    ]
+  where
+    unFreq = concatMap (uncurry (flip replicate)) . IM.toList
+
+neighborWeights
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
+    -> V.Vector (IntMap NCount)
+neighborWeights d mx = runST $ do
+    v <- MV.replicate n IM.empty
+    for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
+      MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
+    V.freeze v
+  where
+    n = pascals !! d !! mx
+
+toNCount :: Int -> NCount
+toNCount = \case
+  1 -> NOne
+  2 -> NTwo
+  3 -> NThree
+  _ -> NMany
 
 day17
     :: Int
@@ -241,30 +316,16 @@ parseMap
     -> Set Point
 parseMap = parseAsciiSet (== '#')
 
-neighborPairs
-    :: Int    -- ^ dimension
-    -> Int    -- ^ maximum
-    -> [(Int, Int)]
-neighborPairs d mx =
-    [ (pascalIx (sort i), x)
-    | x <- [0 .. n-1]
-    , i <- neighbs mx (ixPascal d x)
-    ]
-  where
-    n = pascals !! d !! mx
-
 cacheNeighborWeights
     :: D.Connection
     -> Int    -- ^ dimension
     -> Int    -- ^ maximum
     -> IO ()
 cacheNeighborWeights conn d mx = do
-    D.executeNamed conn
-      "DELETE FROM cache WHERE dim = :d" [ ":d" D.:= d ]
     dbsem <- newQSem 1
     threadsem <- newQSem 5
     done <- newEmptyMVar
-    forEnd_ (chunkUp <$> chunksOf 10_000_000 (neighborPairs d mx)) $ \isLast pmap -> do
+    forEnd_ (chunkUp <$> chunksOf 100_000 (neighborPairs d mx)) $ \isLast pmap -> do
       waitQSem threadsem
       forkIO $ do
         let chunky   = IM.size pmap
@@ -293,8 +354,9 @@ cacheNeighborWeights conn d mx = do
       NMany  -> 4
     n :: Double
     n = fromIntegral (pascals !! d !! mx)
+    chunkUp :: [(Int, (Int, NCount))] -> IntMap (IntMap NCount)
     chunkUp = IM.fromListWith (IM.unionWith (<>))
-            . (map . second) (`IM.singleton` NOne)
+            . (map . second) (uncurry IM.singleton)
 
 forEnd_
     :: Applicative m
@@ -314,17 +376,11 @@ loadCache
     -> IO (V.Vector (IntMap NCount))
 loadCache conn d mx =
     V.generateM n $ \src -> do
-      fmap toCount . IM.fromList <$> D.queryNamed conn
+      fmap toNCount . IM.fromList <$> D.queryNamed conn
         "SELECT target,weight FROM cache WHERE dim = :d AND source = :src"
         [ ":d" D.:= d, ":src" D.:= src ]
   where
     n = pascals !! d !! mx
-    toCount :: Int -> NCount
-    toCount = \case
-      1 -> NOne
-      2 -> NTwo
-      3 -> NThree
-      _ -> NMany
 
 loadNeighborWeights
     :: Int    -- ^ dimensions
