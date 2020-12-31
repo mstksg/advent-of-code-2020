@@ -3444,8 +3444,8 @@ data Dir = North | East | South | West
 -- | Rotate a point by a direction
 rotPoint :: Num a => Dir -> V2 a -> V2 a
 
-allDir :: NonEmpty Dir
-allDir = North :| [ East .. ]
+allDir :: [Dir]
+allDir = [North ..]
 
 -- All of these instances are described in my day 12 writeup
 instance Semigroup Dir where
@@ -3467,8 +3467,8 @@ instance Group D8 where
     invert (D8 x False) = D8 (invert x) False
     invert (D8 x True ) = D8 x          True
 
-allD8 :: NonEmpty D8
-allD8 = D8 <$> allDir <*> (False :| [ True ])
+allD8 :: [D8]
+allD8 = D8 <$> allDir <*> [False, True]
 
 -- | Rotate and flip a point by a 'D8'
 orientPoint :: Num a => D8 -> V2 a -> V2 a
@@ -3517,7 +3517,7 @@ toTiles ps = ((core, getEdge), M.toList (map swap oToEdge))
     oMap      = M.fromList oToEdge
     oToEdge   =
         [ (o, mapMaybeSet (\(V2 x y) -> x <$ guard (y == 0)) ps')
-        | o <- toList allD8
+        | o <- allD8
         , let ps' = shiftToZero $ orientPoint (invert o) `S.map` ps
         ]
 ```
@@ -3608,7 +3608,7 @@ assembleMap tileMap tiles0 =
         -> Int              -- ^ tile id
         -> f Dir            -- ^ edges to insert
         -> Map Edge (Point, Dir)
-    toQueue p0 o tileId ds = M.fromList $ toList ds <&> \d ->   -- for each dir
+    toQueue p0 o tileId ds = M.fromList $ ds <&> \d ->   -- for each dir
         ( (tileMap IM.! tileId) (o <> D8 d False)   -- the edge
         , ( p0 + rotPoint d (V2 0 (-1))             -- the new point
           , d
@@ -3663,15 +3663,21 @@ And now we try `pokePattern` with the dragon at all orientations until we find
 one that gets any pokes:
 
 ```haskell
+dragon :: Set Point         -- the dragon image
+
 allDragons :: [Set Point]   -- the dragon image at all orientations
+allDragons =
+    [ shiftToZero $ orientPoint o `S.map` dragon
+    | o <- allD8
+    ]
 
 dragonCount
     :: Set Point
     -> Maybe Int
 dragonCount fullMap = listToMaybe
     [ res
-    | drgn <- toList allDragons
-    , let res = S.size $ pokePattern (NES.toSet drgn) fullMap
+    | drgn <- allDragons
+    , let res = S.size $ pokePattern drgn fullMap
     , res /= S.size fullMap
     ]
 ```
