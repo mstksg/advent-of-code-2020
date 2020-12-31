@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Wed, 30 Dec 2020 19:47:00 EST</lastBuildDate>
+    <lastBuildDate>Wed, 30 Dec 2020 19:50:38 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Wed, 30 Dec 2020 19:47:00 EST</pubDate>
+    <pubDate>Wed, 30 Dec 2020 19:50:38 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -543,7 +543,7 @@ that file instead!
 &lt;span id=&quot;cb7-9&quot;&gt;&lt;a href=&quot;#cb7-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , &lt;span class=&quot;kw&quot;&gt;let&lt;/span&gt; res &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; S.size &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; pokePattern (NES.toSet drgn) fullMap&lt;/span&gt;
 &lt;span id=&quot;cb7-10&quot;&gt;&lt;a href=&quot;#cb7-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    , res &lt;span class=&quot;op&quot;&gt;/=&lt;/span&gt; S.size fullMap&lt;/span&gt;
 &lt;span id=&quot;cb7-11&quot;&gt;&lt;a href=&quot;#cb7-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    ]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;And that concludes my solve of what was probably the most complex challenge of the month!&lt;/p&gt;
+&lt;p&gt;And that concludes my solve of what was probably the most complex challenge of the month! Overall a lot of moving parts, but I was at least very happy to be able to use some knowledge of group theory (in particular, how the orientations of a square compose and interact) to break the puzzle down into pieces that were much easier to think about.&lt;/p&gt;
 &lt;h3 id=&quot;day-20-benchmarks&quot;&gt;Day 20 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 20a
 benchmarking...

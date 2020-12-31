@@ -3676,7 +3676,10 @@ dragonCount fullMap = listToMaybe
 ```
 
 And that concludes my solve of what was probably the most complex challenge of
-the month!
+the month!  Overall a lot of moving parts, but I was at least very happy to be
+able to use some knowledge of group theory (in particular, how the orientations
+of a square compose and interact) to break the puzzle down into pieces that
+were much easier to think about.
 
 
 ### Day 20 Benchmarks
