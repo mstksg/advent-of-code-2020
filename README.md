@@ -57,7 +57,7 @@ haddocks][haddock] --- more info below!
 | Day 18    | [x][d18r]   | [x][d18g] | [x][d18h]  | [x][d18b]  |
 | Day 19    | [x][d19r]   | [x][d19g] | [x][d19h]  | [x][d19b]  |
 | Day 20    | [x][d20r]   | [x][d20g] | [x][d20h]  | [x][d20b]  |
-| Day 21    |             | [x][d21g] | [x][d21h]  | [x][d21b]  |
+| Day 21    | [x][d21r]   | [x][d21g] | [x][d21h]  | [x][d21b]  |
 | Day 22    | [x][d22r]   | [x][d22g] | [x][d22h]  | [x][d22b]  |
 | Day 23    |             | [x][d23g] | [x][d23h]  | [x][d23b]  |
 | Day 24    |             | [x][d24g] | [x][d24h]  | [x][d24b]  |
@@ -376,6 +376,7 @@ All networking features are powered by *[advent-of-code-api][]*.
 [d20b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-20-benchmarks
 [d21g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day21.hs
 [d21h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day21.html
+[d21r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-21
 [d21b]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-21-benchmarks
 [d22g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day22.hs
 [d22h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day22.html
