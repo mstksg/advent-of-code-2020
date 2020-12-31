@@ -80,6 +80,7 @@ library:
   - aeson
   - ansi-terminal
   - arithmoi
+  - async
   - barbies
   - bitvec
   - bytestring

@@ -13,13 +13,16 @@ module AOC.Challenge.Day17 (
   , pascals
   , neighborWeights
   , neighborWeightsNoCache
+  , loadNeighborWeights
   -- , NCount(..)
   ) where
 
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
+import           Control.Concurrent
 import           Control.DeepSeq             (force, NFData)
+import           Control.Exception
 import           Control.Monad               (unless)
 import           Control.Monad.ST            (runST)
 import           Data.Bifunctor              (second)
@@ -198,7 +201,8 @@ day17 d = MkSol
             nxy     = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = unsafePerformIO $ loadNeighborWeights d 6
+            wts = neighborWeights d 6
+            -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
                  . (!!! 6)
@@ -227,6 +231,8 @@ day17b = day17 2
 --                                      smallcache: 52s
 -- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 -- d=13: ? / 7766482944 -- sqlite3 cache: 13.4s
+-- d=14: ? / 39942504448 -- sqlite3 cache: 21.6s
+-- d=15: ? / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s)
 
 parseMap
     :: String
@@ -253,18 +259,28 @@ cacheNeighborWeights
 cacheNeighborWeights conn d mx = do
     D.executeNamed conn
       "DELETE FROM cache WHERE dim = :d" [ ":d" D.:= d ]
-    for_ (chunkUp <$> chunksOf 10_000_000 (neighborPairs d mx)) $ \pmap -> do
-      let chunky   = IM.size pmap
-          bunky    = sum $ IM.size <$> pmap
-          lastSeen = fromIntegral $ maximum (fst . IM.findMax <$> pmap) + 1
-      printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
-      D.withTransaction conn $ D.executeMany conn
-        "INSERT INTO cache(dim,source,target,weight) VALUES (?,?,?,?) ON CONFLICT(dim,source,target) DO UPDATE SET weight = weight + ? WHERE weight < 4"
-        [ (d, x, y, c, c)
-        | (x, ys) <- IM.toList pmap
-        , (y, z ) <- IM.toList ys
-        , let c = fromCount z
-        ]
+    dbsem <- newQSem 1
+    threadsem <- newQSem 5
+    done <- newEmptyMVar
+    forEnd_ (chunkUp <$> chunksOf 10_000_000 (neighborPairs d mx)) (putMVar done ()) $ \pmap -> do
+      waitQSem threadsem
+      forkIO $ do
+        let chunky   = IM.size pmap
+            bunky    = sum $ IM.size <$> pmap
+            lastSeen = fromIntegral $ maximum (fst . IM.findMax <$> pmap) + 1
+        _ <- evaluate $ force pmap
+        bracket_ (waitQSem dbsem) (signalQSem dbsem) $ do
+          printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
+          D.withTransaction conn $ D.executeMany conn
+            "INSERT INTO cache(dim,source,target,weight) VALUES (?,?,?,?) ON CONFLICT(dim,source,target) DO UPDATE SET weight = weight + ? WHERE weight < 4"
+            [ (d, x, y, c, c)
+            | (x, ys) <- IM.toList pmap
+            , (y, z ) <- IM.toList ys
+            , let c = fromCount z
+            ]
+        signalQSem threadsem
+    takeMVar done
+    threadDelay 1000000
   where
     fromCount :: NCount -> Int
     fromCount = \case
@@ -276,6 +292,17 @@ cacheNeighborWeights conn d mx = do
     n = fromIntegral (pascals !! d !! mx)
     chunkUp = IM.fromListWith (IM.unionWith (<>))
             . (map . second) (`IM.singleton` NOne)
+
+forEnd_
+    :: Applicative m
+    => [a]
+    -> m b
+    -> (a -> m c)
+    -> m b
+forEnd_ xs0 ender f = go xs0
+  where
+    go []     = ender
+    go (x:xs) = f x *> go xs
 
 loadCache
     :: D.Connection
