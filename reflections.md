@@ -44,6 +44,7 @@ Table of Contents
 * [Day 22](#day-22)
 * [Day 23](#day-23)
 * [Day 24](#day-24)
+* [Day 25](#day-25)
 
 Day 1
 ------
@@ -4432,5 +4433,80 @@ time                 276.7 ms   (264.5 ms .. 284.2 ms)
 mean                 277.7 ms   (275.0 ms .. 280.3 ms)
 std dev              3.348 ms   (1.951 ms .. 4.853 ms)
 variance introduced by outliers: 16% (moderately inflated)
+```
+
+
+
+Day 25
+------
+
+<!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day25.md`.  If you want to edit this, edit
+that file instead!
+-->
+
+*[Prompt][d25p]* / *[Code][d25g]* / *[Rendered][d25h]* / *[Standalone Reflection Page][d25r]*
+
+[d25p]: https://adventofcode.com/2020/day/25
+[d25g]: https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day25.hs
+[d25h]: https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day25.html
+[d25r]: https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md
+
+Merry Christmas everyone, it's December 25th :D
+
+The Christmas Problem is usually supposed to be a quick and concise one, since
+Eric wants people to spend the holiday with their family.  This one is a bit
+obscured in the jargon, but once you sort through it, the solution ends up
+being pretty tidy :)
+
+In the end you are exponentiating the number 7 by a given number of times (the
+loop count) to get the number you see.  So you're solving `7^x = <your
+number>`...so that's basically a logarithm!
+
+The *[arithmoi](https://hackage.haskell.org/package/arithmoi)* library (which I
+previously used in problems like Day 13) offers a nice discrete logarithm
+function, so that's really all we need to use:
+
+
+```haskell
+type Magic = 20201227
+
+magicGroup :: CyclicGroup Integer Magic
+Just magicGroup = cyclicGroup
+
+primBase :: PrimitiveRoot Magic
+Just primBase = isPrimitiveRoot magicGroup 7
+
+findSecret :: Mod Magic -> Maybe Natural
+findSecret = fmap (discreteLogarithm magicGroup primBase)
+           . isMultElement
+```
+
+And so our final solution is just (after converting the input numbers to the
+`Mod Magic` data type)...
+
+```haskell
+day25 :: Mod Magic -> Mod Magic -> Maybe Integer
+day52 x y = do
+    secret <- findSecret x
+    pure . getVal $ y ^% secret         -- exponentiate by the loop count
+```
+
+Merry Christmas to everyone, and happy New Years too.  Thank you for reading
+these reflections, and I hope they have been helpful in some way :)  Special
+thanks to Eric Wastl too for such a great event as always.  Until next year!
+
+
+### Day 25 Benchmarks
+
+```
+>> Day 25a
+benchmarking...
+time                 22.34 ms   (14.39 ms .. 33.08 ms)
+                     0.417 R²   (0.270 R² .. 0.655 R²)
+mean                 15.34 ms   (10.74 ms .. 21.22 ms)
+std dev              13.35 ms   (10.16 ms .. 20.18 ms)
+variance introduced by outliers: 96% (severely inflated)
 ```
 

@@ -7,11 +7,54 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Wed, 30 Dec 2020 21:08:02 EST</lastBuildDate>
+    <lastBuildDate>Wed, 30 Dec 2020 22:25:40 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Wed, 30 Dec 2020 21:08:02 EST</pubDate>
+    <pubDate>Wed, 30 Dec 2020 22:25:40 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
+    <item>
+      <title>Day 25</title>
+      <description>&lt;h2 id=&quot;day-25&quot;&gt;Day 25&lt;/h2&gt;
+&lt;!--
+This section is generated and compiled by the build script at ./Build.hs from
+the file `./reflections/day25.md`.  If you want to edit this, edit
+that file instead!
+--&gt;
+&lt;p&gt;&lt;em&gt;&lt;a href=&quot;https://adventofcode.com/2020/day/25&quot;&gt;Prompt&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/src/AOC/Challenge/Day25.hs&quot;&gt;Code&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://mstksg.github.io/advent-of-code-2020/src/AOC.Challenge.Day25.html&quot;&gt;Rendered&lt;/a&gt;&lt;/em&gt; / &lt;em&gt;&lt;a href=&quot;https://github.com/mstksg/advent-of-code-2020/blob/master/reflections-out/day25.md&quot;&gt;Standalone Reflection Page&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Merry Christmas everyone, it’s December 25th :D&lt;/p&gt;
+&lt;p&gt;The Christmas Problem is usually supposed to be a quick and concise one, since Eric wants people to spend the holiday with their family. This one is a bit obscured in the jargon, but once you sort through it, the solution ends up being pretty tidy :)&lt;/p&gt;
+&lt;p&gt;In the end you are exponentiating the number 7 by a given number of times (the loop count) to get the number you see. So you’re solving &lt;code&gt;7^x = &amp;lt;your number&amp;gt;&lt;/code&gt;…so that’s basically a logarithm!&lt;/p&gt;
+&lt;p&gt;The &lt;em&gt;&lt;a href=&quot;https://hackage.haskell.org/package/arithmoi&quot;&gt;arithmoi&lt;/a&gt;&lt;/em&gt; library (which I previously used in problems like Day 13) offers a nice discrete logarithm function, so that’s really all we need to use:&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb1&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb1-1&quot;&gt;&lt;a href=&quot;#cb1-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;20201227&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-2&quot;&gt;&lt;a href=&quot;#cb1-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-3&quot;&gt;&lt;a href=&quot;#cb1-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;magicGroup ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;CyclicGroup&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Integer&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-4&quot;&gt;&lt;a href=&quot;#cb1-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; magicGroup &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; cyclicGroup&lt;/span&gt;
+&lt;span id=&quot;cb1-5&quot;&gt;&lt;a href=&quot;#cb1-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-6&quot;&gt;&lt;a href=&quot;#cb1-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;primBase ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;PrimitiveRoot&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-7&quot;&gt;&lt;a href=&quot;#cb1-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;dt&quot;&gt;Just&lt;/span&gt; primBase &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; isPrimitiveRoot magicGroup &lt;span class=&quot;dv&quot;&gt;7&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-8&quot;&gt;&lt;a href=&quot;#cb1-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-9&quot;&gt;&lt;a href=&quot;#cb1-9&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;findSecret ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Mod&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Natural&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb1-10&quot;&gt;&lt;a href=&quot;#cb1-10&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;findSecret &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;fmap&lt;/span&gt; (discreteLogarithm magicGroup primBase)&lt;/span&gt;
+&lt;span id=&quot;cb1-11&quot;&gt;&lt;a href=&quot;#cb1-11&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;           &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; isMultElement&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And so our final solution is just (after converting the input numbers to the &lt;code&gt;Mod Magic&lt;/code&gt; data type)…&lt;/p&gt;
+&lt;div class=&quot;sourceCode&quot; id=&quot;cb2&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb2-1&quot;&gt;&lt;a href=&quot;#cb2-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;day25 ::&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Mod&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Mod&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Magic&lt;/span&gt; &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Integer&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-2&quot;&gt;&lt;a href=&quot;#cb2-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;day52 x y &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;do&lt;/span&gt;&lt;/span&gt;
+&lt;span id=&quot;cb2-3&quot;&gt;&lt;a href=&quot;#cb2-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    secret &lt;span class=&quot;ot&quot;&gt;&amp;lt;-&lt;/span&gt; findSecret x&lt;/span&gt;
+&lt;span id=&quot;cb2-4&quot;&gt;&lt;a href=&quot;#cb2-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;fu&quot;&gt;pure&lt;/span&gt; &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; getVal &lt;span class=&quot;op&quot;&gt;$&lt;/span&gt; y &lt;span class=&quot;op&quot;&gt;^%&lt;/span&gt; secret         &lt;span class=&quot;co&quot;&gt;-- exponentiate by the loop count&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Merry Christmas to everyone, and happy New Years too. Thank you for reading these reflections, and I hope they have been helpful in some way :) Special thanks to Eric Wastl too for such a great event as always. Until next year!&lt;/p&gt;
+&lt;h3 id=&quot;day-25-benchmarks&quot;&gt;Day 25 Benchmarks&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 25a
+benchmarking...
+time                 22.34 ms   (14.39 ms .. 33.08 ms)
+                     0.417 R²   (0.270 R² .. 0.655 R²)
+mean                 15.34 ms   (10.74 ms .. 21.22 ms)
+std dev              13.35 ms   (10.16 ms .. 20.18 ms)
+variance introduced by outliers: 96% (severely inflated)&lt;/code&gt;&lt;/pre&gt;
+</description>
+      <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-25</link>
+      <pubDate>Fri, 25 Dec 2020 01:00:00 EST</pubDate>
+    </item>
+
     <item>
       <title>Day 24</title>
       <description>&lt;h2 id=&quot;day-24&quot;&gt;Day 24&lt;/h2&gt;
