@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unused-imports   #-}
-{-# OPTIONS_GHC -Wno-unused-top-binds #-}
-
 -- |
 -- Module      : AOC.Challenge.Day25
 -- License     : BSD3
@@ -9,54 +6,37 @@
 -- Portability : non-portable
 --
 -- Day 25.  See "AOC.Solver" for the types used in this module!
---
--- After completing the challenge, it is recommended to:
---
--- *   Replace "AOC.Prelude" imports to specific modules (with explicit
---     imports) for readability.
--- *   Remove the @-Wno-unused-imports@ and @-Wno-unused-top-binds@
---     pragmas.
--- *   Replace the partial type signatures underscores in the solution
---     types @_ :~> _@ with the actual types of inputs and outputs of the
---     solution.  You can delete the type signatures completely and GHC
---     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day25 (
     day25a
   ) where
 
-import           AOC.Prelude
+import           AOC.Common                         (_ListTup)
+import           AOC.Solver                         ((:~>)(..))
+import           Control.Lens                       (preview)
+import           Control.Monad                      ((<=<))
+import           Math.NumberTheory.Moduli           (Mod, PrimitiveRoot, (^%), getVal, isMultElement, discreteLogarithm, isPrimitiveRoot)
+import           Math.NumberTheory.Moduli.Singleton (CyclicGroup, cyclicGroup)
+import           Numeric.Natural                    (Natural)
+import           Text.Read                          (readMaybe)
 
-import qualified Data.Graph.Inductive           as G
-import qualified Data.IntMap                    as IM
-import qualified Data.IntSet                    as IS
-import qualified Data.List.NonEmpty             as NE
-import qualified Data.List.PointedList          as PL
-import qualified Data.List.PointedList.Circular as PLC
-import qualified Data.Map                       as M
-import qualified Data.OrdPSQ                    as PSQ
-import qualified Data.Sequence                  as Seq
-import qualified Data.Set                       as S
-import qualified Data.Text                      as T
-import qualified Data.Vector                    as V
-import qualified Linear                         as L
-import qualified Text.Megaparsec                as P
-import qualified Text.Megaparsec.Char           as P
-import qualified Text.Megaparsec.Char.Lexer     as PP
+type Magic = 20201227
 
-trans :: Int -> [Int]
-trans subj = iterate (\y -> (y * subj) `mod` 20201227) subj
+magicGroup :: CyclicGroup Integer Magic
+Just magicGroup = cyclicGroup
 
-day25a :: _ :~> _
+primBase :: PrimitiveRoot Magic
+Just primBase = isPrimitiveRoot magicGroup 7
+
+findSecret :: Mod Magic -> Maybe Natural
+findSecret = fmap (discreteLogarithm magicGroup primBase)
+           . isMultElement
+
+day25a :: (Mod Magic, Mod Magic) :~> Integer
 day25a = MkSol
-    { sParse = Just . (\[x,y] -> (read @Int x, read @Int y)) . lines
+    { sParse = preview _ListTup
+           <=< traverse (fmap fromInteger . readMaybe)
+             . lines
     , sShow  = show
-    , sSolve = \(x, y) -> do
-        lpszX <- findIndex (== x) (trans 7)
-        lpszY <- findIndex (== y) (trans 7)
-        let encs = freqs $ do
-              lpsz <- [lpszX, lpszY]
-              val  <- [x,y]
-              pure $ trans val !!! lpsz
-        fst <$> maximumVal encs
+    , sSolve = \(x, y) -> getVal . (y ^%) <$> findSecret x
     }
