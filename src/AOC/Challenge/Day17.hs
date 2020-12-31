@@ -17,13 +17,16 @@ module AOC.Challenge.Day17 (
   -- , NCount(..)
   ) where
 
+-- import           System.IO.Unsafe         (unsafePerformIO)
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
-import           Control.Concurrent
+import           Control.Concurrent          (forkIO, threadDelay)
+import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
+import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
-import           Control.Exception
-import           Control.Monad               (unless)
+import           Control.Exception           (bracket_, evaluate)
+import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Data.Bifunctor              (second)
 import           Data.Coerce                 (coerce)
@@ -35,7 +38,6 @@ import           Data.List.Split             (chunksOf)
 import           Data.Set                    (Set)
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
-import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
@@ -221,18 +223,18 @@ day17b = day17 2
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
 -- d=7: 178720 / 502240; 7.7s   -- with pre-neighbs: 356ms (no cache: 290ms)
--- d=8: ? / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms) (smallcache: 920ms)
+-- d=8: 900288 / 2567360; 30s        -- with pre-neighbs: 1.2s (no cache: 690ms) (smallcache: 920ms)
 -- d=9: 4333056 / 12764416; 2m20s   -- with pre-neighbs: 4.8s (no cache: 1.5s)
 --                                                  no knownnat: 4.3s
--- d=10: ? / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
+-- d=10: 20251648 / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
 --                                      no knownnat: 19s
 --                                      smallcache: 12s
--- d=11: ? / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
+-- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
--- d=12: ? / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
--- d=13: ? / 7766482944 -- sqlite3 cache: 13.4s
--- d=14: ? / 39942504448 -- sqlite3 cache: 21.6s
--- d=15: ? / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s)
+-- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
+-- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
+-- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
+-- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s)
 
 parseMap
     :: String
@@ -262,7 +264,7 @@ cacheNeighborWeights conn d mx = do
     dbsem <- newQSem 1
     threadsem <- newQSem 5
     done <- newEmptyMVar
-    forEnd_ (chunkUp <$> chunksOf 10_000_000 (neighborPairs d mx)) (putMVar done ()) $ \pmap -> do
+    forEnd_ (chunkUp <$> chunksOf 10_000_000 (neighborPairs d mx)) $ \isLast pmap -> do
       waitQSem threadsem
       forkIO $ do
         let chunky   = IM.size pmap
@@ -279,6 +281,7 @@ cacheNeighborWeights conn d mx = do
             , let c = fromCount z
             ]
         signalQSem threadsem
+        when isLast $ putMVar done ()
     takeMVar done
     threadDelay 1000000
   where
@@ -296,13 +299,13 @@ cacheNeighborWeights conn d mx = do
 forEnd_
     :: Applicative m
     => [a]
-    -> m b
-    -> (a -> m c)
-    -> m b
-forEnd_ xs0 ender f = go xs0
+    -> (Bool -> a -> m c)
+    -> m ()
+forEnd_ xs0 f = go xs0
   where
-    go []     = ender
-    go (x:xs) = f x *> go xs
+    go []     = pure ()
+    go [x]    = void $ f True x
+    go (x:xs) = f False x *> go xs
 
 loadCache
     :: D.Connection
