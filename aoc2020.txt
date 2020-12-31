@@ -8120,7 +8120,7 @@ day17a :: Set Point :~> Int
 day17b :: Set Point :~> Int
 pascals :: [[Int]]
 neighborWeights :: Int -> Int -> Vector (IntMap NCount)
-neighborWeightsNoCache :: Int -> Int -> a -> Vector (IntMap NCount)
+oldNeighborWeights :: Int -> Int -> Vector (IntMap NCount)
 loadNeighborWeights :: Int -> Int -> IO (Vector (IntMap NCount))
 instance GHC.Generics.Generic AOC.Challenge.Day17.NCount
 instance GHC.Classes.Ord AOC.Challenge.Day17.NCount
@@ -8414,14 +8414,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2GpA
-mainRunOpts :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA MainRunOpts
-mroActual :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA Bool
-mroBench :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA Bool
-mroInput :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA Bool
-mroSpec :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA TestSpec
-mroTest :: HasMainRunOpts c_a2GpA => Lens' c_a2GpA Bool
+class HasMainRunOpts c_a2GR5
+mainRunOpts :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 MainRunOpts
+mroActual :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 Bool
+mroBench :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 Bool
+mroInput :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 Bool
+mroSpec :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 TestSpec
+mroTest :: HasMainRunOpts c_a2GR5 => Lens' c_a2GR5 Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8434,10 +8434,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2Gx3
-mainViewOpts :: HasMainViewOpts c_a2Gx3 => Lens' c_a2Gx3 MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2Gx3 => Lens' c_a2Gx3 TestSpec
-mvoWait :: HasMainViewOpts c_a2Gx3 => Lens' c_a2Gx3 Bool
+class HasMainViewOpts c_a2GYy
+mainViewOpts :: HasMainViewOpts c_a2GYy => Lens' c_a2GYy MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2GYy => Lens' c_a2GYy TestSpec
+mvoWait :: HasMainViewOpts c_a2GYy => Lens' c_a2GYy Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8462,13 +8462,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2GBB
-mainSubmitOpts :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB Bool
-msoLock :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB Bool
-msoRetry :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB Bool
-msoSpec :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2GBB => Lens' c_a2GBB Bool
+class HasMainSubmitOpts c_a2H36
+mainSubmitOpts :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 Bool
+msoLock :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 Bool
+msoRetry :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 Bool
+msoSpec :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2H36 => Lens' c_a2H36 Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
