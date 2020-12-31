@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Wed, 30 Dec 2020 23:26:12 EST</lastBuildDate>
+    <lastBuildDate>Thu, 31 Dec 2020 14:31:52 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Wed, 30 Dec 2020 23:26:12 EST</pubDate>
+    <pubDate>Thu, 31 Dec 2020 14:31:52 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -45,11 +45,11 @@ that file instead!
 &lt;h3 id=&quot;day-25-benchmarks&quot;&gt;Day 25 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 25a
 benchmarking...
-time                 22.34 ms   (14.39 ms .. 33.08 ms)
-                     0.417 R²   (0.270 R² .. 0.655 R²)
-mean                 15.34 ms   (10.74 ms .. 21.22 ms)
-std dev              13.35 ms   (10.16 ms .. 20.18 ms)
-variance introduced by outliers: 96% (severely inflated)&lt;/code&gt;&lt;/pre&gt;
+time                 1.321 ms   (1.274 ms .. 1.358 ms)
+                     0.992 R²   (0.987 R² .. 0.996 R²)
+mean                 1.289 ms   (1.263 ms .. 1.319 ms)
+std dev              77.97 μs   (68.99 μs .. 92.69 μs)
+variance introduced by outliers: 47% (moderately inflated)&lt;/code&gt;&lt;/pre&gt;
 </description>
       <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md#day-25</link>
       <pubDate>Fri, 25 Dec 2020 01:00:00 EST</pubDate>
@@ -1015,8 +1015,8 @@ that file instead!
 &lt;span id=&quot;cb4-2&quot;&gt;&lt;a href=&quot;#cb4-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;part1 &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; S.size &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; (&lt;span class=&quot;op&quot;&gt;!!&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;6&lt;/span&gt;) &lt;span class=&quot;op&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;iterate&lt;/span&gt; stepper&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;And for part 2…notice that all of our code actually never does anything &lt;em&gt;specific&lt;/em&gt; to &lt;code&gt;V3&lt;/code&gt;! In fact, if we leave the type signatures of &lt;code&gt;neighbsSet&lt;/code&gt; and &lt;code&gt;neighborMap&lt;/code&gt; and &lt;code&gt;stepper&lt;/code&gt; off, GHC will actually suggest more general type signatures for us.&lt;/p&gt;
 &lt;div class=&quot;sourceCode&quot; id=&quot;cb5&quot;&gt;&lt;pre class=&quot;sourceCode haskell&quot;&gt;&lt;code class=&quot;sourceCode haskell&quot;&gt;&lt;span id=&quot;cb5-1&quot;&gt;&lt;a href=&quot;#cb5-1&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;neighbsSet&lt;/span&gt;
-&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Applicative&lt;/span&gt; f, &lt;span class=&quot;dt&quot;&gt;Num&lt;/span&gt; a, &lt;span class=&quot;dt&quot;&gt;Eq&lt;/span&gt; (f a), &lt;span class=&quot;dt&quot;&gt;Traversable&lt;/span&gt; f)&lt;/span&gt;
-&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;V3&lt;/span&gt; a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;V3&lt;/span&gt; a)&lt;/span&gt;
+&lt;span id=&quot;cb5-2&quot;&gt;&lt;a href=&quot;#cb5-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Applicative&lt;/span&gt; f, &lt;span class=&quot;dt&quot;&gt;Num&lt;/span&gt; a, &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; (f a), &lt;span class=&quot;dt&quot;&gt;Traversable&lt;/span&gt; f)&lt;/span&gt;
+&lt;span id=&quot;cb5-3&quot;&gt;&lt;a href=&quot;#cb5-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    &lt;span class=&quot;ot&quot;&gt;=&amp;gt;&lt;/span&gt; f a &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;dt&quot;&gt;Set&lt;/span&gt; (f a)&lt;/span&gt;
 &lt;span id=&quot;cb5-4&quot;&gt;&lt;a href=&quot;#cb5-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;/span&gt;
 &lt;span id=&quot;cb5-5&quot;&gt;&lt;a href=&quot;#cb5-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;neighborMap&lt;/span&gt;
 &lt;span id=&quot;cb5-6&quot;&gt;&lt;a href=&quot;#cb5-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;&lt;span class=&quot;ot&quot;&gt;    ::&lt;/span&gt; (&lt;span class=&quot;dt&quot;&gt;Applicative&lt;/span&gt; f, &lt;span class=&quot;dt&quot;&gt;Num&lt;/span&gt; a, &lt;span class=&quot;dt&quot;&gt;Ord&lt;/span&gt; (f a), &lt;span class=&quot;dt&quot;&gt;Traversable&lt;/span&gt; f)&lt;/span&gt;

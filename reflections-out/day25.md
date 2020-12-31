@@ -97,10 +97,10 @@ thanks to Eric Wastl too for such a great event as always.  Until next year!
 ```
 >> Day 25a
 benchmarking...
-time                 22.34 ms   (14.39 ms .. 33.08 ms)
-                     0.417 R²   (0.270 R² .. 0.655 R²)
-mean                 15.34 ms   (10.74 ms .. 21.22 ms)
-std dev              13.35 ms   (10.16 ms .. 20.18 ms)
-variance introduced by outliers: 96% (severely inflated)
+time                 1.321 ms   (1.274 ms .. 1.358 ms)
+                     0.992 R²   (0.987 R² .. 0.996 R²)
+mean                 1.289 ms   (1.263 ms .. 1.319 ms)
+std dev              77.97 μs   (68.99 μs .. 92.69 μs)
+variance introduced by outliers: 47% (moderately inflated)
 ```
 

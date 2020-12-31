@@ -95,8 +95,8 @@ type signatures for us.
 
 ```haskell
 neighbsSet
-    :: (Applicative f, Num a, Eq (f a), Traversable f)
-    => V3 a -> Set (V3 a)
+    :: (Applicative f, Num a, Ord (f a), Traversable f)
+    => f a -> Set (f a)
 
 neighborMap
     :: (Applicative f, Num a, Ord (f a), Traversable f)
