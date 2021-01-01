@@ -37,11 +37,13 @@ import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.Split             (chunksOf)
+import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
+import qualified Control.Foldl               as F
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
@@ -204,6 +206,8 @@ continuousRunNeighbors_ mx n r = ((unchanged, 1):) . map wt . flip evalStateT r 
     let res = IM.filter (> 0) $ IM.insert lastVal lastCall xs
     res <$ guard (res /= unchanged)
   where
+    -- unchanged has to be the first item for the 'tail' trick to work in
+    -- pointRunNeighbs
     unchanged :: IntMap Int
     unchanged = IM.singleton n r
     go :: StateT Int [] Int
@@ -237,14 +241,17 @@ allPointRuns d mx = flip evalStateT d $ do
 
 -- | All neighbors (and weights) for a given point run
 pointRunNeighbs
-    :: Int    -- ^ max
-    -> IntMap Int     -- ^ point runs
+    :: Int                     -- ^ max
+    -> IntMap Int              -- ^ point runs
     -> [(IntMap Int, Int)]     -- ^ neighbs and weights (potential duplicates)
-pointRunNeighbs mx p = map (bimap (IM.unionsWith (+)) product . unzip)
+pointRunNeighbs mx p = map (F.fold aggr)
                      . tail
                      . traverse (\(n, r) -> continuousRunNeighbors mx n r)
                      . IM.toList
                      $ p
+  where
+    aggr = (,) <$> F.foldMap @(MIM.MonoidalIntMap (Sum Int)) (coerce . fst) coerce
+               <*> F.premap snd F.product
 
 neighborPairs
     :: Int    -- ^ dimension
