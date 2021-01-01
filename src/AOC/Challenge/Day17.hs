@@ -16,6 +16,7 @@ module AOC.Challenge.Day17 (
   , neighborPairs
   , loadNeighborWeights
   , continuousRunNeighbors
+  , pointRunNeighbs
   -- , NCount(..)
   ) where
 
@@ -46,7 +47,7 @@ import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
 import qualified Control.Foldl               as F
-import qualified Data.IntMap                 as IM
+import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
 import qualified Data.MemoCombinators        as Memo
@@ -59,8 +60,7 @@ pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 
 pascalIx :: [Int] -> Int
-pascalIx = sum
-         . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
+pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
 
 ixPascal
     :: Int      -- ^ dimension
@@ -234,15 +234,19 @@ allPointRuns
     -> Int    -- ^ max
     -> [IntMap Int]
 allPointRuns d mx = flip evalStateT d $ do
-    xs <- sequenceA (IM.fromSet (const go) (IS.fromList [0..mx-1]))
+    xs <- fmap (IM.fromDistinctAscList . catMaybes) . traverse (\o -> fmap (o,) <$> go) $ [0 .. mx-1]
     lastCall <- get
-    pure . IM.filter (> 0) $ IM.insert mx lastCall xs
+    let ys
+          | lastCall > 0 = IM.insert mx lastCall xs
+          | otherwise    = xs
+    pure ys
   where
-    go :: StateT Int [] Int
+    go :: StateT Int [] (Maybe Int)
     go = StateT $ \i ->
-      [ (j, i - j)
-      | j <- [0..i]
-      ]
+        (Nothing, i)
+      : [ (Just j, i - j)
+        | j <- [1..i]
+        ]
 
 -- | All neighbors (and weights) for a given point run
 pointRunNeighbs
@@ -255,8 +259,8 @@ pointRunNeighbs mx p = map (F.fold aggr)
                      . IM.toList
                      $ p
   where
-    aggr = (,) <$> F.foldMap @(MIM.MonoidalIntMap (Sum Int)) (coerce . fst) coerce
-               <*> F.premap snd (F.Fold mulNCount NOne id)
+    aggr = (,) <$> F.Fold (\c (d, _) -> IM.unionWith (+) c d) IM.empty id
+               <*> F.Fold (\c (_, d) -> c `mulNCount` d) NOne id
 
 mulNCount :: NCount -> NCount -> NCount
 mulNCount = \case
@@ -289,6 +293,7 @@ neighborWeights
     -> V.Vector (IntMap NCount)
 neighborWeights d mx = runST $ do
     v <- MV.replicate n IM.empty
+    -- maybe keep a map of "done" pG/pX pairs and skip those
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v

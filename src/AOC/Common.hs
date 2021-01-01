@@ -87,6 +87,7 @@ module AOC.Common (
   , mapMaybeSet
   , symDiff
   , unfoldedIterate
+  , memo4
   -- * Parsers
   , TokStream(..)
   , parseTokStream
@@ -164,6 +165,7 @@ import qualified Data.IntPSQ                        as IntPSQ
 import qualified Data.List.NonEmpty                 as NE
 import qualified Data.Map                           as M
 import qualified Data.Map.NonEmpty                  as NEM
+import qualified Data.MemoCombinators               as Memo
 import qualified Data.OrdPSQ                        as OrdPSQ
 import qualified Data.Sequence                      as Seq
 import qualified Data.Set                           as S
@@ -835,6 +837,12 @@ mapMaybeSet f = S.fromList . mapMaybe f . S.toList
 
 symDiff :: Ord a => Set a -> Set a -> Set a
 symDiff x y = (x `S.union` y) S.\\ (x `S.intersection` y)
+
+memo4
+    :: Memo.Memo a -> Memo.Memo b -> Memo.Memo c -> Memo.Memo d
+    -> (a -> b -> c -> d -> r)
+    -> (a -> b -> c -> d -> r)
+memo4 a b c d = a . (Memo.memo3 b c d .)
 
 anaM
     :: (Monad m, R.Corecursive t, Traversable (R.Base t))

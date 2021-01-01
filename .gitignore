@@ -13,3 +13,5 @@ _*
 /tags
 /scratch
 /cache
+*.prof
+*.prof.html
