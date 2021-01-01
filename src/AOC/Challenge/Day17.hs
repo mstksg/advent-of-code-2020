@@ -13,11 +13,12 @@ module AOC.Challenge.Day17 (
   , pascals
   , neighborWeights
   , oldNeighborWeights
+  , neighborPairs
   , loadNeighborWeights
+  , continuousRunNeighbors
   -- , NCount(..)
   ) where
 
--- import           System.IO.Unsafe         (unsafePerformIO)
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
@@ -26,7 +27,7 @@ import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
 import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
-import           Control.Monad               (unless, void, when, mfilter)
+import           Control.Monad               (unless, void, when, guard)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..), evalStateT, get)
 import           Data.Bifunctor              (bimap, second)
@@ -36,15 +37,15 @@ import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.Split             (chunksOf)
-import           Data.Map                    (Map)
 import           Data.Set                    (Set)
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
+import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
 import qualified Data.IntMap                 as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntSet                 as IS
-import qualified Data.Map                    as M
+import qualified Data.MemoCombinators        as Memo
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -182,16 +183,29 @@ finalWeight n x = process . freqs $ x
 
 -- | Calculate the neighbors and weights from a continuous run of the same
 -- number
+--
+-- This could be memoized but maybe it doesn't matter, it's pretty fast?
 continuousRunNeighbors
     :: Int      -- ^ max
     -> Int      -- ^ number
     -> Int      -- ^ run length
     -> [(IntMap Int, Int)]    -- ^ neighbors run map, and weight
-continuousRunNeighbors mx n r = map wt . flip evalStateT r $ do
+continuousRunNeighbors = Memo.memo3 Memo.integral Memo.integral Memo.integral
+                            continuousRunNeighbors_
+
+continuousRunNeighbors_
+    :: Int      -- ^ max
+    -> Int      -- ^ number
+    -> Int      -- ^ run length
+    -> [(IntMap Int, Int)]    -- ^ neighbors run map, and weight
+continuousRunNeighbors_ mx n r = ((unchanged, 1):) . map wt . flip evalStateT r $ do
     xs <- sequenceA (IM.fromSet (const go) opts)
     lastCall <- get
-    pure . IM.filter (> 0) $ IM.insert lastVal lastCall xs
+    let res = IM.filter (> 0) $ IM.insert lastVal lastCall xs
+    res <$ guard (res /= unchanged)
   where
+    unchanged :: IntMap Int
+    unchanged = IM.singleton n r
     go :: StateT Int [] Int
     go = StateT $ \i ->
       [ (j, i - j)
@@ -225,10 +239,9 @@ allPointRuns d mx = flip evalStateT d $ do
 pointRunNeighbs
     :: Int    -- ^ max
     -> IntMap Int     -- ^ point runs
-    -> Map (IntMap Int) Int     -- ^ neighbs and weights
-pointRunNeighbs mx p = M.update (mfilter (> 0) . Just . subtract 1) p   -- how to not need to do this heh
-                     . M.fromListWith (+)
-                     . map (bimap (IM.unionsWith (+)) product . unzip)
+    -> [(IntMap Int, Int)]     -- ^ neighbs and weights (potential duplicates)
+pointRunNeighbs mx p = map (bimap (IM.unionsWith (+)) product . unzip)
+                     . tail
                      . traverse (\(n, r) -> continuousRunNeighbors mx n r)
                      . IM.toList
                      $ p
@@ -241,7 +254,7 @@ neighborPairs d mx =
     [ (pG, (pX, w'))
     | x <- allPointRuns d mx
     , let pX = pascalIx (unFreq x)
-    , (g, w) <- M.toList (pointRunNeighbs mx x)
+    , (g, w) <- pointRunNeighbs mx x
     , let pG = pascalIx (unFreq g)
           w' = toNCount w
     ]
@@ -309,7 +322,7 @@ day17b = day17 2
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
--- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s)
+-- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
 
 parseMap
     :: String
@@ -325,12 +338,12 @@ cacheNeighborWeights conn d mx = do
     dbsem <- newQSem 1
     threadsem <- newQSem 5
     done <- newEmptyMVar
-    forEnd_ (chunkUp <$> chunksOf 100_000 (neighborPairs d mx)) $ \isLast pmap -> do
+    forEnd_ (chunkUp <$> chunksOf 1_000_000 (neighborPairs d mx)) $ \isLast pmap -> do
       waitQSem threadsem
       forkIO $ do
         let chunky   = IM.size pmap
             bunky    = sum $ IM.size <$> pmap
-            lastSeen = fromIntegral $ maximum (fst . IM.findMax <$> pmap) + 1
+            lastSeen = n - fromIntegral (maximum (fst . IM.findMax <$> pmap) + 1)
         _ <- evaluate $ force pmap
         bracket_ (waitQSem dbsem) (signalQSem dbsem) $ do
           printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
