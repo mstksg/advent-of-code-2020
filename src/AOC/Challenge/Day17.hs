@@ -30,15 +30,17 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when, guard)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..), evalStateT, get)
-import           Data.Bifunctor              (bimap, second)
+import           Data.Bifunctor              (second)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.Split             (chunksOf)
+import           Data.Maybe                  (catMaybes)
 import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
+import           Data.Tuple.Strict           (T2(..), sfst, ssnd)
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
@@ -191,7 +193,7 @@ continuousRunNeighbors
     :: Int      -- ^ max
     -> Int      -- ^ number
     -> Int      -- ^ run length
-    -> [(IntMap Int, Int)]    -- ^ neighbors run map, and weight
+    -> [(IntMap Int, NCount)]    -- ^ neighbors run map, and weight
 continuousRunNeighbors = Memo.memo3 Memo.integral Memo.integral Memo.integral
                             continuousRunNeighbors_
 
@@ -199,29 +201,32 @@ continuousRunNeighbors_
     :: Int      -- ^ max
     -> Int      -- ^ number
     -> Int      -- ^ run length
-    -> [(IntMap Int, Int)]    -- ^ neighbors run map, and weight
-continuousRunNeighbors_ mx n r = ((unchanged, 1):) . map wt . flip evalStateT r $ do
-    xs <- sequenceA (IM.fromSet (const go) opts)
+    -> [(IntMap Int, NCount)]    -- ^ neighbors run map, and weight
+continuousRunNeighbors_ mx n r = ((IM.singleton n r, NOne):) . map wt . flip evalStateT r $ do
+    xs <- fmap (IM.fromDistinctAscList . catMaybes) . traverse (\o -> fmap (o,) <$> go) $ opts
     lastCall <- get
-    let res = IM.filter (> 0) $ IM.insert lastVal lastCall xs
-    res <$ guard (res /= unchanged)
+    let ys
+          | lastCall > 0 = IM.insertWith addTup lastVal (T2 lastCall (factorial lastCall)) xs
+          | otherwise    = xs
+    ys <$ guard (IM.keysSet ys /= IS.singleton n)
   where
     -- unchanged has to be the first item for the 'tail' trick to work in
     -- pointRunNeighbs
-    unchanged :: IntMap Int
-    unchanged = IM.singleton n r
-    go :: StateT Int [] Int
+    go :: StateT Int [] (Maybe (T2 Int Int))
     go = StateT $ \i ->
-      [ (j, i - j)
-      | j <- [0..i]
-      ]
-    wt :: IntMap Int -> (IntMap Int, Int)
-    wt mp = (mp', factorial r `div` product (factorial <$> mp))
-      where
-        mp' = IM.mapKeysWith (+) abs mp
+        (Nothing, i)
+      : [ ( Just (T2 j (factorial j))
+          , i - j
+          )
+        | j <- [1..i]
+        ]
+    wt :: IntMap (T2 Int Int) -> (IntMap Int, NCount)
+    wt mp = (sfst <$> mp, toNCount $ factorial r `div` product (ssnd <$> mp))
     (opts, lastVal)
-      | n == mx   = (IS.fromList [n-1], n)
-      | otherwise = (IS.fromList [n-1, n], n+1)
+      | n == 0    = ([n, n+1], n+1)
+      | n == mx   = ([n-1], n)
+      | otherwise = ([n-1, n], n+1)
+    addTup (T2 x fx) (T2 y fy) = T2 (x + y) (fx * fy)
 
 -- | All point runs for a given dim and max
 allPointRuns
@@ -241,9 +246,9 @@ allPointRuns d mx = flip evalStateT d $ do
 
 -- | All neighbors (and weights) for a given point run
 pointRunNeighbs
-    :: Int                     -- ^ max
-    -> IntMap Int              -- ^ point runs
-    -> [(IntMap Int, Int)]     -- ^ neighbs and weights (potential duplicates)
+    :: Int                        -- ^ max
+    -> IntMap Int                 -- ^ point runs
+    -> [(IntMap Int, NCount)]     -- ^ neighbs and weights (potential duplicates)
 pointRunNeighbs mx p = map (F.fold aggr)
                      . tail
                      . traverse (\(n, r) -> continuousRunNeighbors mx n r)
@@ -251,19 +256,29 @@ pointRunNeighbs mx p = map (F.fold aggr)
                      $ p
   where
     aggr = (,) <$> F.foldMap @(MIM.MonoidalIntMap (Sum Int)) (coerce . fst) coerce
-               <*> F.premap snd F.product
+               <*> F.premap snd (F.Fold mulNCount NOne id)
+
+mulNCount :: NCount -> NCount -> NCount
+mulNCount = \case
+    NOne -> id
+    NTwo -> \case
+      NOne -> NTwo
+      _    -> NMany
+    NThree -> \case
+      NOne -> NThree
+      _    -> NMany
+    NMany  -> const NMany
 
 neighborPairs
     :: Int    -- ^ dimension
     -> Int    -- ^ maximum
     -> [(Int, (Int, NCount))]
 neighborPairs d mx =
-    [ (pG, (pX, w'))
+    [ (pG, (pX, w))
     | x <- allPointRuns d mx
     , let pX = pascalIx (unFreq x)
     , (g, w) <- pointRunNeighbs mx x
     , let pG = pascalIx (unFreq g)
-          w' = toNCount w
     ]
   where
     unFreq = concatMap (uncurry (flip replicate)) . IM.toList
@@ -282,10 +297,10 @@ neighborWeights d mx = runST $ do
 
 toNCount :: Int -> NCount
 toNCount = \case
-  1 -> NOne
-  2 -> NTwo
-  3 -> NThree
-  _ -> NMany
+    1 -> NOne
+    2 -> NTwo
+    3 -> NThree
+    _ -> NMany
 
 day17
     :: Int
@@ -298,7 +313,8 @@ day17 d = MkSol
             nxy     = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            wts = neighborWeights d 6
+            -- wts = neighborWeights d 6
+            wts = neighborWeights d (6 + length x - length x)   -- force no cache
             -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
@@ -324,9 +340,11 @@ day17b = day17 2
 -- d=10: 20251648 / 62771200; 8m58s    -- with unboxed, 1m6s, with pre-neighb: 21s (no cache: 2.56?)
 --                                      no knownnat: 19s
 --                                      smallcache: 12s
+--                                      smart cache: 4.0s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
+--                total cache + solve:21.9s
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
