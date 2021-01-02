@@ -11,12 +11,21 @@ module AOC.Challenge.Day17 (
     day17a
   , day17b
   , pascals
+  , pascalRunIx
+  , pascalIx
+  , ixPascal
   , neighborWeights
+  , neighborWeights_
   , oldNeighborWeights
   , neighborPairs
+  , neighborPairs_
   , loadNeighborWeights
   , continuousRunNeighbors
   , pointRunNeighbs
+  , allPointRuns
+  , vecRunNeighbs
+  , vecRunNeighbs_
+  , allVecRuns
   -- , NCount(..)
   ) where
 
@@ -30,30 +39,33 @@ import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when, guard)
 import           Control.Monad.ST            (runST)
-import           Control.Monad.State         (StateT(..), evalStateT, get)
+import           Control.Monad.State         (StateT(..), evalStateT, get, modify)
 import           Data.Bifunctor              (second)
 import           Data.Coerce                 (coerce)
-import           Data.Foldable               (toList, for_)
+import           Data.Foldable               (toList, for_, asum)
+import           Control.Monad.Trans.Class
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.Split             (chunksOf)
-import           Data.Maybe                  (catMaybes)
+import           Data.Maybe                  (catMaybes, fromMaybe)
 import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T2(..), sfst, ssnd)
+import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
 import qualified Control.Foldl               as F
-import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntMap.Monoidal.Strict as MIM
+import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
 import qualified Data.MemoCombinators        as Memo
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
+import qualified Data.Vector.Unboxed         as VU
 import qualified Database.SQLite.Simple      as D
 
 pascals :: [[Int]]
@@ -61,6 +73,9 @@ pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 
 pascalIx :: [Int] -> Int
 pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
+
+pascalRunIx :: IntMap Int -> Int
+pascalRunIx = pascalIx . concatMap (uncurry (flip replicate)) . IM.toList
 
 ixPascal
     :: Int      -- ^ dimension
@@ -255,12 +270,149 @@ pointRunNeighbs
     -> [(IntMap Int, NCount)]     -- ^ neighbs and weights (potential duplicates)
 pointRunNeighbs mx p = map (F.fold aggr)
                      . tail
+                     -- whoa! there are some major redundancies here!
+                     -- ie for 111223444, 1079 -> 486
                      . traverse (\(n, r) -> continuousRunNeighbors mx n r)
                      . IM.toList
                      $ p
   where
     aggr = (,) <$> F.Fold (\c (d, _) -> IM.unionWith (+) c d) IM.empty id
                <*> F.Fold (\c (_, d) -> c `mulNCount` d) NOne id
+
+-- lots of waste here too but maybe it's faster?
+-- nice thing is we can go directly to pascal-land
+vecRunNeighbs_
+    :: VU.Vector Int
+    -> [(VU.Vector Int, NCount)]
+-- vecRunNeighbs_ xs0 =
+vecRunNeighbs_ xs0 = tail $
+      -- second (ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
+      second (toNCount . ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
+  where
+    p0 = product . map factorial $ VU.toList xs0
+    go :: Int -> Int -> StateT (T2 (VU.Vector Int) Int) [] Int
+    go i _ = do
+        T2 xs _ <- get
+        let l  = fromMaybe 0 $ xs VU.!? (i-1)
+            r  = xs VU.!? (i+1)
+            x  = xs VU.! i
+            x0 = xs0 VU.! i
+        -- if i == 1, then we double the leftward contribution's
+        -- probability since it could have come from a reflection
+        if i == 1
+          then do
+            asum
+              [ modify $ \(T2 v p) -> T2 v (p `div` factorial lc `div` factorial (l - lc))
+              | lc <- [0 .. l]
+              ]
+          else modify (\(T2 v p) -> T2 v (p `div` factorial l))
+        xContrib <- case r of
+          Nothing -> x <$ modify (\(T2 v p) -> T2 v (p `div` factorial x))
+          Just _  -> asum
+            [ xc <$ modify (\(T2 v p) -> T2 (v VU.// [(i, x-xc)]) (p `div` factorial xc))
+            | xc <- if 0 <= x0 && x0 <= x
+                      then x0 : filter (/= x0) [0..x]
+                      else [0..x]
+            -- | xc <- [0..x]
+            ]
+        rContrib <- case r of
+          Nothing -> pure 0
+          Just r' -> asum
+            [ rc <$ modify (\(T2 v p) -> T2 (v VU.// [(i+1, r'-rc)]) (p `div` factorial rc))
+            | rc <- [0 .. r']
+            ]
+        pure (l + xContrib + rContrib)
+
+-- lots of waste here too but maybe it's faster?
+-- nice thing is we can go directly to pascal-land
+-- same amount of waste as the map method, but we can directly encode
+-- i guess
+vecRunNeighbs
+    :: VU.Vector Int
+    -> [(Int, Int)]
+vecRunNeighbs xs0 = tail $ go 0 0 xs0 p0 ((0:) <$> tail pascals)
+  where
+    p0 = product . map factorial $ VU.toList xs0
+    n  = VU.length xs0
+    go i !tot !xs !p cs
+      | i < n = do
+          (xContrib, xs', p') <- case r of
+            Nothing -> pure (x, xs, p `div` factorial x)
+            Just _  ->
+              [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
+              | xc <- if 0 <= x0 && x0 <= x
+                        then x0 : filter (/= x0) [0 .. x]
+                        else [0..x]
+              ]
+          (rContrib, xs'', p'') <- case r of
+            Nothing -> pure (0, xs', p')
+            Just r' ->
+              [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
+              | rc <- [0 .. r']
+              ]
+          p''' <- if i == 1
+            then
+              [ p'' `div` factorial lc `div` factorial (l - lc)
+              | lc <- [0 .. l]
+              ]
+            else pure (p'' `div` factorial l)
+          let res = l + xContrib + rContrib
+              (c,cs') = splitAt res cs
+              tot'    = tot + sum (map head c)
+          go (i + 1) tot' xs'' p''' (tail <$> cs')
+      | otherwise = pure (tot, p)
+      where
+        l = fromMaybe 0 $ xs VU.!? (i-1)
+        r = xs VU.!? (i+1)
+        x = xs VU.! i
+        x0 = xs0 VU.! i
+
+-- | All point runs for a given dim and max
+allVecRuns
+    :: Int    -- ^ dim
+    -> Int    -- ^ max
+    -> [VU.Vector Int]
+allVecRuns d mx = go 0 d []
+  where
+    go i j rs
+      | i < mx = do
+          k <- [0..j]
+          go (i + 1) (j - k) (k:rs)
+      | otherwise = pure $ VU.fromListN (mx+1) (reverse (j:rs))
+
+-- flip evalStateT d $ do
+--     xs <- fmap (IM.fromDistinctAscList . catMaybes) . traverse (\o -> fmap (o,) <$> go) $ [0 .. mx-1]
+--     lastCall <- get
+--     let ys
+--           | lastCall > 0 = IM.insert mx lastCall xs
+--           | otherwise    = xs
+--     pure ys
+--   where
+--     go :: StateT Int [] (Maybe Int)
+--     go = StateT $ \i ->
+--         (Nothing, i)
+--       : [ (Just j, i - j)
+--         | j <- [1..i]
+--         ]
+
+neighborPairs_
+    :: Int    -- ^ dimension
+    -> Int    -- ^ maximum
+    -> [(Int, (Int, NCount))]
+neighborPairs_ d mx =
+    [ (pG, (pX, toNCount w))
+    | x <- allVecRuns d mx
+    , let pX = pascalIx (unRuns x)
+    , (pG, w) <- vecRunNeighbs x
+    -- , let w' | pG == pX  = w - 1
+    --          | otherwise = w
+    -- , w' > 0
+    -- , w' <- if pG == pX then filter (> 0) [w - 1]
+    --                     else [w]
+    ]
+  where
+    unRuns = concatMap (uncurry (flip replicate)) . zip [0..] . VU.toList
+
 
 mulNCount :: NCount -> NCount -> NCount
 mulNCount = \case
@@ -280,12 +432,10 @@ neighborPairs
 neighborPairs d mx =
     [ (pG, (pX, w))
     | x <- allPointRuns d mx
-    , let pX = pascalIx (unFreq x)
+    , let pX = pascalRunIx x
     , (g, w) <- pointRunNeighbs mx x
-    , let pG = pascalIx (unFreq g)
+    , let pG = pascalRunIx g
     ]
-  where
-    unFreq = concatMap (uncurry (flip replicate)) . IM.toList
 
 neighborWeights
     :: Int            -- ^ dimension
@@ -295,6 +445,20 @@ neighborWeights d mx = runST $ do
     v <- MV.replicate n IM.empty
     -- maybe keep a map of "done" pG/pX pairs and skip those
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
+      MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
+    V.freeze v
+  where
+    n = pascals !! d !! mx
+
+neighborWeights_
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
+    -> V.Vector (IntMap NCount)
+neighborWeights_ d mx = runST $ do
+    v <- MV.replicate n IM.empty
+    -- maybe keep a map of "done" pG/pX pairs and skip those
+    for_ (neighborPairs_ d mx) $ \(pG, (pX, w')) ->
+      -- MV.modify v (IM.insertWith (flip (<>)) pX w') pG
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v
   where
@@ -311,7 +475,7 @@ day17
     :: Int
     -> Set Point :~> Int
 day17 d = MkSol
-    { sParse = Just . parseMap
+    { sParse = Just . parseAsciiSet (== '#')
     , sShow  = show
     , sSolve = \(S.toList->x) ->
         let bounds  = maximum (concatMap toList x) + 1
@@ -319,7 +483,7 @@ day17 d = MkSol
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
-            wts = neighborWeights d (6 + length x - length x)   -- force no cache
+            wts = neighborWeights_ d (6 + length x - length x)   -- force no cache
             -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
@@ -334,7 +498,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 2
+day17b = day17 8
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -349,15 +513,11 @@ day17b = day17 2
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
---                total cache + solve:21.9s
+--                                      smart cache: 21.5s total
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
+--                                      smart cache: 1m10s total
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
-
-parseMap
-    :: String
-    -> Set Point
-parseMap = parseAsciiSet (== '#')
 
 cacheNeighborWeights
     :: D.Connection
