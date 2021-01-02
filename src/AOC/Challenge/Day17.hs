@@ -10,6 +10,10 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
+  , RunTree(..)
+  , runTreeWeightsF
+  , runTreeListF
+  , runTreeNeighbs
   , pascals
   , pascalRunIx
   , pascalIx
@@ -40,18 +44,22 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when, guard)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..), evalStateT, get, modify)
-import           Data.Bifunctor              (second)
+import           Control.Monad.Trans.Class
+import           Data.Bifunctor              (second, first)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_, asum)
-import           Control.Monad.Trans.Class
+import           Data.Functor.Foldable
+import           Data.Functor.Foldable.TH
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
-import           Data.List                   (scanl', sort)
+import           Data.List                   (scanl', sort, foldl1', foldl')
+import           Data.List.NonEmpty          (NonEmpty(..))
 import           Data.List.Split             (chunksOf)
-import           Data.Maybe                  (catMaybes, fromMaybe)
+import           Data.Map                    (Map)
+import           Data.Maybe                  (catMaybes, fromMaybe, maybeToList, mapMaybe)
 import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
-import           Data.Tuple.Strict           (T2(..), sfst, ssnd)
+import           Data.Tuple.Strict           (T2(..), sfst, ssnd, T3(..))
 import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
@@ -61,12 +69,74 @@ import qualified Control.Foldl               as F
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
+import qualified Data.List.NonEmpty          as NE
+import qualified Data.Map.Strict             as M
 import qualified Data.MemoCombinators        as Memo
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
 import qualified Data.Vector.Unboxed         as VU
 import qualified Database.SQLite.Simple      as D
+
+data RunTree k a = RTNode (Map k (RunTree k a))
+                 | RTLeaf a
+  deriving Show
+
+makeBaseFunctor ''RunTree
+
+runTreeNeighbs :: VU.Vector Int -> [(VU.Vector Int, NCount)]
+runTreeNeighbs xs = mapMaybe ((fmap . first) VU.fromList . sequence)
+                  $ hylo runTreeListF (runTreeWeightsF xs) (0, [T3 p0 True xs])
+-- first VU.fromList
+  where
+    p0 = product . map factorial $ VU.toList xs
+
+runTreeListF
+    :: RunTreeF k a [([k],a)]
+    -> [([k], a)]
+runTreeListF = \case
+    RTNodeF mp -> concatMap (\(k, xs) -> map (first (k:)) xs) (M.toList mp)
+    RTLeafF x -> [([], x)]
+
+runTreeWeightsF
+    :: VU.Vector Int                  -- original
+    -> (Int, [T3 Int Bool (VU.Vector Int)])  -- ix, list of weights, whether any modificaiton has occurred, new state
+    -> RunTreeF Int (Maybe NCount) (Int, [T3 Int Bool (VU.Vector Int)])
+runTreeWeightsF xs0 (i, opts)
+    | i < VU.length xs0 = RTNodeF $ (i+1,) <$> M.fromListWith (++) opts'
+    | otherwise         = RTLeafF $ foldMap pullSame $ opts
+  where
+    pullSame (T3 _ True _) = Nothing
+    pullSame (T3 p _    _) = Just (toNCount p)
+    opts' = do
+      T3 p b xs <- opts
+      let l  = fromMaybe 0 $ xs VU.!? (i-1)
+          r  = xs VU.!? (i + 1)
+          x  = xs VU.! i
+          x0 = xs0 VU.! i
+      (xContrib, xs', p') <- case r of
+        Nothing -> pure (x, xs, p `div` factorial x)
+        Just _  ->
+          [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
+          | xc <- [0..x]
+          ]
+      (rContrib, xs'', p'') <- case r of
+        Nothing -> pure (0, xs', p')
+        Just r' ->
+          [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
+          | rc <- [0 .. r']
+          ]
+      -- now there should be a way to compute this closed form
+      -- instead of spawning up to d times number of copies
+      -- well we know half of them are going to be identical..
+      p''' <- if i == 1
+        then
+          [ p'' `div` factorial lc `div` factorial (l - lc)
+          | lc <- [0 .. l]
+          ]
+        else pure (p'' `div` factorial l)
+      let res = l + xContrib + rContrib
+      pure (res, [T3 p''' (b && xContrib == x0) xs''])
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -238,7 +308,7 @@ continuousRunNeighbors_ mx n r = ((IM.singleton n r, NOne):) . map wt . flip eva
     wt :: IntMap (T2 Int Int) -> (IntMap Int, NCount)
     wt mp = (sfst <$> mp, toNCount $ factorial r `div` product (ssnd <$> mp))
     (opts, lastVal)
-      | n == 0    = ([n, n+1], n+1)
+      | n == 0    = ([0, 1], 1)     -- hm, this is wasteful?
       | n == mx   = ([n-1], n)
       | otherwise = ([n-1, n], n+1)
     addTup (T2 x fx) (T2 y fy) = T2 (x + y) (fx * fy)
@@ -272,7 +342,7 @@ pointRunNeighbs mx p = map (F.fold aggr)
                      . tail
                      -- whoa! there are some major redundancies here!
                      -- ie for 111223444, 1079 -> 486
-                     . traverse (\(n, r) -> continuousRunNeighbors mx n r)
+                     . traverse (\(n, r) -> continuousRunNeighbors_ mx n r)
                      . IM.toList
                      $ p
   where
@@ -322,6 +392,7 @@ vecRunNeighbs_ xs0 = tail $
             | rc <- [0 .. r']
             ]
         pure (l + xContrib + rContrib)
+
 
 -- lots of waste here too but maybe it's faster?
 -- nice thing is we can go directly to pascal-land
@@ -466,6 +537,7 @@ neighborWeights_ d mx = runST $ do
 
 toNCount :: Int -> NCount
 toNCount = \case
+    0 -> error "0 ncount"
     1 -> NOne
     2 -> NTwo
     3 -> NThree
