@@ -57,7 +57,7 @@ import           Data.List                   (scanl', sort, foldl1', foldl')
 import           Data.List.NonEmpty          (NonEmpty(..))
 import           Data.List.Split             (chunksOf)
 import           Data.Map                    (Map)
-import           Data.Maybe                  (catMaybes, fromMaybe, maybeToList, mapMaybe)
+import           Data.Maybe                  (catMaybes, fromMaybe, maybeToList, mapMaybe, isJust)
 import           Data.Semigroup              (Sum(..))
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T2(..), sfst, ssnd, T3(..))
@@ -73,6 +73,7 @@ import qualified Data.IntSet                 as IS
 import qualified Data.List.NonEmpty          as NE
 import qualified Data.Map.Strict             as M
 import qualified Data.MemoCombinators        as Memo
+import qualified Data.MemoCombinators.Class  as Memo
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -99,6 +100,7 @@ runTreeListF = \case
     RTNodeF mp -> concatMap (\(k, xs) -> map (first (k:)) xs) (M.toList mp)
     RTLeafF x -> [([], x)]
 
+-- see if we can get the Chunk method ported to here
 runTreeWeightsF
     :: VU.Vector Int                  -- original
     -> (Int, Map (Bool, VU.Vector Int) Int)
@@ -109,8 +111,6 @@ runTreeWeightsF xs0 (i, opts)
   where
     pullSame (True , _) _ = Nothing
     pullSame (_    , _) p = Just (toNCount p)
-    -- pullSame (T3 _ True _) = Nothing
-    -- pullSame (T3 p _    _) = Just (toNCount p)
     opts' = do
       ((b, xs), p) <- M.toList opts
       let l  = fromMaybe 0 $ xs VU.!? (i-1)
@@ -143,6 +143,15 @@ pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
 
 pascalRunIx :: IntMap Int -> Int
 pascalRunIx = pascalIx . concatMap (uncurry (flip replicate)) . IM.toList
+
+pascalVecRunIx :: VU.Vector Int -> Int
+pascalVecRunIx = go 0 ((0:) <$> tail pascals). VU.toList
+  where
+    go !tot !cs = \case
+      []   -> tot
+      x:xs ->
+        let (c,cs') = splitAt x cs
+        in  go (tot + sum (map head c)) (tail <$> cs') xs
 
 ixPascal
     :: Int      -- ^ dimension
@@ -352,37 +361,51 @@ vecRunNeighbs_
     :: VU.Vector Int
     -> [(VU.Vector Int, NCount)]
 vecRunNeighbs_ xs0 =
-      -- second (ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
-      mapMaybe (\(x, (T3 _ b c)) -> if b then Nothing else Just (x, toNCount c))
-      (runStateT (VU.imapM go xs0) (T3 xs0 True p0))
+    mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True p0)
   where
+    pullSame (_, (T3 _ True _)) = Nothing
+    pullSame (x, (T3 _ _    c)) = Just (x, toNCount c)
     p0 = product . map factorial $ VU.toList xs0
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
-    go i _ = do
-        T3 xs _ _ <- get
+    go i _ = StateT $ \(T3 xs b p) -> do
         let l  = fromMaybe 0 $ xs VU.!? (i-1)
             r  = xs VU.!? (i+1)
             x  = xs VU.! i
             x0 = xs0 VU.! i
-        (xrContrib, xContrib) <- case r of
-          Nothing -> (x, x) <$ modify (\(T3 v b p) -> T3 v b (p `div` factorial x))
-          Just r' -> asum
-            [ ( totContrib, xContrib )
-                <$ modify (\(T3 v b p) ->
-                      T3 (v VU.// [(i, x-xContrib),(i+1, r'-rContrib)])
-                         b
-                         (p `div` factorial xContrib `div` factorial rContrib)
-                    )
+        (xrContrib, xs', xContrib, p') <- case r of
+          Nothing -> pure (x, xs, x, p `div` factorial x)
+          Just r' ->
+            [ ( totContrib
+              , xs VU.// [(i, x-xContrib),(i+1, r'-rContrib)]
+              , xContrib
+              , p `div` factorial xContrib `div` factorial rContrib
+              )
             | totContrib <- [0..(x+r')]
             , xContrib <- [max 0 (totContrib-r')..min x totContrib]
             , let rContrib = totContrib - xContrib
             ]
-        if i == 1
-          then modify $ \(T3 v b p) -> T3 v b (p * (2^l))
-          else modify $ \(T3 v b p) -> T3 v b (p `div` factorial l)
-        modify $ \(T3 v b p) -> T3 v (b && xContrib == x0) p
-        pure (l + xrContrib)
+        let p''
+              | i == 1    = p' * (2^l)
+              | otherwise = p' `div` factorial l
+            res = l + xrContrib
+        pure (res, T3 xs' (b && xContrib == x0) p'')
 
+data Chomper a = C { _cLeft2 :: !Bool        -- false if no exist, true if exist
+                   , _cLeft  :: !(Maybe a)
+                   , _cHere  :: !a
+                   , _cOrig  :: !a
+                   , _cRight :: ![a]
+                   }
+
+-- instance Data.MemoTable a => Memo.MemoTable (Chomper a) where
+--     table f = \(C ll l x x0 rs) -> m ll l x x0 rs
+--       where
+--         m = Memo.memoize $ \ll -> Memo.memoize $ \l -> Memo.memoize $ \x ->
+--               Memo.memoize $ \x0 -> Memo.memoize $ \rs -> f (C ll l x x0 rs)
+
+toChomper :: [a] -> Maybe (Chomper a)
+toChomper []     = Nothing
+toChomper (x:xs) = Just (C False Nothing x x xs)
 
 -- lots of waste here too but maybe it's faster?
 -- nice thing is we can go directly to pascal-land
@@ -391,39 +414,44 @@ vecRunNeighbs_ xs0 =
 vecRunNeighbs
     :: VU.Vector Int
     -> [(Int, NCount)]
-vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 0 True xs0 p0 ((0:) <$> tail pascals)
+vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pascals)
   where
+    xs0' = VU.toList xs0
+    Just chomp0 = toChomper xs0'
     pullSame (True, _) = Nothing
     pullSame (_   , x) = Just x
-    p0 = product . map factorial $ VU.toList xs0
-    n  = VU.length xs0
-    go i !tot allSame !xs !p cs
-      | i < n = do
-          (xrContrib, xs', xContrib, p') <- case r of
-            Nothing -> pure (x, xs, x, p `div` factorial x)
-            Just r' ->
-              [ ( totContrib
-                , xs VU.// [(i, x-xContrib),(i+1, r'-rContrib)]
-                , xContrib
+    p0 = product . map factorial $ xs0'
+    go !tot !allSame (C ll l x x0 rs) !p !cs = case rs of
+        []    -> pure $
+          let p'
+                | isJust l && not ll = p * (2 ^ l') `div` factorial x
+                | otherwise          = p `div` factorial l' `div` factorial x
+              res   = l' + x
+              c     = take res cs
+              tot'  = tot + sum (map head c)
+          in  (allSame && x == x0, (tot', toNCount p'))
+        r:rs' -> do
+          (xContrib, rContrib, p') <-
+              [ ( xContrib
+                , rContrib
                 , p `div` factorial xContrib `div` factorial rContrib
                 )
-              | totContrib <- [0..(x+r')]
-              , xContrib <- [max 0 (totContrib-r')..min x totContrib]
+              | totContrib <- [0..(x+r)]
+              , xContrib <- [max 0 (totContrib-r)..min x totContrib]
               , let rContrib = totContrib - xContrib
               ]
           let p''
-                | i == 1    = p' * (2^l)
-                | otherwise = p' `div` factorial l
-              res = l + xrContrib
+                | ll' && not ll = p' * (2^l')
+                | otherwise     = p' `div` factorial l'
+              res = l' + xContrib + rContrib
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
-          go (i + 1) tot' (allSame && xContrib == x0) xs' p'' (tail <$> cs')
-      | otherwise = pure (allSame, (tot, toNCount p))
+              chomp   = C ll' (Just (x - xContrib)) (r - rContrib) r rs'
+          go tot' (allSame && xContrib == x0) chomp p'' (tail <$> cs')
       where
-        l = fromMaybe 0 $ xs VU.!? (i-1)
-        r = xs VU.!? (i+1)
-        x = xs VU.! i
-        x0 = xs0 VU.! i
+        (l', ll') = case l of
+          Nothing -> (0, False)
+          Just q  -> (q, True )
 
 -- | All point runs for a given dim and max
 allVecRuns
@@ -436,22 +464,7 @@ allVecRuns d mx = go 0 d []
       | i < mx = do
           k <- [0..j]
           go (i + 1) (j - k) (k:rs)
-      | otherwise = pure $ VU.fromListN (mx+1) (reverse (j:rs))
-
--- flip evalStateT d $ do
---     xs <- fmap (IM.fromDistinctAscList . catMaybes) . traverse (\o -> fmap (o,) <$> go) $ [0 .. mx-1]
---     lastCall <- get
---     let ys
---           | lastCall > 0 = IM.insert mx lastCall xs
---           | otherwise    = xs
---     pure ys
---   where
---     go :: StateT Int [] (Maybe Int)
---     go = StateT $ \i ->
---         (Nothing, i)
---       : [ (Just j, i - j)
---         | j <- [1..i]
---         ]
+      | otherwise = pure $ VU.fromListN (mx+1) (j:rs)
 
 neighborPairs_
     :: Int    -- ^ dimension
@@ -460,16 +473,11 @@ neighborPairs_
 neighborPairs_ d mx =
     [ (pG, (pX, w))
     | x <- allVecRuns d mx
-    , let pX = pascalIx (unRuns x)
+    , let pX = pascalVecRunIx x
     , (pG, w) <- vecRunNeighbs x
-    -- , let w' | pG == pX  = w - 1
-    --          | otherwise = w
-    -- , w' > 0
-    -- , w' <- if pG == pX then filter (> 0) [w - 1]
-    --                     else [w]
     ]
-  where
-    unRuns = concatMap (uncurry (flip replicate)) . zip [0..] . VU.toList
+  -- where
+  --   unRuns = concatMap (uncurry (flip replicate)) . zip [0..] . VU.toList
 
 
 mulNCount :: NCount -> NCount -> NCount
@@ -505,11 +513,6 @@ neighborPairs__ d mx =
     , let pX = pascalIx (unRuns (VU.toList x))
     , (g, w) <- runTreeNeighbs x
     , let pG = pascalIx (unRuns g)
-    -- , let w' | pG == pX  = w - 1
-    --          | otherwise = w
-    -- , w' > 0
-    -- , w' <- if pG == pX then filter (> 0) [w - 1]
-    --                     else [w]
     ]
   where
     unRuns = concatMap (uncurry (flip replicate)) . zip [0..]
@@ -574,8 +577,9 @@ day17 d = MkSol
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
-            wts = neighborWeights d (6 + length x - length x)   -- force no cache
-            -- wts = unsafePerformIO $ loadNeighborWeights d 6
+            wts = neighborWeights_ d (6 + length x - length x)   -- force no cache
+            -- wts = unsafePerformIO $ loadNeighborWeights d (6 + length x - length x)
+        -- in         Just . IS.size
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
                  . (!!! 6)
@@ -589,7 +593,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 10
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -609,8 +613,12 @@ day17b = day17 10
 --                                      21s vs 17s
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 --                                      smart cache: 1m10s total
+--                                      new: 43s
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
+--                                      new: 2m21s total
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
+--    new method: total cache + run = 20m53s
+-- d=16: ? / 1125317394432 -- build sqlite cache + run = 62m44; run = 2m25s
 
 cacheNeighborWeights
     :: D.Connection
@@ -621,12 +629,12 @@ cacheNeighborWeights conn d mx = do
     dbsem <- newQSem 1
     threadsem <- newQSem 5
     done <- newEmptyMVar
-    forEnd_ (chunkUp <$> chunksOf 1_000_000 (neighborPairs d mx)) $ \isLast pmap -> do
+    forEnd_ (chunkUp <$> chunksOf 5_000_000 (neighborPairs_ d mx)) $ \isLast pmap -> do
       waitQSem threadsem
       forkIO $ do
         let chunky   = IM.size pmap
             bunky    = sum $ IM.size <$> pmap
-            lastSeen = n - fromIntegral (maximum (fst . IM.findMax <$> pmap) + 1)
+            lastSeen = fromIntegral (maximum (fst . IM.findMax <$> pmap) + 1)
         _ <- evaluate $ force pmap
         bracket_ (waitQSem dbsem) (signalQSem dbsem) $ do
           printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
