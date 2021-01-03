@@ -350,45 +350,37 @@ pointRunNeighbs mx p = map (F.fold aggr)
 -- nice thing is we can go directly to pascal-land
 vecRunNeighbs_
     :: VU.Vector Int
-    -> [(VU.Vector Int, NCount)]
--- vecRunNeighbs_ xs0 =
-vecRunNeighbs_ xs0 = tail $
+    -> [(VU.Vector Int, Bool, NCount)]
+vecRunNeighbs_ xs0 =
       -- second (ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
-      second (toNCount . ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
+      (\(x, (T3 _ b c)) -> (x, b, toNCount c)) <$> runStateT (VU.imapM go xs0) (T3 xs0 True p0)
   where
     p0 = product . map factorial $ VU.toList xs0
-    go :: Int -> Int -> StateT (T2 (VU.Vector Int) Int) [] Int
+    go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
     go i _ = do
-        T2 xs _ <- get
+        T3 xs _ _ <- get
         let l  = fromMaybe 0 $ xs VU.!? (i-1)
             r  = xs VU.!? (i+1)
             x  = xs VU.! i
             x0 = xs0 VU.! i
-        -- if i == 1, then we double the leftward contribution's
-        -- probability since it could have come from a reflection
-        if i == 1
-          then do
-            asum
-              [ modify $ \(T2 v p) -> T2 v (p `div` factorial lc `div` factorial (l - lc))
-              | lc <- [0 .. l]
-              ]
-          else modify (\(T2 v p) -> T2 v (p `div` factorial l))
-        xContrib <- case r of
-          Nothing -> x <$ modify (\(T2 v p) -> T2 v (p `div` factorial x))
-          Just _  -> asum
-            [ xc <$ modify (\(T2 v p) -> T2 (v VU.// [(i, x-xc)]) (p `div` factorial xc))
-            | xc <- if 0 <= x0 && x0 <= x
-                      then x0 : filter (/= x0) [0..x]
-                      else [0..x]
-            -- | xc <- [0..x]
-            ]
-        rContrib <- case r of
-          Nothing -> pure 0
+        (xrContrib, xContrib) <- case r of
+          Nothing -> (x, x) <$ modify (\(T3 v b p) -> T3 v b (p `div` factorial x))
           Just r' -> asum
-            [ rc <$ modify (\(T2 v p) -> T2 (v VU.// [(i+1, r'-rc)]) (p `div` factorial rc))
-            | rc <- [0 .. r']
+            [ ( totContrib, xContrib )
+                <$ modify (\(T3 v b p) ->
+                      T3 (v VU.// [(i, x-xContrib),(i+1, r'-rContrib)])
+                         b
+                         (p `div` factorial xContrib `div` factorial rContrib)
+                    )
+            | totContrib <- [0..(x+r')]
+            , xContrib <- [max 0 (totContrib-r')..min x totContrib]
+            , let rContrib = totContrib - xContrib
             ]
-        pure (l + xContrib + rContrib)
+        if i == 1
+          then modify $ \(T3 v b p) -> T3 v b (p * (2^l))
+          else modify $ \(T3 v b p) -> T3 v b (p `div` factorial l)
+        modify $ \(T3 v b p) -> T3 v (b && xContrib == x0) p
+        pure (l + xrContrib)
 
 
 -- lots of waste here too but maybe it's faster?
@@ -397,7 +389,7 @@ vecRunNeighbs_ xs0 = tail $
 -- i guess
 vecRunNeighbs
     :: VU.Vector Int
-    -> [(Int, Bool, Int)]
+    -> [(Int, Bool, NCount)]
 vecRunNeighbs xs0 = go 0 0 True xs0 p0 ((0:) <$> tail pascals)
   where
     p0 = product . map factorial $ VU.toList xs0
@@ -423,7 +415,7 @@ vecRunNeighbs xs0 = go 0 0 True xs0 p0 ((0:) <$> tail pascals)
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
           go (i + 1) tot' (allSame && xContrib == x0) xs' p'' (tail <$> cs')
-      | otherwise = pure (tot, allSame, p)
+      | otherwise = pure (tot, allSame, toNCount p)
       where
         l = fromMaybe 0 $ xs VU.!? (i-1)
         r = xs VU.!? (i+1)
@@ -463,7 +455,7 @@ neighborPairs_
     -> Int    -- ^ maximum
     -> [(Int, (Int, NCount))]
 neighborPairs_ d mx =
-    [ (pG, (pX, toNCount w))
+    [ (pG, (pX, w))
     | x <- allVecRuns d mx
     , let pX = pascalIx (unRuns x)
     , (pG, allSame, w) <- vecRunNeighbs x
@@ -580,7 +572,7 @@ day17 d = MkSol
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
-            wts = neighborWeights__ d (6 + length x - length x)   -- force no cache
+            wts = neighborWeights_ d (6 + length x - length x)   -- force no cache
             -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
