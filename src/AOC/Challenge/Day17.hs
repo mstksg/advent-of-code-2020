@@ -117,75 +117,23 @@ runTreeWeightsF xs0 (i, opts)
           r  = xs VU.!? (i + 1)
           x  = xs VU.! i
           x0 = xs0 VU.! i
-      (xContrib, xs', p') <- case r of
-        Nothing -> pure (x, xs, p `div` factorial x)
-        Just _  ->
-          [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
-          | xc <- [0..x]
-          ]
-      (rContrib, xs'', p'') <- case r of
-        Nothing -> pure (0, xs', p')
+      (xrContrib, xs', xContrib, p') <- case r of
+        Nothing -> pure (x, xs, x, p `div` factorial x)
         Just r' ->
-          [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
-          | rc <- [0 .. r']
+          [ ( totContrib
+            , xs VU.// [(i, x-xContrib),(i+1, r'-rContrib)]
+            , xContrib
+            , p `div` factorial xContrib `div` factorial rContrib
+            )
+          | totContrib <- [0..(x+r')]
+          , xContrib <- [max 0 (totContrib-r')..min x totContrib]
+          , let rContrib = totContrib - xContrib
           ]
-      -- now there should be a way to compute this closed form
-      -- instead of spawning up to d times number of copies
-      -- well we know half of them are going to be identical..
-      let p'''
-            | i == 1    = p'' * (2^l)
-            | otherwise = p'' `div` factorial l
-          res = l + xContrib + rContrib
-      pure (res, M.singleton (b && xContrib == x0, xs'') p''')
-
--- runTreeWeightsF
---     :: VU.Vector Int                  -- original
---     -> (Int, [T3 Int Bool (VU.Vector Int)])  -- ix, list of weights, whether any modificaiton has occurred, new state
---     -> RunTreeF (Int, VU.Vector Int) (Maybe NCount) (Int, [T2 Int Bool (VU.Vector Int)])
--- runTreeWeightsF xs0 (i, opts)
---     | i < VU.length xs0 = RTNodeF $ (i+1,) <$> M.fromListWith (++) opts'
---     | otherwise         = RTLeafF $ foldMap pullSame $ opts
---   where
---     pullSame (T3 _ True _) = Nothing
---     pullSame (T3 p _    _) = Just (toNCount p)
---     opts' = do
---       T3 p b xs <- opts
---       let l  = fromMaybe 0 $ xs VU.!? (i-1)
---           r  = xs VU.!? (i + 1)
---           x  = xs VU.! i
---           x0 = xs0 VU.! i
---       (xContrib, xs', p') <- case r of
---         Nothing -> pure (x, xs, p `div` factorial x)
---         Just _  ->
---           [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
---           | xc <- [0..x]
---           ]
---       (rContrib, xs'', p'') <- case r of
---         Nothing -> pure (0, xs', p')
---         Just r' ->
---           [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
---           | rc <- [0 .. r']
---           ]
---       -- now there should be a way to compute this closed form
---       -- instead of spawning up to d times number of copies
---       -- well we know half of them are going to be identical..
---       p''' <- if i == 1
---         then
---           if l > 0
---             then
---               if even l
---                 then (p'' `div` factorial (l `div` 2)) :
---                   [ 2 * (p'' `div` factorial lc `div` factorial (l - lc))
---                   | lc <- [0 .. (l `div` 2 - 1)]
---                   ]
---                 else
---                   [ 2 * (p'' `div` factorial lc `div` factorial (l - lc))
---                   | lc <- [0 .. l `div` 2]
---                   ]
---             else pure p''
---         else pure (p'' `div` factorial l)
---       let res = l + xContrib + rContrib
---       pure (res, [T3 p''' (b && xContrib == x0) xs''])
+      let p''
+            | i == 1    = p' * (2^l)
+            | otherwise = p' `div` factorial l
+          res = l + xrContrib
+      pure (res, M.singleton (b && xContrib == x0, xs') p'')
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -449,35 +397,33 @@ vecRunNeighbs_ xs0 = tail $
 -- i guess
 vecRunNeighbs
     :: VU.Vector Int
-    -> [(Int, Int)]
-vecRunNeighbs xs0 = tail $ go 0 0 xs0 p0 ((0:) <$> tail pascals)
+    -> [(Int, Bool, Int)]
+vecRunNeighbs xs0 = go 0 0 True xs0 p0 ((0:) <$> tail pascals)
   where
     p0 = product . map factorial $ VU.toList xs0
     n  = VU.length xs0
-    go i !tot !xs !p cs
+    go i !tot allSame !xs !p cs
       | i < n = do
-          (xContrib, xs', p') <- case r of
-            Nothing -> pure (x, xs, p `div` factorial x)
-            Just _  ->
-              [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
-              | xc <- if 0 <= x0 && x0 <= x
-                        then x0 : filter (/= x0) [0 .. x]
-                        else [0..x]
-              ]
-          (rContrib, xs'', p'') <- case r of
-            Nothing -> pure (0, xs', p')
+          (xrContrib, xs', xContrib, p') <- case r of
+            Nothing -> pure (x, xs, x, p `div` factorial x)
             Just r' ->
-              [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
-              | rc <- [0 .. r']
+              [ ( totContrib
+                , xs VU.// [(i, x-xContrib),(i+1, r'-rContrib)]
+                , xContrib
+                , p `div` factorial xContrib `div` factorial rContrib
+                )
+              | totContrib <- [0..(x+r')]
+              , xContrib <- [max 0 (totContrib-r')..min x totContrib]
+              , let rContrib = totContrib - xContrib
               ]
-          let p'''
-                | i == 1    = p'' * (2^l)
-                | otherwise = p'' `div` factorial l
-              res = l + xContrib + rContrib
+          let p''
+                | i == 1    = p' * (2^l)
+                | otherwise = p' `div` factorial l
+              res = l + xrContrib
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
-          go (i + 1) tot' xs'' p''' (tail <$> cs')
-      | otherwise = pure (tot, p)
+          go (i + 1) tot' (allSame && xContrib == x0) xs' p'' (tail <$> cs')
+      | otherwise = pure (tot, allSame, p)
       where
         l = fromMaybe 0 $ xs VU.!? (i-1)
         r = xs VU.!? (i+1)
@@ -520,7 +466,8 @@ neighborPairs_ d mx =
     [ (pG, (pX, toNCount w))
     | x <- allVecRuns d mx
     , let pX = pascalIx (unRuns x)
-    , (pG, w) <- vecRunNeighbs x
+    , (pG, allSame, w) <- vecRunNeighbs x
+    , not allSame
     -- , let w' | pG == pX  = w - 1
     --          | otherwise = w
     -- , w' > 0
