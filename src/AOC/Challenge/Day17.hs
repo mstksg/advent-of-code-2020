@@ -20,6 +20,7 @@ module AOC.Challenge.Day17 (
   , ixPascal
   , neighborWeights
   , neighborWeights_
+  , neighborWeights__
   , oldNeighborWeights
   , neighborPairs
   , neighborPairs_
@@ -84,9 +85,9 @@ data RunTree k a = RTNode (Map k (RunTree k a))
 
 makeBaseFunctor ''RunTree
 
-runTreeNeighbs :: VU.Vector Int -> [(VU.Vector Int, NCount)]
-runTreeNeighbs xs = mapMaybe ((fmap . first) VU.fromList . sequence)
-                  $ hylo runTreeListF (runTreeWeightsF xs) (0, [T3 p0 True xs])
+runTreeNeighbs :: VU.Vector Int -> [([Int], NCount)]
+runTreeNeighbs xs = mapMaybe sequence
+                  $ hylo runTreeListF (runTreeWeightsF xs) (0, M.singleton (True, xs) p0)
 -- first VU.fromList
   where
     p0 = product . map factorial $ VU.toList xs
@@ -100,16 +101,18 @@ runTreeListF = \case
 
 runTreeWeightsF
     :: VU.Vector Int                  -- original
-    -> (Int, [T3 Int Bool (VU.Vector Int)])  -- ix, list of weights, whether any modificaiton has occurred, new state
-    -> RunTreeF Int (Maybe NCount) (Int, [T3 Int Bool (VU.Vector Int)])
+    -> (Int, Map (Bool, VU.Vector Int) Int)
+    -> RunTreeF Int (Maybe NCount) (Int, Map (Bool, VU.Vector Int) Int)
 runTreeWeightsF xs0 (i, opts)
-    | i < VU.length xs0 = RTNodeF $ (i+1,) <$> M.fromListWith (++) opts'
-    | otherwise         = RTLeafF $ foldMap pullSame $ opts
+    | i < VU.length xs0 = RTNodeF $ (i+1,) <$> M.fromListWith (M.unionWith (+)) opts'
+    | otherwise         = RTLeafF $ M.foldMapWithKey pullSame opts
   where
-    pullSame (T3 _ True _) = Nothing
-    pullSame (T3 p _    _) = Just (toNCount p)
+    pullSame (True , _) _ = Nothing
+    pullSame (_    , _) p = Just (toNCount p)
+    -- pullSame (T3 _ True _) = Nothing
+    -- pullSame (T3 p _    _) = Just (toNCount p)
     opts' = do
-      T3 p b xs <- opts
+      ((b, xs), p) <- M.toList opts
       let l  = fromMaybe 0 $ xs VU.!? (i-1)
           r  = xs VU.!? (i + 1)
           x  = xs VU.! i
@@ -129,14 +132,60 @@ runTreeWeightsF xs0 (i, opts)
       -- now there should be a way to compute this closed form
       -- instead of spawning up to d times number of copies
       -- well we know half of them are going to be identical..
-      p''' <- if i == 1
-        then
-          [ p'' `div` factorial lc `div` factorial (l - lc)
-          | lc <- [0 .. l]
-          ]
-        else pure (p'' `div` factorial l)
-      let res = l + xContrib + rContrib
-      pure (res, [T3 p''' (b && xContrib == x0) xs''])
+      let p'''
+            | i == 1    = p'' * (2^l)
+            | otherwise = p'' `div` factorial l
+          res = l + xContrib + rContrib
+      pure (res, M.singleton (b && xContrib == x0, xs'') p''')
+
+-- runTreeWeightsF
+--     :: VU.Vector Int                  -- original
+--     -> (Int, [T3 Int Bool (VU.Vector Int)])  -- ix, list of weights, whether any modificaiton has occurred, new state
+--     -> RunTreeF (Int, VU.Vector Int) (Maybe NCount) (Int, [T2 Int Bool (VU.Vector Int)])
+-- runTreeWeightsF xs0 (i, opts)
+--     | i < VU.length xs0 = RTNodeF $ (i+1,) <$> M.fromListWith (++) opts'
+--     | otherwise         = RTLeafF $ foldMap pullSame $ opts
+--   where
+--     pullSame (T3 _ True _) = Nothing
+--     pullSame (T3 p _    _) = Just (toNCount p)
+--     opts' = do
+--       T3 p b xs <- opts
+--       let l  = fromMaybe 0 $ xs VU.!? (i-1)
+--           r  = xs VU.!? (i + 1)
+--           x  = xs VU.! i
+--           x0 = xs0 VU.! i
+--       (xContrib, xs', p') <- case r of
+--         Nothing -> pure (x, xs, p `div` factorial x)
+--         Just _  ->
+--           [ (xc, xs VU.// [(i, x-xc)], p `div` factorial xc)
+--           | xc <- [0..x]
+--           ]
+--       (rContrib, xs'', p'') <- case r of
+--         Nothing -> pure (0, xs', p')
+--         Just r' ->
+--           [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
+--           | rc <- [0 .. r']
+--           ]
+--       -- now there should be a way to compute this closed form
+--       -- instead of spawning up to d times number of copies
+--       -- well we know half of them are going to be identical..
+--       p''' <- if i == 1
+--         then
+--           if l > 0
+--             then
+--               if even l
+--                 then (p'' `div` factorial (l `div` 2)) :
+--                   [ 2 * (p'' `div` factorial lc `div` factorial (l - lc))
+--                   | lc <- [0 .. (l `div` 2 - 1)]
+--                   ]
+--                 else
+--                   [ 2 * (p'' `div` factorial lc `div` factorial (l - lc))
+--                   | lc <- [0 .. l `div` 2]
+--                   ]
+--             else pure p''
+--         else pure (p'' `div` factorial l)
+--       let res = l + xContrib + rContrib
+--       pure (res, [T3 p''' (b && xContrib == x0) xs''])
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -342,7 +391,7 @@ pointRunNeighbs mx p = map (F.fold aggr)
                      . tail
                      -- whoa! there are some major redundancies here!
                      -- ie for 111223444, 1079 -> 486
-                     . traverse (\(n, r) -> continuousRunNeighbors_ mx n r)
+                     . traverse (\(n, r) -> continuousRunNeighbors mx n r)
                      . IM.toList
                      $ p
   where
@@ -421,13 +470,10 @@ vecRunNeighbs xs0 = tail $ go 0 0 xs0 p0 ((0:) <$> tail pascals)
               [ (rc, xs' VU.// [(i+1, r'-rc)], p' `div` factorial rc)
               | rc <- [0 .. r']
               ]
-          p''' <- if i == 1
-            then
-              [ p'' `div` factorial lc `div` factorial (l - lc)
-              | lc <- [0 .. l]
-              ]
-            else pure (p'' `div` factorial l)
-          let res = l + xContrib + rContrib
+          let p'''
+                | i == 1    = p'' * (2^l)
+                | otherwise = p'' `div` factorial l
+              res = l + xContrib + rContrib
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
           go (i + 1) tot' xs'' p''' (tail <$> cs')
@@ -508,6 +554,25 @@ neighborPairs d mx =
     , let pG = pascalRunIx g
     ]
 
+neighborPairs__
+    :: Int    -- ^ dimension
+    -> Int    -- ^ maximum
+    -> [(Int, (Int, NCount))]
+neighborPairs__ d mx =
+    [ (pG, (pX, w))
+    | x <- allVecRuns d mx
+    , let pX = pascalIx (unRuns (VU.toList x))
+    , (g, w) <- runTreeNeighbs x
+    , let pG = pascalIx (unRuns g)
+    -- , let w' | pG == pX  = w - 1
+    --          | otherwise = w
+    -- , w' > 0
+    -- , w' <- if pG == pX then filter (> 0) [w - 1]
+    --                     else [w]
+    ]
+  where
+    unRuns = concatMap (uncurry (flip replicate)) . zip [0..]
+
 neighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
@@ -529,11 +594,24 @@ neighborWeights_ d mx = runST $ do
     v <- MV.replicate n IM.empty
     -- maybe keep a map of "done" pG/pX pairs and skip those
     for_ (neighborPairs_ d mx) $ \(pG, (pX, w')) ->
-      -- MV.modify v (IM.insertWith (flip (<>)) pX w') pG
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v
   where
     n = pascals !! d !! mx
+
+neighborWeights__
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
+    -> V.Vector (IntMap NCount)
+neighborWeights__ d mx = runST $ do
+    v <- MV.replicate n IM.empty
+    -- maybe keep a map of "done" pG/pX pairs and skip those
+    for_ (neighborPairs__ d mx) $ \(pG, (pX, w')) ->
+      MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
+    V.freeze v
+  where
+    n = pascals !! d !! mx
+
 
 toNCount :: Int -> NCount
 toNCount = \case
@@ -555,7 +633,7 @@ day17 d = MkSol
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
-            wts = neighborWeights_ d (6 + length x - length x)   -- force no cache
+            wts = neighborWeights__ d (6 + length x - length x)   -- force no cache
             -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
