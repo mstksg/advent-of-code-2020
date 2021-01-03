@@ -12,7 +12,7 @@
 </span><span id="line-12"></span><span>
 </span><span id="line-13"></span><span class="hs-keyword">newtype</span><span> </span><span id="DynoMap"><span class="annot"><a href="AOC.Util.DynoMap.html#DynoMap"><span class="hs-identifier hs-var">DynoMap</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Dyno"><span class="annot"><a href="AOC.Util.DynoMap.html#Dyno"><span class="hs-identifier hs-var">Dyno</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="runDyno"><span class="annot"><span class="annottext">DynoMap -&gt; Map String Dynamic
 </span><a href="AOC.Util.DynoMap.html#runDyno"><span class="hs-identifier hs-var hs-var">runDyno</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Map</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Dynamic</span></span><span> </span><span class="hs-special">}</span><span>
-</span><span id="line-14"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679759927"><span id="local-6989586621679759929"><span id="local-6989586621679759931"><span class="annot"><span class="annottext">b -&gt; DynoMap -&gt; DynoMap
+</span><span id="line-14"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679762512"><span id="local-6989586621679762514"><span id="local-6989586621679762516"><span class="annot"><span class="annottext">b -&gt; DynoMap -&gt; DynoMap
 NonEmpty DynoMap -&gt; DynoMap
 DynoMap -&gt; DynoMap -&gt; DynoMap
 (DynoMap -&gt; DynoMap -&gt; DynoMap)
@@ -31,7 +31,7 @@ sconcat :: NonEmpty DynoMap -&gt; DynoMap
 $csconcat :: NonEmpty DynoMap -&gt; DynoMap
 &lt;&gt; :: DynoMap -&gt; DynoMap -&gt; DynoMap
 $c&lt;&gt; :: DynoMap -&gt; DynoMap -&gt; DynoMap
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679759919"><span id="local-6989586621679759921"><span id="local-6989586621679759923"><span class="annot"><span class="annottext">Semigroup DynoMap
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679762504"><span id="local-6989586621679762506"><span id="local-6989586621679762508"><span class="annot"><span class="annottext">Semigroup DynoMap
 DynoMap
 Semigroup DynoMap =&gt;
 DynoMap
@@ -56,13 +56,13 @@ $cp1Monoid :: Semigroup DynoMap
 </span><span id="line-17"></span><span class="hs-comment">--</span><span>
 </span><span id="line-18"></span><span class="hs-comment">-- &gt; lookupDyno &quot;hello&quot;</span><span>
 </span><span id="line-19"></span><span class="annot"><a href="AOC.Util.DynoMap.html#lookupDyno"><span class="hs-identifier hs-type">lookupDyno</span></a></span><span>
-</span><span id="line-20"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679759937"><span class="annot"><a href="#local-6989586621679759937"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span> </span><span class="annot"><a href="#local-6989586621679759937"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679762522"><span class="annot"><a href="#local-6989586621679762522"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span> </span><span class="annot"><a href="#local-6989586621679762522"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-21"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-22"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Util.DynoMap.html#DynoMap"><span class="hs-identifier hs-type">DynoMap</span></a></span><span>
-</span><span id="line-23"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679759937"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><a href="#local-6989586621679762522"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-24"></span><span id="lookupDyno"><span class="annot"><span class="annottext">lookupDyno :: String -&gt; DynoMap -&gt; Maybe a
-</span><a href="AOC.Util.DynoMap.html#lookupDyno"><span class="hs-identifier hs-var hs-var">lookupDyno</span></a></span></span><span> </span><span id="local-6989586621679759917"><span class="annot"><span class="annottext">sym :: String
-</span><a href="#local-6989586621679759917"><span class="hs-identifier hs-var">sym</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dynamic -&gt; Maybe a
+</span><a href="AOC.Util.DynoMap.html#lookupDyno"><span class="hs-identifier hs-var hs-var">lookupDyno</span></a></span></span><span> </span><span id="local-6989586621679762502"><span class="annot"><span class="annottext">sym :: String
+</span><a href="#local-6989586621679762502"><span class="hs-identifier hs-var">sym</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Dynamic -&gt; Maybe a
 forall a. Typeable a =&gt; Dynamic -&gt; Maybe a
 </span><span class="hs-identifier hs-var">fromDynamic</span></span><span>
 </span><span id="line-25"></span><span>             </span><span class="annot"><span class="annottext">(Dynamic -&gt; Maybe a)
@@ -73,7 +73,7 @@ Monad m =&gt;
 </span><span class="hs-operator hs-var">&lt;=&lt;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Map String Dynamic -&gt; Maybe Dynamic
 forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">M.lookup</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679759917"><span class="hs-identifier hs-var">sym</span></a></span><span>
+</span><a href="#local-6989586621679762502"><span class="hs-identifier hs-var">sym</span></a></span><span>
 </span><span id="line-26"></span><span>               </span><span class="annot"><span class="annottext">(Map String Dynamic -&gt; Maybe Dynamic)
 -&gt; (DynoMap -&gt; Map String Dynamic) -&gt; DynoMap -&gt; Maybe Dynamic
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -83,21 +83,21 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span id="line-28"></span><span class="hs-comment">-- | Like 'lookupDyno', but with a default value to be returned if the key</span><span>
 </span><span id="line-29"></span><span class="hs-comment">-- is not found or has the wrong type.</span><span>
 </span><span id="line-30"></span><span class="annot"><a href="AOC.Util.DynoMap.html#lookupDynoWith"><span class="hs-identifier hs-type">lookupDynoWith</span></a></span><span>
-</span><span id="line-31"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679759912"><span class="annot"><a href="#local-6989586621679759912"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span> </span><span class="annot"><a href="#local-6989586621679759912"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679762497"><span class="annot"><a href="#local-6989586621679762497"><span class="hs-identifier hs-type">a</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Typeable</span></span><span> </span><span class="annot"><a href="#local-6989586621679762497"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>    </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-33"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679759912"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679762497"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Util.DynoMap.html#DynoMap"><span class="hs-identifier hs-type">DynoMap</span></a></span><span>
-</span><span id="line-35"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679759912"><span class="hs-identifier hs-type">a</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679762497"><span class="hs-identifier hs-type">a</span></a></span><span>
 </span><span id="line-36"></span><span id="lookupDynoWith"><span class="annot"><span class="annottext">lookupDynoWith :: String -&gt; a -&gt; DynoMap -&gt; a
-</span><a href="AOC.Util.DynoMap.html#lookupDynoWith"><span class="hs-identifier hs-var hs-var">lookupDynoWith</span></a></span></span><span> </span><span id="local-6989586621679759911"><span class="annot"><span class="annottext">sym :: String
-</span><a href="#local-6989586621679759911"><span class="hs-identifier hs-var">sym</span></a></span></span><span> </span><span id="local-6989586621679759910"><span class="annot"><span class="annottext">def :: a
-</span><a href="#local-6989586621679759910"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a -&gt; a
+</span><a href="AOC.Util.DynoMap.html#lookupDynoWith"><span class="hs-identifier hs-var hs-var">lookupDynoWith</span></a></span></span><span> </span><span id="local-6989586621679762496"><span class="annot"><span class="annottext">sym :: String
+</span><a href="#local-6989586621679762496"><span class="hs-identifier hs-var">sym</span></a></span></span><span> </span><span id="local-6989586621679762495"><span class="annot"><span class="annottext">def :: a
+</span><a href="#local-6989586621679762495"><span class="hs-identifier hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Maybe a -&gt; a
 forall a. a -&gt; Maybe a -&gt; a
 </span><span class="hs-identifier hs-var">fromMaybe</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679759910"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe a -&gt; a) -&gt; (DynoMap -&gt; Maybe a) -&gt; DynoMap -&gt; a
+</span><a href="#local-6989586621679762495"><span class="hs-identifier hs-var">def</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe a -&gt; a) -&gt; (DynoMap -&gt; Maybe a) -&gt; DynoMap -&gt; a
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; DynoMap -&gt; Maybe a
 forall a. Typeable a =&gt; String -&gt; DynoMap -&gt; Maybe a
 </span><a href="AOC.Util.DynoMap.html#lookupDyno"><span class="hs-identifier hs-var">lookupDyno</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679759911"><span class="hs-identifier hs-var">sym</span></a></span><span>
+</span><a href="#local-6989586621679762496"><span class="hs-identifier hs-var">sym</span></a></span><span>
 </span><span id="line-37"></span></pre></body></html>
