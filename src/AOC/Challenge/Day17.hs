@@ -350,10 +350,11 @@ pointRunNeighbs mx p = map (F.fold aggr)
 -- nice thing is we can go directly to pascal-land
 vecRunNeighbs_
     :: VU.Vector Int
-    -> [(VU.Vector Int, Bool, NCount)]
+    -> [(VU.Vector Int, NCount)]
 vecRunNeighbs_ xs0 =
       -- second (ssnd) <$> runStateT (VU.imapM go xs0) (T2 xs0 p0)
-      (\(x, (T3 _ b c)) -> (x, b, toNCount c)) <$> runStateT (VU.imapM go xs0) (T3 xs0 True p0)
+      mapMaybe (\(x, (T3 _ b c)) -> if b then Nothing else Just (x, toNCount c))
+      (runStateT (VU.imapM go xs0) (T3 xs0 True p0))
   where
     p0 = product . map factorial $ VU.toList xs0
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
@@ -389,9 +390,11 @@ vecRunNeighbs_ xs0 =
 -- i guess
 vecRunNeighbs
     :: VU.Vector Int
-    -> [(Int, Bool, NCount)]
-vecRunNeighbs xs0 = go 0 0 True xs0 p0 ((0:) <$> tail pascals)
+    -> [(Int, NCount)]
+vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 0 True xs0 p0 ((0:) <$> tail pascals)
   where
+    pullSame (True, _) = Nothing
+    pullSame (_   , x) = Just x
     p0 = product . map factorial $ VU.toList xs0
     n  = VU.length xs0
     go i !tot allSame !xs !p cs
@@ -415,7 +418,7 @@ vecRunNeighbs xs0 = go 0 0 True xs0 p0 ((0:) <$> tail pascals)
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
           go (i + 1) tot' (allSame && xContrib == x0) xs' p'' (tail <$> cs')
-      | otherwise = pure (tot, allSame, toNCount p)
+      | otherwise = pure (allSame, (tot, toNCount p))
       where
         l = fromMaybe 0 $ xs VU.!? (i-1)
         r = xs VU.!? (i+1)
@@ -458,8 +461,7 @@ neighborPairs_ d mx =
     [ (pG, (pX, w))
     | x <- allVecRuns d mx
     , let pX = pascalIx (unRuns x)
-    , (pG, allSame, w) <- vecRunNeighbs x
-    , not allSame
+    , (pG, w) <- vecRunNeighbs x
     -- , let w' | pG == pX  = w - 1
     --          | otherwise = w
     -- , w' > 0
@@ -572,7 +574,7 @@ day17 d = MkSol
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
-            wts = neighborWeights_ d (6 + length x - length x)   -- force no cache
+            wts = neighborWeights d (6 + length x - length x)   -- force no cache
             -- wts = unsafePerformIO $ loadNeighborWeights d 6
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
@@ -587,7 +589,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 8
+day17b = day17 10
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -601,8 +603,10 @@ day17b = day17 8
 --                                      smart cache: 4.0s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
+--                                      8.8s v 7.7s
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 --                                      smart cache: 21.5s total
+--                                      21s vs 17s
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 --                                      smart cache: 1m10s total
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
