@@ -33,7 +33,7 @@ import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
 import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
-import           Control.Monad               (unless, void, when)
+import           Control.Monad               (unless, void, when, guard)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
 import           Data.Bifunctor              (second)
@@ -42,8 +42,9 @@ import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
+import           Data.List.NonEmpty          (NonEmpty(..))
 import           Data.List.Split             (chunksOf)
-import           Data.Maybe                  (fromMaybe, mapMaybe, isJust)
+import           Data.Maybe                  (fromMaybe, mapMaybe)
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T3(..))
 import           GHC.Generics                (Generic)
@@ -53,6 +54,7 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
+import qualified Data.List.NonEmpty          as NE
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -202,12 +204,12 @@ data Chomper a = C { _cLeft2 :: !Bool        -- false if no exist, true if exist
                    , _cLeft  :: !(Maybe a)
                    , _cHere  :: !a
                    , _cOrig  :: !a
-                   , _cRight :: ![a]
+                   , _cRight :: !(NonEmpty a)
                    }
 
 toChomper :: [a] -> Maybe (Chomper a)
-toChomper []     = Nothing
-toChomper (x:xs) = Just (C False Nothing x x xs)
+toChomper (x:y:zs) = Just (C False Nothing x x (y:|zs))
+toChomper _        = Nothing
 
 -- reference implementaiton returning the actual runs
 vecRunNeighbs_
@@ -255,15 +257,19 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
     pullSame (_   , x) = Just x
     p0 = product . map factorial $ xs0'
     go !tot !allSame (C ll l x x0 rs) !p !cs = case rs of
-        []    -> pure $
-          let p'
-                | isJust l && not ll = p * (2 ^ l') `div` factorial x
-                | otherwise          = p `div` factorial l' `div` factorial x
-              res   = l' + x
-              c     = take res cs
-              tot'  = tot + sum (map head c)
-          in  (allSame && x == x0, (tot', toNCount p'))
-        r:rs' -> do
+        -- we can ignore all of these since we don't ever check neighbors
+        -- of t>=mx.  so rContrib must be completely r for the last item,
+        -- since the last item must be 0
+        r:|[] -> do
+          let p' = p `div` factorial x `div` factorial r
+              p''
+                | ll' && not ll = p' * (2^l')
+                | otherwise     = p' `div` factorial l'
+              res  = l' + x + r
+              c    = take res cs
+              tot' = tot + sum (map head c)
+          pure (allSame && x == x0 && r == 0, (tot', toNCount p''))
+        r:|(r':rs') -> do
           (xContrib, rContrib, p') <-
               [ ( xContrib
                 , rContrib
@@ -279,7 +285,7 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
               res = l' + xContrib + rContrib
               (c,cs') = splitAt res cs
               tot'    = tot + sum (map head c)
-              chomp   = C ll' (Just (x - xContrib)) (r - rContrib) r rs'
+              chomp   = C ll' (Just (x - xContrib)) (r - rContrib) r (r':|rs')
           go tot' (allSame && xContrib == x0) chomp p'' (tail <$> cs')
       where
         (l', ll') = case l of
@@ -308,10 +314,7 @@ neighborPairs d mx =
     | x <- allVecRuns d mx
     , let pX = pascalVecRunIx x
     , (pG, w) <- vecRunNeighbs x
-    , pG < n'
     ]
-  where
-    n' = pascals !! d !! (mx-1)
 
 neighborWeights
     :: Int            -- ^ dimension
@@ -320,6 +323,7 @@ neighborWeights
 neighborWeights d mx = runST $ do
     v <- MV.replicate n' IM.empty
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
+      -- MV.modify v (IM.insertWith (flip (<>)) pX w') pG
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v
   where
@@ -377,6 +381,7 @@ day17b = day17 2
 --                                      smallcache: 12s
 --                                      smart cache: 4.0s total
 --                                      no-t=6 cache: 3.3s total
+--                                      smarter t=6 cache: 3.0s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
@@ -392,6 +397,7 @@ day17b = day17 2
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
 --    new method: total cache + run = 20m53s
 -- d=16: ? / 1125317394432 -- build sqlite cache + run = 62m44; run = 2m25s
+-- d=17: ? / 6178939535360 -- build sqlite cache + run = 24m
 
 cacheNeighborWeights
     :: D.Connection
