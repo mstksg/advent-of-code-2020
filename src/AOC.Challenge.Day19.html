@@ -29,9 +29,9 @@
 </span><span id="line-29"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char</span></span><span>       </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">P</span></span><span>
 </span><span id="line-30"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Text.Megaparsec.Char.Lexer</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">PP</span></span><span>
 </span><span id="line-31"></span><span>
-</span><span id="line-32"></span><span id="local-6989586621679766040"><span id="local-6989586621679766041"></span></span><span class="hs-keyword">data</span><span> </span><span id="Rule"><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-var">Rule</span></a></span></span><span> </span><span id="local-6989586621679766097"><span class="annot"><a href="#local-6989586621679766097"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Simple"><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-var">Simple</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
-</span><span id="line-33"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span id="Compound"><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-var">Compound</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679766097"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
-</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679766032"><span id="local-6989586621679766034"><span id="local-6989586621679766036"><span class="annot"><span class="annottext">Int -&gt; Rule a -&gt; ShowS
+</span><span id="line-32"></span><span id="local-6989586621679766310"><span id="local-6989586621679766311"></span></span><span class="hs-keyword">data</span><span> </span><span id="Rule"><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-var">Rule</span></a></span></span><span> </span><span id="local-6989586621679766367"><span class="annot"><a href="#local-6989586621679766367"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="Simple"><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-var">Simple</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Char</span></span><span>
+</span><span id="line-33"></span><span>            </span><span class="hs-glyph">|</span><span> </span><span id="Compound"><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-var">Compound</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><a href="#local-6989586621679766367"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-34"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679766302"><span id="local-6989586621679766304"><span id="local-6989586621679766306"><span class="annot"><span class="annottext">Int -&gt; Rule a -&gt; ShowS
 [Rule a] -&gt; ShowS
 Rule a -&gt; String
 (Int -&gt; Rule a -&gt; ShowS)
@@ -47,7 +47,7 @@ show :: Rule a -&gt; String
 $cshow :: forall a. Show a =&gt; Rule a -&gt; String
 showsPrec :: Int -&gt; Rule a -&gt; ShowS
 $cshowsPrec :: forall a. Show a =&gt; Int -&gt; Rule a -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766027"><span id="local-6989586621679766029"><span class="annot"><span class="annottext">Rule a -&gt; Rule a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766297"><span id="local-6989586621679766299"><span class="annot"><span class="annottext">Rule a -&gt; Rule a -&gt; Bool
 (Rule a -&gt; Rule a -&gt; Bool)
 -&gt; (Rule a -&gt; Rule a -&gt; Bool) -&gt; Eq (Rule a)
 forall a. Eq a =&gt; Rule a -&gt; Rule a -&gt; Bool
@@ -56,7 +56,7 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: forall a. Eq a =&gt; Rule a -&gt; Rule a -&gt; Bool
 == :: Rule a -&gt; Rule a -&gt; Bool
 $c== :: forall a. Eq a =&gt; Rule a -&gt; Rule a -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766011"><span id="local-6989586621679766013"><span id="local-6989586621679766015"><span id="local-6989586621679766017"><span id="local-6989586621679766019"><span id="local-6989586621679766021"><span id="local-6989586621679766023"><span class="annot"><span class="annottext">Eq (Rule a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766281"><span id="local-6989586621679766283"><span id="local-6989586621679766285"><span id="local-6989586621679766287"><span id="local-6989586621679766289"><span id="local-6989586621679766291"><span id="local-6989586621679766293"><span class="annot"><span class="annottext">Eq (Rule a)
 Eq (Rule a) =&gt;
 (Rule a -&gt; Rule a -&gt; Ordering)
 -&gt; (Rule a -&gt; Rule a -&gt; Bool)
@@ -108,7 +108,7 @@ forall a x. Rep (Rule a) x -&gt; Rule a
 forall a x. Rule a -&gt; Rep (Rule a) x
 $cto :: forall a x. Rep (Rule a) x -&gt; Rule a
 $cfrom :: forall a x. Rule a -&gt; Rep (Rule a) x
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766003"><span id="local-6989586621679766005"><span class="annot"><span class="annottext">a -&gt; Rule b -&gt; Rule a
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679766273"><span id="local-6989586621679766275"><span class="annot"><span class="annottext">a -&gt; Rule b -&gt; Rule a
 (a -&gt; b) -&gt; Rule a -&gt; Rule b
 (forall a b. (a -&gt; b) -&gt; Rule a -&gt; Rule b)
 -&gt; (forall a b. a -&gt; Rule b -&gt; Rule a) -&gt; Functor Rule
@@ -123,36 +123,36 @@ fmap :: (a -&gt; b) -&gt; Rule a -&gt; Rule b
 $cfmap :: forall a b. (a -&gt; b) -&gt; Rule a -&gt; Rule b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-35"></span><span>
-</span><span id="line-36"></span><span id="local-6989586621679766001"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679765999"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="#local-6989586621679766001"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679766001"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
+</span><span id="line-36"></span><span id="local-6989586621679766271"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679766269"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="#local-6989586621679766271"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679766271"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span></span><span>
 </span><span id="line-37"></span><span>
 </span><span id="line-38"></span><span class="annot"><a href="AOC.Challenge.Day19.html#matchRuleAlg"><span class="hs-identifier hs-type">matchRuleAlg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
 </span><span id="line-39"></span><span id="matchRuleAlg"><span class="annot"><span class="annottext">matchRuleAlg :: Rule (String -&gt; [String]) -&gt; String -&gt; [String]
 </span><a href="AOC.Challenge.Day19.html#matchRuleAlg"><span class="hs-identifier hs-var hs-var">matchRuleAlg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-40"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-type">Simple</span></a></span><span> </span><span id="local-6989586621679765996"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679765996"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-40"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-type">Simple</span></a></span><span> </span><span id="local-6989586621679766266"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679766266"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
 </span><span id="line-41"></span><span>      </span><span class="hs-special">[</span><span class="hs-special">]</span><span>   </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[String]
 forall (f :: * -&gt; *) a. Alternative f =&gt; f a
 </span><span class="hs-identifier hs-var">empty</span></span><span>
-</span><span id="line-42"></span><span>      </span><span id="local-6989586621679765995"><span class="annot"><span class="annottext">d :: Char
-</span><a href="#local-6989586621679765995"><span class="hs-identifier hs-var">d</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679765994"><span class="annot"><span class="annottext">ds :: String
-</span><a href="#local-6989586621679765994"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679765994"><span class="hs-identifier hs-var">ds</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [()] -&gt; [String]
+</span><span id="line-42"></span><span>      </span><span id="local-6989586621679766265"><span class="annot"><span class="annottext">d :: Char
+</span><a href="#local-6989586621679766265"><span class="hs-identifier hs-var">d</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679766264"><span class="annot"><span class="annottext">ds :: String
+</span><a href="#local-6989586621679766264"><span class="hs-identifier hs-var">ds</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679766264"><span class="hs-identifier hs-var">ds</span></a></span><span> </span><span class="annot"><span class="annottext">String -&gt; [()] -&gt; [String]
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; [()]
 forall (f :: * -&gt; *). Alternative f =&gt; Bool -&gt; f ()
 </span><span class="hs-identifier hs-var">guard</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679765996"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
+</span><a href="#local-6989586621679766266"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679765995"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-type">Compound</span></a></span><span> </span><span id="local-6989586621679765992"><span class="annot"><span class="annottext">xs :: [[String -&gt; [String]]]
-</span><a href="#local-6989586621679765992"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679765991"><span class="annot"><span class="annottext">str :: String
-</span><a href="#local-6989586621679765991"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><a href="#local-6989586621679766265"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-type">Compound</span></a></span><span> </span><span id="local-6989586621679766262"><span class="annot"><span class="annottext">xs :: [[String -&gt; [String]]]
+</span><a href="#local-6989586621679766262"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679766261"><span class="annot"><span class="annottext">str :: String
+</span><a href="#local-6989586621679766261"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-44"></span><span>      </span><span class="annot"><span class="annottext">([String -&gt; [String]] -&gt; [String])
 -&gt; [[String -&gt; [String]]] -&gt; [String]
 forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
-</span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679765989"><span class="annot"><span class="annottext">ys :: [String -&gt; [String]]
-</span><a href="#local-6989586621679765989"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((String -&gt; [String])
+</span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679766259"><span class="annot"><span class="annottext">ys :: [String -&gt; [String]]
+</span><a href="#local-6989586621679766259"><span class="hs-identifier hs-var">ys</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">((String -&gt; [String])
  -&gt; (String -&gt; [String]) -&gt; String -&gt; [String])
 -&gt; (String -&gt; [String])
 -&gt; [String -&gt; [String]]
@@ -168,28 +168,28 @@ Monad m =&gt;
 </span><span class="hs-operator hs-var">(&gt;=&gt;)</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; [String]
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">[String -&gt; [String]]
-</span><a href="#local-6989586621679765989"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679765991"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[String -&gt; [String]]]
-</span><a href="#local-6989586621679765992"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679766259"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679766261"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[String -&gt; [String]]]
+</span><a href="#local-6989586621679766262"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-45"></span><span>
 </span><span id="line-46"></span><span class="annot"><a href="AOC.Challenge.Day19.html#matcher"><span class="hs-identifier hs-type">matcher</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
 </span><span id="line-47"></span><span id="matcher"><span class="annot"><span class="annottext">matcher :: IntMap (Rule Int) -&gt; String -&gt; [String]
-</span><a href="AOC.Challenge.Day19.html#matcher"><span class="hs-identifier hs-var hs-var">matcher</span></a></span></span><span> </span><span id="local-6989586621679765986"><span class="annot"><span class="annottext">rules :: IntMap (Rule Int)
-</span><a href="#local-6989586621679765986"><span class="hs-identifier hs-var">rules</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Rule (String -&gt; [String]) -&gt; String -&gt; [String])
+</span><a href="AOC.Challenge.Day19.html#matcher"><span class="hs-identifier hs-var hs-var">matcher</span></a></span></span><span> </span><span id="local-6989586621679766256"><span class="annot"><span class="annottext">rules :: IntMap (Rule Int)
+</span><a href="#local-6989586621679766256"><span class="hs-identifier hs-var">rules</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Rule (String -&gt; [String]) -&gt; String -&gt; [String])
 -&gt; (Int -&gt; Rule Int) -&gt; Int -&gt; String -&gt; [String]
 forall (f :: * -&gt; *) b a.
 Functor f =&gt;
 (f b -&gt; b) -&gt; (a -&gt; f a) -&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">hylo</span></span><span> </span><span class="annot"><span class="annottext">Rule (String -&gt; [String]) -&gt; String -&gt; [String]
 </span><a href="AOC.Challenge.Day19.html#matchRuleAlg"><span class="hs-identifier hs-var">matchRuleAlg</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap (Rule Int)
-</span><a href="#local-6989586621679765986"><span class="hs-identifier hs-var">rules</span></a></span><span> </span><span class="annot"><span class="annottext">IntMap (Rule Int) -&gt; Int -&gt; Rule Int
+</span><a href="#local-6989586621679766256"><span class="hs-identifier hs-var">rules</span></a></span><span> </span><span class="annot"><span class="annottext">IntMap (Rule Int) -&gt; Int -&gt; Rule Int
 forall a. IntMap a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">IM.!</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
 </span><span id="line-48"></span><span>
 </span><span id="line-49"></span><span class="annot"><a href="AOC.Challenge.Day19.html#solver"><span class="hs-identifier hs-type">solver</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-50"></span><span id="solver"><span class="annot"><span class="annottext">solver :: IntMap (Rule Int) -&gt; [String] -&gt; Int
-</span><a href="AOC.Challenge.Day19.html#solver"><span class="hs-identifier hs-var hs-var">solver</span></a></span></span><span> </span><span id="local-6989586621679765983"><span class="annot"><span class="annottext">rules :: IntMap (Rule Int)
-</span><a href="#local-6989586621679765983"><span class="hs-identifier hs-var">rules</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Bool) -&gt; [String] -&gt; Int
+</span><a href="AOC.Challenge.Day19.html#solver"><span class="hs-identifier hs-var hs-var">solver</span></a></span></span><span> </span><span id="local-6989586621679766253"><span class="annot"><span class="annottext">rules :: IntMap (Rule Int)
+</span><a href="#local-6989586621679766253"><span class="hs-identifier hs-var">rules</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Bool) -&gt; [String] -&gt; Int
 forall (f :: * -&gt; *) a. Foldable f =&gt; (a -&gt; Bool) -&gt; f a -&gt; Int
 </span><a href="AOC.Common.html#countTrue"><span class="hs-identifier hs-var">countTrue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(String -&gt; Bool) -&gt; [String] -&gt; Bool
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
@@ -199,7 +199,7 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">IntMap (Rule Int) -&gt; String -&gt; [String]
 </span><a href="AOC.Challenge.Day19.html#matcher"><span class="hs-identifier hs-var">matcher</span></a></span><span> </span><span class="annot"><span class="annottext">IntMap (Rule Int)
-</span><a href="#local-6989586621679765983"><span class="hs-identifier hs-var">rules</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679766253"><span class="hs-identifier hs-var">rules</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-51"></span><span>
 </span><span id="line-52"></span><span class="annot"><a href="AOC.Challenge.Day19.html#day19a"><span class="hs-identifier hs-type">day19a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-53"></span><span id="day19a"><span class="annot"><span class="annottext">day19a :: (IntMap (Rule Int), [String]) :~&gt; Int
@@ -293,11 +293,11 @@ forall a. [[a]] -&gt; Rule a
 </span><span id="line-73"></span><span class="annot"><a href="AOC.Challenge.Day19.html#_genAlg"><span class="hs-identifier hs-type">_genAlg</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span>
 </span><span id="line-74"></span><span id="_genAlg"><span class="annot"><span class="annottext">_genAlg :: Rule [String] -&gt; [String]
 </span><a href="AOC.Challenge.Day19.html#_genAlg"><span class="hs-identifier hs-var hs-var">_genAlg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
-</span><span id="line-75"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-type">Simple</span></a></span><span> </span><span id="local-6989586621679765967"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679765967"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679765967"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
-</span><span id="line-76"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-type">Compound</span></a></span><span> </span><span id="local-6989586621679765966"><span class="annot"><span class="annottext">xs :: [[[String]]]
-</span><a href="#local-6989586621679765966"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">([[String]] -&gt; [String]) -&gt; [[[String]]] -&gt; [String]
+</span><span id="line-75"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Simple"><span class="hs-identifier hs-type">Simple</span></a></span><span> </span><span id="local-6989586621679766237"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679766237"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679766237"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-76"></span><span>    </span><span class="annot"><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-type">Compound</span></a></span><span> </span><span id="local-6989586621679766236"><span class="annot"><span class="annottext">xs :: [[[String]]]
+</span><a href="#local-6989586621679766236"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">([[String]] -&gt; [String]) -&gt; [[[String]]] -&gt; [String]
 forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
 </span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">([String] -&gt; String) -&gt; [[String]] -&gt; [String]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -311,15 +311,15 @@ forall (t :: * -&gt; *) (m :: * -&gt; *) a.
 (Traversable t, Monad m) =&gt;
 t (m a) -&gt; m (t a)
 </span><span class="hs-identifier hs-var">sequence</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[[String]]]
-</span><a href="#local-6989586621679765966"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679766236"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-77"></span><span>
 </span><span id="line-78"></span><span class="hs-keyword">type</span><span> </span><span id="Parser%27"><span class="annot"><a href="AOC.Challenge.Day19.html#Parser%27"><span class="hs-identifier hs-var">Parser'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-79"></span><span>
 </span><span id="line-80"></span><span class="annot"><a href="AOC.Challenge.Day19.html#ruleParser"><span class="hs-identifier hs-type">ruleParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day19.html#Parser%27"><span class="hs-identifier hs-type">Parser'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
 </span><span id="line-81"></span><span id="ruleParser"><span class="annot"><span class="annottext">ruleParser :: Parser' (Int, Rule Int)
 </span><a href="AOC.Challenge.Day19.html#ruleParser"><span class="hs-identifier hs-var hs-var">ruleParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-82"></span><span>    </span><span id="local-6989586621679765962"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679765962"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Int -&gt; Parsec Void String Int
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679766232"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679766232"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Int -&gt; Parsec Void String Int
 forall s e a.
 (Stream s, Token s ~ Char, Ord e) =&gt;
 Parsec e s a -&gt; Parsec e s a
@@ -334,8 +334,8 @@ m a
 -&gt; ParsecT Void String Identity String -&gt; Parsec Void String Int
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="hs-string">&quot;:&quot;</span></span><span>
-</span><span id="line-83"></span><span>    </span><span id="local-6989586621679765959"><span class="annot"><span class="annottext">Rule Int
-</span><a href="#local-6989586621679765959"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ParsecT Void String Identity (Rule Int)]
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679766229"><span class="annot"><span class="annottext">Rule Int
+</span><a href="#local-6989586621679766229"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ParsecT Void String Identity (Rule Int)]
 -&gt; ParsecT Void String Identity (Rule Int)
 forall (f :: * -&gt; *) (m :: * -&gt; *) a.
 (Foldable f, Alternative m) =&gt;
@@ -356,7 +356,7 @@ forall a. Char -&gt; Rule a
 -&gt; ParsecT Void String Identity (Rule Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
-</span><a href="#local-6989586621679765955"><span class="hs-identifier hs-var">simpleParser</span></a></span><span>
+</span><a href="#local-6989586621679766225"><span class="hs-identifier hs-var">simpleParser</span></a></span><span>
 </span><span id="line-85"></span><span>      </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[[Int]] -&gt; Rule Int
 forall a. [[a]] -&gt; Rule a
 </span><a href="AOC.Challenge.Day19.html#Compound"><span class="hs-identifier hs-var">Compound</span></a></span><span> </span><span class="annot"><span class="annottext">([[Int]] -&gt; Rule Int)
@@ -364,14 +364,14 @@ forall a. [[a]] -&gt; Rule a
 -&gt; ParsecT Void String Identity (Rule Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity [[Int]]
-</span><a href="#local-6989586621679765954"><span class="hs-identifier hs-var">compoundParser</span></a></span><span>
+</span><a href="#local-6989586621679766224"><span class="hs-identifier hs-var">compoundParser</span></a></span><span>
 </span><span id="line-86"></span><span>      </span><span class="hs-special">]</span><span>
 </span><span id="line-87"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679765962"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Rule Int
-</span><a href="#local-6989586621679765959"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679766232"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Rule Int
+</span><a href="#local-6989586621679766229"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-88"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-89"></span><span>    </span><span id="local-6989586621679765955"><span class="annot"><span class="annottext">simpleParser :: ParsecT Void String Identity Char
-</span><a href="#local-6989586621679765955"><span class="hs-identifier hs-var hs-var">simpleParser</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><span id="line-89"></span><span>    </span><span id="local-6989586621679766225"><span class="annot"><span class="annottext">simpleParser :: ParsecT Void String Identity Char
+</span><a href="#local-6989586621679766225"><span class="hs-identifier hs-var hs-var">simpleParser</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity Char
 -&gt; ParsecT Void String Identity Char
@@ -383,8 +383,8 @@ forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.letterChar</span></span><span>
-</span><span id="line-90"></span><span>    </span><span id="local-6989586621679765954"><span class="annot"><span class="annottext">compoundParser :: ParsecT Void String Identity [[Int]]
-</span><a href="#local-6989586621679765954"><span class="hs-identifier hs-var hs-var">compoundParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Int -&gt; ParsecT Void String Identity [Int]
+</span><span id="line-90"></span><span>    </span><span id="local-6989586621679766224"><span class="annot"><span class="annottext">compoundParser :: ParsecT Void String Identity [[Int]]
+</span><a href="#local-6989586621679766224"><span class="hs-identifier hs-var hs-var">compoundParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String Int -&gt; ParsecT Void String Identity [Int]
 forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
 </span><span class="hs-identifier hs-var">P.many</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parsec Void String Int -&gt; Parsec Void String Int
 forall s e a.
@@ -408,8 +408,8 @@ Parsec e s a -&gt; Parsec e s a
 </span><span id="line-92"></span><span class="annot"><a href="AOC.Challenge.Day19.html#inputParser"><span class="hs-identifier hs-type">inputParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day19.html#Parser%27"><span class="hs-identifier hs-type">Parser'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">IntMap</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day19.html#Rule"><span class="hs-identifier hs-type">Rule</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-93"></span><span id="inputParser"><span class="annot"><span class="annottext">inputParser :: Parsec Void String (IntMap (Rule Int), [String])
 </span><a href="AOC.Challenge.Day19.html#inputParser"><span class="hs-identifier hs-var hs-var">inputParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-94"></span><span>    </span><span id="local-6989586621679765949"><span class="annot"><span class="annottext">IntMap (Rule Int)
-</span><a href="#local-6989586621679765949"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Int, Rule Int)] -&gt; IntMap (Rule Int)
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621679766219"><span class="annot"><span class="annottext">IntMap (Rule Int)
+</span><a href="#local-6989586621679766219"><span class="hs-identifier hs-var">rs</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[(Int, Rule Int)] -&gt; IntMap (Rule Int)
 forall a. [(Int, a)] -&gt; IntMap a
 </span><span class="hs-identifier hs-var">IM.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Int, Rule Int)] -&gt; IntMap (Rule Int))
 -&gt; ParsecT Void String Identity [(Int, Rule Int)]
@@ -432,8 +432,8 @@ forall e s (m :: * -&gt; *).
 (MonadParsec e s m, Token s ~ Char) =&gt;
 m (Token s)
 </span><span class="hs-identifier hs-var">P.newline</span></span><span>
-</span><span id="line-96"></span><span>    </span><span id="local-6989586621679765947"><span class="annot"><span class="annottext">[String]
-</span><a href="#local-6989586621679765947"><span class="hs-identifier hs-var">ss</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
+</span><span id="line-96"></span><span>    </span><span id="local-6989586621679766217"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679766217"><span class="hs-identifier hs-var">ss</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
 -&gt; ParsecT Void String Identity String
 forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
 </span><span class="hs-identifier hs-var">P.many</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Char
@@ -450,6 +450,6 @@ forall e s (m :: * -&gt; *).
 m (Token s)
 </span><span class="hs-identifier hs-var">P.newline</span></span><span>
 </span><span id="line-97"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">IntMap (Rule Int)
-</span><a href="#local-6989586621679765949"><span class="hs-identifier hs-var">rs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[String]
-</span><a href="#local-6989586621679765947"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679766219"><span class="hs-identifier hs-var">rs</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679766217"><span class="hs-identifier hs-var">ss</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-98"></span></pre></body></html>
