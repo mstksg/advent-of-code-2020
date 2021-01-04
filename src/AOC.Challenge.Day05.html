@@ -25,23 +25,23 @@ forall (t :: * -&gt; *) b a.
 Foldable t =&gt;
 (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
 </span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Char -&gt; Int
-</span><a href="#local-6989586621679769009"><span class="hs-identifier hs-var">iGuessWe'reDoingThis</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><a href="#local-6989586621679770164"><span class="hs-identifier hs-var">iGuessWe'reDoingThis</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
 </span><span id="line-23"></span><span>  </span><span class="hs-keyword">where</span><span>
 </span><span id="line-24"></span><span>    </span><span class="hs-comment">-- heh</span><span>
-</span><span id="line-25"></span><span>    </span><span id="local-6989586621679769009"><span class="annot"><span class="annottext">iGuessWe'reDoingThis :: Int -&gt; Char -&gt; Int
-</span><a href="#local-6989586621679769009"><span class="hs-identifier hs-var hs-var">iGuessWe'reDoingThis</span></a></span></span><span> </span><span id="local-6989586621679769008"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679769008"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679769007"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679769007"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-25"></span><span>    </span><span id="local-6989586621679770164"><span class="annot"><span class="annottext">iGuessWe'reDoingThis :: Int -&gt; Char -&gt; Int
+</span><a href="#local-6989586621679770164"><span class="hs-identifier hs-var hs-var">iGuessWe'reDoingThis</span></a></span></span><span> </span><span id="local-6989586621679770163"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679770163"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679770162"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679770162"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-26"></span><span>      </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679769008"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679770163"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; a
 </span><span class="hs-identifier hs-var">complement</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><span class="hs-identifier hs-var">ord</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679769007"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+</span><a href="#local-6989586621679770162"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; Int -&gt; a
 </span><span class="hs-operator hs-var">`shiftR`</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Bits a =&gt; a -&gt; a -&gt; a
@@ -51,61 +51,61 @@ forall a. Bits a =&gt; a -&gt; a -&gt; a
 </span><span id="line-29"></span><span class="annot"><a href="AOC.Challenge.Day05.html#findHole"><span class="hs-identifier hs-type">findHole</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">F.Fold</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
 </span><span id="line-30"></span><span id="findHole"><span class="annot"><span class="annottext">findHole :: Fold Int (Maybe Int)
 </span><a href="AOC.Challenge.Day05.html#findHole"><span class="hs-identifier hs-var hs-var">findHole</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-31"></span><span>    </span><span id="local-6989586621679769003"><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621679769003"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int (Maybe Int)
+</span><span id="line-31"></span><span>    </span><span id="local-6989586621679770158"><span class="annot"><span class="annottext">Maybe Int
+</span><a href="#local-6989586621679770158"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int (Maybe Int)
 forall a. Ord a =&gt; Fold a (Maybe a)
 </span><span class="hs-identifier hs-var">F.minimum</span></span><span>
-</span><span id="line-32"></span><span>    </span><span id="local-6989586621679769001"><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621679769001"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int (Maybe Int)
+</span><span id="line-32"></span><span>    </span><span id="local-6989586621679770156"><span class="annot"><span class="annottext">Maybe Int
+</span><a href="#local-6989586621679770156"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int (Maybe Int)
 forall a. Ord a =&gt; Fold a (Maybe a)
 </span><span class="hs-identifier hs-var">F.maximum</span></span><span>
-</span><span id="line-33"></span><span>    </span><span id="local-6989586621679768999"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679768999"><span class="hs-identifier hs-var">sm</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int Int
+</span><span id="line-33"></span><span>    </span><span id="local-6989586621679770154"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679770154"><span class="hs-identifier hs-var">sm</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Fold Int Int
 forall a. Num a =&gt; Fold a a
 </span><span class="hs-identifier hs-var">F.sum</span></span><span>
 </span><span id="line-34"></span><span>    </span><span class="hs-identifier">pure</span><span> </span><span class="hs-operator">$</span><span>
 </span><span id="line-35"></span><span>      </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int -&gt; Int
 forall a. Integral a =&gt; a -&gt; a -&gt; a -&gt; a
-</span><a href="#local-6989586621679768997"><span class="hs-identifier hs-var">missingItem</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int -&gt; Int)
+</span><a href="#local-6989586621679770152"><span class="hs-identifier hs-var">missingItem</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int -&gt; Int)
 -&gt; Maybe Int -&gt; Maybe (Int -&gt; Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621679769003"><span class="hs-identifier hs-var">mn</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Int -&gt; Int -&gt; Int) -&gt; Maybe Int -&gt; Maybe (Int -&gt; Int)
+</span><a href="#local-6989586621679770158"><span class="hs-identifier hs-var">mn</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Int -&gt; Int -&gt; Int) -&gt; Maybe Int -&gt; Maybe (Int -&gt; Int)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Maybe Int
-</span><a href="#local-6989586621679769001"><span class="hs-identifier hs-var">mx</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Int -&gt; Int) -&gt; Maybe Int -&gt; Maybe Int
+</span><a href="#local-6989586621679770156"><span class="hs-identifier hs-var">mx</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe (Int -&gt; Int) -&gt; Maybe Int -&gt; Maybe Int
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679768999"><span class="hs-identifier hs-var">sm</span></a></span><span>
+</span><a href="#local-6989586621679770154"><span class="hs-identifier hs-var">sm</span></a></span><span>
 </span><span id="line-36"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-37"></span><span>    </span><span id="local-6989586621679768997"><span class="annot"><span class="annottext">missingItem :: a -&gt; a -&gt; a -&gt; a
-</span><a href="#local-6989586621679768997"><span class="hs-identifier hs-var hs-var">missingItem</span></a></span></span><span> </span><span id="local-6989586621679768995"><span class="annot"><span class="annottext">mn :: a
-</span><a href="#local-6989586621679768995"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span id="local-6989586621679768994"><span class="annot"><span class="annottext">mx :: a
-</span><a href="#local-6989586621679768994"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span id="local-6989586621679768993"><span class="annot"><span class="annottext">sm :: a
-</span><a href="#local-6989586621679768993"><span class="hs-identifier hs-var">sm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768992"><span class="hs-identifier hs-var">totalSum</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><span id="line-37"></span><span>    </span><span id="local-6989586621679770152"><span class="annot"><span class="annottext">missingItem :: a -&gt; a -&gt; a -&gt; a
+</span><a href="#local-6989586621679770152"><span class="hs-identifier hs-var hs-var">missingItem</span></a></span></span><span> </span><span id="local-6989586621679770150"><span class="annot"><span class="annottext">mn :: a
+</span><a href="#local-6989586621679770150"><span class="hs-identifier hs-var">mn</span></a></span></span><span> </span><span id="local-6989586621679770149"><span class="annot"><span class="annottext">mx :: a
+</span><a href="#local-6989586621679770149"><span class="hs-identifier hs-var">mx</span></a></span></span><span> </span><span id="local-6989586621679770148"><span class="annot"><span class="annottext">sm :: a
+</span><a href="#local-6989586621679770148"><span class="hs-identifier hs-var">sm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679770147"><span class="hs-identifier hs-var">totalSum</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768993"><span class="hs-identifier hs-var">sm</span></a></span><span>
+</span><a href="#local-6989586621679770148"><span class="hs-identifier hs-var">sm</span></a></span><span>
 </span><span id="line-38"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-39"></span><span>        </span><span id="local-6989586621679768992"><span class="annot"><span class="annottext">totalSum :: a
-</span><a href="#local-6989586621679768992"><span class="hs-identifier hs-var hs-var">totalSum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768994"><span class="hs-identifier hs-var">mx</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><span id="line-39"></span><span>        </span><span id="local-6989586621679770147"><span class="annot"><span class="annottext">totalSum :: a
+</span><a href="#local-6989586621679770147"><span class="hs-identifier hs-var hs-var">totalSum</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679770149"><span class="hs-identifier hs-var">mx</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768994"><span class="hs-identifier hs-var">mx</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679770149"><span class="hs-identifier hs-var">mx</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Integral a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">`div`</span></span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768995"><span class="hs-identifier hs-var">mn</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679770150"><span class="hs-identifier hs-var">mn</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span class="hs-special">(</span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679768995"><span class="hs-identifier hs-var">mn</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
+</span><a href="#local-6989586621679770150"><span class="hs-identifier hs-var">mn</span></a></span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-glyph hs-var">-</span></span><span class="annot"><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="annot"><span class="annottext">a -&gt; a -&gt; a
 forall a. Integral a =&gt; a -&gt; a -&gt; a
