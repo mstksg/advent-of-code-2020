@@ -70,6 +70,8 @@ module AOC.Common (
   , _ListTup4
   , sortSizedBy
   , withAllSized
+  , binaryFold
+  , binaryFoldPar
   -- * Simple type util
   , deleteFinite
   , Letter
@@ -151,14 +153,17 @@ import           Data.Tuple
 import           Data.Void
 import           Data.Word
 import           Debug.Trace
-import           GHC.Generics                       (Generic)
+import           GHC.Generics                       (Generic, (:*:)(..))
 import           GHC.TypeNats
 import           Linear                             (V2(..), V3(..), V4(..), R1(..), R2(..), R3(..), R4(..))
 import           Numeric.Natural
 import qualified Control.Foldl                      as F
 import qualified Control.Monad.Combinators          as P
+import qualified Data.Conduino                      as C
+import qualified Data.Conduino.Combinators          as C
 import qualified Data.Finitary                      as F
 import qualified Data.Functor.Foldable              as R
+import qualified Data.Functor.Foldable.TH           as R
 import qualified Data.Graph.Inductive               as G
 import qualified Data.IntMap                        as IM
 import qualified Data.IntPSQ                        as IntPSQ
@@ -512,6 +517,49 @@ foldMapParChunk
     -> m
 foldMapParChunk n f xs = fold $
   parMap rdeepseq (foldMap f) (chunksOf n xs)
+
+
+binaryFold
+    :: Monoid m
+    => Int        -- ^ minimum size list
+    -> (a -> m)
+    -> [a]
+    -> m
+binaryFold n f = bigGo (1 :: Int)
+  where
+    bigGo i xs = case go i xs of
+      (!r, []) -> r
+      (!r, ys) -> r <> bigGo (i+1) ys
+    go 1 xs = first (foldMap f) (splitAt n xs)
+    go i xs     = (t, zs)
+      where
+        !t = r <> s
+        (r, ys) = go (i-1) xs
+        (s, zs) = go (i-1) ys
+
+binaryFoldPar
+    :: Monoid m
+    => Int        -- ^ minimum size list
+    -> (a -> m)
+    -> [a]
+    -> m
+binaryFoldPar n f = runEval . bigGo (1 :: Int)
+  where
+    bigGo i xs = do
+      (!r, ys) <- go i xs
+      case ys of
+        [] -> pure r
+        _:_ -> do
+          q <- bigGo (i+1) ys
+          pure (q <> r)
+    go 1 xs = (,zs) <$> rpar (foldMap f ys)
+      where
+        (ys, zs) = splitAt n xs
+    go i xs = do
+      (r, ys) <- go (i-1) xs
+      (s, zs) <- go (i-1) ys
+      let !t = r <> s
+      pure $ (t, zs)
 
 listTup :: [a] -> Maybe (a,a)
 listTup (x:y:_) = Just (x,y)

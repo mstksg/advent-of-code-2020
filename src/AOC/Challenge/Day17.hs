@@ -24,6 +24,7 @@ module AOC.Challenge.Day17 (
   , NCount(..)
   ) where
 
+-- import           Debug.Trace
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
@@ -35,8 +36,7 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
-import           Data.Bifunctor              (second, bimap)
-import qualified Data.Map as M
+import           Data.Bifunctor              (second)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
@@ -46,7 +46,6 @@ import           Data.List.Split             (chunksOf)
 import           Data.Maybe                  (fromMaybe, mapMaybe, isJust)
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T3(..))
-import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
