@@ -211,7 +211,7 @@ toChomper :: [a] -> Maybe (Chomper a)
 toChomper (x:y:zs) = Just (C False Nothing x x (y:|zs))
 toChomper _        = Nothing
 
--- reference implementaiton returning the actual runs
+-- reference implementaiton returning the actual runs. but
 vecRunNeighbs_
     :: VU.Vector Int
     -> [(VU.Vector Int, NCount)]
@@ -222,28 +222,38 @@ vecRunNeighbs_ xs0 =
     pullSame (x, (T3 _ _    c)) = Just (x, toNCount c)
     p0 = product . map factorial $ VU.toList xs0
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
-    go i _ = StateT $ \(T3 xs b p) -> do
+    go i _
+      | i == n - 1 = pure 0
+      | otherwise  = StateT $ \(T3 xs b p) -> do
         let l  = fromMaybe 0 $ xs VU.!? (i-1)
-            r  = xs VU.!? (i+1)
+            r  = xs VU.! (i+1)
             x  = xs VU.! i
             x0 = xs0 VU.! i
-        (xrContrib, xs', xContrib, p') <- case r of
-          Nothing -> pure (x, xs, x, p `div` factorial x)
-          Just r' ->
-            [ ( totContrib
-              , xs VU.// [(i, x-xContrib),(i+1, r'-rContrib)]
-              , xContrib
-              , p `div` factorial xContrib `div` factorial rContrib
-              )
-            | totContrib <- [0..(x+r')]
-            , xContrib <- [max 0 (totContrib-r')..min x totContrib]
-            , let rContrib = totContrib - xContrib
-            ]
+        (rContrib, xs', b', xContrib, p') <-
+          if i == (n-2)
+            then pure
+                  ( r, xs, b && x == x0 && r == 0, x
+                  , p `div` factorial x `div` factorial r
+                  )
+            else
+              [ ( rContrib
+                , xs VU.// [(i, x-xContrib),(i+1, r-rContrib)]
+                , b && xContrib == x0
+                , xContrib
+                , p `div` factorial xContrib `div` factorial rContrib
+                )
+              | totContrib <- [0..(x+r)]
+              , xContrib <- [max 0 (totContrib-r)..min x totContrib]
+              , let rContrib = totContrib - xContrib
+              ]
         let p''
               | i == 1    = p' * (2^l)
               | otherwise = p' `div` factorial l
-            res = l + xrContrib
-        pure (res, T3 xs' (b && xContrib == x0) p'')
+            res = l + rContrib + xContrib
+        -- todo: be smarter about this
+        when (i == n - 1) $ guard (res == 0)
+        pure (res, T3 xs' b' p'')
+    n = VU.length xs0
 
 -- | directly return pascal coords
 vecRunNeighbs
@@ -323,7 +333,6 @@ neighborWeights
 neighborWeights d mx = runST $ do
     v <- MV.replicate n' IM.empty
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
-      -- MV.modify v (IM.insertWith (flip (<>)) pX w') pG
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v
   where
