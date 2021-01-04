@@ -24,45 +24,45 @@
 </span><span id="line-24"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day03.html#Coord"><span class="hs-identifier hs-type">Coord</span></a></span><span>
 </span><span id="line-25"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span>
 </span><span id="line-26"></span><span id="validCoord"><span class="annot"><span class="annottext">validCoord :: Finite 31 -&gt; Int -&gt; Coord -&gt; Bool
-</span><a href="AOC.Challenge.Day03.html#validCoord"><span class="hs-identifier hs-var hs-var">validCoord</span></a></span></span><span> </span><span id="local-6989586621679770604"><span class="annot"><span class="annottext">dx :: Finite 31
-</span><a href="#local-6989586621679770604"><span class="hs-identifier hs-var">dx</span></a></span></span><span> </span><span id="local-6989586621679770603"><span class="annot"><span class="annottext">dy :: Int
-</span><a href="#local-6989586621679770603"><span class="hs-identifier hs-var">dy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679770602"><span class="annot"><span class="annottext">x :: Finite 31
-</span><a href="#local-6989586621679770602"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679770601"><span class="annot"><span class="annottext">y :: Int
-</span><a href="#local-6989586621679770601"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-27"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679770600"><span class="annot"><span class="annottext">i :: Int
-</span><a href="#local-6989586621679770600"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679770599"><span class="annot"><span class="annottext">r :: Int
-</span><a href="#local-6989586621679770599"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679770601"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; (Int, Int)
+</span><a href="AOC.Challenge.Day03.html#validCoord"><span class="hs-identifier hs-var hs-var">validCoord</span></a></span></span><span> </span><span id="local-6989586621679771348"><span class="annot"><span class="annottext">dx :: Finite 31
+</span><a href="#local-6989586621679771348"><span class="hs-identifier hs-var">dx</span></a></span></span><span> </span><span id="local-6989586621679771347"><span class="annot"><span class="annottext">dy :: Int
+</span><a href="#local-6989586621679771347"><span class="hs-identifier hs-var">dy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679771346"><span class="annot"><span class="annottext">x :: Finite 31
+</span><a href="#local-6989586621679771346"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679771345"><span class="annot"><span class="annottext">y :: Int
+</span><a href="#local-6989586621679771345"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679771344"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679771344"><span class="hs-identifier hs-var">i</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679771343"><span class="annot"><span class="annottext">r :: Int
+</span><a href="#local-6989586621679771343"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679771345"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; (Int, Int)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679770603"><span class="hs-identifier hs-var">dy</span></a></span><span>
+</span><a href="#local-6989586621679771347"><span class="hs-identifier hs-var">dy</span></a></span><span>
 </span><span id="line-28"></span><span>    </span><span class="hs-keyword">in</span><span>  </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679770599"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679771343"><span class="hs-identifier hs-var">r</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Finite 31
-</span><a href="#local-6989586621679770604"><span class="hs-identifier hs-var">dx</span></a></span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Finite 31 -&gt; Finite 31
+</span><a href="#local-6989586621679771348"><span class="hs-identifier hs-var">dx</span></a></span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Finite 31 -&gt; Finite 31
 forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Integer -&gt; Finite 31
 forall (n :: Nat). KnownNat n =&gt; Integer -&gt; Finite n
 </span><span class="hs-identifier hs-var">modulo</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679770600"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Finite 31 -&gt; Bool
+</span><a href="#local-6989586621679771344"><span class="hs-identifier hs-var">i</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Finite 31 -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">Finite 31
-</span><a href="#local-6989586621679770602"><span class="hs-identifier hs-var">x</span></a></span><span>
+</span><a href="#local-6989586621679771346"><span class="hs-identifier hs-var">x</span></a></span><span>
 </span><span id="line-29"></span><span>
 </span><span id="line-30"></span><span class="annot"><a href="AOC.Challenge.Day03.html#countLine"><span class="hs-identifier hs-type">countLine</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Finite</span></span><span> </span><span class="annot"><span class="hs-number">31</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-31"></span><span id="countLine"><span class="annot"><span class="annottext">countLine :: Finite 31 -&gt; Int -&gt; String -&gt; Int
-</span><a href="AOC.Challenge.Day03.html#countLine"><span class="hs-identifier hs-var hs-var">countLine</span></a></span></span><span> </span><span id="local-6989586621679770594"><span class="annot"><span class="annottext">dx :: Finite 31
-</span><a href="#local-6989586621679770594"><span class="hs-identifier hs-var">dx</span></a></span></span><span> </span><span id="local-6989586621679770593"><span class="annot"><span class="annottext">dy :: Int
-</span><a href="#local-6989586621679770593"><span class="hs-identifier hs-var">dy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Coord, Char) -&gt; Bool) -&gt; [(Coord, Char)] -&gt; Int
+</span><a href="AOC.Challenge.Day03.html#countLine"><span class="hs-identifier hs-var hs-var">countLine</span></a></span></span><span> </span><span id="local-6989586621679771338"><span class="annot"><span class="annottext">dx :: Finite 31
+</span><a href="#local-6989586621679771338"><span class="hs-identifier hs-var">dx</span></a></span></span><span> </span><span id="local-6989586621679771337"><span class="annot"><span class="annottext">dy :: Int
+</span><a href="#local-6989586621679771337"><span class="hs-identifier hs-var">dy</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((Coord, Char) -&gt; Bool) -&gt; [(Coord, Char)] -&gt; Int
 forall (f :: * -&gt; *) a. Foldable f =&gt; (a -&gt; Bool) -&gt; f a -&gt; Int
 </span><a href="AOC.Common.html#countTrue"><span class="hs-identifier hs-var">countTrue</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Coord -&gt; Char -&gt; Bool) -&gt; (Coord, Char) -&gt; Bool
 forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><span class="hs-identifier hs-var">uncurry</span></span><span> </span><span class="annot"><span class="annottext">Coord -&gt; Char -&gt; Bool
-</span><a href="#local-6989586621679770591"><span class="hs-identifier hs-var">tree</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679771335"><span class="hs-identifier hs-var">tree</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-32"></span><span>                </span><span class="annot"><span class="annottext">([(Coord, Char)] -&gt; Int)
 -&gt; (String -&gt; [(Coord, Char)]) -&gt; String -&gt; Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -70,37 +70,37 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Coord
 forall b a. (Integral b, Num a) =&gt; b -&gt; (a, b)
-</span><a href="#local-6989586621679770589"><span class="hs-identifier hs-var">splitOut</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Coord) -&gt; [Int] -&gt; [Coord]
+</span><a href="#local-6989586621679771333"><span class="hs-identifier hs-var">splitOut</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Coord) -&gt; [Int] -&gt; [Coord]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">0</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-33"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-34"></span><span>    </span><span id="local-6989586621679770587"><span class="annot"><span class="annottext">checkCoord :: Coord -&gt; Bool
-</span><a href="#local-6989586621679770587"><span class="hs-identifier hs-var hs-var">checkCoord</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Int -&gt; Coord -&gt; Bool
+</span><span id="line-34"></span><span>    </span><span id="local-6989586621679771331"><span class="annot"><span class="annottext">checkCoord :: Coord -&gt; Bool
+</span><a href="#local-6989586621679771331"><span class="hs-identifier hs-var hs-var">checkCoord</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Finite 31 -&gt; Int -&gt; Coord -&gt; Bool
 </span><a href="AOC.Challenge.Day03.html#validCoord"><span class="hs-identifier hs-var">validCoord</span></a></span><span> </span><span class="annot"><span class="annottext">Finite 31
-</span><a href="#local-6989586621679770594"><span class="hs-identifier hs-var">dx</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679770593"><span class="hs-identifier hs-var">dy</span></a></span><span>
-</span><span id="line-35"></span><span>    </span><span id="local-6989586621679770591"><span class="annot"><span class="annottext">tree :: Coord -&gt; Char -&gt; Bool
-</span><a href="#local-6989586621679770591"><span class="hs-identifier hs-var hs-var">tree</span></a></span></span><span> </span><span id="local-6989586621679770586"><span class="annot"><span class="annottext">xy :: Coord
-</span><a href="#local-6989586621679770586"><span class="hs-identifier hs-var">xy</span></a></span></span><span> </span><span id="local-6989586621679770585"><span class="annot"><span class="annottext">c :: Char
-</span><a href="#local-6989586621679770585"><span class="hs-identifier hs-var">c</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679770585"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
+</span><a href="#local-6989586621679771338"><span class="hs-identifier hs-var">dx</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679771337"><span class="hs-identifier hs-var">dy</span></a></span><span>
+</span><span id="line-35"></span><span>    </span><span id="local-6989586621679771335"><span class="annot"><span class="annottext">tree :: Coord -&gt; Char -&gt; Bool
+</span><a href="#local-6989586621679771335"><span class="hs-identifier hs-var hs-var">tree</span></a></span></span><span> </span><span id="local-6989586621679771330"><span class="annot"><span class="annottext">xy :: Coord
+</span><a href="#local-6989586621679771330"><span class="hs-identifier hs-var">xy</span></a></span></span><span> </span><span id="local-6989586621679771329"><span class="annot"><span class="annottext">c :: Char
+</span><a href="#local-6989586621679771329"><span class="hs-identifier hs-var">c</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679771329"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Char -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="hs-char">'#'</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">Coord -&gt; Bool
-</span><a href="#local-6989586621679770587"><span class="hs-identifier hs-var">checkCoord</span></a></span><span> </span><span class="annot"><span class="annottext">Coord
-</span><a href="#local-6989586621679770586"><span class="hs-identifier hs-var">xy</span></a></span><span>
-</span><span id="line-36"></span><span>    </span><span id="local-6989586621679770589"><span class="annot"><span class="annottext">splitOut :: b -&gt; (a, b)
-</span><a href="#local-6989586621679770589"><span class="hs-identifier hs-var hs-var">splitOut</span></a></span></span><span> </span><span id="local-6989586621679770584"><span class="annot"><span class="annottext">i :: b
-</span><a href="#local-6989586621679770584"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; a
+</span><a href="#local-6989586621679771331"><span class="hs-identifier hs-var">checkCoord</span></a></span><span> </span><span class="annot"><span class="annottext">Coord
+</span><a href="#local-6989586621679771330"><span class="hs-identifier hs-var">xy</span></a></span><span>
+</span><span id="line-36"></span><span>    </span><span id="local-6989586621679771333"><span class="annot"><span class="annottext">splitOut :: b -&gt; (a, b)
+</span><a href="#local-6989586621679771333"><span class="hs-identifier hs-var hs-var">splitOut</span></a></span></span><span> </span><span id="local-6989586621679771328"><span class="annot"><span class="annottext">i :: b
+</span><a href="#local-6989586621679771328"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">b -&gt; a
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
 </span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679770583"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679770582"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679771327"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679771326"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-37"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-38"></span><span>        </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679770582"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679770582"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679770583"><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679770583"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
-</span><a href="#local-6989586621679770584"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; (b, b)
+</span><span id="line-38"></span><span>        </span><span class="hs-special">(</span><span class="hs-glyph">!</span><span id="local-6989586621679771326"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679771326"><span class="hs-identifier hs-var">y</span></a></span></span><span class="hs-special">,</span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679771327"><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679771327"><span class="hs-identifier hs-var">x</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">b
+</span><a href="#local-6989586621679771328"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">b -&gt; b -&gt; (b, b)
 forall a. Integral a =&gt; a -&gt; a -&gt; (a, a)
 </span><span class="hs-operator hs-var">`divMod`</span></span><span> </span><span class="annot"><span class="hs-number">31</span></span><span>
 </span><span id="line-39"></span><span>
@@ -160,8 +160,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a. Show a =&gt; a -&gt; String
 </span><span class="hs-identifier hs-var">show</span></span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">sSolve :: (?dyno::DynoMap) =&gt; String -&gt; Maybe Int
-</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679770574"><span class="annot"><span class="annottext">s :: String
-</span><a href="#local-6989586621679770574"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
+</span><a href="AOC.Solver.html#sSolve"><span class="hs-identifier hs-var">sSolve</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679771318"><span class="annot"><span class="annottext">s :: String
+</span><a href="#local-6989586621679771318"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Maybe Int) -&gt; ([Int] -&gt; Int) -&gt; [Int] -&gt; Maybe Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -183,6 +183,6 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span id="line-57"></span><span>        </span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[String -&gt; Int] -&gt; [String] -&gt; [Int]
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679770574"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">]</span><span>
+</span><a href="#local-6989586621679771318"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">]</span><span>
 </span><span id="line-58"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-59"></span></pre></body></html>

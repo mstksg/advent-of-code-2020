@@ -460,6 +460,8 @@ listTup4 :: [a] -> Maybe (a, a, a, a)
 _ListTup4 :: Prism' [a] (a, a, a, a)
 sortSizedBy :: Vector v a => (a -> a -> Ordering) -> Vector v n a -> Vector v n a
 withAllSized :: Vector v a => NonEmpty [a] -> (forall n. KnownNat n => NonEmpty (Vector v n a) -> Maybe r) -> Maybe r
+binaryFold :: Monoid m => Int -> (a -> m) -> [a] -> m
+binaryFoldPar :: Monoid m => Int -> (a -> m) -> [a] -> m
 
 -- | Delete a potential value from a <a>Finite</a>.
 deleteFinite :: KnownNat n => Finite (n + 1) -> Finite (n + 1) -> Maybe (Finite n)
@@ -7836,6 +7838,8 @@ minimumValByNE :: (b -> b -> Ordering) -> NEMap a b -> (a, b)
 -- | Version of <a>minimumVal</a> for nonempty maps.
 minimumValNE :: Ord b => NEMap a b -> (a, b)
 foldMapParChunk :: forall a m. (NFData m, Monoid m) => Int -> (a -> m) -> [a] -> m
+binaryFold :: Monoid m => Int -> (a -> m) -> [a] -> m
+binaryFoldPar :: Monoid m => Int -> (a -> m) -> [a] -> m
 listTup :: [a] -> Maybe (a, a)
 _ListTup :: Prism' [a] (a, a)
 listTup3 :: [a] -> Maybe (a, a, a)
@@ -8124,23 +8128,28 @@ pascals :: [[Int]]
 pascalIx :: [Int] -> Int
 pascalVecRunIx :: Vector Int -> Int
 ixPascal :: Int -> Int -> [Int]
-neighborWeights :: Int -> Int -> Vector (IntMap LiveCount)
-oldNeighborWeights :: Int -> Int -> Vector (IntMap LiveCount)
-neighborPairs :: Int -> Int -> [(Int, (Int, LiveCount))]
-loadNeighborWeights :: Int -> Int -> Vector (IntMap LiveCount)
+neighborWeights :: Int -> Int -> Vector (IntMap NCount)
+oldNeighborWeights :: Int -> Int -> Vector (IntMap NCount)
+neighborPairs :: Int -> Int -> [(Int, (Int, NCount))]
+loadNeighborWeights :: Int -> Int -> Vector (IntMap NCount)
 
 -- | directly return pascal coords
-vecRunNeighbs :: Vector Int -> [(Int, LiveCount)]
-vecRunNeighbs_ :: Vector Int -> [(Vector Int, LiveCount)]
+vecRunNeighbs :: Vector Int -> [(Int, NCount)]
+vecRunNeighbs_ :: Vector Int -> [(Vector Int, NCount)]
 
 -- | All point runs for a given dim and max
 allVecRuns :: Int -> Int -> [Vector Int]
-instance GHC.Generics.Generic AOC.Challenge.Day17.LiveCount
-instance GHC.Classes.Ord AOC.Challenge.Day17.LiveCount
-instance GHC.Classes.Eq AOC.Challenge.Day17.LiveCount
-instance GHC.Show.Show AOC.Challenge.Day17.LiveCount
-instance Control.DeepSeq.NFData AOC.Challenge.Day17.LiveCount
-instance GHC.Base.Semigroup AOC.Challenge.Day17.LiveCount
+data NCount
+NOne :: NCount
+NTwo :: NCount
+NThree :: NCount
+NMany :: NCount
+instance GHC.Generics.Generic AOC.Challenge.Day17.NCount
+instance GHC.Classes.Ord AOC.Challenge.Day17.NCount
+instance GHC.Classes.Eq AOC.Challenge.Day17.NCount
+instance GHC.Show.Show AOC.Challenge.Day17.NCount
+instance Control.DeepSeq.NFData AOC.Challenge.Day17.NCount
+instance GHC.Base.Semigroup AOC.Challenge.Day17.NCount
 
 
 -- | Day 16. See <a>AOC.Solver</a> for the types used in this module!
@@ -8427,14 +8436,14 @@ MRO :: !TestSpec -> !Bool -> !Bool -> !Bool -> !Bool -> !Day -> Part -> IO (Mayb
 
 -- | Manually supply input (Default: always return Nothing)
 [_mroInput] :: MainRunOpts -> !Day -> Part -> IO (Maybe String)
-class HasMainRunOpts c_a2Igy
-mainRunOpts :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy MainRunOpts
-mroActual :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy Bool
-mroBench :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy Bool
-mroInput :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy (Day -> Part -> IO (Maybe String))
-mroLock :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy Bool
-mroSpec :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy TestSpec
-mroTest :: HasMainRunOpts c_a2Igy => Lens' c_a2Igy Bool
+class HasMainRunOpts c_a2IrY
+mainRunOpts :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY MainRunOpts
+mroActual :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY Bool
+mroBench :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY Bool
+mroInput :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY (Day -> Part -> IO (Maybe String))
+mroLock :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY Bool
+mroSpec :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY TestSpec
+mroTest :: HasMainRunOpts c_a2IrY => Lens' c_a2IrY Bool
 
 -- | Run, test, bench.
 mainRun :: (MonadIO m, MonadError [String] m) => Config -> MainRunOpts -> m (Map Day (Map Part (Maybe Bool, Either [String] String)))
@@ -8447,10 +8456,10 @@ data MainViewOpts
 MVO :: !TestSpec -> !Bool -> MainViewOpts
 [_mvoSpec] :: MainViewOpts -> !TestSpec
 [_mvoWait] :: MainViewOpts -> !Bool
-class HasMainViewOpts c_a2Io1
-mainViewOpts :: HasMainViewOpts c_a2Io1 => Lens' c_a2Io1 MainViewOpts
-mvoSpec :: HasMainViewOpts c_a2Io1 => Lens' c_a2Io1 TestSpec
-mvoWait :: HasMainViewOpts c_a2Io1 => Lens' c_a2Io1 Bool
+class HasMainViewOpts c_a2Izr
+mainViewOpts :: HasMainViewOpts c_a2Izr => Lens' c_a2Izr MainViewOpts
+mvoSpec :: HasMainViewOpts c_a2Izr => Lens' c_a2Izr TestSpec
+mvoWait :: HasMainViewOpts c_a2Izr => Lens' c_a2Izr Bool
 
 -- | View prompt
 mainView :: (MonadIO m, MonadError [String] m) => Config -> MainViewOpts -> m (Map Day (Map Part Text))
@@ -8475,13 +8484,13 @@ MSO :: !ChallengeSpec -> !Bool -> !Bool -> !Bool -> !Bool -> MainSubmitOpts
 -- | If a wait is received after submission, try again automatically
 --   (Default: False)
 [_msoRetry] :: MainSubmitOpts -> !Bool
-class HasMainSubmitOpts c_a2Isz
-mainSubmitOpts :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz MainSubmitOpts
-msoForce :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz Bool
-msoLock :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz Bool
-msoRetry :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz Bool
-msoSpec :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz ChallengeSpec
-msoTest :: HasMainSubmitOpts c_a2Isz => Lens' c_a2Isz Bool
+class HasMainSubmitOpts c_a2IDZ
+mainSubmitOpts :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ MainSubmitOpts
+msoForce :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ Bool
+msoLock :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ Bool
+msoRetry :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ Bool
+msoSpec :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ ChallengeSpec
+msoTest :: HasMainSubmitOpts c_a2IDZ => Lens' c_a2IDZ Bool
 
 -- | Submit and analyze result
 mainSubmit :: (MonadIO m, MonadError [String] m) => Config -> MainSubmitOpts -> m (Text, SubmitRes)
