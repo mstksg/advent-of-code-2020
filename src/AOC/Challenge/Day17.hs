@@ -33,7 +33,7 @@ import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
 import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
-import           Control.Monad               (unless, void, when, guard)
+import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
 import           Data.Bifunctor              (second)
@@ -88,12 +88,6 @@ ixPascal n x = go x (reverse p0) []
       where
         qs = takeWhile (<= y) (0:p)
 
-ixDouble :: Int -> Int -> Int -> [Int]
-ixDouble d n i = y : x : ixPascal d a
-  where
-    (a, b) = i `divMod` (n*n)
-    (x, y) = b `divMod` n
-
 neighbs2d :: Int -> Int -> [Int]
 neighbs2d n i =
     [ i + dx + n*dy
@@ -108,12 +102,6 @@ data NCount =
     | NMany
   deriving (Show, Eq, Ord, Generic)
 instance NFData NCount
-
-nValid :: NCount -> Maybe Bool
-nValid = \case
-    NTwo   -> Just False
-    NThree -> Just True
-    _      -> Nothing
 
 instance Semigroup NCount where
     (<>) = \case
@@ -181,52 +169,27 @@ validLiveCount = \case
     Live GT -> True
     _       -> False
 
-stepper_
+stepper
     :: Int      -- ^ how big the xy plane is
     -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
-    -> V.Vector IntSet
-    -> V.Vector IntSet
-stepper_ nxy syms cs = runST $ do
-    mcs <- MV.replicate (nxy * nxy) IM.empty
-    flip V.imapM_ cs $ \gIx ds ->
-      for_ (IS.toList ds) $ \pIx -> do
-        let pNeighbs = syms V.! pIx
+    -> IntMap IntSet
+    -> IntMap IntSet
+stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) $
+      coerce (foldMapParChunk @(MIM.MonoidalIntMap (MIM.MonoidalIntMap LiveCount)) chnk id)
+      [ IM.fromList . ((gIx, updateHere):) $
+          [ (gnIx, updateThere)
+          | gnIx <- tail gNeighbs
+          ]
+      | (gIx, ds) <- IM.toList cs
+      , pIx <- IS.toList ds
+      , let pNeighbs = syms V.! pIx
             gNeighbs = neighbs2d nxy gIx
             updateHere  = IM.insertWith (<>) pIx LiveAlone pNeighbs
             updateThere = IM.insertWith (<>) pIx (Dead LT) pNeighbs
-        for_ (tail gNeighbs) $ \gnIx -> do
-          MV.modify mcs (IM.unionWith (<>) updateThere) gnIx
-        MV.modify mcs (IM.unionWith (<>) updateHere) gIx
-    V.generateM (nxy * nxy) $ \i ->
-      IM.keysSet . IM.filter validLiveCount <$> MV.read mcs i
-
-stepper
-    :: Int      -- ^ how big the xy plane is
-    -> V.Vector (IntMap NCount)        -- ^ symmetry map
-    -> IntSet
-    -> IntSet
-stepper nxy syms cs = stayAlive <> comeAlive
+      ]
   where
     chnk :: Int
-    chnk = min 1000 (max 10 (IS.size cs `div` 100))
-    neighborCounts :: IntMap Bool
-    neighborCounts = IM.mapMaybe nValid
-                   $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
-      [ IM.fromListWith (<>) $
-          [ (gnIx + pIx * (nxy*nxy), NOne)
-          | gnIx <- tail gNeighbs
-          ] <>
-          [ (gnIx + pnIx * (nxy*nxy), pnC)
-          | (pnIx, pnC) <- IM.toList pNeighbs
-          , gnIx <- gNeighbs
-          ]
-      | c <- IS.toList cs
-      , let (pIx,gIx) = c `divMod` (nxy*nxy)
-            pNeighbs = syms V.! pIx
-            gNeighbs = neighbs2d nxy gIx
-      ]
-    stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
-    comeAlive = IM.keysSet (IM.filter id neighborCounts) `IS.difference` cs
+    chnk = min 1000 (max 10 (sum (IS.size <$> toList cs) `div` 100))
 
 neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
 neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
@@ -426,30 +389,21 @@ day17 d = MkSol
     , sSolve = \(S.toList->x) ->
         let bounds  = maximum (concatMap toList x) + 1
             nxy     = bounds + 12
-            shifted = IS.fromList $
-                (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
-            shifted_ = runST $ do
-              mcs <- MV.replicate (nxy*nxy) IS.empty
-              for_ x $ \p -> do
-                let V2 i j = p + 6
-                MV.write mcs (i + j * nxy) (IS.singleton 0)
-              V.freeze mcs
+            shifted = IM.fromList $
+                (\(V2 i j) -> (i + j * nxy, IS.singleton 0)) . (+ 6) <$> x
             -- wts = neighborWeights d 6
             wts = neighborWeights d (6 + length x - length x)   -- force no cache
             -- wts = loadNeighborWeights d (6 + length x - length x)
         -- in         Just . IS.size
         in  Just . sum
-                 -- . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
-                 . map (sum . map (finalWeight d . ixPascal d) . IS.toList)
-                 . V.toList
+                 . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList
                  . (!!! 6)
                  -- . map (\q -> traceShow (IS.size q) q)
                  -- . zipWith (\i q -> if i == 4 then traceShow (ixDouble d nxy <$> IS.toList q) q
                  --                              else q
                  --           ) [0..]
-                 . iterate (force . stepper_ nxy (fmap toDead <$> wts))
-                 -- . iterate (force . stepper_ nxy (fmap toDead <$> wts))
-                 $ shifted_
+                 . iterate (force . stepper nxy (fmap toDead <$> wts))
+                 $ shifted
     }
 {-# INLINE day17 #-}
 
@@ -457,7 +411,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 8
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -471,7 +425,7 @@ day17b = day17 8
 --                                      smart cache: 4.0s total
 --                                      no-t=6 cache: 3.3s total
 --                                      smarter t=6 cache: 3.0s total
---                                      mutable grid: 2.2s total
+--                                      unflatted grid: 2.1s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
