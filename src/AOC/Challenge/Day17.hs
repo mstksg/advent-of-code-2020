@@ -35,7 +35,8 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
-import           Data.Bifunctor              (second)
+import           Data.Bifunctor              (second, bimap)
+import qualified Data.Map as M
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
@@ -45,6 +46,7 @@ import           Data.List.Split             (chunksOf)
 import           Data.Maybe                  (fromMaybe, mapMaybe, isJust)
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T3(..))
+import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
@@ -307,20 +309,22 @@ neighborPairs d mx =
     | x <- allVecRuns d mx
     , let pX = pascalVecRunIx x
     , (pG, w) <- vecRunNeighbs x
+    , pG < n'
     ]
+  where
+    n' = pascals !! d !! (mx-1)
 
 neighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
     -> V.Vector (IntMap NCount)
 neighborWeights d mx = runST $ do
-    v <- MV.replicate n IM.empty
-    -- maybe keep a map of "done" pG/pX pairs and skip those
+    v <- MV.replicate n' IM.empty
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
       MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
     V.freeze v
   where
-    n = pascals !! d !! mx
+    n' = pascals !! d !! (mx-1)
 
 toNCount :: Int -> NCount
 toNCount = \case
@@ -343,12 +347,15 @@ day17 d = MkSol
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
             -- wts = neighborWeights d 6
             wts = neighborWeights d (6 + length x - length x)   -- force no cache
-            -- wts = unsafePerformIO $ loadNeighborWeights d (6 + length x - length x)
+            -- wts = loadNeighborWeights d (6 + length x - length x)
         -- in         Just . IS.size
         in  Just . sum
                  . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
                  . (!!! 6)
-                 -- . zipWith traceShow [0..]
+                 -- . map (\q -> traceShow (IS.size q) q)
+                 -- . zipWith (\i q -> if i == 4 then traceShow (ixDouble d nxy <$> IS.toList q) q
+                 --                              else q
+                 --           ) [0..]
                  . iterate (force . stepper nxy wts)
                  $ shifted
     }
@@ -370,12 +377,14 @@ day17b = day17 2
 --                                      no knownnat: 19s
 --                                      smallcache: 12s
 --                                      smart cache: 4.0s total
+--                                      no-t=6 cache: 3.3s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 --                                      smart cache: 21.5s total
 --                                      21s vs 17s
+--                                      no t=6 cache: 14s
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 --                                      smart cache: 1m10s total
 --                                      new: 43s
@@ -444,12 +453,12 @@ loadCache
     -> Int      -- ^ max
     -> IO (V.Vector (IntMap NCount))
 loadCache conn d mx =
-    V.generateM n $ \src -> do
+    V.generateM n' $ \src -> do
       fmap toNCount . IM.fromList <$> D.queryNamed conn
         "SELECT target,weight FROM cache WHERE dim = :d AND source = :src"
         [ ":d" D.:= d, ":src" D.:= src ]
   where
-    n = pascals !! d !! mx
+    n' = pascals !! d !! (mx-1)
 
 loadNeighborWeights
     :: Int    -- ^ dimensions
