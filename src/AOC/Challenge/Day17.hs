@@ -54,7 +54,6 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
-import qualified Data.List.NonEmpty          as NE
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -127,6 +126,80 @@ instance Semigroup NCount where
         _      -> NMany
       _        -> const NMany
 
+data LiveCount = Dead !Ordering
+               | LiveAlone
+               | Live !Ordering
+               | Overloaded
+  deriving (Show, Eq, Ord, Generic)
+instance NFData LiveCount
+
+addOrdering :: a -> (Ordering -> a) -> Ordering -> Ordering -> a
+addOrdering x f = \case
+    LT -> \case
+      LT -> f EQ
+      EQ -> f GT
+      GT -> x
+    EQ -> \case
+      LT -> f GT
+      _  -> x
+    GT -> const x
+
+toDead :: NCount -> LiveCount
+toDead = \case
+    NOne   -> Dead LT
+    NTwo   -> Dead EQ
+    NThree -> Dead GT
+    NMany  -> Overloaded
+
+-- toLiveCount :: Int -> LiveCount
+-- toLiveCount = \case
+--     0 -> error "0 livecount"
+--     1 -> Dead LT
+--     2 -> Dead EQ
+--     3 -> Dead GT
+--     _ -> Overloaded
+
+instance Semigroup LiveCount where
+    Dead n     <> Dead m     = addOrdering Overloaded Dead n m
+    Dead n     <> LiveAlone  = Live n
+    Dead n     <> Live  m    = addOrdering Overloaded Live n m
+    Dead _     <> Overloaded = Overloaded
+    LiveAlone  <> Dead m     = Live m
+    LiveAlone  <> LiveAlone  = LiveAlone
+    LiveAlone  <> Live m     = Live m
+    LiveAlone  <> Overloaded = Overloaded
+    Live n     <> Dead m     = addOrdering Overloaded Live n m
+    Live n     <> LiveAlone  = Live n
+    Live n     <> Live m     = addOrdering Overloaded Live n m
+    Live _     <> Overloaded = Overloaded
+    Overloaded <> _          = Overloaded
+
+validLiveCount :: LiveCount -> Bool
+validLiveCount = \case
+    Dead GT -> True
+    Live EQ -> True
+    Live GT -> True
+    _       -> False
+
+stepper_
+    :: Int      -- ^ how big the xy plane is
+    -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
+    -> V.Vector IntSet
+    -> V.Vector IntSet
+stepper_ nxy syms cs = runST $ do
+    mcs <- MV.replicate (nxy * nxy) IM.empty
+    flip V.imapM_ cs $ \gIx ds ->
+      for_ (IS.toList ds) $ \pIx -> do
+        let pNeighbs = syms V.! pIx
+            gNeighbs = neighbs2d nxy gIx
+            updateHere  = IM.insertWith (<>) pIx LiveAlone pNeighbs
+            updateThere = IM.insertWith (<>) pIx (Dead LT) pNeighbs
+        for_ (tail gNeighbs) $ \gnIx -> do
+          MV.modify mcs (IM.unionWith (<>) updateThere) gnIx
+        MV.modify mcs (IM.unionWith (<>) updateHere) gIx
+    V.generateM (nxy * nxy) $ \i ->
+      IM.keysSet . IM.filter validLiveCount <$> MV.read mcs i
+
 stepper
     :: Int      -- ^ how big the xy plane is
     -> V.Vector (IntMap NCount)        -- ^ symmetry map
@@ -140,13 +213,13 @@ stepper nxy syms cs = stayAlive <> comeAlive
     neighborCounts = IM.mapMaybe nValid
                    $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
       [ IM.fromListWith (<>) $
-        [ (gnIx + pnIx * (nxy*nxy), pnC)
-        | (pnIx, pnC) <- IM.toList pNeighbs
-        , gnIx <- gNeighbs
-        ] <>
-        [ (gnIx + pIx * (nxy*nxy), NOne)
-        | gnIx <- tail gNeighbs
-        ]
+          [ (gnIx + pIx * (nxy*nxy), NOne)
+          | gnIx <- tail gNeighbs
+          ] <>
+          [ (gnIx + pnIx * (nxy*nxy), pnC)
+          | (pnIx, pnC) <- IM.toList pNeighbs
+          , gnIx <- gNeighbs
+          ]
       | c <- IS.toList cs
       , let (pIx,gIx) = c `divMod` (nxy*nxy)
             pNeighbs = syms V.! pIx
@@ -250,8 +323,6 @@ vecRunNeighbs_ xs0 =
               | i == 1    = p' * (2^l)
               | otherwise = p' `div` factorial l
             res = l + rContrib + xContrib
-        -- todo: be smarter about this
-        when (i == n - 1) $ guard (res == 0)
         pure (res, T3 xs' b' p'')
     n = VU.length xs0
 
@@ -357,19 +428,28 @@ day17 d = MkSol
             nxy     = bounds + 12
             shifted = IS.fromList $
                 (\(V2 i j) -> i + j * nxy) . (+ 6) <$> x
+            shifted_ = runST $ do
+              mcs <- MV.replicate (nxy*nxy) IS.empty
+              for_ x $ \p -> do
+                let V2 i j = p + 6
+                MV.write mcs (i + j * nxy) (IS.singleton 0)
+              V.freeze mcs
             -- wts = neighborWeights d 6
             wts = neighborWeights d (6 + length x - length x)   -- force no cache
             -- wts = loadNeighborWeights d (6 + length x - length x)
         -- in         Just . IS.size
         in  Just . sum
-                 . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
+                 -- . IM.fromSet (finalWeight d . drop 2 . ixDouble d nxy)
+                 . map (sum . map (finalWeight d . ixPascal d) . IS.toList)
+                 . V.toList
                  . (!!! 6)
                  -- . map (\q -> traceShow (IS.size q) q)
                  -- . zipWith (\i q -> if i == 4 then traceShow (ixDouble d nxy <$> IS.toList q) q
                  --                              else q
                  --           ) [0..]
-                 . iterate (force . stepper nxy wts)
-                 $ shifted
+                 . iterate (force . stepper_ nxy (fmap toDead <$> wts))
+                 -- . iterate (force . stepper_ nxy (fmap toDead <$> wts))
+                 $ shifted_
     }
 {-# INLINE day17 #-}
 
@@ -377,7 +457,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 2
+day17b = day17 8
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -391,9 +471,11 @@ day17b = day17 2
 --                                      smart cache: 4.0s total
 --                                      no-t=6 cache: 3.3s total
 --                                      smarter t=6 cache: 3.0s total
+--                                      mutable grid: 2.2s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
+--                                      smarter t=6 cache: 5.8s
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 --                                      smart cache: 21.5s total
 --                                      21s vs 17s
