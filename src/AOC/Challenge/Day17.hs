@@ -21,7 +21,6 @@ module AOC.Challenge.Day17 (
   , vecRunNeighbs
   , vecRunNeighbs_
   , allVecRuns
-  , NCount(..)
   ) where
 
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
@@ -36,7 +35,6 @@ import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
 import           Data.Bifunctor              (second, bimap)
-import qualified Data.Map as M
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
@@ -54,6 +52,7 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
+import qualified Data.Map                    as M
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -101,58 +100,86 @@ neighbs2d n i =
     , dy <- [0,-1,1]
     ]
 
-data NCount =
-      NOne
-    | NTwo
-    | NThree
-    | NMany
+data LiveCount = Dead !Ordering
+               | LiveAlone
+               | Live !Ordering
+               | Overloaded
   deriving (Show, Eq, Ord, Generic)
-instance NFData NCount
+instance NFData LiveCount
 
-nValid :: NCount -> Maybe Bool
-nValid = \case
-    NTwo   -> Just False
-    NThree -> Just True
-    _      -> Nothing
+addOrdering :: a -> (Ordering -> a) -> Ordering -> Ordering -> a
+addOrdering x f = \case
+    LT -> \case
+      LT -> f EQ
+      EQ -> f GT
+      GT -> x
+    EQ -> \case
+      LT -> f GT
+      _  -> x
+    GT -> const x
 
-instance Semigroup NCount where
-    (<>) = \case
-      NOne -> \case
-        NOne   -> NTwo
-        NTwo   -> NThree
-        _      -> NMany
-      NTwo -> \case
-        NOne   -> NThree
-        _      -> NMany
-      _        -> const NMany
+toLiveCount :: Int -> LiveCount
+toLiveCount = \case
+    0 -> error "0 livecount"
+    1 -> Dead LT
+    2 -> Dead EQ
+    3 -> Dead GT
+    _ -> Overloaded
+
+instance Semigroup LiveCount where
+    Dead n     <> Dead m     = addOrdering Overloaded Dead n m
+    Dead n     <> LiveAlone  = Live n
+    Dead n     <> Live  m    = addOrdering Overloaded Live n m
+    Dead _     <> Overloaded = Overloaded
+    LiveAlone  <> Dead m     = Live m
+    LiveAlone  <> LiveAlone  = LiveAlone
+    LiveAlone  <> Live m     = Live m
+    LiveAlone  <> Overloaded = Overloaded
+    Live n     <> Dead m     = addOrdering Overloaded Live n m
+    Live n     <> LiveAlone  = Live n
+    Live n     <> Live m     = addOrdering Overloaded Live n m
+    Live _     <> Overloaded = Overloaded
+    Overloaded <> _          = Overloaded
+
+validLiveCount :: LiveCount -> Bool
+validLiveCount = \case
+    Dead GT -> True
+    Live EQ -> True
+    Live GT -> True
+    _       -> False
 
 stepper
     :: Int      -- ^ how big the xy plane is
-    -> V.Vector (IntMap NCount)        -- ^ symmetry map
+    -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
     -> IntSet
     -> IntSet
-stepper nxy syms cs = stayAlive <> comeAlive
+stepper nxy syms cs = next
   where
     chnk :: Int
     chnk = min 1000 (max 10 (IS.size cs `div` 100))
-    neighborCounts :: IntMap Bool
-    neighborCounts = IM.mapMaybe nValid
-                   $ coerce (foldMapParChunk @(MIM.MonoidalIntMap NCount) chnk id)
-      [ IM.fromListWith (<>) $
-        [ (gnIx + pnIx * (nxy*nxy), pnC)
-        | (pnIx, pnC) <- IM.toList pNeighbs
-        , gnIx <- gNeighbs
-        ] <>
-        [ (gnIx + pIx * (nxy*nxy), NOne)
-        | gnIx <- tail gNeighbs
-        ]
+    next :: IntSet
+    next = IM.keysSet . IM.filter validLiveCount
+                   $ coerce (foldMapParChunk @(MIM.MonoidalIntMap LiveCount) chnk id)
+      [ IM.unionWith (<>)
+        (IM.fromList
+            [ (gnIx + pnIx * (nxy*nxy), pnC)
+            | (pnIx, pnC) <- IM.toList pNeighbs
+            , gnIx <- gNeighbs
+            ]
+        )
+        (IM.fromList $
+            (c, LiveAlone) :
+            [ (gnIx + pIx * (nxy*nxy), Dead LT)
+            | gnIx <- tail gNeighbs
+            ]
+        )
       | c <- IS.toList cs
       , let (pIx,gIx) = c `divMod` (nxy*nxy)
             pNeighbs = syms V.! pIx
             gNeighbs = neighbs2d nxy gIx
       ]
-    stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
-    comeAlive = IM.keysSet (IM.filter id neighborCounts) `IS.difference` cs
+    -- stayAlive = IM.keysSet neighborCounts `IS.intersection` cs
+    -- comeAlive = IM.keysSet (IM.filter id neighborCounts) `IS.difference` cs
 
 neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
 neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
@@ -164,12 +191,12 @@ neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
 oldNeighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
-    -> V.Vector (IntMap NCount)
+    -> V.Vector (IntMap LiveCount)
 oldNeighborWeights d mx = runST $ do
     v <- MV.replicate n IM.empty
     for_ [0 .. n-1] $ \x ->
       for_ (neighbs mx (ixPascal d x)) $ \i -> do
-        MV.unsafeModify v (IM.insertWith (flip (<>)) x NOne) $
+        MV.unsafeModify v (IM.insertWith (flip (<>)) x (Dead LT)) $
           pascalIx (sort i)
     V.freeze v
   where
@@ -213,12 +240,12 @@ toChomper (x:xs) = Just (C False Nothing x x xs)
 -- reference implementaiton returning the actual runs
 vecRunNeighbs_
     :: VU.Vector Int
-    -> [(VU.Vector Int, NCount)]
+    -> [(VU.Vector Int, LiveCount)]
 vecRunNeighbs_ xs0 =
     mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True p0)
   where
     pullSame (_, (T3 _ True _)) = Nothing
-    pullSame (x, (T3 _ _    c)) = Just (x, toNCount c)
+    pullSame (x, (T3 _ _    c)) = Just (x, toLiveCount c)
     p0 = product . map factorial $ VU.toList xs0
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
     go i _ = StateT $ \(T3 xs b p) -> do
@@ -247,7 +274,7 @@ vecRunNeighbs_ xs0 =
 -- | directly return pascal coords
 vecRunNeighbs
     :: VU.Vector Int
-    -> [(Int, NCount)]
+    -> [(Int, LiveCount)]
 vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pascals)
   where
     xs0' = VU.toList xs0
@@ -263,7 +290,7 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
               res   = l' + x
               c     = take res cs
               tot'  = tot + sum (map head c)
-          in  (allSame && x == x0, (tot', toNCount p'))
+          in  (allSame && x == x0, (tot', toLiveCount p'))
         r:rs' -> do
           (xContrib, rContrib, p') <-
               [ ( xContrib
@@ -303,7 +330,7 @@ allVecRuns d mx = go 0 d []
 neighborPairs
     :: Int    -- ^ dimension
     -> Int    -- ^ maximum
-    -> [(Int, (Int, NCount))]
+    -> [(Int, (Int, LiveCount))]
 neighborPairs d mx =
     [ (pG, (pX, w))
     | x <- allVecRuns d mx
@@ -317,7 +344,7 @@ neighborPairs d mx =
 neighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
-    -> V.Vector (IntMap NCount)
+    -> V.Vector (IntMap LiveCount)
 neighborWeights d mx = runST $ do
     v <- MV.replicate n' IM.empty
     for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
@@ -325,14 +352,6 @@ neighborWeights d mx = runST $ do
     V.freeze v
   where
     n' = pascals !! d !! (mx-1)
-
-toNCount :: Int -> NCount
-toNCount = \case
-    0 -> error "0 ncount"
-    1 -> NOne
-    2 -> NTwo
-    3 -> NThree
-    _ -> NMany
 
 day17
     :: Int
@@ -365,7 +384,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 2
+day17b = day17 8
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -424,15 +443,22 @@ cacheNeighborWeights conn d mx = do
     takeMVar done
     threadDelay 1000000
   where
-    fromCount :: NCount -> Int
+    fromCount :: LiveCount -> Int
     fromCount = \case
-      NOne   -> 1
-      NTwo   -> 2
-      NThree -> 3
-      NMany  -> 4
+      Dead LT -> 1
+      Dead EQ -> 2
+      Dead GT -> 3
+      Overloaded -> 4
+      _          -> error "bad count"
+    -- fromCount :: NCount -> Int
+    -- fromCount = \case
+    --   NOne   -> 1
+    --   NTwo   -> 2
+    --   NThree -> 3
+    --   NMany  -> 4
     n :: Double
     n = fromIntegral (pascals !! d !! mx)
-    chunkUp :: [(Int, (Int, NCount))] -> IntMap (IntMap NCount)
+    chunkUp :: [(Int, (Int, LiveCount))] -> IntMap (IntMap LiveCount)
     chunkUp = IM.fromListWith (IM.unionWith (<>))
             . (map . second) (uncurry IM.singleton)
 
@@ -451,10 +477,10 @@ loadCache
     :: D.Connection
     -> Int      -- ^ dimensions
     -> Int      -- ^ max
-    -> IO (V.Vector (IntMap NCount))
+    -> IO (V.Vector (IntMap LiveCount))
 loadCache conn d mx =
     V.generateM n' $ \src -> do
-      fmap toNCount . IM.fromList <$> D.queryNamed conn
+      fmap toLiveCount . IM.fromList <$> D.queryNamed conn
         "SELECT target,weight FROM cache WHERE dim = :d AND source = :src"
         [ ":d" D.:= d, ":src" D.:= src ]
   where
@@ -463,13 +489,13 @@ loadCache conn d mx =
 loadNeighborWeights
     :: Int    -- ^ dimensions
     -> Int    -- ^ maximum
-    -> V.Vector (IntMap NCount)
+    -> V.Vector (IntMap LiveCount)
 loadNeighborWeights d mx = unsafePerformIO $ loadNeighborWeights_ d mx
 
 loadNeighborWeights_
     :: Int    -- ^ dimensions
     -> Int    -- ^ maximum
-    -> IO (V.Vector (IntMap NCount))
+    -> IO (V.Vector (IntMap LiveCount))
 loadNeighborWeights_ d mx = D.withConnection "cache/day17.db" $ \conn -> do
     D.execute_ conn
       "CREATE TABLE IF NOT EXISTS cache (dim INT, source INT, target INT, weight INT, CONSTRAINT dst UNIQUE(dim, source, target))"
