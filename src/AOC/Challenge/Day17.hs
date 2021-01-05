@@ -24,7 +24,6 @@ module AOC.Challenge.Day17 (
   , NCount(..)
   ) where
 
--- import           Debug.Trace
 import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
@@ -36,7 +35,7 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
-import           Data.Bifunctor              (second)
+import           Data.Bifunctor              (second, bimap)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
@@ -44,9 +43,11 @@ import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
 import           Data.List.NonEmpty          (NonEmpty(..))
 import           Data.List.Split             (chunksOf)
+import           Data.Map                    (Map)
 import           Data.Maybe                  (fromMaybe, mapMaybe)
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T3(..))
+import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           System.IO.Unsafe            (unsafePerformIO)
@@ -54,6 +55,7 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
+import qualified Data.Map                    as M
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
 import qualified Data.Vector.Mutable         as MV
@@ -104,15 +106,10 @@ data NCount =
 instance NFData NCount
 
 instance Semigroup NCount where
-    (<>) = \case
-      NOne -> \case
-        NOne   -> NTwo
-        NTwo   -> NThree
-        _      -> NMany
-      NTwo -> \case
-        NOne   -> NThree
-        _      -> NMany
-      _        -> const NMany
+    NOne <> NOne = NTwo
+    NOne <> NTwo = NThree
+    NTwo <> NOne = NThree
+    _    <> _    = NMany
 
 data LiveCount = Dead !Ordering
                | LiveAlone
@@ -122,15 +119,12 @@ data LiveCount = Dead !Ordering
 instance NFData LiveCount
 
 addOrdering :: a -> (Ordering -> a) -> Ordering -> Ordering -> a
-addOrdering x f = \case
-    LT -> \case
-      LT -> f EQ
-      EQ -> f GT
-      GT -> x
-    EQ -> \case
-      LT -> f GT
-      _  -> x
-    GT -> const x
+addOrdering x f = go
+  where
+    go LT LT = f EQ
+    go LT EQ = f GT
+    go EQ LT = f GT
+    go _  _  = x
 
 toDead :: NCount -> LiveCount
 toDead = \case
@@ -139,28 +133,17 @@ toDead = \case
     NThree -> Dead GT
     NMany  -> Overloaded
 
--- toLiveCount :: Int -> LiveCount
--- toLiveCount = \case
---     0 -> error "0 livecount"
---     1 -> Dead LT
---     2 -> Dead EQ
---     3 -> Dead GT
---     _ -> Overloaded
-
 instance Semigroup LiveCount where
-    Dead n     <> Dead m     = addOrdering Overloaded Dead n m
-    Dead n     <> LiveAlone  = Live n
-    Dead n     <> Live  m    = addOrdering Overloaded Live n m
-    Dead _     <> Overloaded = Overloaded
-    LiveAlone  <> Dead m     = Live m
-    LiveAlone  <> LiveAlone  = LiveAlone
-    LiveAlone  <> Live m     = Live m
-    LiveAlone  <> Overloaded = Overloaded
-    Live n     <> Dead m     = addOrdering Overloaded Live n m
-    Live n     <> LiveAlone  = Live n
-    Live n     <> Live m     = addOrdering Overloaded Live n m
-    Live _     <> Overloaded = Overloaded
-    Overloaded <> _          = Overloaded
+    Dead n      <> Dead m      = addOrdering Overloaded Dead n m
+    Dead n      <> LiveAlone   = Live n
+    Dead n      <> Live  m     = addOrdering Overloaded Live n m
+    LiveAlone   <> Dead m      = Live m
+    LiveAlone   <> LiveAlone   = LiveAlone
+    LiveAlone   <> Live m      = Live m
+    Live n      <> Dead m      = addOrdering Overloaded Live n m
+    Live n      <> LiveAlone   = Live n
+    Live n      <> Live m      = addOrdering Overloaded Live n m
+    _           <> _           = Overloaded
 
 validLiveCount :: LiveCount -> Bool
 validLiveCount = \case
@@ -172,18 +155,14 @@ validLiveCount = \case
 stepper
     :: Int      -- ^ how big the xy plane is
     -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
-    -> IntMap IntSet
+    -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
 stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) $
       coerce (foldMapParChunk @(MIM.MonoidalIntMap (MIM.MonoidalIntMap LiveCount)) chnk id)
-      [ IM.fromList . ((gIx, updateHere):) $
-          [ (gnIx, updateThere)
-          | gnIx <- tail gNeighbs
-          ]
+      [ IM.fromList $ zip (neighbs2d nxy gIx) (updateHere : repeat updateThere)
       | (gIx, ds) <- IM.toList cs
-      , pIx <- IS.toList ds
-      , let pNeighbs = syms V.! pIx
-            gNeighbs = neighbs2d nxy gIx
+      , pIx       <- IS.toList ds
+      , let pNeighbs    = syms V.! pIx
             updateHere  = IM.insertWith (<>) pIx LiveAlone pNeighbs
             updateThere = IM.insertWith (<>) pIx (Dead LT) pNeighbs
       ]
@@ -203,14 +182,16 @@ oldNeighborWeights
     -> Int            -- ^ maximum
     -> V.Vector (IntMap NCount)
 oldNeighborWeights d mx = runST $ do
-    v <- MV.replicate n IM.empty
+    v <- MV.replicate n' IM.empty
     for_ [0 .. n-1] $ \x ->
-      for_ (neighbs mx (ixPascal d x)) $ \i -> do
-        MV.unsafeModify v (IM.insertWith (flip (<>)) x NOne) $
-          pascalIx (sort i)
+      for_ (neighbs (mx-1) (ixPascal d x)) $ \i -> do
+        let pIx = pascalIx (sort i)
+        when (pIx < n') $
+          MV.modify v (IM.insertWith (flip (<>)) x NOne) pIx
     V.freeze v
   where
-    n = pascals !! d !! mx
+    n  = pascals !! d !! mx
+    n' = pascals !! d !! (mx-1)
 
 -- -- used to test finalWeights
 -- _duplicands
@@ -303,8 +284,8 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
     go !tot !allSame (C ll l x x0 rs) !p !cs = case rs of
         -- we can ignore all of these since we don't ever check neighbors
         -- of t>=mx.  so rContrib must be completely r for the last item,
-        -- since the last item must be 0
-        r:|[] -> do
+        -- to completely exhaust that point so that a 0 pick is forced.
+        r:|[] -> pure
           let p' = p `div` factorial x `div` factorial r
               p''
                 | ll' && not ll = p' * (2^l')
@@ -312,7 +293,7 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
               res  = l' + x + r
               c    = take res cs
               tot' = tot + sum (map head c)
-          pure (allSame && x == x0 && r == 0, (tot', toNCount p''))
+          in  (allSame && x == x0 && r == 0, (tot', toNCount p''))
         r:|(r':rs') -> do
           (xContrib, rContrib, p') <-
               [ ( xContrib
@@ -320,7 +301,7 @@ vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pasca
                 , p `div` factorial xContrib `div` factorial rContrib
                 )
               | totContrib <- [0..(x+r)]
-              , xContrib <- [max 0 (totContrib-r)..min x totContrib]
+              , xContrib  <- [max 0 (totContrib-r)..min x totContrib]
               , let rContrib = totContrib - xContrib
               ]
           let p''
@@ -397,15 +378,50 @@ day17 d = MkSol
         -- in         Just . IS.size
         in  Just . sum
                  . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList
+                 -- . (\q -> traceShow (M.mapKeys (map (encRun 6)) . M.filter ((6,12)`elem`) $ heatPoints d nxy q) q)
                  . (!!! 6)
                  -- . map (\q -> traceShow (IS.size q) q)
                  -- . zipWith (\i q -> if i == 4 then traceShow (ixDouble d nxy <$> IS.toList q) q
                  --                              else q
                  --           ) [0..]
+                 -- . zipWith (\(i::Int) q ->
+                 --              traceShow (heatMap nxy q) q
+                 --              -- traceShow (heatMap2 d nxy q) q
+                 --           ) [0..]
                  . iterate (force . stepper nxy (fmap toDead <$> wts))
                  $ shifted
     }
 {-# INLINE day17 #-}
+
+heatMap :: Int -> IntMap IntSet -> [[Int]]
+heatMap nxy pts =
+    [ [ maybe 0 IS.size (IM.lookup (x + y * nxy) pts)
+      | y <- [0..nxy-1]
+      ]
+    | x <- [0..nxy-1]
+    ]
+
+heatMap2 :: Int -> Int -> IntMap IntSet -> [[Int]]
+heatMap2 d nxy pts =
+    [ [ maybe 0 (sum . map (finalWeight d . ixPascal d) . IS.toList) (IM.lookup (x + y * nxy) pts)
+      | y <- [0..nxy-1]
+      ]
+    | x <- [0..nxy-1]
+    ]
+
+heatPoints :: Int -> Int -> IntMap IntSet -> Map [[Int]] [(Int, Int)]
+heatPoints d nxy pts = fmap S.toList $ M.fromListWith (<>)
+    [ (p, S.singleton (x, y))
+    | x <- [0..nxy-1]
+    , y <- [0..nxy-1]
+    , let p = map (ixPascal d) . IS.toList $ IM.findWithDefault IS.empty (x + y*nxy) pts
+    , not (null p)
+    ]
+
+encRun :: Int -> [Int] -> [Int]
+encRun mx xs = map (\i -> M.findWithDefault 0 i occ) [0..mx]
+  where
+    occ = freqs xs
 
 day17a :: Set Point :~> Int
 day17a = day17 1
@@ -425,7 +441,8 @@ day17b = day17 2
 --                                      smart cache: 4.0s total
 --                                      no-t=6 cache: 3.3s total
 --                                      smarter t=6 cache: 3.0s total
---                                      unflatted grid: 2.1s total
+--                                      unflatted step grid: 2.1s total
+--                                      pure grid: 1.2s total
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
@@ -443,6 +460,7 @@ day17b = day17 2
 --    new method: total cache + run = 20m53s
 -- d=16: ? / 1125317394432 -- build sqlite cache + run = 62m44; run = 2m25s
 -- d=17: ? / 6178939535360 -- build sqlite cache + run = 24m
+-- d=17: ? / 34702568194048 -- build sqlite cache + run = 75m
 
 cacheNeighborWeights
     :: D.Connection
