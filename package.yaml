@@ -173,6 +173,27 @@ executables:
     - finite-typelits
     - lens
     - optparse-applicative
+  aoc2020-day17:
+    main:                day17.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -O2
+    dependencies:
+    - aeson
+    - aoc2020
+    - bytestring
+    - cereal
+    - conduit
+    - conduit-extra
+    - containers
+    - deepseq
+    - filepath
+    - hvega
+    - text
+    - unliftio-core
 
 tests:
   aoc2020-test:

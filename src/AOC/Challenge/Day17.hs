@@ -10,10 +10,12 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
+  , runDay17
   , pascals
   , pascalIx
   , pascalVecRunIx
   , ixPascal
+  , validNCount
   , neighborWeights
   , oldNeighborWeights
   , neighborPairs
@@ -21,10 +23,12 @@ module AOC.Challenge.Day17 (
   , vecRunNeighbs
   , vecRunNeighbs_
   , allVecRuns
+  , finalWeight
+  , encRun
   , NCount(..)
   ) where
 
-import           AOC.Common                  ((!!!), factorial, freqs, lookupFreq, foldMapParChunk)
+import           AOC.Common                  (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
 import           Control.Concurrent          (forkIO, threadDelay)
@@ -35,7 +39,7 @@ import           Control.Exception           (bracket_, evaluate)
 import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
 import           Control.Monad.State         (StateT(..))
-import           Data.Bifunctor              (second, bimap)
+import           Data.Bifunctor              (second)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
 import           Data.IntMap.Strict          (IntMap)
@@ -46,10 +50,11 @@ import           Data.List.Split             (chunksOf)
 import           Data.Map                    (Map)
 import           Data.Maybe                  (fromMaybe, mapMaybe)
 import           Data.Set                    (Set)
-import           Data.Tuple.Strict           (T3(..))
-import           Debug.Trace
+import           Data.Tuple.Strict           (T3(..), T2(..))
+-- import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
+import           Safe                        (lastMay)
 import           System.IO.Unsafe            (unsafePerformIO)
 import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
@@ -152,23 +157,34 @@ validLiveCount = \case
     Live GT -> True
     _       -> False
 
+validNCount :: NCount -> Maybe Bool
+validNCount = \case
+    NTwo   -> Just False
+    NThree -> Just True
+    _      -> Nothing
+
 stepper
     :: Int      -- ^ how big the xy plane is
     -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
     -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
 stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) $
-      coerce (foldMapParChunk @(MIM.MonoidalIntMap (MIM.MonoidalIntMap LiveCount)) chnk id)
+      coerce (foldMapParChunk @(MIM.MonoidalIntMap (MIM.MonoidalIntMap LiveCount)) nxy id)
       [ IM.fromList $ zip (neighbs2d nxy gIx) (updateHere : repeat updateThere)
       | (gIx, ds) <- IM.toList cs
-      , pIx       <- IS.toList ds
-      , let pNeighbs    = syms V.! pIx
-            updateHere  = IM.insertWith (<>) pIx LiveAlone pNeighbs
-            updateThere = IM.insertWith (<>) pIx (Dead LT) pNeighbs
+      , let T2 updateHere updateThere = prebaked M.! ds
       ]
   where
-    chnk :: Int
-    chnk = min 1000 (max 10 (sum (IS.size <$> toList cs) `div` 100))
+    -- the number of unique groups stays constant as you increase d
+    uniqueGroups = S.fromList $ IM.elems cs
+    prebaked :: Map IntSet (T2 (IntMap LiveCount) (IntMap LiveCount))
+    prebaked = flip M.fromSet uniqueGroups $ \ds ->
+      coerce $ foldMap id
+        [ T2 (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx LiveAlone pNeighbs)
+             (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx (Dead LT) pNeighbs)
+        | pIx <- IS.toList ds
+        , let pNeighbs = syms V.! pIx
+        ]
 
 neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
 neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
@@ -361,62 +377,67 @@ toNCount = \case
     3 -> NThree
     _ -> NMany
 
+runDay17
+    :: Bool               -- ^ cache thunk between runs
+    -> Bool               -- ^ use sqlite3
+    -> Int                -- ^ number of steps
+    -> Int                -- ^ dimensions
+    -> Set Point          -- ^ points
+    -> [IntMap IntSet]    -- ^ steps
+runDay17 cache sql3 mx d (S.toList -> x) =
+          take (mx + 1)
+        . strictIterate (force . stepper nxy (fmap toDead <$> wts))
+        $ shifted
+  where
+    bounds  = maximum (concatMap toList x) + 1
+    nxy     = bounds + mx*2
+    shifted = IM.fromList $
+        (\(V2 i j) -> (i + j * nxy, IS.singleton 0)) . (+ V2 mx mx) <$> x
+    mx'
+      | cache     = mx
+      | otherwise = mx + length x - length x
+    {-# INLINE mx' #-}
+    wts
+      | sql3      = loadNeighborWeights d mx'
+      | otherwise = neighborWeights d mx'
+{-# INLINE runDay17 #-}
+
 day17
     :: Int
     -> Set Point :~> Int
 day17 d = MkSol
     { sParse = Just . parseAsciiSet (== '#')
     , sShow  = show
-    , sSolve = \(S.toList->x) ->
-        let bounds  = maximum (concatMap toList x) + 1
-            nxy     = bounds + 12
-            shifted = IM.fromList $
-                (\(V2 i j) -> (i + j * nxy, IS.singleton 0)) . (+ 6) <$> x
-            -- wts = neighborWeights d 6
-            wts = neighborWeights d (6 + length x - length x)   -- force no cache
-            -- wts = loadNeighborWeights d (6 + length x - length x)
-        -- in         Just . IS.size
-        in  Just . sum
-                 . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList
-                 -- . (\q -> traceShow (M.mapKeys (map (encRun 6)) . M.filter ((6,12)`elem`) $ heatPoints d nxy q) q)
-                 . (!!! 6)
-                 -- . map (\q -> traceShow (IS.size q) q)
-                 -- . zipWith (\i q -> if i == 4 then traceShow (ixDouble d nxy <$> IS.toList q) q
-                 --                              else q
-                 --           ) [0..]
-                 -- . zipWith (\(i::Int) q ->
-                 --              traceShow (heatMap nxy q) q
-                 --              -- traceShow (heatMap2 d nxy q) q
-                 --           ) [0..]
-                 . iterate (force . stepper nxy (fmap toDead <$> wts))
-                 $ shifted
+    , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
+             . lastMay
+             . runDay17 False False 6 d
     }
 {-# INLINE day17 #-}
 
-heatMap :: Int -> IntMap IntSet -> [[Int]]
-heatMap nxy pts =
-    [ [ maybe 0 IS.size (IM.lookup (x + y * nxy) pts)
-      | y <- [0..nxy-1]
-      ]
-    | x <- [0..nxy-1]
-    ]
+-- heatMap :: Int -> IntMap IntSet -> [[Int]]
+-- heatMap nxy pts =
+--     [ [ maybe 0 IS.size (IM.lookup (x + y * nxy) pts)
+--       | y <- [0..nxy-1]
+--       ]
+--     | x <- [0..nxy-1]
+--     ]
 
-heatMap2 :: Int -> Int -> IntMap IntSet -> [[Int]]
-heatMap2 d nxy pts =
-    [ [ maybe 0 (sum . map (finalWeight d . ixPascal d) . IS.toList) (IM.lookup (x + y * nxy) pts)
-      | y <- [0..nxy-1]
-      ]
-    | x <- [0..nxy-1]
-    ]
+-- heatMap2 :: Int -> Int -> IntMap IntSet -> [[Int]]
+-- heatMap2 d nxy pts =
+--     [ [ maybe 0 (sum . map (finalWeight d . ixPascal d) . IS.toList) (IM.lookup (x + y * nxy) pts)
+--       | y <- [0..nxy-1]
+--       ]
+--     | x <- [0..nxy-1]
+--     ]
 
-heatPoints :: Int -> Int -> IntMap IntSet -> Map [[Int]] [(Int, Int)]
-heatPoints d nxy pts = fmap S.toList $ M.fromListWith (<>)
-    [ (p, S.singleton (x, y))
-    | x <- [0..nxy-1]
-    , y <- [0..nxy-1]
-    , let p = map (ixPascal d) . IS.toList $ IM.findWithDefault IS.empty (x + y*nxy) pts
-    , not (null p)
-    ]
+-- heatPoints :: Int -> Int -> IntMap IntSet -> Map [[Int]] [(Int, Int)]
+-- heatPoints d nxy pts = fmap S.toList $ M.fromListWith (<>)
+--     [ (p, S.singleton (x, y))
+--     | x <- [0..nxy-1]
+--     , y <- [0..nxy-1]
+--     , let p = map (ixPascal d) . IS.toList $ IM.findWithDefault IS.empty (x + y*nxy) pts
+--     , not (null p)
+--     ]
 
 encRun :: Int -> [Int] -> [Int]
 encRun mx xs = map (\i -> M.findWithDefault 0 i occ) [0..mx]
@@ -427,7 +448,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 2
+day17b = day17 8
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -443,24 +464,33 @@ day17b = day17 2
 --                                      smarter t=6 cache: 3.0s total
 --                                      unflatted step grid: 2.1s total
 --                                      pure grid: 1.2s total
+--                                      unique z-stacks: 120ms step
 -- d=11: 93113856 / 309176832; 43m54s  -- with unboxed, 5m3s, with pre-neighb: 1m43s (no cache: 4.5s)
 --                                      smallcache: 52s
 --                                      8.8s v 7.7s
 --                                      smarter t=6 cache: 5.8s
+--                                      unique z-stacks: 172ms step
 -- d=12: 424842240 / 1537981440 -- with unboxed, 22m10s, with pre-neighb: 8m30s (no cache: 7.4s)
 --                                      smart cache: 21.5s total
 --                                      21s vs 17s
 --                                      no t=6 cache: 14s
+--                                      unique z-stacks: 281ms step
 -- d=13: 1932496896 / 7766482944 -- sqlite3 cache: 13.4s
 --                                      smart cache: 1m10s total
 --                                      new: 43s
+--                                      unique z-stacks: 421ms step
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
 --                                      new: 2m21s total
+--                                      unique z-stacks: 647ms step
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
 --    new method: total cache + run = 20m53s
+--                                      unique z-stacks: 1.00s step
 -- d=16: ? / 1125317394432 -- build sqlite cache + run = 62m44; run = 2m25s
+--                                      unique z-stacks: 1.37s step
 -- d=17: ? / 6178939535360 -- build sqlite cache + run = 24m
--- d=17: ? / 34702568194048 -- build sqlite cache + run = 75m
+--                                      unique z-stacks: 2.08s step
+-- d=18: ? / 34702568194048 -- build sqlite cache + run = 75m
+--                                      unique z-stacks: 3.19s step
 
 cacheNeighborWeights
     :: D.Connection

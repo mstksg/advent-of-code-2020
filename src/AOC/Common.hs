@@ -26,6 +26,7 @@ module AOC.Common (
   , loopEither
   , firstJust
   , (!!!)
+  , strictIterate
   , (!?)
   , drop'
   , dup
@@ -193,6 +194,11 @@ trace' str x = trace (x `seq` str) x
 [] !!! _ = error "Out of range"
 (x:_ ) !!! 0 = x
 (x:xs) !!! n = x `seq` (xs !!! (n - 1))
+
+strictIterate :: (a -> a) -> a -> [a]
+strictIterate f = go
+  where
+    go !x = x : go (f x)
 
 -- | Strict drop
 drop' :: Int -> [a] -> [a]
