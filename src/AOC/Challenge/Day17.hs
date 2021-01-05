@@ -168,23 +168,20 @@ stepper
     -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
     -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
-stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) $
-      coerce (foldMapParChunk @(MIM.MonoidalIntMap (MIM.MonoidalIntMap LiveCount)) nxy id)
-      [ IM.fromList $ zip (neighbs2d nxy gIx) (updateHere : repeat updateThere)
-      | (gIx, ds) <- IM.toList cs
-      , let T2 updateHere updateThere = prebaked M.! ds
-      ]
+stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
+    flip (foldMapParChunk nxy) (IM.toList cs) $ \(gIx, ds) ->
+      let T2 updateHere updateThere = prebaked M.! ds
+      in  MIM.MonoidalIntMap . IM.fromList $
+            zip (neighbs2d nxy gIx) (updateHere : repeat updateThere)
   where
     -- the number of unique groups stays constant as you increase d
     uniqueGroups = S.fromList $ IM.elems cs
-    prebaked :: Map IntSet (T2 (IntMap LiveCount) (IntMap LiveCount))
+    prebaked :: Map IntSet (T2 (MIM.MonoidalIntMap LiveCount) (MIM.MonoidalIntMap LiveCount))
     prebaked = flip M.fromSet uniqueGroups $ \ds ->
-      coerce $ foldMap id
-        [ T2 (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx LiveAlone pNeighbs)
-             (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx (Dead LT) pNeighbs)
-        | pIx <- IS.toList ds
-        , let pNeighbs = syms V.! pIx
-        ]
+      flip foldMap (IS.toList ds) $ \pIx ->
+        let pNeighbs = syms V.! pIx
+        in  T2 (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx LiveAlone pNeighbs)
+               (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx (Dead LT) pNeighbs)
 
 neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
 neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
