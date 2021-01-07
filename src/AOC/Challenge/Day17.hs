@@ -8,6 +8,7 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
+  , pascals
   , runDay17
   , ixPascal
   , pascalIx
@@ -22,7 +23,7 @@ module AOC.Challenge.Day17 (
   , finalWeight
   ) where
 
-import           AOC.Common                    (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
+import           AOC.Common                    (factorial, integerFactorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point              (Point, parseAsciiSet)
 import           AOC.Solver                    ((:~>)(..))
 import           Control.Applicative.Backwards (Backwards(..))
@@ -304,7 +305,7 @@ vecRunNeighbs
     :: [[Int]]            -- ^ pascal table
     -> Int
     -> [(Int, NCount)]
-vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
+vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True NOne 0 x xs)
                     . genVecRunIxPascal pasc0
   where
     -- we build these in reverse because we can both generate and encode
@@ -315,7 +316,7 @@ vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
         -> Int          -- ^ running total
         -> Int          -- ^ original item in that position
         -> Bool         -- ^ currently all the same?
-        -> Int          -- ^ multiplicity
+        -> NCount       -- ^ multiplicity
         -> Int          -- ^ item to the right
         -> Int          -- ^ current item
         -> [Int]        -- ^ leftover items (right to left)
@@ -323,9 +324,13 @@ vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
     go pascs_ !tot x0 allSame !p r x = \case
       [] ->
         let res  = r + x
-            p'   = p * factorial res * (2^r) `div` factorial x
+            p'   = p `mulNCount` toNCount @Integer
+                    ( integerFactorial (fromIntegral res)
+                    * (2^r)
+                `div` integerFactorial (fromIntegral x)
+                    )
             tot' = tot
-        in  (tot', toNCount p') <$ guard (not (allSame && x == x0))
+        in  (tot', p') <$ guard (not (allSame && x == x0))
       l:ls -> do
         xlContrib <- [0..(x+l)]
         xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
@@ -333,10 +338,12 @@ vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
             res        = r + xlContrib
             l'         = l - lContrib
             x'         = x - xContrib
-            p'         = p * factorial res
-                       `div` factorial r
-                       `div` factorial xContrib
-                       `div` factorial lContrib
+            p'         = p `mulNCount` toNCount @Integer
+                           ( integerFactorial (fromIntegral res)
+                       `div` integerFactorial (fromIntegral r)
+                       `div` integerFactorial (fromIntegral xContrib)
+                       `div` integerFactorial (fromIntegral lContrib)
+                           )
             pasc:pascs = pascs_
             tot'       = tot + sum (take res pasc)
             pascs'     = drop res <$> pascs
@@ -354,7 +361,7 @@ neighborWeights d mx =
   where
     n' = pascals !! d !! (mx - 1)
 
-toNCount :: Int -> NCount
+toNCount :: (Num a, Eq a) => a -> NCount
 toNCount = \case
     0 -> error "0 ncount"
     1 -> NOne
@@ -362,13 +369,25 @@ toNCount = \case
     3 -> NThree
     _ -> NMany
 
+mulNCount :: NCount -> NCount -> NCount
+mulNCount = \case
+    NOne   -> id
+    NTwo   -> \case
+      NOne -> NTwo
+      _    -> NMany
+    NThree -> \case
+      NOne -> NThree
+      _    -> NMany
+    _      -> const NMany
+
 runDay17
-    :: Bool               -- ^ cache thunk between runs
+    :: Bool               -- ^ cache neighbors between runs
+    -> Bool               -- ^ use an up-front vector cache (instead of dynamic memotable)
     -> Int                -- ^ number of steps
     -> Int                -- ^ dimensions
     -> Set Point          -- ^ points
     -> [IntMap IntSet]    -- ^ steps
-runDay17 cache mx d (S.toList -> x) =
+runDay17 cache vcache mx d (S.toList -> x) =
           take (mx + 1)
         . strictIterate (force . stepper nxy wts)
         $ shifted
@@ -381,7 +400,10 @@ runDay17 cache mx d (S.toList -> x) =
       | cache     = mx
       | otherwise = mx + length x - length x
     {-# INLINE mx' #-}
-    wts = Memo.integral $ IM.fromListWith (<>)
+    -- wts = ((fmap toDead <$> neighborWeights d mx') V.!)
+    wts
+      | vcache    = ((fmap toDead <$> neighborWeights d mx') V.!)
+      | otherwise = Memo.integral $ IM.fromListWith (<>)
                         . map (second toDead)
                         . vecRunNeighbs (pascalTable d mx')
 {-# INLINE runDay17 #-}
@@ -394,7 +416,7 @@ day17 d = MkSol
     , sShow  = show
     , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
              . lastMay
-             . runDay17 False 6 d
+             . runDay17 False True 6 d
     }
 {-# INLINE day17 #-}
 
@@ -402,7 +424,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 12
+day17b = day17 28
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -436,7 +458,7 @@ day17b = day17 12
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
 --                                      new: 2m21s total
 --                                      unique z-stacks: 647ms step
---                                      forward cache: 4.8s all in memory
+--                                      forward cache: (old) 4.8s all in memory
 --                                          -> 1.2s with streaming neighbor gen
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
 --    new method: total cache + run = 20m53s
@@ -449,3 +471,11 @@ day17b = day17 12
 --                                      unique z-stacks: 3.19s step
 -- d=19: ? / 199077056872448 -- build sqlite cache + run = 220m
 --                                      unique z-stacks: 18s step step
+--                                      forward neighb: 11.4s
+-- d=20: ? / 1163817241018368 -- forward neighb: 16.6s
+--                                      forward cache: 6.4s
+-- d=21: ? / 6913315519332352 -- forward neighb: 23.3s
+--                                      forward cache: 9.2s
+-- d=22: ? / 41598514437816320 -- forward neighb: 34.0s
+--                                      forward cache: 12.8s
+-- d=30: ? / int 3929358204928 -- forward neighb: 5m1s

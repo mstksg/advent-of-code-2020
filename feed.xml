@@ -7,9 +7,9 @@
     <link>https://github.com/mstksg/advent-of-code-2020/blob/master/reflections.md</link>
     <copyright>Copyright 2020 Justin Le</copyright>
     <language>en-us</language>
-    <lastBuildDate>Thu, 31 Dec 2020 14:31:52 EST</lastBuildDate>
+    <lastBuildDate>Thu,  7 Jan 2021 17:02:28 EST</lastBuildDate>
     <managingEditor>justin@jle.im</managingEditor>
-    <pubDate>Thu, 31 Dec 2020 14:31:52 EST</pubDate>
+    <pubDate>Thu,  7 Jan 2021 17:02:28 EST</pubDate>
     <webMaster>justin@jle.im</webMaster>
     <generator>Shake + Template</generator>
     <item>
@@ -1365,9 +1365,9 @@ that file instead!
 &lt;span id=&quot;cb3-3&quot;&gt;&lt;a href=&quot;#cb3-3&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;  &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
 &lt;span id=&quot;cb3-4&quot;&gt;&lt;a href=&quot;#cb3-4&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;    go (&lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;base, &lt;span class=&quot;op&quot;&gt;!&lt;/span&gt;step) (offset, i) &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; (base&amp;#39;, step &lt;span class=&quot;op&quot;&gt;*&lt;/span&gt; i)&lt;/span&gt;
 &lt;span id=&quot;cb3-5&quot;&gt;&lt;a href=&quot;#cb3-5&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;      &lt;span class=&quot;kw&quot;&gt;where&lt;/span&gt;&lt;/span&gt;
-&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        base&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; iterateFind (\n &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (n &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; offset) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;)&lt;/span&gt;
-&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                            (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; step)&lt;/span&gt;
-&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                            base&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span id=&quot;cb3-6&quot;&gt;&lt;a href=&quot;#cb3-6&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;        base&amp;#39; &lt;span class=&quot;ot&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;fu&quot;&gt;until&lt;/span&gt; (\n &lt;span class=&quot;ot&quot;&gt;-&amp;gt;&lt;/span&gt; (n &lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; offset) &lt;span class=&quot;ot&quot;&gt;`mod`&lt;/span&gt; i &lt;span class=&quot;op&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;dv&quot;&gt;0&lt;/span&gt;)&lt;/span&gt;
+&lt;span id=&quot;cb3-7&quot;&gt;&lt;a href=&quot;#cb3-7&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                      (&lt;span class=&quot;op&quot;&gt;+&lt;/span&gt; step)&lt;/span&gt;
+&lt;span id=&quot;cb3-8&quot;&gt;&lt;a href=&quot;#cb3-8&quot; aria-hidden=&quot;true&quot;&gt;&lt;/a&gt;                      base&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3 id=&quot;day-13-benchmarks&quot;&gt;Day 13 Benchmarks&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; Day 13a
 benchmarking...

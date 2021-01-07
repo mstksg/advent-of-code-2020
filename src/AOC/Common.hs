@@ -87,6 +87,7 @@ module AOC.Common (
   , getDown
   , toNatural
   , factorial
+  , integerFactorial
   , mapMaybeSet
   , symDiff
   , unfoldedIterate
@@ -881,6 +882,13 @@ toNatural x = fromIntegral x <$ guard (x >= 0)
 
 factorial :: Int -> Int
 factorial n = go 2 1
+  where
+    go i !x
+      | i > n     = x
+      | otherwise = go (i + 1) (x * i)
+
+integerFactorial :: Integer -> Integer
+integerFactorial n = go 2 1
   where
     go i !x
       | i > n     = x

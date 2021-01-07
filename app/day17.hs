@@ -113,7 +113,7 @@ loadData d = do
       Just r  -> pure r
       Nothing -> do
         inp <- parseAsciiSet (== '#') <$> readFile "data/17.txt"
-        let out = runDay17 True 6 d inp
+        let out = runDay17 True True 6 d inp
             bds = maximum (concatMap toList (toList inp)) + 1
             nxy = bds + 12
         BS.writeFile fp (C.encode (nxy, out))

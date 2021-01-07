@@ -110,9 +110,9 @@ part2 = fst . foldl' go (0, 1)
   where
     go (!base, !step) (offset, i) = (base', step * i)
       where
-        base' = iterateFind (\n -> (n + offset) `mod` i == 0)
-                            (+ step)
-                            base
+        base' = until (\n -> (n + offset) `mod` i == 0)
+                      (+ step)
+                      base
 ```
 
 
