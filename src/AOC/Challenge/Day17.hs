@@ -14,7 +14,11 @@ module AOC.Challenge.Day17 (
   , pascals
   , pascalIx
   , pascalVecRunIx
+  , pascalTable
   , ixPascal
+  , chompPascal
+  , vecRunIxPascal
+  , genVecRunIxPascal
   , validNCount
   , neighborWeights
   , oldNeighborWeights
@@ -23,8 +27,11 @@ module AOC.Challenge.Day17 (
   , vecRunNeighbs
   , vecRunNeighbs_
   , vecRunInvNeighbs
+  , vecRunInvNeighbs_
+  , neighborInvWeights_
   , neighborInvWeights
   , allVecRuns
+  , allVecRunsInv
   , finalWeight
   , encRun
   , NCount(..)
@@ -49,13 +56,13 @@ import           Data.Foldable               (toList, for_)
 import           Data.Function               (on)
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
-import           Data.List                   (scanl', sort)
+import           Data.List                   (scanl', sort, transpose)
 import           Data.List.NonEmpty          (NonEmpty(..))
 import           Data.List.Split             (chunksOf)
 import           Data.Map                    (Map)
 import           Data.Maybe                  (fromMaybe, mapMaybe)
 import           Data.Set                    (Set)
-import           Data.Tuple.Strict           (T3(..), T2(..))
+import           Data.Tuple.Strict           (T3(..), T2(..), T4(..))
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           Safe                        (lastMay)
@@ -78,6 +85,14 @@ pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 pascalIx :: [Int] -> Int
 pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
 
+pascalTable :: Int -> Int -> [[Int]]
+pascalTable d mx = reverse
+                 . transpose
+                 . map (take mx)
+                 . reverse
+                 . take d
+                 $ tail pascals
+
 pascalVecRunIx :: VU.Vector Int -> Int
 pascalVecRunIx = go 0 ((0:) <$> tail pascals). VU.toList
   where
@@ -99,6 +114,38 @@ ixPascal n x = go x (reverse p0) []
     go y (p:ps) r = go (y - last qs) ps ((length qs - 1) : r)
       where
         qs = takeWhile (<= y) (0:p)
+
+vecRunIxPascal
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> Int      -- ^ number
+    -> [Int]    -- ^ run
+vecRunIxPascal n mx x = go x p0 []
+  where
+    p0 = reverse . transpose $ take mx <$> reverse (take n (tail pascals))
+    go :: Int -> [[Int]] -> [Int] -> [Int]
+    go q ps z = case chompPascal q ps of
+      (j, _, [] ) -> (length (head ps) - j):j:z
+      (j, r, ps') -> go r ps' (j:z)
+
+chompPascal :: Int -> [[Int]] -> (Int, Int, [[Int]])
+chompPascal = go 0
+  where
+    go !i q ~(xs:xss) = case xs of
+      []            -> (i, q, xss)
+      (x:ys)
+        | q >= x    -> go (i+1) (q-x) (ys:map tail xss)
+        | otherwise -> (i, q, xss)
+
+encRun :: Int -> [Int] -> [Int]
+encRun mx = take (mx + 1) . (++ repeat 0) . go 0 0
+  where
+    go :: Int -> Int -> [Int] -> [Int]
+    go x !n = \case
+      [] -> [n]
+      y:ys
+        | x == y    -> go x (n+1) ys
+        | otherwise -> n : replicate (y-x-1) 0 ++ go y 1 ys
 
 neighbs2d :: Int -> Int -> [Int]
 neighbs2d n i =
@@ -253,7 +300,7 @@ vecRunInvNeighbs
 vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True 1)
   where
     pullSame (_, T3 _ True _) = Nothing
-    pullSame (x, T3 _ _    p) = Just (x, toNCount $ product (factorial <$> VU.toList x) `div` p)
+    pullSame (x, T3 _ _    p) = Just (x, toNCount p)
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
     go i x0 = StateT $ \(T3 xs allSame p) -> do
       let l = xs VU.!? (i-1)
@@ -261,17 +308,18 @@ vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 T
           r = xs VU.!? (i+1)
       case (l, r) of
         (Nothing, Nothing) -> error "huh"
-        (Just l', Nothing) ->
-          pure (l' + x, T3 xs (allSame && x == x0) (p * factorial x * factorial l'))
+        (Just l', Nothing) -> pure
+          let res = l' + x
+              p'  = p * factorial res `div` factorial x `div` factorial l'
+          in  (l' + x, T3 xs (allSame && x == x0) p')
         (Nothing, Just r') -> do
           lxrContrib <- [0..(x+r')]
           xContrib   <- [max 0 (lxrContrib-r') .. min x lxrContrib]
           let lrContrib = lxrContrib - xContrib
-          lContrib <- [0..lrContrib]
-          let rContrib = lrContrib - lContrib
-              res      = lxrContrib
-              xs'      = xs VU.// [(i, x-xContrib), (i+1, r'-lrContrib)]
-              p'       = p * factorial lContrib * factorial xContrib * factorial rContrib
+              res       = lxrContrib
+              xs'       = xs VU.// [(i, x-xContrib), (i+1, r'-lrContrib)]
+              p'        = p * factorial res * (2^lrContrib)
+                        `div` factorial xContrib
           pure (res, T3 xs' (allSame && xContrib == x0) p')
         (Just l', Just r') -> do
           xrContrib <- [0..(x+r')]
@@ -279,16 +327,95 @@ vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 T
           let rContrib = xrContrib - xContrib
               res      = l' + xrContrib
               xs'      = xs VU.// [(i, x-xContrib), (i+1, r'-rContrib)]
-              p'       = p * factorial l' * factorial xContrib * factorial rContrib
+              p'       = p * factorial res
+                       `div` factorial l'
+                       `div` factorial xContrib
+                       `div` factorial rContrib
           pure (res, T3 xs' (allSame && xContrib == x0) p')
 
+genVecRunIxPascal
+    :: [[Int]]  -- ^ pascal table
+    -> Int      -- ^ number
+    -> [Int]    -- ^ runs, but reverse order
+genVecRunIxPascal p0 x = go x p0
+  where
+    go :: Int -> [[Int]] -> [Int]
+    go q ps = case chompPascal q ps of
+      (j, _, [] ) -> j : [length (head ps) - j]
+      (j, r, ps') -> j : go r ps'
+
+vecRunInvNeighbs_
+    :: [[Int]]            -- ^ pascal table
+    -> Int
+    -> [(Int, NCount)]
+vecRunInvNeighbs_ pasc0 = (\(x:xs) -> go pasc0 0 x True 1 Nothing x xs)
+                        . genVecRunIxPascal pasc0
+  where
+    go  :: [[Int]]      -- ^ running pascal table
+        -> Int          -- ^ running total
+        -> Int          -- ^ original item in that position
+        -> Bool         -- ^ currently all the same?
+        -> Int          -- ^ multiplicity
+        -> Maybe Int    -- ^ item to the right
+        -> Int          -- ^ current item
+        -> [Int]        -- ^ leftover items (right to left)
+        -> [(Int, NCount)]
+    go pascs_ tot x0 allSame p r x ls = case (r, ls) of
+      (Nothing, []   ) -> error "huh"
+      (Just r', []   ) -> do
+          let res  = r' + x
+              p'   = p * factorial res * (2^r') `div` factorial x
+              tot' = tot
+          guard . not $ allSame && x == x0
+          pure (tot', toNCount p')
+      (Nothing, l:ls') -> do
+        xlContrib <- [0..(x+l)]
+        xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
+        let lContrib = xlContrib - xContrib
+            res      = xlContrib
+            l'       = l - lContrib
+            x'       = x - xContrib
+            p'       = p * factorial res
+                     `div` factorial xContrib
+                     `div` factorial lContrib
+            tot'     = tot + sum (take res pasc)
+            pasc:pascs = pascs_
+            pascs'   = drop res <$> pascs
+        go pascs' tot' l (allSame && xContrib == x0) p' (Just x') l' ls'
+      (Just r', l:ls') -> do
+        xlContrib <- [0..(x+l)]
+        xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
+        let lContrib = xlContrib - xContrib
+            res      = r' + xlContrib
+            l'       = l - lContrib
+            x'       = x - xContrib
+            p'       = p * factorial res
+                     `div` factorial r'
+                     `div` factorial xContrib
+                     `div` factorial lContrib
+            pasc:pascs = pascs_
+            tot'     = tot + sum (take res pasc)
+            pascs'   = drop res <$> pascs
+        go pascs' tot' l (allSame && xContrib == x0) p' (Just x') l' ls'
+  
 neighborInvWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
-    -> V.Vector _
+    -> V.Vector (IntMap NCount)
 neighborInvWeights d mx =  V.fromList $
     IM.fromListWith (<>) . (map . first) pascalVecRunIx
       . vecRunInvNeighbs <$> allVecRunsInv d mx
+
+neighborInvWeights_
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
+    -> V.Vector (IntMap NCount)
+neighborInvWeights_ d mx =
+      V.fromList
+    . fmap (IM.fromListWith (<>) . vecRunInvNeighbs_ (pascalTable d mx))
+    $ [0 .. n' - 1]
+  where
+    n' = pascals !! d !! (mx - 1)
 
 -- | All point runs for a given dim and max
 allVecRunsInv
@@ -476,16 +603,11 @@ day17 d = MkSol
     }
 {-# INLINE day17 #-}
 
-encRun :: Int -> [Int] -> [Int]
-encRun mx xs = map (\i -> M.findWithDefault 0 i occ) [0..mx]
-  where
-    occ = freqs xs
-
 day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 8
+day17b = day17 3
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
