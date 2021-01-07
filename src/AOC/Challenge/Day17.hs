@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 -- |
 -- Module      : AOC.Challenge.Day17
 -- License     : BSD3
@@ -11,69 +9,44 @@ module AOC.Challenge.Day17 (
     day17a
   , day17b
   , runDay17
-  , pascals
-  , pascalIx
-  , pascalVecRunIx
-  , pascalTable
   , ixPascal
-  , chompPascal
+  , pascalIx
+  , encRun
+  , pascalVecRunIx
   , vecRunIxPascal
-  , genVecRunIxPascal
-  , validNCount
-  , neighborWeights
+  , pascalTable
   , oldNeighborWeights
-  , neighborPairs
-  , loadNeighborWeights
   , vecRunNeighbs
   , vecRunNeighbs_
-  , vecRunInvNeighbs
-  , vecRunInvNeighbs_
-  , neighborInvWeights_
-  , neighborInvWeights
-  , allVecRuns
-  , allVecRunsInv
+  , neighborWeights
   , finalWeight
-  , encRun
-  , NCount(..)
   ) where
 
 import           AOC.Common                    (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point              (Point, parseAsciiSet)
 import           AOC.Solver                    ((:~>)(..))
-import           Control.Applicative.Backwards
-import           Control.Concurrent            (forkIO, threadDelay)
-import           Control.Concurrent.MVar       (takeMVar, putMVar, newEmptyMVar)
-import           Control.Concurrent.QSem       (waitQSem, signalQSem, newQSem)
+import           Control.Applicative.Backwards (Backwards(..))
 import           Control.DeepSeq               (force, NFData)
-import           Control.Exception             (bracket_, evaluate)
-import           Control.Lens
-import           Control.Monad
-import           Control.Monad                 (unless, void, when)
+import           Control.Lens                  (itraverseOf)
+import           Control.Monad                 (when, guard)
 import           Control.Monad.ST              (runST)
-import           Control.Monad.State           (StateT(..), execStateT)
-import           Data.Bifunctor                (first, second)
+import           Control.Monad.State           (StateT(..))
+import           Data.Bifunctor                (second)
 import           Data.Coerce                   (coerce)
 import           Data.Foldable                 (toList, for_)
-import           Data.Function                 (on)
 import           Data.IntMap.Strict            (IntMap)
 import           Data.IntSet                   (IntSet)
 import           Data.List                     (scanl', sort, transpose)
-import           Data.List.NonEmpty            (NonEmpty(..))
-import           Data.List.Split               (chunksOf)
 import           Data.Map                      (Map)
 import           Data.Maybe                    (fromMaybe, mapMaybe)
 import           Data.Set                      (Set)
-import           Data.Tuple.Strict             (T3(..), T2(..), T4(..))
-import           Debug.Trace
+import           Data.Tuple.Strict             (T3(..), T2(..))
 import           GHC.Generics                  (Generic)
 import           Linear                        (V2(..))
 import           Safe                          (lastMay)
-import           System.IO.Unsafe              (unsafePerformIO)
-import           Text.Printf                   (printf)
 import qualified Data.IntMap.Monoidal.Strict   as MIM
 import qualified Data.IntMap.Strict            as IM
 import qualified Data.IntSet                   as IS
-import qualified Data.List.NonEmpty            as NE
 import qualified Data.Map                      as M
 import qualified Data.MemoCombinators          as Memo
 import qualified Data.Set                      as S
@@ -81,7 +54,6 @@ import qualified Data.Vector                   as V
 import qualified Data.Vector.Generic.Lens      as V
 import qualified Data.Vector.Mutable           as MV
 import qualified Data.Vector.Unboxed           as VU
-import qualified Database.SQLite.Simple        as D
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -213,16 +185,10 @@ validLiveCount = \case
     Live GT -> True
     _       -> False
 
-validNCount :: NCount -> Maybe Bool
-validNCount = \case
-    NTwo   -> Just False
-    NThree -> Just True
-    _      -> Nothing
-
 stepper
-    :: Int      -- ^ how big the xy plane is
-    -> (Int -> IntMap LiveCount)
-    -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
+    :: Int                          -- ^ how big the xy plane is
+    -> (Int -> IntMap LiveCount)    -- ^ neighbor getter function (please cache)
+    -> IntMap IntSet                -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
 stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
     flip (foldMapParChunk chnk) (IM.toList cs) $ \(gIx, ds) ->
@@ -287,22 +253,12 @@ finalWeight n x = process . freqs $ x
           `div` product (factorial <$> mp)
 
 
-data Chomper a = C { _cLeft2 :: !Bool        -- false if no exist, true if exist
-                   , _cLeft  :: !(Maybe a)
-                   , _cHere  :: !a
-                   , _cOrig  :: !a
-                   , _cRight :: !(NonEmpty a)
-                   }
-
-toChomper :: [a] -> Maybe (Chomper a)
-toChomper (x:y:zs) = Just (C False Nothing x x (y:|zs))
-toChomper _        = Nothing
-
--- reference implementation
-vecRunInvNeighbs
+-- | Reference implementation for 'vecRunNeighbs', which takes and returns
+-- actual vec run neighbors
+vecRunNeighbs_
     :: VU.Vector Int
     -> [(VU.Vector Int, NCount)]
-vecRunInvNeighbs xs0 = mapMaybe pullSame $
+vecRunNeighbs_ xs0 = mapMaybe pullSame $
     runStateT (forwards $ itraverseOf V.vectorTraverse go xs0) (T3 xs0 True 1)
   where
     pullSame (_, T3 _ True _) = Nothing
@@ -343,15 +299,18 @@ genVecRunIxPascal p0 x = go x p0
       (j, r, ps') -> j : go r ps'
 {-# INLINE genVecRunIxPascal #-}
 
-vecRunInvNeighbs_
+-- | Streaming/constant space enumerate all neighbor and multiplicities
+vecRunNeighbs
     :: [[Int]]            -- ^ pascal table
     -> Int
     -> [(Int, NCount)]
-vecRunInvNeighbs_ pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
-                        . genVecRunIxPascal pasc0
+vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
+                    . genVecRunIxPascal pasc0
   where
-    -- | we build these in reverse because we can both generate and encode
+    -- we build these in reverse because we can both generate and encode
     -- pascal indices in reverse order in constant space/a streaming way
+    -- and also because it makes the final choice for 1->0 transitions much
+    -- simpler
     go  :: [[Int]]      -- ^ running pascal table
         -> Int          -- ^ running total
         -> Int          -- ^ original item in that position
@@ -383,171 +342,17 @@ vecRunInvNeighbs_ pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
             pascs'     = drop res <$> pascs
         go pascs' tot' l (allSame && xContrib == x0) p' x' l' ls
 
-neighborInvWeights
-    :: Int            -- ^ dimension
-    -> Int            -- ^ maximum
-    -> V.Vector (IntMap NCount)
-neighborInvWeights d mx =  V.fromList $
-    IM.fromListWith (<>) . (map . first) pascalVecRunIx
-      . vecRunInvNeighbs <$> allVecRunsInv d mx
-
-neighborInvPairs
-    :: Int    -- ^ dimension
-    -> Int    -- ^ maximum
-    -> [[(Int, NCount)]]
-neighborInvPairs d mx = vecRunInvNeighbs_ (pascalTable d mx) <$> [0 .. n' - 1]
-  where
-    n' = pascals !! d !! (mx - 1)
-
--- | Put into a lazy vector because we usually don't need the entire thing;
--- this essentially acts as a memo table
-neighborInvWeights_
-    :: Int            -- ^ dimension
-    -> Int            -- ^ maximum
-    -> V.Vector (IntMap NCount)
-neighborInvWeights_ d mx =
-      V.fromList
-    . map (IM.fromListWith (<>))
-    $ neighborInvPairs d mx
-
--- | All point runs for a given dim and max
-allVecRunsInv
-    :: Int    -- ^ dim
-    -> Int    -- ^ max
-    -> [VU.Vector Int]
-allVecRunsInv d mx = go 0 d [0]
-  where
-    go i j rs
-      | i < mx - 1 = do
-          k <- [0..j]
-          go (i + 1) (j - k) (k:rs)
-      | otherwise = pure $ VU.fromListN (mx+1) (j:rs)
-
-
--- reference implementaiton returning the actual runs. but
-vecRunNeighbs_
-    :: VU.Vector Int
-    -> [(VU.Vector Int, NCount)]
-vecRunNeighbs_ xs0 =
-    mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True p0)
-  where
-    pullSame (_, T3 _ True _) = Nothing
-    pullSame (x, T3 _ _    c) = Just (x, toNCount c)
-    p0 = product . map factorial $ VU.toList xs0
-    go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
-    go i _
-      | i == n - 1 = pure 0
-      | otherwise  = StateT $ \(T3 xs b p) -> do
-        let l  = fromMaybe 0 $ xs VU.!? (i-1)
-            r  = xs VU.! (i+1)
-            x  = xs VU.! i
-            x0 = xs0 VU.! i
-        (rContrib, xs', b', xContrib, p') <-
-          if i == (n-2)
-            then pure
-                  ( r, xs, b && x == x0 && r == 0, x
-                  , p `div` factorial x `div` factorial r
-                  )
-            else
-              [ ( rContrib
-                , xs VU.// [(i, x-xContrib),(i+1, r-rContrib)]
-                , b && xContrib == x0
-                , xContrib
-                , p `div` factorial xContrib `div` factorial rContrib
-                )
-              | totContrib <- [0..(x+r)]
-              , xContrib <- [max 0 (totContrib-r)..min x totContrib]
-              , let rContrib = totContrib - xContrib
-              ]
-        let p''
-              | i == 1    = p' * (2^l)
-              | otherwise = p' `div` factorial l
-            res = l + rContrib + xContrib
-        pure (res, T3 xs' b' p'')
-    n = VU.length xs0
-
--- | directly return pascal coords
-vecRunNeighbs
-    :: VU.Vector Int
-    -> [(Int, NCount)]
-vecRunNeighbs xs0 = mapMaybe pullSame $ go 0 True chomp0 p0 ((0:) <$> tail pascals)
-  where
-    xs0' = VU.toList xs0
-    Just chomp0 = toChomper xs0'
-    pullSame (True, _) = Nothing
-    pullSame (_   , x) = Just x
-    p0 = product . map factorial $ xs0'
-    go !tot !allSame (C ll l x x0 rs) !p !cs = case rs of
-        -- we can ignore all of these since we don't ever check neighbors
-        -- of t>=mx.  so rContrib must be completely r for the last item,
-        -- to completely exhaust that point so that a 0 pick is forced.
-        r:|[] -> pure
-          let p' = p `div` factorial x `div` factorial r
-              p''
-                | ll' && not ll = p' * (2^l')
-                | otherwise     = p' `div` factorial l'
-              res  = l' + x + r
-              c    = take res cs
-              tot' = tot + sum (map head c)
-          in  (allSame && x == x0 && r == 0, (tot', toNCount p''))
-        r:|(r':rs') -> do
-          (xContrib, rContrib, p') <-
-              [ ( xContrib
-                , rContrib
-                , p `div` factorial xContrib `div` factorial rContrib
-                )
-              | totContrib <- [0..(x+r)]
-              , xContrib  <- [max 0 (totContrib-r)..min x totContrib]
-              , let rContrib = totContrib - xContrib
-              ]
-          let p''
-                | ll' && not ll = p' * (2^l')
-                | otherwise     = p' `div` factorial l'
-              res = l' + xContrib + rContrib
-              (c,cs') = splitAt res cs
-              tot'    = tot + sum (map head c)
-              chomp   = C ll' (Just (x - xContrib)) (r - rContrib) r (r':|rs')
-          go tot' (allSame && xContrib == x0) chomp p'' (tail <$> cs')
-      where
-        (l', ll') = case l of
-          Nothing -> (0, False)
-          Just q  -> (q, True )
-
--- | All point runs for a given dim and max
-allVecRuns
-    :: Int    -- ^ dim
-    -> Int    -- ^ max
-    -> [VU.Vector Int]
-allVecRuns d mx = go 0 d []
-  where
-    go i j rs
-      | i < mx = do
-          k <- [0..j]
-          go (i + 1) (j - k) (k:rs)
-      | otherwise = pure $ VU.fromListN (mx+1) (j:rs)
-
-neighborPairs
-    :: Int    -- ^ dimension
-    -> Int    -- ^ maximum
-    -> [(Int, (Int, NCount))]
-neighborPairs d mx =
-    [ (pG, (pX, w))
-    | x <- allVecRuns d mx
-    , let pX = pascalVecRunIx x
-    , (pG, w) <- vecRunNeighbs x
-    ]
-
+-- | Build up all the weights for quick reference comparison
 neighborWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
     -> V.Vector (IntMap NCount)
-neighborWeights d mx = runST $ do
-    v <- MV.replicate n' IM.empty
-    for_ (neighborPairs d mx) $ \(pG, (pX, w')) ->
-      MV.unsafeModify v (IM.insertWith (flip (<>)) pX w') pG
-    V.freeze v
+neighborWeights d mx =
+      V.fromList
+    . map (IM.fromListWith (<>) . vecRunNeighbs (pascalTable d mx))
+    $ [0 .. n' - 1]
   where
-    n' = pascals !! d !! (mx-1)
+    n' = pascals !! d !! (mx - 1)
 
 toNCount :: Int -> NCount
 toNCount = \case
@@ -559,15 +364,13 @@ toNCount = \case
 
 runDay17
     :: Bool               -- ^ cache thunk between runs
-    -> Bool               -- ^ use sqlite3
     -> Int                -- ^ number of steps
     -> Int                -- ^ dimensions
     -> Set Point          -- ^ points
     -> [IntMap IntSet]    -- ^ steps
-runDay17 cache sql3 mx d (S.toList -> x) =
+runDay17 cache mx d (S.toList -> x) =
           take (mx + 1)
         . strictIterate (force . stepper nxy wts)
-        -- . strictIterate (force . stepper nxy (fmap toDead <$> wts))
         $ shifted
   where
     bounds  = maximum (concatMap toList x) + 1
@@ -578,14 +381,9 @@ runDay17 cache sql3 mx d (S.toList -> x) =
       | cache     = mx
       | otherwise = mx + length x - length x
     {-# INLINE mx' #-}
-    wts
-      | sql3      = undefined
-      -- | sql3      = loadNeighborWeights d mx'
-      | otherwise = Memo.integral $ IM.fromListWith (<>)
-                                  . map (second toDead)
-                                  . vecRunInvNeighbs_ (pascalTable d mx')
-      -- neighborInvWeights_ d mx'
-      -- | otherwise = neighborWeights d mx'
+    wts = Memo.integral $ IM.fromListWith (<>)
+                        . map (second toDead)
+                        . vecRunNeighbs (pascalTable d mx')
 {-# INLINE runDay17 #-}
 
 day17
@@ -596,7 +394,7 @@ day17 d = MkSol
     , sShow  = show
     , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
              . lastMay
-             . runDay17 False False 6 d
+             . runDay17 False 6 d
     }
 {-# INLINE day17 #-}
 
@@ -651,95 +449,3 @@ day17b = day17 12
 --                                      unique z-stacks: 3.19s step
 -- d=19: ? / 199077056872448 -- build sqlite cache + run = 220m
 --                                      unique z-stacks: 18s step step
-
-cacheNeighborWeights
-    :: D.Connection
-    -> Int    -- ^ dimension
-    -> Int    -- ^ maximum
-    -> IO ()
-cacheNeighborWeights conn d mx = do
-    dbsem <- newQSem 1
-    threadsem <- newQSem 5
-    done <- newEmptyMVar
-    forEnd_ (chunkUp <$> chunksOf 5_000_000 (neighborPairs d mx)) $ \isLast pmap -> do
-      waitQSem threadsem
-      forkIO $ do
-        let chunky   = IM.size pmap
-            bunky    = sum $ IM.size <$> pmap
-            lastSeen = fromIntegral (fst (IM.findMax pmap) + 1)
-        _ <- evaluate $ force pmap
-        bracket_ (waitQSem dbsem) (signalQSem dbsem) $ do
-          printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
-          D.withTransaction conn $ D.executeMany conn
-            "INSERT INTO cache(dim,source,target,weight) VALUES (?,?,?,?) ON CONFLICT(dim,source,target) DO UPDATE SET weight = weight + ? WHERE weight < 4"
-            [ (d, x, y, c, c)
-            | (y, ys) <- IM.toList pmap
-            , (x, z ) <- IM.toList ys
-            , let c = fromCount z
-            ]
-        signalQSem threadsem
-        when isLast $ putMVar done ()
-    takeMVar done
-    threadDelay 1000000
-  where
-    fromCount :: NCount -> Int
-    fromCount = \case
-      NOne   -> 1
-      NTwo   -> 2
-      NThree -> 3
-      NMany  -> 4
-    n :: Double
-    n = fromIntegral (pascals !! d !! mx)
-    chunkUp :: [(Int, (Int, NCount))] -> IntMap (IntMap NCount)
-    chunkUp = IM.fromDistinctAscList
-            . map (\((x, c) :| cs) -> (x, IM.fromListWith (<>) (c : map snd cs)))
-            . NE.groupBy ((==) `on` fst)
-            . map (\(g, (x, c)) -> (x, (g, c)))
-            -- faster to un-swap and let sqlite handle the merging?
-            -- looks at least like all the chunks are the same size
-
-forEnd_
-    :: Applicative m
-    => [a]
-    -> (Bool -> a -> m c)
-    -> m ()
-forEnd_ xs0 f = go xs0
-  where
-    go []     = pure ()
-    go [x]    = void $ f True x
-    go (x:xs) = f False x *> go xs
-
-loadCache
-    :: D.Connection
-    -> Int      -- ^ dimensions
-    -> Int      -- ^ max
-    -> IO (V.Vector (IntMap NCount))
-loadCache conn d mx =
-    V.generateM n' $ \src -> do
-      fmap toNCount . IM.fromList <$> D.queryNamed conn
-        "SELECT target,weight FROM cache WHERE dim = :d AND source = :src"
-        [ ":d" D.:= d, ":src" D.:= src ]
-  where
-    n' = pascals !! d !! (mx-1)
-
-loadNeighborWeights
-    :: Int    -- ^ dimensions
-    -> Int    -- ^ maximum
-    -> V.Vector (IntMap NCount)
-loadNeighborWeights d mx = unsafePerformIO $ loadNeighborWeights_ d mx
-
-loadNeighborWeights_
-    :: Int    -- ^ dimensions
-    -> Int    -- ^ maximum
-    -> IO (V.Vector (IntMap NCount))
-loadNeighborWeights_ d mx = D.withConnection "cache/day17.db" $ \conn -> do
-    D.execute_ conn
-      "CREATE TABLE IF NOT EXISTS cache (dim INT, source INT, target INT, weight INT, CONSTRAINT dst UNIQUE(dim, source, target))"
-    exists <- not . null @[] @(D.Only Int) <$> D.queryNamed conn
-      "SELECT dim FROM cache WHERE dim = :d LIMIT 1" [":d" D.:= d]
-    unless exists $ do
-      putStrLn "Building cache..."
-      cacheNeighborWeights conn d mx
-      putStrLn "Cache completed."
-    loadCache conn d mx
-      -- <* putStrLn "cache loaded"
