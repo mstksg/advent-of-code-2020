@@ -22,26 +22,31 @@ module AOC.Challenge.Day17 (
   , loadNeighborWeights
   , vecRunNeighbs
   , vecRunNeighbs_
+  , vecRunInvNeighbs
+  , neighborInvWeights
   , allVecRuns
   , finalWeight
   , encRun
   , NCount(..)
   ) where
 
+-- import           Debug.Trace
 import           AOC.Common                  (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
+import           Control.Monad
 import           Control.Concurrent          (forkIO, threadDelay)
 import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
 import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
 import           Control.DeepSeq             (force, NFData)
 import           Control.Exception           (bracket_, evaluate)
+import           Data.Bifunctor (first)
 import           Control.Monad               (unless, void, when)
 import           Control.Monad.ST            (runST)
-import           Control.Monad.State         (StateT(..))
-import           Data.Bifunctor              (second)
+import           Control.Monad.State         (StateT(..), execStateT)
 import           Data.Coerce                 (coerce)
 import           Data.Foldable               (toList, for_)
+import           Data.Function               (on)
 import           Data.IntMap.Strict          (IntMap)
 import           Data.IntSet                 (IntSet)
 import           Data.List                   (scanl', sort)
@@ -51,7 +56,6 @@ import           Data.Map                    (Map)
 import           Data.Maybe                  (fromMaybe, mapMaybe)
 import           Data.Set                    (Set)
 import           Data.Tuple.Strict           (T3(..), T2(..))
--- import           Debug.Trace
 import           GHC.Generics                (Generic)
 import           Linear                      (V2(..))
 import           Safe                        (lastMay)
@@ -60,6 +64,7 @@ import           Text.Printf                 (printf)
 import qualified Data.IntMap.Monoidal.Strict as MIM
 import qualified Data.IntMap.Strict          as IM
 import qualified Data.IntSet                 as IS
+import qualified Data.List.NonEmpty          as NE
 import qualified Data.Map                    as M
 import qualified Data.Set                    as S
 import qualified Data.Vector                 as V
@@ -169,7 +174,7 @@ stepper
     -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
 stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
-    flip (foldMapParChunk nxy) (IM.toList cs) $ \(gIx, ds) ->
+    flip (foldMapParChunk chnk) (IM.toList cs) $ \(gIx, ds) ->
       let T2 updateHere updateThere = prebaked M.! ds
       in  MIM.MonoidalIntMap . IM.fromList $
             zip (neighbs2d nxy gIx) (updateHere : repeat updateThere)
@@ -182,6 +187,7 @@ stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
         let pNeighbs = syms V.! pIx
         in  T2 (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx LiveAlone pNeighbs)
                (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx (Dead LT) pNeighbs)
+    chnk = 100 `min` 5 `max` (IM.size cs `div` 10)
 
 neighbs :: (Num a, Eq a) => a -> [a] -> [[a]]
 neighbs mx = tail . traverse (\x -> if | x == mx   -> [x,x-1]
@@ -241,6 +247,62 @@ toChomper :: [a] -> Maybe (Chomper a)
 toChomper (x:y:zs) = Just (C False Nothing x x (y:|zs))
 toChomper _        = Nothing
 
+vecRunInvNeighbs
+    :: VU.Vector Int
+    -> [(VU.Vector Int, NCount)]
+vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True 1)
+  where
+    pullSame (_, T3 _ True _) = Nothing
+    pullSame (x, T3 _ _    p) = Just (x, toNCount $ product (factorial <$> VU.toList x) `div` p)
+    go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
+    go i x0 = StateT $ \(T3 xs allSame p) -> do
+      let l = fromMaybe 0 $ xs VU.!? (i-1)
+          x = xs VU.! i
+          r = xs VU.!? (i+1)
+      case r of
+        Nothing ->
+          pure (l + x, T3 xs (allSame && x == x0) (p * factorial x * factorial l))
+        Just r' -> do
+          (xContrib, xs') <-
+            [ (xc, xs VU.// [(i,x - xc)])
+            | xc <- [0..x]
+            ]
+          (rContrib, xs'') <-
+            [ (rc, xs' VU.// [(i+1, r' - rc)])
+            | rc <- [0..r']
+            ]
+          (lContrib, xs''') <-
+            if i == 0
+              then [ (lc, xs'' VU.// [(i+1, r' - rContrib - lc)])
+                   | lc <- [0..(r' - rContrib)]
+                   ]
+              else pure (l, xs'')
+          let p'  = p * factorial xContrib * factorial lContrib * factorial rContrib
+              res = lContrib + xContrib + rContrib
+          pure (res, T3 xs''' (allSame && xContrib == x0) p')
+
+neighborInvWeights
+    :: Int            -- ^ dimension
+    -> Int            -- ^ maximum
+    -> V.Vector _
+neighborInvWeights d mx =  V.fromList $
+    IM.fromListWith (<>) . (map . first) pascalVecRunIx
+      . vecRunInvNeighbs <$> allVecRunsInv d mx
+
+-- | All point runs for a given dim and max
+allVecRunsInv
+    :: Int    -- ^ dim
+    -> Int    -- ^ max
+    -> [VU.Vector Int]
+allVecRunsInv d mx = go 0 d [0]
+  where
+    go i j rs
+      | i < mx - 1 = do
+          k <- [0..j]
+          go (i + 1) (j - k) (k:rs)
+      | otherwise = pure $ VU.fromListN (mx+1) (j:rs)
+
+
 -- reference implementaiton returning the actual runs. but
 vecRunNeighbs_
     :: VU.Vector Int
@@ -248,8 +310,8 @@ vecRunNeighbs_
 vecRunNeighbs_ xs0 =
     mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True p0)
   where
-    pullSame (_, (T3 _ True _)) = Nothing
-    pullSame (x, (T3 _ _    c)) = Just (x, toNCount c)
+    pullSame (_, T3 _ True _) = Nothing
+    pullSame (x, T3 _ _    c) = Just (x, toNCount c)
     p0 = product . map factorial $ VU.toList xs0
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
     go i _
@@ -396,6 +458,7 @@ runDay17 cache sql3 mx d (S.toList -> x) =
     {-# INLINE mx' #-}
     wts
       | sql3      = loadNeighborWeights d mx'
+      -- | otherwise = neighborInvWeights d mx'
       | otherwise = neighborWeights d mx'
 {-# INLINE runDay17 #-}
 
@@ -408,33 +471,9 @@ day17 d = MkSol
     , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
              . lastMay
              . runDay17 False False 6 d
+             -- . runDay17 True True 6 d
     }
 {-# INLINE day17 #-}
-
--- heatMap :: Int -> IntMap IntSet -> [[Int]]
--- heatMap nxy pts =
---     [ [ maybe 0 IS.size (IM.lookup (x + y * nxy) pts)
---       | y <- [0..nxy-1]
---       ]
---     | x <- [0..nxy-1]
---     ]
-
--- heatMap2 :: Int -> Int -> IntMap IntSet -> [[Int]]
--- heatMap2 d nxy pts =
---     [ [ maybe 0 (sum . map (finalWeight d . ixPascal d) . IS.toList) (IM.lookup (x + y * nxy) pts)
---       | y <- [0..nxy-1]
---       ]
---     | x <- [0..nxy-1]
---     ]
-
--- heatPoints :: Int -> Int -> IntMap IntSet -> Map [[Int]] [(Int, Int)]
--- heatPoints d nxy pts = fmap S.toList $ M.fromListWith (<>)
---     [ (p, S.singleton (x, y))
---     | x <- [0..nxy-1]
---     , y <- [0..nxy-1]
---     , let p = map (ixPascal d) . IS.toList $ IM.findWithDefault IS.empty (x + y*nxy) pts
---     , not (null p)
---     ]
 
 encRun :: Int -> [Int] -> [Int]
 encRun mx xs = map (\i -> M.findWithDefault 0 i occ) [0..mx]
@@ -445,7 +484,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 8
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -488,6 +527,8 @@ day17b = day17 8
 --                                      unique z-stacks: 2.08s step
 -- d=18: ? / 34702568194048 -- build sqlite cache + run = 75m
 --                                      unique z-stacks: 3.19s step
+-- d=19: ? / 199077056872448 -- build sqlite cache + run = 220m
+--                                      unique z-stacks: 18s step step
 
 cacheNeighborWeights
     :: D.Connection
@@ -503,15 +544,15 @@ cacheNeighborWeights conn d mx = do
       forkIO $ do
         let chunky   = IM.size pmap
             bunky    = sum $ IM.size <$> pmap
-            lastSeen = fromIntegral (maximum (fst . IM.findMax <$> pmap) + 1)
+            lastSeen = fromIntegral (fst (IM.findMax pmap) + 1)
         _ <- evaluate $ force pmap
         bracket_ (waitQSem dbsem) (signalQSem dbsem) $ do
           printf "[%05.2f%%] Cacheing chunk of size %d/%d ...\n" (lastSeen / n * 100) chunky bunky
           D.withTransaction conn $ D.executeMany conn
             "INSERT INTO cache(dim,source,target,weight) VALUES (?,?,?,?) ON CONFLICT(dim,source,target) DO UPDATE SET weight = weight + ? WHERE weight < 4"
             [ (d, x, y, c, c)
-            | (x, ys) <- IM.toList pmap
-            , (y, z ) <- IM.toList ys
+            | (y, ys) <- IM.toList pmap
+            , (x, z ) <- IM.toList ys
             , let c = fromCount z
             ]
         signalQSem threadsem
@@ -528,8 +569,12 @@ cacheNeighborWeights conn d mx = do
     n :: Double
     n = fromIntegral (pascals !! d !! mx)
     chunkUp :: [(Int, (Int, NCount))] -> IntMap (IntMap NCount)
-    chunkUp = IM.fromListWith (IM.unionWith (<>))
-            . (map . second) (uncurry IM.singleton)
+    chunkUp = IM.fromDistinctAscList
+            . map (\((x, c) :| cs) -> (x, IM.fromListWith (<>) (c : map snd cs)))
+            . NE.groupBy ((==) `on` fst)
+            . map (\(g, (x, c)) -> (x, (g, c)))
+            -- faster to un-swap and let sqlite handle the merging?
+            -- looks at least like all the chunks are the same size
 
 forEnd_
     :: Applicative m
