@@ -30,7 +30,7 @@ module AOC.Challenge.Day17 (
   , NCount(..)
   ) where
 
--- import           Debug.Trace
+import           Debug.Trace
 import           AOC.Common                  (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point            (Point, parseAsciiSet)
 import           AOC.Solver                  ((:~>)(..))
@@ -256,30 +256,31 @@ vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 T
     pullSame (x, T3 _ _    p) = Just (x, toNCount $ product (factorial <$> VU.toList x) `div` p)
     go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
     go i x0 = StateT $ \(T3 xs allSame p) -> do
-      let l = fromMaybe 0 $ xs VU.!? (i-1)
-          x = xs VU.! i
+      let l = xs VU.!? (i-1)
+          x = xs VU.!   i
           r = xs VU.!? (i+1)
-      case r of
-        Nothing ->
-          pure (l + x, T3 xs (allSame && x == x0) (p * factorial x * factorial l))
-        Just r' -> do
-          (xContrib, xs') <-
-            [ (xc, xs VU.// [(i,x - xc)])
-            | xc <- [0..x]
-            ]
-          (rContrib, xs'') <-
-            [ (rc, xs' VU.// [(i+1, r' - rc)])
-            | rc <- [0..r']
-            ]
-          (lContrib, xs''') <-
-            if i == 0
-              then [ (lc, xs'' VU.// [(i+1, r' - rContrib - lc)])
-                   | lc <- [0..(r' - rContrib)]
-                   ]
-              else pure (l, xs'')
-          let p'  = p * factorial xContrib * factorial lContrib * factorial rContrib
-              res = lContrib + xContrib + rContrib
-          pure (res, T3 xs''' (allSame && xContrib == x0) p')
+      case (l, r) of
+        (Nothing, Nothing) -> error "huh"
+        (Just l', Nothing) ->
+          pure (l' + x, T3 xs (allSame && x == x0) (p * factorial x * factorial l'))
+        (Nothing, Just r') -> do
+          lxrContrib <- [0..(x+r')]
+          xContrib   <- [max 0 (lxrContrib-r') .. min x lxrContrib]
+          let lrContrib = lxrContrib - xContrib
+          lContrib <- [0..lrContrib]
+          let rContrib = lrContrib - lContrib
+              res      = lxrContrib
+              xs'      = xs VU.// [(i, x-xContrib), (i+1, r'-lrContrib)]
+              p'       = p * factorial lContrib * factorial xContrib * factorial rContrib
+          pure (res, T3 xs' (allSame && xContrib == x0) p')
+        (Just l', Just r') -> do
+          xrContrib <- [0..(x+r')]
+          xContrib  <- [max 0 (xrContrib-r') .. min x xrContrib]
+          let rContrib = xrContrib - xContrib
+              res      = l' + xrContrib
+              xs'      = xs VU.// [(i, x-xContrib), (i+1, r'-rContrib)]
+              p'       = p * factorial l' * factorial xContrib * factorial rContrib
+          pure (res, T3 xs' (allSame && xContrib == x0) p')
 
 neighborInvWeights
     :: Int            -- ^ dimension
@@ -458,8 +459,8 @@ runDay17 cache sql3 mx d (S.toList -> x) =
     {-# INLINE mx' #-}
     wts
       | sql3      = loadNeighborWeights d mx'
-      -- | otherwise = neighborInvWeights d mx'
-      | otherwise = neighborWeights d mx'
+      | otherwise = neighborInvWeights d mx'
+      -- | otherwise = neighborWeights d mx'
 {-# INLINE runDay17 #-}
 
 day17
@@ -484,7 +485,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 2
+day17b = day17 8
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
