@@ -37,47 +37,51 @@ module AOC.Challenge.Day17 (
   , NCount(..)
   ) where
 
-import           Debug.Trace
-import           AOC.Common                  (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
-import           AOC.Common.Point            (Point, parseAsciiSet)
-import           AOC.Solver                  ((:~>)(..))
+import           AOC.Common                    (factorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
+import           AOC.Common.Point              (Point, parseAsciiSet)
+import           AOC.Solver                    ((:~>)(..))
+import           Control.Applicative.Backwards
+import           Control.Concurrent            (forkIO, threadDelay)
+import           Control.Concurrent.MVar       (takeMVar, putMVar, newEmptyMVar)
+import           Control.Concurrent.QSem       (waitQSem, signalQSem, newQSem)
+import           Control.DeepSeq               (force, NFData)
+import           Control.Exception             (bracket_, evaluate)
+import           Control.Lens
 import           Control.Monad
-import           Control.Concurrent          (forkIO, threadDelay)
-import           Control.Concurrent.MVar     (takeMVar, putMVar, newEmptyMVar)
-import           Control.Concurrent.QSem     (waitQSem, signalQSem, newQSem)
-import           Control.DeepSeq             (force, NFData)
-import           Control.Exception           (bracket_, evaluate)
-import           Data.Bifunctor (first)
-import           Control.Monad               (unless, void, when)
-import           Control.Monad.ST            (runST)
-import           Control.Monad.State         (StateT(..), execStateT)
-import           Data.Coerce                 (coerce)
-import           Data.Foldable               (toList, for_)
-import           Data.Function               (on)
-import           Data.IntMap.Strict          (IntMap)
-import           Data.IntSet                 (IntSet)
-import           Data.List                   (scanl', sort, transpose)
-import           Data.List.NonEmpty          (NonEmpty(..))
-import           Data.List.Split             (chunksOf)
-import           Data.Map                    (Map)
-import           Data.Maybe                  (fromMaybe, mapMaybe)
-import           Data.Set                    (Set)
-import           Data.Tuple.Strict           (T3(..), T2(..), T4(..))
-import           GHC.Generics                (Generic)
-import           Linear                      (V2(..))
-import           Safe                        (lastMay)
-import           System.IO.Unsafe            (unsafePerformIO)
-import           Text.Printf                 (printf)
-import qualified Data.IntMap.Monoidal.Strict as MIM
-import qualified Data.IntMap.Strict          as IM
-import qualified Data.IntSet                 as IS
-import qualified Data.List.NonEmpty          as NE
-import qualified Data.Map                    as M
-import qualified Data.Set                    as S
-import qualified Data.Vector                 as V
-import qualified Data.Vector.Mutable         as MV
-import qualified Data.Vector.Unboxed         as VU
-import qualified Database.SQLite.Simple      as D
+import           Control.Monad                 (unless, void, when)
+import           Control.Monad.ST              (runST)
+import           Control.Monad.State           (StateT(..), execStateT)
+import           Data.Bifunctor                (first, second)
+import           Data.Coerce                   (coerce)
+import           Data.Foldable                 (toList, for_)
+import           Data.Function                 (on)
+import           Data.IntMap.Strict            (IntMap)
+import           Data.IntSet                   (IntSet)
+import           Data.List                     (scanl', sort, transpose)
+import           Data.List.NonEmpty            (NonEmpty(..))
+import           Data.List.Split               (chunksOf)
+import           Data.Map                      (Map)
+import           Data.Maybe                    (fromMaybe, mapMaybe)
+import           Data.Set                      (Set)
+import           Data.Tuple.Strict             (T3(..), T2(..), T4(..))
+import           Debug.Trace
+import           GHC.Generics                  (Generic)
+import           Linear                        (V2(..))
+import           Safe                          (lastMay)
+import           System.IO.Unsafe              (unsafePerformIO)
+import           Text.Printf                   (printf)
+import qualified Data.IntMap.Monoidal.Strict   as MIM
+import qualified Data.IntMap.Strict            as IM
+import qualified Data.IntSet                   as IS
+import qualified Data.List.NonEmpty            as NE
+import qualified Data.Map                      as M
+import qualified Data.MemoCombinators          as Memo
+import qualified Data.Set                      as S
+import qualified Data.Vector                   as V
+import qualified Data.Vector.Generic.Lens      as V
+import qualified Data.Vector.Mutable           as MV
+import qualified Data.Vector.Unboxed           as VU
+import qualified Database.SQLite.Simple        as D
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
@@ -217,7 +221,7 @@ validNCount = \case
 
 stepper
     :: Int      -- ^ how big the xy plane is
-    -> V.Vector (IntMap LiveCount)        -- ^ symmetry map
+    -> (Int -> IntMap LiveCount)
     -> IntMap IntSet    -- ^ alive set: map of <x.y> to all zw+ points (pascal coords)
     -> IntMap IntSet
 stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
@@ -231,7 +235,7 @@ stepper nxy syms cs = fmap (IM.keysSet . IM.filter validLiveCount) . coerce $
     prebaked :: Map IntSet (T2 (MIM.MonoidalIntMap LiveCount) (MIM.MonoidalIntMap LiveCount))
     prebaked = flip M.fromSet uniqueGroups $ \ds ->
       flip foldMap (IS.toList ds) $ \pIx ->
-        let pNeighbs = syms V.! pIx
+        let pNeighbs = syms pIx
         in  T2 (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx LiveAlone pNeighbs)
                (MIM.MonoidalIntMap $ IM.insertWith (<>) pIx (Dead LT) pNeighbs)
     chnk = 100 `min` 5 `max` (IM.size cs `div` 10)
@@ -298,40 +302,33 @@ toChomper _        = Nothing
 vecRunInvNeighbs
     :: VU.Vector Int
     -> [(VU.Vector Int, NCount)]
-vecRunInvNeighbs xs0 = mapMaybe pullSame $ runStateT (VU.imapM go xs0) (T3 xs0 True 1)
+vecRunInvNeighbs xs0 = mapMaybe pullSame $
+    runStateT (forwards $ itraverseOf V.vectorTraverse go xs0) (T3 xs0 True 1)
   where
     pullSame (_, T3 _ True _) = Nothing
     pullSame (x, T3 _ _    p) = Just (x, toNCount p)
-    go :: Int -> Int -> StateT (T3 (VU.Vector Int) Bool Int) [] Int
-    go i x0 = StateT $ \(T3 xs allSame p) -> do
-      let l = xs VU.!? (i-1)
-          x = xs VU.!   i
-          r = xs VU.!? (i+1)
-      case (l, r) of
-        (Nothing, Nothing) -> error "huh"
-        (Just l', Nothing) -> pure
-          let res = l' + x
-              p'  = p * factorial res `div` factorial x `div` factorial l'
-          in  (l' + x, T3 xs (allSame && x == x0) p')
-        (Nothing, Just r') -> do
-          lxrContrib <- [0..(x+r')]
-          xContrib   <- [max 0 (lxrContrib-r') .. min x lxrContrib]
-          let lrContrib = lxrContrib - xContrib
-              res       = lxrContrib
-              xs'       = xs VU.// [(i, x-xContrib), (i+1, r'-lrContrib)]
-              p'        = p * factorial res * (2^lrContrib)
-                        `div` factorial xContrib
-          pure (res, T3 xs' (allSame && xContrib == x0) p')
-        (Just l', Just r') -> do
-          xrContrib <- [0..(x+r')]
-          xContrib  <- [max 0 (xrContrib-r') .. min x xrContrib]
-          let rContrib = xrContrib - xContrib
-              res      = l' + xrContrib
-              xs'      = xs VU.// [(i, x-xContrib), (i+1, r'-rContrib)]
-              p'       = p * factorial res
-                       `div` factorial l'
-                       `div` factorial xContrib
-                       `div` factorial rContrib
+    -- we go backwards because it makes the final choice (1->0 transitions)
+    -- simpler
+    go :: Int -> Int -> Backwards (StateT (T3 (VU.Vector Int) Bool Int) []) Int
+    go i x0 = Backwards $ StateT $ \(T3 xs allSame p) -> do
+      let l0 = xs VU.!? (i-1)
+          x  = xs VU.!   i
+          r  = fromMaybe 0 $ xs VU.!? (i+1)
+      case l0 of
+        Nothing -> pure
+          let res  = r + x
+              p'   = p * factorial res * (2^r) `div` factorial x
+          in  (res, T3 xs (allSame && x == x0) p')
+        Just l  -> do
+          xlContrib <- [0..(x+l)]
+          xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
+          let lContrib   = xlContrib - xContrib
+              res        = r + xlContrib
+              xs'        = xs VU.// [(i, x-xContrib), (i-1, l-lContrib)]
+              p'         = p * factorial res
+                         `div` factorial r
+                         `div` factorial xContrib
+                         `div` factorial lContrib
           pure (res, T3 xs' (allSame && xContrib == x0) p')
 
 genVecRunIxPascal
@@ -394,16 +391,24 @@ neighborInvWeights d mx =  V.fromList $
     IM.fromListWith (<>) . (map . first) pascalVecRunIx
       . vecRunInvNeighbs <$> allVecRunsInv d mx
 
+neighborInvPairs
+    :: Int    -- ^ dimension
+    -> Int    -- ^ maximum
+    -> [[(Int, NCount)]]
+neighborInvPairs d mx = vecRunInvNeighbs_ (pascalTable d mx) <$> [0 .. n' - 1]
+  where
+    n' = pascals !! d !! (mx - 1)
+
+-- | Put into a lazy vector because we usually don't need the entire thing;
+-- this essentially acts as a memo table
 neighborInvWeights_
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
     -> V.Vector (IntMap NCount)
 neighborInvWeights_ d mx =
       V.fromList
-    . fmap (IM.fromListWith (<>) . vecRunInvNeighbs_ (pascalTable d mx))
-    $ [0 .. n' - 1]
-  where
-    n' = pascals !! d !! (mx - 1)
+    . map (IM.fromListWith (<>))
+    $ neighborInvPairs d mx
 
 -- | All point runs for a given dim and max
 allVecRunsInv
@@ -561,7 +566,8 @@ runDay17
     -> [IntMap IntSet]    -- ^ steps
 runDay17 cache sql3 mx d (S.toList -> x) =
           take (mx + 1)
-        . strictIterate (force . stepper nxy (fmap toDead <$> wts))
+        . strictIterate (force . stepper nxy wts)
+        -- . strictIterate (force . stepper nxy (fmap toDead <$> wts))
         $ shifted
   where
     bounds  = maximum (concatMap toList x) + 1
@@ -573,8 +579,12 @@ runDay17 cache sql3 mx d (S.toList -> x) =
       | otherwise = mx + length x - length x
     {-# INLINE mx' #-}
     wts
-      | sql3      = loadNeighborWeights d mx'
-      | otherwise = neighborInvWeights_ d mx'
+      | sql3      = undefined
+      -- | sql3      = loadNeighborWeights d mx'
+      | otherwise = Memo.integral $ IM.fromListWith (<>)
+                                  . map (second toDead)
+                                  . vecRunInvNeighbs_ (pascalTable d mx')
+      -- neighborInvWeights_ d mx'
       -- | otherwise = neighborWeights d mx'
 {-# INLINE runDay17 #-}
 
