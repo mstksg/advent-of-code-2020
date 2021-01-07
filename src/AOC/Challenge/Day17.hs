@@ -294,6 +294,7 @@ toChomper :: [a] -> Maybe (Chomper a)
 toChomper (x:y:zs) = Just (C False Nothing x x (y:|zs))
 toChomper _        = Nothing
 
+-- reference implementation
 vecRunInvNeighbs
     :: VU.Vector Int
     -> [(VU.Vector Int, NCount)]
@@ -343,61 +344,48 @@ genVecRunIxPascal p0 x = go x p0
     go q ps = case chompPascal q ps of
       (j, _, [] ) -> j : [length (head ps) - j]
       (j, r, ps') -> j : go r ps'
+{-# INLINE genVecRunIxPascal #-}
 
 vecRunInvNeighbs_
     :: [[Int]]            -- ^ pascal table
     -> Int
     -> [(Int, NCount)]
-vecRunInvNeighbs_ pasc0 = (\(x:xs) -> go pasc0 0 x True 1 Nothing x xs)
+vecRunInvNeighbs_ pasc0 = (\(x:xs) -> go pasc0 0 x True 1 0 x xs)
                         . genVecRunIxPascal pasc0
   where
+    -- | we build these in reverse because we can both generate and encode
+    -- pascal indices in reverse order in constant space/a streaming way
     go  :: [[Int]]      -- ^ running pascal table
         -> Int          -- ^ running total
         -> Int          -- ^ original item in that position
         -> Bool         -- ^ currently all the same?
         -> Int          -- ^ multiplicity
-        -> Maybe Int    -- ^ item to the right
+        -> Int          -- ^ item to the right
         -> Int          -- ^ current item
         -> [Int]        -- ^ leftover items (right to left)
         -> [(Int, NCount)]
-    go pascs_ tot x0 allSame p r x ls = case (r, ls) of
-      (Nothing, []   ) -> error "huh"
-      (Just r', []   ) -> do
-          let res  = r' + x
-              p'   = p * factorial res * (2^r') `div` factorial x
-              tot' = tot
-          guard . not $ allSame && x == x0
-          pure (tot', toNCount p')
-      (Nothing, l:ls') -> do
+    go pascs_ !tot x0 allSame !p r x = \case
+      [] ->
+        let res  = r + x
+            p'   = p * factorial res * (2^r) `div` factorial x
+            tot' = tot
+        in  (tot', toNCount p') <$ guard (not (allSame && x == x0))
+      l:ls -> do
         xlContrib <- [0..(x+l)]
         xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
-        let lContrib = xlContrib - xContrib
-            res      = xlContrib
-            l'       = l - lContrib
-            x'       = x - xContrib
-            p'       = p * factorial res
-                     `div` factorial xContrib
-                     `div` factorial lContrib
-            tot'     = tot + sum (take res pasc)
+        let lContrib   = xlContrib - xContrib
+            res        = r + xlContrib
+            l'         = l - lContrib
+            x'         = x - xContrib
+            p'         = p * factorial res
+                       `div` factorial r
+                       `div` factorial xContrib
+                       `div` factorial lContrib
             pasc:pascs = pascs_
-            pascs'   = drop res <$> pascs
-        go pascs' tot' l (allSame && xContrib == x0) p' (Just x') l' ls'
-      (Just r', l:ls') -> do
-        xlContrib <- [0..(x+l)]
-        xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
-        let lContrib = xlContrib - xContrib
-            res      = r' + xlContrib
-            l'       = l - lContrib
-            x'       = x - xContrib
-            p'       = p * factorial res
-                     `div` factorial r'
-                     `div` factorial xContrib
-                     `div` factorial lContrib
-            pasc:pascs = pascs_
-            tot'     = tot + sum (take res pasc)
-            pascs'   = drop res <$> pascs
-        go pascs' tot' l (allSame && xContrib == x0) p' (Just x') l' ls'
-  
+            tot'       = tot + sum (take res pasc)
+            pascs'     = drop res <$> pascs
+        go pascs' tot' l (allSame && xContrib == x0) p' x' l' ls
+
 neighborInvWeights
     :: Int            -- ^ dimension
     -> Int            -- ^ maximum
@@ -586,7 +574,7 @@ runDay17 cache sql3 mx d (S.toList -> x) =
     {-# INLINE mx' #-}
     wts
       | sql3      = loadNeighborWeights d mx'
-      | otherwise = neighborInvWeights d mx'
+      | otherwise = neighborInvWeights_ d mx'
       -- | otherwise = neighborWeights d mx'
 {-# INLINE runDay17 #-}
 
@@ -599,7 +587,6 @@ day17 d = MkSol
     , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
              . lastMay
              . runDay17 False False 6 d
-             -- . runDay17 True True 6 d
     }
 {-# INLINE day17 #-}
 
@@ -607,7 +594,7 @@ day17a :: Set Point :~> Int
 day17a = day17 1
 
 day17b :: Set Point :~> Int
-day17b = day17 3
+day17b = day17 12
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -641,6 +628,8 @@ day17b = day17 3
 -- d=14: 8778178560 / 39942504448 -- sqlite3 cache: 21.6s
 --                                      new: 2m21s total
 --                                      unique z-stacks: 647ms step
+--                                      forward cache: 4.8s all in memory
+--                                          -> 1.2s with streaming neighbor gen
 -- d=15: 39814275072 / 209681145856 -- sqlite3 cache: 32.5s, (including loading: 1m20s); smart cache: 4h35m
 --    new method: total cache + run = 20m53s
 --                                      unique z-stacks: 1.00s step
