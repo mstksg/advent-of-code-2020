@@ -244,14 +244,14 @@ finalWeight
     :: (Num a, Ord a)
     => Int              -- ^ dim
     -> [a]
-    -> Int
+    -> Integer
 finalWeight n x = process . freqs $ x
   where
     process mp = (2 ^ numNonZeroes) * perms
       where
         numNonZeroes = n - lookupFreq 0 mp
-        perms = factorial n
-          `div` product (factorial <$> mp)
+        perms = integerFactorial (fromIntegral n)
+          `div` product (integerFactorial . fromIntegral <$> mp)
 
 
 -- | Reference implementation for 'vecRunNeighbs', which takes and returns
@@ -298,7 +298,6 @@ genVecRunIxPascal p0 x = go x p0
     go q ps = case chompPascal q ps of
       (j, _, [] ) -> j : [length (head ps) - j]
       (j, r, ps') -> j : go r ps'
-{-# INLINE genVecRunIxPascal #-}
 
 -- | Streaming/constant space enumerate all neighbor and multiplicities
 vecRunNeighbs
@@ -363,7 +362,7 @@ neighborWeights d mx =
 
 toNCount :: (Num a, Eq a) => a -> NCount
 toNCount = \case
-    0 -> error "0 ncount"
+    -- 0 -> error "0 ncount"
     1 -> NOne
     2 -> NTwo
     3 -> NThree
@@ -400,7 +399,6 @@ runDay17 cache vcache mx d (S.toList -> x) =
       | cache     = mx
       | otherwise = mx + length x - length x
     {-# INLINE mx' #-}
-    -- wts = ((fmap toDead <$> neighborWeights d mx') V.!)
     wts
       | vcache    = ((fmap toDead <$> neighborWeights d mx') V.!)
       | otherwise = Memo.integral $ IM.fromListWith (<>)
@@ -410,7 +408,7 @@ runDay17 cache vcache mx d (S.toList -> x) =
 
 day17
     :: Int
-    -> Set Point :~> Int
+    -> Set Point :~> Integer
 day17 d = MkSol
     { sParse = Just . parseAsciiSet (== '#')
     , sShow  = show
@@ -420,11 +418,11 @@ day17 d = MkSol
     }
 {-# INLINE day17 #-}
 
-day17a :: Set Point :~> Int
+day17a :: Set Point :~> Integer
 day17a = day17 1
 
-day17b :: Set Point :~> Int
-day17b = day17 28
+day17b :: Set Point :~> Integer
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
@@ -478,4 +476,4 @@ day17b = day17 28
 --                                      forward cache: 9.2s
 -- d=22: ? / 41598514437816320 -- forward neighb: 34.0s
 --                                      forward cache: 12.8s
--- d=30: ? / int 3929358204928 -- forward neighb: 5m1s
+-- d=30: ? / 86683143717026864824320 -- forward neighb: 5m1s

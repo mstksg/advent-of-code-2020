@@ -39,7 +39,7 @@ main = do
         let coss = A.encode . fromVL $
               gridPlot IS.size ScLinear nxy (T.pack $ printf "Coset Count (d=%d, t=%d)" d t) dat
             muls = A.encode . fromVL $
-              gridPlot (sum . map (finalWeight d . ixPascal d) . IS.toList)
+              gridPlot (fromIntegral . sum . map (finalWeight d . ixPascal d) . IS.toList)
                 ScSymLog nxy (T.pack $ printf "Point Count (d=%d, t=%d)" d t) dat
         _ <- runResourceT $ runVegaLite
           (C.sourceLazy coss)
