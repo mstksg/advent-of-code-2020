@@ -8,7 +8,6 @@
 module AOC.Challenge.Day17 (
     day17a
   , day17b
-  , pascals
   , runDay17
   , ixPascal
   , pascalIx
@@ -16,7 +15,6 @@ module AOC.Challenge.Day17 (
   , pascalVecRunIx
   , vecRunIxPascal
   , genVecRunIxPascal
-  , pascalTable
   , oldNeighborWeights
   , vecRunNeighbs
   , vecRunNeighbs_
@@ -59,11 +57,8 @@ import qualified Data.Vector.Generic.Lens      as V
 import qualified Data.Vector.Mutable           as MV
 import qualified Data.Vector.Unboxed           as VU
 
-pascals :: [[Int]]
-pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
-
 pascalIx :: [Int] -> Int
-pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
+pascalIx = sum . zipWith (\p x -> if x == 0 then 0 else binom (p+x) (x-1)) [0..]
 
 binom
     :: Int
@@ -75,14 +70,6 @@ binom n k = go 1 1
       | i <= k    = go (i+1) (x * (n + 1 - i) `div` i)
       | otherwise = x
 
-
-pascalTable :: Int -> Int -> [[Int]]
-pascalTable d mx = reverse
-                 . transpose
-                 . map (take mx)
-                 . reverse
-                 . take d
-                 $ tail pascals
 
 pascalVecRunIx :: VU.Vector Int -> Int
 pascalVecRunIx = uncurry (go 0) . prepro . VU.toList
@@ -255,8 +242,8 @@ oldNeighborWeights d mx = runST $ do
           MV.modify v (IM.insertWith (flip (<>)) x NOne) pIx
     V.freeze v
   where
-    n  = pascals !! d !! mx
-    n' = pascals !! d !! (mx-1)
+    n  = binom (d+mx) mx
+    n' = binom (d+mx-1) (mx-1)
 
 -- -- used to test finalWeights
 -- _duplicands
@@ -376,7 +363,7 @@ neighborWeights d mx =
     . map (IM.fromListWith (<>) . vecRunNeighbs d mx)
     $ [0 .. n' - 1]
   where
-    n' = pascals !! d !! (mx - 1)
+    n' = binom (d+mx-1) (mx-1)
 
 toNCount :: (Num a, Eq a) => a -> NCount
 toNCount = \case
@@ -440,7 +427,7 @@ day17a :: Set Point :~> Integer
 day17a = day17 1
 
 day17b :: Set Point :~> Integer
-day17b = day17 2
+day17b = day17 10
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
