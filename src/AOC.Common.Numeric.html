@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">AOC.Common.Numeric</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-3"></span><span>    </span><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier">PascalTable</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.Numeric.html#buildPascalTable"><span class="hs-identifier">buildPascalTable</span></a></span><span>
+</span><span id="line-5"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Common.Numeric.html#binom"><span class="hs-identifier">binom</span></a></span><span>
+</span><span id="line-6"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Vector.Unboxed</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">VU</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span>           </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="annot"><a href="AOC.Common.Numeric.html#pascals"><span class="hs-identifier hs-type">pascals</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
+</span><span id="line-12"></span><span id="pascals"><span class="annot"><span class="annottext">pascals :: [[Int]]
+</span><a href="AOC.Common.Numeric.html#pascals"><span class="hs-identifier hs-var hs-var">pascals</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int]
+forall a. a -&gt; [a]
+</span><span class="hs-identifier hs-var">repeat</span></span><span> </span><span class="annot"><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [[Int]] -&gt; [[Int]]
+forall a. a -&gt; [a] -&gt; [a]
+</span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [Int]) -&gt; [[Int]] -&gt; [[Int]]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Int] -&gt; [Int]
+forall a. [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">tail</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [Int]) -&gt; ([Int] -&gt; [Int]) -&gt; [Int] -&gt; [Int]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Int) -&gt; Int -&gt; [Int] -&gt; [Int]
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">scanl'</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">(+)</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="AOC.Common.Numeric.html#pascals"><span class="hs-identifier hs-var">pascals</span></a></span><span>
+</span><span id="line-13"></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">data</span><span> </span><span id="PascalTable"><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier hs-var">PascalTable</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PascalTable"><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier hs-var">PascalTable</span></a></span></span><span> </span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">{</span><span> </span><span id="ptWidth"><span class="annot"><span class="annottext">PascalTable -&gt; Int
+</span><a href="AOC.Common.Numeric.html#ptWidth"><span class="hs-identifier hs-var hs-var">ptWidth</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="ptDepth"><span class="annot"><span class="annottext">PascalTable -&gt; Int
+</span><a href="AOC.Common.Numeric.html#ptDepth"><span class="hs-identifier hs-var hs-var">ptDepth</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">,</span><span> </span><span id="ptTable"><span class="annot"><span class="annottext">PascalTable -&gt; Vector Int
+</span><a href="AOC.Common.Numeric.html#ptTable"><span class="hs-identifier hs-var hs-var">ptTable</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-glyph">!</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">VU.Vector</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679762275"><span id="local-6989586621679762277"><span id="local-6989586621679762279"><span class="annot"><span class="annottext">Int -&gt; PascalTable -&gt; ShowS
+[PascalTable] -&gt; ShowS
+PascalTable -&gt; String
+(Int -&gt; PascalTable -&gt; ShowS)
+-&gt; (PascalTable -&gt; String)
+-&gt; ([PascalTable] -&gt; ShowS)
+-&gt; Show PascalTable
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PascalTable] -&gt; ShowS
+$cshowList :: [PascalTable] -&gt; ShowS
+show :: PascalTable -&gt; String
+$cshow :: PascalTable -&gt; String
+showsPrec :: Int -&gt; PascalTable -&gt; ShowS
+$cshowsPrec :: Int -&gt; PascalTable -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><a href="AOC.Common.Numeric.html#buildPascalTable"><span class="hs-identifier hs-type">buildPascalTable</span></a></span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>            </span><span class="hs-comment">-- ^ num diagonals</span><span>
+</span><span id="line-23"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>            </span><span class="hs-comment">-- ^ depth of diagonal</span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier hs-type">PascalTable</span></a></span><span>
+</span><span id="line-25"></span><span id="buildPascalTable"><span class="annot"><span class="annottext">buildPascalTable :: Int -&gt; Int -&gt; PascalTable
+</span><a href="AOC.Common.Numeric.html#buildPascalTable"><span class="hs-identifier hs-var hs-var">buildPascalTable</span></a></span></span><span> </span><span id="local-6989586621679762273"><span class="annot"><span class="annottext">n :: Int
+</span><a href="#local-6989586621679762273"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679762272"><span class="annot"><span class="annottext">d :: Int
+</span><a href="#local-6989586621679762272"><span class="hs-identifier hs-var">d</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">$WPascalTable :: Int -&gt; Int -&gt; Vector Int -&gt; PascalTable
+</span><a href="AOC.Common.Numeric.html#%24WPascalTable"><span class="hs-identifier hs-type hs-type">PascalTable</span></a></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ptWidth :: Int
+</span><a href="AOC.Common.Numeric.html#ptWidth"><span class="hs-identifier hs-var">ptWidth</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762273"><span class="hs-identifier hs-var">n</span></a></span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ptDepth :: Int
+</span><a href="AOC.Common.Numeric.html#ptDepth"><span class="hs-identifier hs-var">ptDepth</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762272"><span class="hs-identifier hs-var">d</span></a></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ptTable :: Vector Int
+</span><a href="AOC.Common.Numeric.html#ptTable"><span class="hs-identifier hs-var">ptTable</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; Vector Int
+forall a. Unbox a =&gt; [a] -&gt; Vector a
+</span><span class="hs-identifier hs-var">VU.fromList</span></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; Vector Int)
+-&gt; ([[Int]] -&gt; [Int]) -&gt; [[Int]] -&gt; Vector Int
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[[Int]] -&gt; [Int]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">([[Int]] -&gt; Vector Int) -&gt; [[Int]] -&gt; Vector Int
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span>
+</span><span id="line-29"></span><span>        </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; [Int]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762272"><span class="hs-identifier hs-var">d</span></a></span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [Int]) -&gt; [[Int]] -&gt; [[Int]]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [[Int]] -&gt; [[Int]]
+forall a. Int -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762273"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">[[Int]]
+</span><a href="AOC.Common.Numeric.html#pascals"><span class="hs-identifier hs-var">pascals</span></a></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">}</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><a href="AOC.Common.Numeric.html#binom"><span class="hs-identifier hs-type">binom</span></a></span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier hs-type">PascalTable</span></a></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>          </span><span class="hs-comment">-- ^ diagonal</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>          </span><span class="hs-comment">-- ^ index</span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-37"></span><span id="binom"><span class="annot"><span class="annottext">binom :: PascalTable -&gt; Int -&gt; Int -&gt; Int
+</span><a href="AOC.Common.Numeric.html#binom"><span class="hs-identifier hs-var hs-var">binom</span></a></span></span><span> </span><span id="local-6989586621679762264"><span id="local-6989586621679762265"><span id="local-6989586621679762266"><span class="annot"><a href="AOC.Common.Numeric.html#PascalTable"><span class="hs-identifier hs-type">PascalTable</span></a></span><span class="hs-special">{</span><span class="hs-glyph">..</span><span class="hs-special">}</span></span></span></span><span> </span><span id="local-6989586621679762263"><span class="annot"><span class="annottext">i :: Int
+</span><a href="#local-6989586621679762263"><span class="hs-identifier hs-var">i</span></a></span></span><span> </span><span id="local-6989586621679762262"><span class="annot"><span class="annottext">j :: Int
+</span><a href="#local-6989586621679762262"><span class="hs-identifier hs-var">j</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Vector Int
+</span><a href="#local-6989586621679762264"><span class="hs-identifier hs-var">ptTable</span></a></span><span> </span><span class="annot"><span class="annottext">Vector Int -&gt; Int -&gt; Int
+forall a. Unbox a =&gt; Vector a -&gt; Int -&gt; a
+</span><span class="hs-operator hs-var">VU.!</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762263"><span class="hs-identifier hs-var">i</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">*</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762265"><span class="hs-identifier hs-var">ptDepth</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679762262"><span class="hs-identifier hs-var">j</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span></pre></body></html>
