@@ -15,18 +15,24 @@ module AOC.Challenge.Day17 (
   , encRun
   , pascalVecRunIx
   , vecRunIxPascal
+  , vecRunIxPascal_
+  , genVecRunIxPascal
+  , genVecRunIxPascal_
   , pascalTable
   , oldNeighborWeights
   , vecRunNeighbs
   , vecRunNeighbs_
+  , vecRunNeighbs__
   , neighborWeights
   , finalWeight
+  , binom
   ) where
 
 import           AOC.Common                    (factorial, integerFactorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
 import           AOC.Common.Point              (Point, parseAsciiSet)
 import           AOC.Solver                    ((:~>)(..))
 import           Control.Applicative.Backwards (Backwards(..))
+import           Debug.Trace
 import           Control.DeepSeq               (force, NFData)
 import           Control.Lens                  (itraverseOf)
 import           Control.Monad                 (when, guard)
@@ -62,6 +68,17 @@ pascals = repeat 1 : map (tail . scanl' (+) 0) pascals
 pascalIx :: [Int] -> Int
 pascalIx = sum . zipWith (\p x -> ((0:p) !! x)) (tail pascals)
 
+binom
+    :: Int
+    -> Int
+    -> Int
+binom n k = go 1 1
+  where
+    go i !x
+      | i <= k    = go (i+1) (x * (n + 1 - i) `div` i)
+      | otherwise = x
+
+
 pascalTable :: Int -> Int -> [[Int]]
 pascalTable d mx = reverse
                  . transpose
@@ -71,26 +88,27 @@ pascalTable d mx = reverse
                  $ tail pascals
 
 pascalVecRunIx :: VU.Vector Int -> Int
-pascalVecRunIx = go 0 ((0:) <$> tail pascals). VU.toList
+pascalVecRunIx = uncurry (go 0) . prepro . VU.toList
   where
-    go !tot !cs = \case
+    prepro ~(x:xs) = ((x, 0), xs)
+    go !tot (!i, !j) = \case
       []   -> tot
       x:xs ->
-        let (c,cs') = splitAt x cs
-        in  go (tot + sum (map head c)) (tail <$> cs') xs
+        let cs = sum [ binom (i+k) j | k <- [1..x] ]
+        in  go (tot + cs) (i+x+1, j+1) xs
 
 ixPascal
     :: Int      -- ^ dimension
     -> Int
     -> [Int]
-ixPascal n x = go x (reverse p0) []
+ixPascal n x = go x 0 []
   where
-    p0 = take n (tail pascals)
-    go :: Int -> [[Int]] -> [Int] -> [Int]
-    go _ []     r = r
-    go y (p:ps) r = go (y - last qs) ps ((length qs - 1) : r)
+    go :: Int -> Int -> [Int] -> [Int]
+    go y i r
+        | i < n     = go (y - last qs) (i+1) ((length qs - 1) : r)
+        | otherwise = r
       where
-        qs = takeWhile (<= y) (0:p)
+        qs = takeWhile (<= y) $ 0 : [ binom ((n-i)+k) (n-i) | k <- [0..] ]
 
 vecRunIxPascal
     :: Int      -- ^ dimension
@@ -113,6 +131,41 @@ chompPascal = go 0
       (x:ys)
         | q >= x    -> go (i+1) (q-x) (ys:map tail xss)
         | otherwise -> (i, q, xss)
+
+vecRunIxPascal_
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> Int      -- ^ number
+    -> [Int]    -- ^ run
+vecRunIxPascal_ n mx x = go x (mx,n) []
+  where
+    go :: Int -> (Int, Int) -> [Int] -> [Int]
+    go q (!m,!k) z = case chompPascal_ q (m,k) of
+      (j, _, (0 ,k')) -> k':j:z
+      (j, r, (m',k')) -> go r (m',k') (j:z)
+
+chompPascal_ :: Int -> (Int, Int) -> (Int, Int, (Int, Int))
+chompPascal_ = go 0
+  where
+    go !i q (!n,!k)
+      | k == 0    = (i, q, (n-1, 0))
+      | otherwise =
+          let x = binom (n+k-1) (n-1)
+          in  if q >= x then go (i+1) (q-x) (n,k-1)
+                        else (i, q, (n-1,k))
+
+genVecRunIxPascal_
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> Int      -- ^ number
+    -> [Int]    -- ^ runs, but reverse order
+genVecRunIxPascal_ n mx x = go x (mx,n)
+  where
+    go :: Int -> (Int, Int) -> [Int]
+    go q (!m,!k) = case chompPascal_ q (m,k) of
+      (j, _, (0, k') ) -> [j,k']
+      (j, r, (m',k')) -> j : go r (m',k')
+
 
 encRun :: Int -> [Int] -> [Int]
 encRun mx = take (mx + 1) . (++ repeat 0) . go 0 0
@@ -301,11 +354,13 @@ genVecRunIxPascal p0 x = go x p0
 
 -- | Streaming/constant space enumerate all neighbor and multiplicities
 vecRunNeighbs
-    :: [[Int]]            -- ^ pascal table
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> [[Int]]            -- ^ pascal table
     -> Int
     -> [(Int, NCount)]
-vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True NOne 0 x xs)
-                    . genVecRunIxPascal pasc0
+vecRunNeighbs n mx pasc0 = (\(x:xs) -> go pasc0 0 x True NOne 0 x xs)
+                         . genVecRunIxPascal_ n mx
   where
     -- we build these in reverse because we can both generate and encode
     -- pascal indices in reverse order in constant space/a streaming way
@@ -348,6 +403,56 @@ vecRunNeighbs pasc0 = (\(x:xs) -> go pasc0 0 x True NOne 0 x xs)
             pascs'     = drop res <$> pascs
         go pascs' tot' l (allSame && xContrib == x0) p' x' l' ls
 
+-- | Streaming/constant space enumerate all neighbor and multiplicities
+vecRunNeighbs__
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> Int
+    -> [(Int, NCount)]
+vecRunNeighbs__ n mx = (\(x:xs) -> go (mx,n) 0 x True NOne 0 x xs)
+                     . genVecRunIxPascal_ n mx
+  where
+    -- we build these in reverse because we can both generate and encode
+    -- pascal indices in reverse order in constant space/a streaming way
+    -- and also because it makes the final choice for 1->0 transitions much
+    -- simpler
+    go  :: (Int, Int)   -- ^ running pascal triangle index
+        -> Int          -- ^ running total
+        -> Int          -- ^ original item in that position
+        -> Bool         -- ^ currently all the same?
+        -> NCount       -- ^ multiplicity
+        -> Int          -- ^ item to the right
+        -> Int          -- ^ current item
+        -> [Int]        -- ^ leftover items (right to left)
+        -> [(Int, NCount)]
+    go (!i,!j) !tot x0 allSame !p r x = \case
+      [] ->
+        let res  = r + x
+            p'   = p `mulNCount` toNCount @Integer
+                    ( integerFactorial (fromIntegral res)
+                    * (2^r)
+                `div` integerFactorial (fromIntegral x)
+                    )
+            tot' = tot
+        in  (tot', p') <$ guard (not (allSame && x == x0))
+      l:ls -> do
+        xlContrib <- [0..(x+l)]
+        xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
+        let lContrib   = xlContrib - xContrib
+            res        = r + xlContrib
+            l'         = l - lContrib
+            x'         = x - xContrib
+            p'         = p `mulNCount` toNCount @Integer
+                           ( integerFactorial (fromIntegral res)
+                       `div` integerFactorial (fromIntegral r)
+                       `div` integerFactorial (fromIntegral xContrib)
+                       `div` integerFactorial (fromIntegral lContrib)
+                           )
+            tot'  = tot + sum [ binom (i+j-k) (j+1-k) | k <- [1..res] ]
+            i' = i-1
+            j' = j-res
+        go (i',j') tot' l (allSame && xContrib == x0) p' x' l' ls
+
 -- | Build up all the weights for quick reference comparison
 neighborWeights
     :: Int            -- ^ dimension
@@ -355,7 +460,7 @@ neighborWeights
     -> V.Vector (IntMap NCount)
 neighborWeights d mx =
       V.fromList
-    . map (IM.fromListWith (<>) . vecRunNeighbs (pascalTable d mx))
+    . map (IM.fromListWith (<>) . vecRunNeighbs__ d mx)
     $ [0 .. n' - 1]
   where
     n' = pascals !! d !! (mx - 1)
@@ -403,7 +508,7 @@ runDay17 cache vcache mx d (S.toList -> x) =
       | vcache    = ((fmap toDead <$> neighborWeights d mx') V.!)
       | otherwise = Memo.integral $ IM.fromListWith (<>)
                         . map (second toDead)
-                        . vecRunNeighbs (pascalTable d mx')
+                        . vecRunNeighbs__ d mx'
 {-# INLINE runDay17 #-}
 
 day17
@@ -414,7 +519,7 @@ day17 d = MkSol
     , sShow  = show
     , sSolve = fmap (sum . map (sum . map (finalWeight d . ixPascal d) . IS.toList) . toList)
              . lastMay
-             . runDay17 False True 6 d
+             . runDay17 False False 6 d
     }
 {-# INLINE day17 #-}
 
@@ -422,7 +527,7 @@ day17a :: Set Point :~> Integer
 day17a = day17 1
 
 day17b :: Set Point :~> Integer
-day17b = day17 2
+day17b = day17 3
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
