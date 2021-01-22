@@ -21,6 +21,7 @@ module AOC.Challenge.Day17 (
   , neighborWeights
   , finalWeight
   , binom
+  , chompPascal
   ) where
 
 import           AOC.Common                    (factorial, integerFactorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
@@ -374,15 +375,9 @@ toNCount = \case
     _ -> NMany
 
 mulNCount :: NCount -> NCount -> NCount
-mulNCount = \case
-    NOne   -> id
-    NTwo   -> \case
-      NOne -> NTwo
-      _    -> NMany
-    NThree -> \case
-      NOne -> NThree
-      _    -> NMany
-    _      -> const NMany
+mulNCount NOne y = y
+mulNCount x NOne = x
+mulNCount _ _    = NMany
 
 runDay17
     :: Bool               -- ^ cache neighbors between runs
@@ -427,7 +422,7 @@ day17a :: Set Point :~> Integer
 day17a = day17 1
 
 day17b :: Set Point :~> Integer
-day17b = day17 10
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
