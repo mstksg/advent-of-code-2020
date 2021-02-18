@@ -3,6 +3,7 @@ module AOC.Common.Numeric (
     PascalTable(..)
   , buildPascalTable
   , binom
+  , pascals
   ) where
 
 import qualified Data.Vector.Unboxed as VU

@@ -9,7 +9,7 @@ module AOC.Challenge.Day17 (
     day17a
   , day17b
   , runDay17
-  , ixPascal
+  , ixPascal, ixPascalRef
   , pascalIx
   , encRun
   , pascalVecRunIx
@@ -17,11 +17,13 @@ module AOC.Challenge.Day17 (
   , genVecRunIxPascal
   , oldNeighborWeights
   , vecRunNeighbs
+  , vecRunNeighbsInt
   , vecRunNeighbs_
   , neighborWeights
   , finalWeight
   , binom
   , chompPascal
+  ,ixChomper, ixChomperRef
   ) where
 
 import           AOC.Common                    (factorial, integerFactorial, freqs, lookupFreq, foldMapParChunk, strictIterate)
@@ -90,10 +92,38 @@ ixPascal n x = go x 0 []
   where
     go :: Int -> Int -> [Int] -> [Int]
     go y i r
+        | i < n     = go y' (i+1) (s : r)
+        | otherwise = r
+      where
+        (y', s) = ixChomper (n-i) y
+
+ixChomper :: Int -> Int -> (Int, Int)     -- (y - last qs), length qs - 1
+ixChomper n x = go 0 0
+  where
+    go k z
+        | z' > x    = (x-z, k)
+        | otherwise = go (k+1) z'
+      where
+        z' = binom (n+k) n
+
+ixPascalRef
+    :: Int      -- ^ dimension
+    -> Int
+    -> [Int]
+ixPascalRef n x = go x 0 []
+  where
+    go :: Int -> Int -> [Int] -> [Int]
+    go y i r
         | i < n     = go (y - last qs) (i+1) ((length qs - 1) : r)
         | otherwise = r
       where
         qs = takeWhile (<= y) $ 0 : [ binom ((n-i)+k) (n-i) | k <- [0..] ]
+
+ixChomperRef :: Int -> Int -> (Int, Int)     -- last qs, length qs - 1
+ixChomperRef n y = (y - last qs, length qs - 1)
+  where
+    qs = takeWhile (<= y) $ 0 : [ binom (n+k) n | k <- [0..] ]
+
 
 vecRunIxPascal
     :: Int      -- ^ dimension
@@ -294,8 +324,8 @@ vecRunNeighbs_ xs0 = mapMaybe pullSame $
           in  (res, T3 xs (allSame && x == x0) p')
         Just l  -> do
           xlContrib <- [0..(x+l)]
-          xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
-          let lContrib   = xlContrib - xContrib
+          lContrib  <- [max 0 (xlContrib-x) .. min l xlContrib]
+          let xContrib   = xlContrib - lContrib
               res        = r + xlContrib
               xs'        = xs VU.// [(i, x-xContrib), (i-1, l-lContrib)]
               p'         = p * factorial res
@@ -333,13 +363,14 @@ vecRunNeighbs n mx = (\(x:xs) -> go (mx,n) 0 x True NOne 0 x xs)
                     ( integerFactorial (fromIntegral res)
                     * (2^r)
                 `div` integerFactorial (fromIntegral x)
+                `div` integerFactorial (fromIntegral r)
                     )
             tot' = tot
         in  (tot', p') <$ guard (not (allSame && x == x0))
       l:ls -> do
         xlContrib <- [0..(x+l)]
-        xContrib  <- [max 0 (xlContrib-l) .. min x xlContrib]
-        let lContrib   = xlContrib - xContrib
+        lContrib  <- [max 0 (xlContrib-x) .. min l xlContrib]
+        let xContrib   = xlContrib - lContrib
             res        = r + xlContrib
             l'         = l - lContrib
             x'         = x - xContrib
@@ -353,6 +384,58 @@ vecRunNeighbs n mx = (\(x:xs) -> go (mx,n) 0 x True NOne 0 x xs)
             i' = i-1
             j' = j-res
         go (i',j') tot' l (allSame && xContrib == x0) p' x' l' ls
+
+-- | Streaming/constant space enumerate all neighbor and multiplicities
+vecRunNeighbsInt
+    :: Int      -- ^ dimension
+    -> Int      -- ^ maximum
+    -> Int
+    -> [(Int, Integer)]
+vecRunNeighbsInt n mx = (\(x:xs) -> go (mx,n) 0 x True 1 0 x xs)
+                      . genVecRunIxPascal n mx
+  where
+    -- we build these in reverse because we can both generate and encode
+    -- pascal indices in reverse order in constant space/a streaming way
+    -- and also because it makes the final choice for 1->0 transitions much
+    -- simpler
+    go  :: (Int, Int)   -- ^ running pascal triangle index
+        -> Int          -- ^ running total
+        -> Int          -- ^ original item in that position
+        -> Bool         -- ^ currently all the same?
+        -> Integer      -- ^ multiplicity
+        -> Int          -- ^ item to the right
+        -> Int          -- ^ current item
+        -> [Int]        -- ^ leftover items (right to left)
+        -> [(Int, Integer)]
+    go (!i,!j) !tot x0 allSame !p r x = \case
+      [] ->
+        let res  = r + x
+            p'   = p *
+                    ( integerFactorial (fromIntegral res)
+                    * (2^r)
+                `div` integerFactorial (fromIntegral x)
+                `div` integerFactorial (fromIntegral r)
+                    )
+            tot' = tot
+        in  (tot', p') <$ guard (not (allSame && x == x0))
+      l:ls -> do
+        xlContrib <- [0..(x+l)]
+        lContrib  <- [max 0 (xlContrib-x) .. min l xlContrib]
+        let xContrib   = xlContrib - lContrib
+            res        = r + xlContrib
+            l'         = l - lContrib
+            x'         = x - xContrib
+            p'         = p *
+                           ( integerFactorial (fromIntegral res)
+                       `div` integerFactorial (fromIntegral r)
+                       `div` integerFactorial (fromIntegral xContrib)
+                       `div` integerFactorial (fromIntegral lContrib)
+                           )
+            tot' = tot + sum [ binom (i+j-k) (i-1) | k <- [1..res] ]
+            i' = i-1
+            j' = j-res
+        go (i',j') tot' l (allSame && xContrib == x0) p' x' l' ls
+
 
 -- | Build up all the weights for quick reference comparison
 neighborWeights
@@ -422,7 +505,7 @@ day17a :: Set Point :~> Integer
 day17a = day17 1
 
 day17b :: Set Point :~> Integer
-day17b = day17 2
+day17b = day17 10
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms
