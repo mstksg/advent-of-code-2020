@@ -84,7 +84,7 @@ module AOC.Common (
   , digitToIntSafe
   , caeser
   , eitherItem
-  , getDown
+  -- , getDown
   , toNatural
   , factorial
   , integerFactorial
@@ -138,7 +138,7 @@ import           Data.Function
 import           Data.Functor.Compose
 import           Data.Hashable
 import           Data.IntMap                        (IntMap)
-import           Data.List
+import           Data.List                          (uncons, sortOn)
 import           Data.List.NonEmpty                 (NonEmpty(..))
 import           Data.List.Split
 import           Data.Map                           (Map)
@@ -340,8 +340,8 @@ eitherItem :: Lens' (Either a a) a
 eitherItem f (Left x) = Left <$> f x
 eitherItem f (Right x) = Right <$> f x
 
-getDown :: Down a -> a
-getDown (Down x) = x
+-- getDown :: Down a -> a
+-- getDown (Down x) = x
 
 splitWord :: Word8 -> (Finite 16, Finite 16)
 splitWord = swap . separateProduct . F.toFinite
@@ -797,18 +797,18 @@ instance (Ord a, Show a) => P.Stream (TokStream a) where
     takeN_        n (TokStream xs) = bimap Seq.fromList TokStream (splitAt n xs)
                                   <$ guard (not (null xs))
     takeWhile_ p = bimap Seq.fromList TokStream . span p . getTokStream
-    showTokens _ = show
-    reachOffset o ps = ("<token stream>", ps')
-      where
-        step = o - P.pstateOffset ps
-        ps' = ps { P.pstateOffset    = o
-                 , P.pstateInput     = TokStream ys
-                 , P.pstateSourcePos = (P.pstateSourcePos ps) {
-                      P.sourceColumn = P.sourceColumn (P.pstateSourcePos ps)
-                                    <> P.mkPos step
-                    }
-                 }
-        ys = drop step (getTokStream (P.pstateInput ps))
+    -- showTokens _ = show
+    -- reachOffset o ps = ("<token stream>", ps')
+    --   where
+    --     step = o - P.pstateOffset ps
+    --     ps' = ps { P.pstateOffset    = o
+    --              , P.pstateInput     = TokStream ys
+    --              , P.pstateSourcePos = (P.pstateSourcePos ps) {
+    --                   P.sourceColumn = P.sourceColumn (P.pstateSourcePos ps)
+    --                                 <> P.mkPos step
+    --                 }
+    --              }
+    --     ys = drop step (getTokStream (P.pstateInput ps))
 
 -- | Parse a stream of tokens @s@ purely, returning 'Either'
 parseTokStream
@@ -862,7 +862,7 @@ pSpace = P.skipMany (P.char ' ')
 parseMaybeLenient :: P.Parsec Void s a -> s -> Maybe a
 parseMaybeLenient p = eitherToMaybe . P.parse p "parseMaybeLenient"
 
-parseOrFail :: (P.Stream s, P.ShowErrorComponent e) => P.Parsec e s a -> s -> a
+parseOrFail :: (P.ShowErrorComponent e, P.VisualStream s, P.TraversableStream s) => P.Parsec e s a -> s -> a
 parseOrFail p = either (error . P.errorBundlePretty) id . P.parse p "parseMaybeLenient"
 
 parseLines :: P.Parsec Void String a -> String -> Maybe [a]
@@ -916,11 +916,11 @@ anaM f = R.hylo (fmap R.embed . join . fmap sequenceA . getCompose) (Compose . f
 newtype Iterate n a = Iterate { runIterate :: a }
 
 unfoldedIterate
-    :: forall n a proxy. N.InlineInduction n
+    :: forall n a proxy. N.SNatI n
     => proxy n
     -> (a -> a)
     -> a -> a
-unfoldedIterate _ f x = runIterate (N.inlineInduction1 start step :: Iterate n a)
+unfoldedIterate _ f x = runIterate (N.induction1 start step :: Iterate n a)
   where
     start :: Iterate 'N.Z a
     start = Iterate x
@@ -928,9 +928,9 @@ unfoldedIterate _ f x = runIterate (N.inlineInduction1 start step :: Iterate n a
     step = coerce f
 
 
-instance Hashable a => Hashable (Seq a) where
-    hashWithSalt s = hashWithSalt s . toList
-    hash = hash . toList
+-- instance Hashable a => Hashable (Seq a) where
+--     hashWithSalt s = hashWithSalt s . toList
+--     hash = hash . toList
 
 instance FunctorWithIndex k (NEMap k) where
     imap = NEM.mapWithKey

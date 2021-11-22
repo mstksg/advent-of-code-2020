@@ -11,7 +11,7 @@ import           Control.Monad.Except
 import           Data.Char
 import           Data.Foldable
 import           Data.IORef
-import           Data.List
+import           Data.List (intercalate)
 import           Data.Maybe
 import           Options.Applicative
 import           System.IO.Error
@@ -36,7 +36,7 @@ main = do
                <> header "aoc-dev - Advent of Code interactive development environment"
                <> progDesc ("Run, test, bench, challenges from Advent of Code, and view prompts. Available days: " ++ availableDays)
                 )
-    cfg@Cfg{..} <- configFile $ fromMaybe defConfPath _oConfig
+    cfg <- configFile $ fromMaybe defConfPath _oConfig
     out <- runExceptT $ case _oMode of
       MRun    mro -> void $ mainRun  cfg mro
       MView   mvo -> void $ mainView cfg mvo

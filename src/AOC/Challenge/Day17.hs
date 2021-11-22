@@ -505,7 +505,7 @@ day17a :: Set Point :~> Integer
 day17a = day17 1
 
 day17b :: Set Point :~> Integer
-day17b = day17 10
+day17b = day17 2
 
 -- d=5: 5760 / 16736; 274ms     -- with unboxed, 96ms, with pre-neighb: 35ms
 -- d=6: 35936 / 95584; 1.5s     -- with unboxed, 309ms, with pre-neighb: 105ms

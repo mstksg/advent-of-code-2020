@@ -100,10 +100,11 @@ type Parser = P.Parsec Void String
 -- a lower-case letter corresponding to the part of the challenge.
 --
 -- See 'mkChallengeMap' for a description of usage.
-solutionList :: FilePath -> Q (TExp [(Day, (Part, SomeSolution))])
-solutionList dir = fmap (TExp . ListE)
-                 . traverse (fmap unType . specExp)
-               =<< runIO (getChallengeSpecs dir)
+solutionList :: FilePath -> Code Q [(Day, (Part, SomeSolution))]
+solutionList dir = Code $
+         fmap (TExp . ListE)
+       . traverse (fmap unType . specExp)
+     =<< runIO (getChallengeSpecs dir)
 
 -- | Meant to be called like:
 --
@@ -126,10 +127,10 @@ specExp s@(CS d p) = do
                  then 'MkSomeSolNF
                  else 'MkSomeSolWH
     pure $ TExp $ TupE
-      [ VarE 'mkDay_ `AppE` LitE (IntegerL (dayInt d))
-      , TupE
-          [ ConE (partCon p)
-          , ConE con `AppE` VarE (mkName (specName s))
+      [ Just $ VarE 'mkDay_ `AppE` LitE (IntegerL (dayInt d))
+      , Just $ TupE
+          [ Just $ ConE (partCon p)
+          , Just $ ConE con `AppE` VarE (mkName (specName s))
           ]
       ]
   where
@@ -196,7 +197,7 @@ solverNFData :: TH.Name -> Q Bool
 solverNFData n
   | checkIfNFData = reify n >>= \case
       VarI _ (ConT c `AppT` a `AppT` _) _
-        | c == ''(:~>) -> deepInstance ''NFData a 
+        | c == ''(:~>) -> deepInstance ''NFData a
       _ -> pure False
   | otherwise     = pure False
 

@@ -87,7 +87,7 @@ testSolution cs = eitherIO $ do
 
 -- | View the prompt for a given challenge spec.
 viewPrompt :: ChallengeSpec -> IO Text
-viewPrompt cs@CS{..} = eitherIO $ do
+viewPrompt cs = eitherIO $ do
     cfg <- liftIO $ configFile defConfPath
     out <- mainView cfg . defaultMVO $ TSDayPart cs
     maybeToEither ["Prompt not found in result map (Internal Error)"] $
@@ -96,7 +96,7 @@ viewPrompt cs@CS{..} = eitherIO $ do
 -- | Countdown to get the prompt for a given challenge spec, if not yet
 -- available.
 waitForPrompt :: ChallengeSpec -> IO Text
-waitForPrompt cs@CS{..} = eitherIO $ do
+waitForPrompt cs = eitherIO $ do
     cfg <- liftIO $ configFile defConfPath
     out <- mainView cfg $ (defaultMVO (TSDayPart cs))
       { _mvoWait = True

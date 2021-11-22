@@ -16,7 +16,7 @@ module AOC.Challenge.Day01 (
 import           AOC.Common       (firstJust)
 import           AOC.Solver       ((:~>)(..))
 import           Data.IntSet      (IntSet)
-import           Data.Type.Nat    (Nat(..), Nat1, Nat2, SNat(..), SNatI(..))
+import           Data.Type.Nat    (Nat(..), Nat1, Nat2, SNat(..), SNatI(..), snat)
 import           Text.Read        (readMaybe)
 import qualified Data.IntSet      as IS
 import qualified Data.Vec.Lazy    as Vec

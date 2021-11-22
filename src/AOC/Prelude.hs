@@ -43,7 +43,7 @@ import           Data.IntSet                as P (IntSet)
 import           Data.IntSet.NonEmpty       as P (NEIntSet)
 import           Data.Ix                    as P hiding (index)
 import           Data.Kind                  as P
-import           Data.List                  as P
+import qualified Data.List                  as P
 import           Data.List.NonEmpty         as P (NonEmpty(..), nonEmpty)
 import           Data.List.Split            as P hiding (oneOf, sepBy)
 import           Data.Map                   as P (Map)

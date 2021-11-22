@@ -7,7 +7,7 @@ module AOC.Common.Numeric (
   ) where
 
 import qualified Data.Vector.Unboxed as VU
-import           Data.List
+import           Data.List (scanl')
 
 pascals :: [[Int]]
 pascals = repeat 1 : map (tail . scanl' (+) 0) pascals

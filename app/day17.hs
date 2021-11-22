@@ -7,7 +7,7 @@ import           Control.DeepSeq
 import           Control.Exception
 import           Control.Monad
 import           Control.Monad.IO.Unlift
-import           Data.Conduit             (ConduitT, (.|), runConduit)
+import           Data.Conduit             (ConduitT, (.|))
 import           Data.Conduit.Process
 import           Data.Foldable
 import           Data.IntMap              (IntMap)
@@ -16,8 +16,6 @@ import           Data.Semigroup
 import           Data.Void
 import           Graphics.Vega.VegaLite
 import           System.Exit
-import           System.FilePath
-import           System.IO
 import           System.IO.Error
 import           Text.Printf
 import qualified Data.Aeson               as A
@@ -28,7 +26,6 @@ import qualified Data.IntSet              as IS
 import qualified Data.Serialize           as C
 import qualified Data.Text                as T
 import qualified Data.Text.Encoding       as T
-import qualified Data.Text.IO             as T
 
 main :: IO ()
 main = do
