@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_1Z3w62v0pZ0FyIYya8JcmB"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="local-6989586621679609645"></span><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-comment">-- |</span><span>
 </span><span id="line-4"></span><span class="hs-comment">-- Module      : AOC.Challenge.Day22</span><span>
@@ -33,8 +33,8 @@
 </span><span id="line-33"></span><span class="hs-keyword">type</span><span> </span><span id="Deck"><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-var">Deck</span></a></span></span><span>   </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-34"></span><span class="hs-keyword">type</span><span> </span><span id="NEDeck"><span class="annot"><a href="AOC.Challenge.Day22.html#NEDeck"><span class="hs-identifier hs-var">NEDeck</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">NESeq</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
 </span><span id="line-35"></span><span>
-</span><span id="line-36"></span><span id="local-6989586621679771192"><span id="local-6989586621679771193"></span></span><span class="hs-keyword">data</span><span> </span><span id="Player"><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-var">Player</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="P1"><span class="annot"><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="P2"><span class="annot"><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-var">P2</span></a></span></span><span>
-</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679771184"><span id="local-6989586621679771186"><span id="local-6989586621679771188"><span class="annot"><span class="annottext">Int -&gt; Player -&gt; ShowS
+</span><span id="line-36"></span><span id="local-6989586621679609596"><span id="local-6989586621679609597"></span></span><span class="hs-keyword">data</span><span> </span><span id="Player"><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-var">Player</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="P1"><span class="annot"><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span></span><span> </span><span class="hs-glyph">|</span><span> </span><span id="P2"><span class="annot"><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-var">P2</span></a></span></span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679609588"><span id="local-6989586621679609590"><span id="local-6989586621679609592"><span class="annot"><span class="annottext">Int -&gt; Player -&gt; ShowS
 [Player] -&gt; ShowS
 Player -&gt; String
 (Int -&gt; Player -&gt; ShowS)
@@ -47,7 +47,7 @@ show :: Player -&gt; String
 $cshow :: Player -&gt; String
 showsPrec :: Int -&gt; Player -&gt; ShowS
 $cshowsPrec :: Int -&gt; Player -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679771179"><span id="local-6989586621679771181"><span class="annot"><span class="annottext">Player -&gt; Player -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679609583"><span id="local-6989586621679609585"><span class="annot"><span class="annottext">Player -&gt; Player -&gt; Bool
 (Player -&gt; Player -&gt; Bool)
 -&gt; (Player -&gt; Player -&gt; Bool) -&gt; Eq Player
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -55,9 +55,9 @@ forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c/= :: Player -&gt; Player -&gt; Bool
 == :: Player -&gt; Player -&gt; Bool
 $c== :: Player -&gt; Player -&gt; Bool
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679771163"><span id="local-6989586621679771165"><span id="local-6989586621679771167"><span id="local-6989586621679771169"><span id="local-6989586621679771171"><span id="local-6989586621679771173"><span id="local-6989586621679771175"><span class="annot"><span class="annottext">Eq Player
-Eq Player =&gt;
-(Player -&gt; Player -&gt; Ordering)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679609563"><span id="local-6989586621679609565"><span id="local-6989586621679609568"><span id="local-6989586621679609571"><span id="local-6989586621679609574"><span id="local-6989586621679609576"><span id="local-6989586621679609578"><span class="annot"><span class="annottext">Eq Player
+Eq Player
+-&gt; (Player -&gt; Player -&gt; Ordering)
 -&gt; (Player -&gt; Player -&gt; Bool)
 -&gt; (Player -&gt; Player -&gt; Bool)
 -&gt; (Player -&gt; Player -&gt; Bool)
@@ -69,8 +69,8 @@ Player -&gt; Player -&gt; Bool
 Player -&gt; Player -&gt; Ordering
 Player -&gt; Player -&gt; Player
 forall a.
-Eq a =&gt;
-(a -&gt; a -&gt; Ordering)
+Eq a
+-&gt; (a -&gt; a -&gt; Ordering)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
 -&gt; (a -&gt; a -&gt; Bool)
@@ -92,7 +92,6 @@ $c&lt;= :: Player -&gt; Player -&gt; Bool
 $c&lt; :: Player -&gt; Player -&gt; Bool
 compare :: Player -&gt; Player -&gt; Ordering
 $ccompare :: Player -&gt; Player -&gt; Ordering
-$cp1Ord :: Eq Player
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">(forall x. Player -&gt; Rep Player x)
 -&gt; (forall x. Rep Player x -&gt; Player) -&gt; Generic Player
 forall x. Rep Player x -&gt; Player
@@ -102,10 +101,10 @@ forall a.
 $cto :: forall x. Rep Player x -&gt; Player
 $cfrom :: forall x. Player -&gt; Rep Player x
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">Generic</span></span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679771157"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679609557"><span class="annot"><span class="hs-identifier hs-type">NFData</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span></span><span>
 </span><span id="line-39"></span><span>
 </span><span id="line-40"></span><span class="hs-keyword">data</span><span> </span><span id="GameState"><span class="annot"><a href="AOC.Challenge.Day22.html#GameState"><span class="hs-identifier hs-var">GameState</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="GS"><span class="annot"><a href="AOC.Challenge.Day22.html#GS"><span class="hs-identifier hs-var">GS</span></a></span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span>
-</span><span id="line-41"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679771151"><span id="local-6989586621679771153"><span class="annot"><span class="annottext">GameState -&gt; GameState -&gt; Bool
+</span><span id="line-41"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span id="local-6989586621679609547"><span id="local-6989586621679609553"><span class="annot"><span class="annottext">GameState -&gt; GameState -&gt; Bool
 (GameState -&gt; GameState -&gt; Bool)
 -&gt; (GameState -&gt; GameState -&gt; Bool) -&gt; Eq GameState
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -114,32 +113,34 @@ $c/= :: GameState -&gt; GameState -&gt; Bool
 == :: GameState -&gt; GameState -&gt; Bool
 $c== :: GameState -&gt; GameState -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span>
-</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679771148"><span class="annot"><span class="hs-identifier hs-type">Hashable</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#GameState"><span class="hs-identifier hs-type">GameState</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-43"></span><span>    </span><span id="local-6989586621679771146"><span class="annot"><span class="annottext">hashWithSalt :: Int -&gt; GameState -&gt; Int
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">hashWithSalt</span></span></span><span> </span><span id="local-6989586621679771144"><span class="annot"><span class="annottext">s :: Int
-</span><a href="#local-6989586621679771144"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#GS"><span class="hs-identifier hs-type">GS</span></a></span><span> </span><span id="local-6989586621679771143"><span class="annot"><span class="annottext">xs :: Deck
-</span><a href="#local-6989586621679771143"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679771142"><span class="annot"><span class="annottext">ys :: Deck
-</span><a href="#local-6989586621679771142"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-42"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679609543"><span class="annot"><span class="hs-identifier hs-type">Hashable</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#GameState"><span class="hs-identifier hs-type">GameState</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-43"></span><span>    </span><span id="local-6989586621679609531"><span class="annot"><span class="annottext">hashWithSalt :: Int -&gt; GameState -&gt; Int
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">hashWithSalt</span></span></span><span> </span><span id="local-6989586621679609529"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609529"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#GS"><span class="hs-identifier hs-type">GS</span></a></span><span> </span><span id="local-6989586621679609528"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609528"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span id="local-6989586621679609527"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609527"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-44"></span><span>      </span><span class="annot"><span class="annottext">Int -&gt; ([Int], [Int], Int) -&gt; Int
 forall a. Hashable a =&gt; Int -&gt; a -&gt; Int
 </span><span class="hs-identifier hs-var">hashWithSalt</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771144"><span class="hs-identifier hs-var">s</span></a></span><span>
+</span><a href="#local-6989586621679609529"><span class="hs-identifier hs-var">s</span></a></span><span>
 </span><span id="line-45"></span><span>        </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; [Int]
 forall a. Int -&gt; [a] -&gt; [a]
-</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck -&gt; [Int]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck -&gt; [Int]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771143"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679609528"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-46"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Int] -&gt; [Int]
 forall a. Int -&gt; [a] -&gt; [a]
-</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck -&gt; [Int]
+</span><span class="hs-identifier hs-var">take</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck -&gt; [Int]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span class="hs-identifier hs-var">toList</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771142"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679609527"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>        </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int
 forall a. Seq a -&gt; Int
 </span><span class="hs-identifier hs-var">Seq.length</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771143"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><a href="#local-6989586621679609528"><span class="hs-identifier hs-var">xs</span></a></span><span>
 </span><span id="line-48"></span><span>        </span><span class="hs-special">)</span><span>
 </span><span id="line-49"></span><span>
 </span><span id="line-50"></span><span class="annot"><a href="AOC.Challenge.Day22.html#score"><span class="hs-identifier hs-type">score</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
@@ -152,7 +153,8 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 forall a b c. (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]
 </span><span class="hs-identifier hs-var">zipWith</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
 forall a. Num a =&gt; a -&gt; a -&gt; a
-</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-number">1</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [Int]) -&gt; (Deck -&gt; [Int]) -&gt; Deck -&gt; [Int]
+</span><span class="hs-operator hs-var">(*)</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-glyph">..</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">([Int] -&gt; [Int]) -&gt; (Deck -&gt; [Int]) -&gt; Deck -&gt; [Int]
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Int]
 forall a. [a] -&gt; [a]
@@ -169,96 +171,103 @@ forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; [a]
 </span><span id="line-57"></span><span>    </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-58"></span><span id="playGameWith"><span class="annot"><span class="annottext">playGameWith :: (NEDeck -&gt; NEDeck -&gt; Maybe Player)
 -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
-</span><a href="AOC.Challenge.Day22.html#playGameWith"><span class="hs-identifier hs-var hs-var">playGameWith</span></a></span></span><span> </span><span id="local-6989586621679771132"><span class="annot"><span class="annottext">f :: NEDeck -&gt; NEDeck -&gt; Maybe Player
-</span><a href="#local-6989586621679771132"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
-</span><a href="#local-6989586621679771131"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
+</span><a href="AOC.Challenge.Day22.html#playGameWith"><span class="hs-identifier hs-var hs-var">playGameWith</span></a></span></span><span> </span><span id="local-6989586621679609517"><span class="annot"><span class="annottext">NEDeck -&gt; NEDeck -&gt; Maybe Player
+</span><a href="#local-6989586621679609517"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
+</span><a href="#local-6989586621679609516"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
 forall a. HashSet a
 </span><span class="hs-identifier hs-var">HS.empty</span></span><span>
 </span><span id="line-59"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-60"></span><span>    </span><span class="annot"><a href="#local-6989586621679771131"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HashSet</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#GameState"><span class="hs-identifier hs-type">GameState</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-61"></span><span>    </span><span id="local-6989586621679771131"><span class="annot"><span class="annottext">go :: HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
-</span><a href="#local-6989586621679771131"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679771129"><span class="annot"><span class="annottext">HashSet GameState
-</span><a href="#local-6989586621679771129"><span class="hs-identifier hs-var">seen</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679771128"><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679771127"><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771127"><span class="hs-identifier hs-var">ys0</span></a></span></span><span>
+</span><span id="line-60"></span><span>    </span><span class="annot"><a href="#local-6989586621679609516"><span class="hs-identifier hs-type">go</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HashSet</span></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#GameState"><span class="hs-identifier hs-type">GameState</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>    </span><span id="local-6989586621679609516"><span class="annot"><span class="annottext">go :: HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
+</span><a href="#local-6989586621679609516"><span class="hs-identifier hs-var hs-var">go</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679609514"><span class="annot"><span class="annottext">HashSet GameState
+</span><a href="#local-6989586621679609514"><span class="hs-identifier hs-var">seen</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679609513"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span></span><span> </span><span class="hs-glyph">!</span><span id="local-6989586621679609512"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609512"><span class="hs-identifier hs-var">ys0</span></a></span></span><span>
 </span><span id="line-62"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Deck -&gt; GameState
 </span><a href="AOC.Challenge.Day22.html#GS"><span class="hs-identifier hs-var">GS</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771127"><span class="hs-identifier hs-var">ys0</span></a></span><span> </span><span class="annot"><span class="annottext">GameState -&gt; HashSet GameState -&gt; Bool
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609512"><span class="hs-identifier hs-var">ys0</span></a></span><span> </span><span class="annot"><span class="annottext">GameState -&gt; HashSet GameState -&gt; Bool
 forall a. (Eq a, Hashable a) =&gt; a -&gt; HashSet a -&gt; Bool
 </span><span class="hs-operator hs-var">`HS.member`</span></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
-</span><a href="#local-6989586621679771129"><span class="hs-identifier hs-var">seen</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609514"><span class="hs-identifier hs-var">seen</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-63"></span><span>      </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">otherwise</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771127"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-64"></span><span>          </span><span class="hs-special">(</span><span id="local-6989586621679771125"><span class="annot"><span class="annottext">x :: Int
-</span><a href="#local-6989586621679771125"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;|</span></span><span> </span><span id="local-6989586621679771123"><span class="annot"><span class="annottext">xs :: Deck
-</span><a href="#local-6989586621679771123"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679771122"><span class="annot"><span class="annottext">y :: Int
-</span><a href="#local-6989586621679771122"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;|</span></span><span> </span><span id="local-6989586621679771121"><span class="annot"><span class="annottext">ys :: Deck
-</span><a href="#local-6989586621679771121"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-65"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679771120"><span class="annot"><span class="annottext">winner :: Player
-</span><a href="#local-6989586621679771120"><span class="hs-identifier hs-var hs-var">winner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">NEDeck -&gt; NEDeck -&gt; Maybe Player
-</span><a href="#local-6989586621679771132"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771125"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; NEDeck
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609512"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-64"></span><span>          </span><span class="hs-special">(</span><span id="local-6989586621679609510"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609510"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;|</span></span><span> </span><span id="local-6989586621679609508"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609508"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679609507"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609507"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;|</span></span><span> </span><span id="local-6989586621679609506"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609506"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-65"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679609505"><span class="annot"><span class="annottext">winner :: Player
+</span><a href="#local-6989586621679609505"><span class="hs-identifier hs-var hs-var">winner</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">NEDeck -&gt; NEDeck -&gt; Maybe Player
+</span><a href="#local-6989586621679609517"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609510"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; NEDeck
 forall a. a -&gt; Seq a -&gt; NESeq a
 </span><span class="hs-operator hs-var">:&lt;||</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771123"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771122"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; NEDeck
+</span><a href="#local-6989586621679609508"><span class="hs-identifier hs-var">xs</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609507"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; NEDeck
 forall a. a -&gt; Seq a -&gt; NESeq a
 </span><span class="hs-operator hs-var">:&lt;||</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771121"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-66"></span><span>                  </span><span class="annot"><span class="hs-identifier hs-type">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771125"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679609506"><span class="hs-identifier hs-var">ys</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-66"></span><span>                  </span><span class="annot"><span class="annottext">Maybe Player
+</span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609510"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771122"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609507"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-var">P2</span></a></span><span>
-</span><span id="line-67"></span><span>                  </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679771117"><span class="annot"><span class="annottext">p :: Player
-</span><a href="#local-6989586621679771117"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Player
-</span><a href="#local-6989586621679771117"><span class="hs-identifier hs-var">p</span></a></span><span>
+</span><span id="line-67"></span><span>                  </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679609502"><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609502"><span class="hs-identifier hs-var">p</span></a></span></span><span>  </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609502"><span class="hs-identifier hs-var">p</span></a></span><span>
 </span><span id="line-68"></span><span>            </span><span class="hs-keyword">in</span><span>  </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Player
-</span><a href="#local-6989586621679771120"><span class="hs-identifier hs-var">winner</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-69"></span><span>                  </span><span class="annot"><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-type">P1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
-</span><a href="#local-6989586621679771131"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
-</span><a href="#local-6989586621679771116"><span class="hs-identifier hs-var">seen'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771123"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
+</span><a href="#local-6989586621679609505"><span class="hs-identifier hs-var">winner</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-69"></span><span>                  </span><span class="annot"><span class="annottext">Player
+</span><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
+</span><a href="#local-6989586621679609516"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
+</span><a href="#local-6989586621679609501"><span class="hs-identifier hs-var">seen'</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609508"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
 forall a. Seq a -&gt; a -&gt; Seq a
 </span><span class="hs-operator hs-var">:|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771125"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
+</span><a href="#local-6989586621679609510"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
 forall a. Seq a -&gt; a -&gt; Seq a
 </span><span class="hs-operator hs-var">:|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771122"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771121"><span class="hs-identifier hs-var">ys</span></a></span><span>
-</span><span id="line-70"></span><span>                  </span><span class="annot"><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-type">P2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
-</span><a href="#local-6989586621679771131"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
-</span><a href="#local-6989586621679771116"><span class="hs-identifier hs-var">seen'</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771123"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771121"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
+</span><a href="#local-6989586621679609507"><span class="hs-identifier hs-var">y</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609506"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-70"></span><span>                  </span><span class="annot"><span class="annottext">Player
+</span><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-var">P2</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HashSet GameState -&gt; Deck -&gt; Deck -&gt; (Player, Deck)
+</span><a href="#local-6989586621679609516"><span class="hs-identifier hs-var">go</span></a></span><span> </span><span class="annot"><span class="annottext">HashSet GameState
+</span><a href="#local-6989586621679609501"><span class="hs-identifier hs-var">seen'</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609508"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609506"><span class="hs-identifier hs-var">ys</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
 forall a. Seq a -&gt; a -&gt; Seq a
 </span><span class="hs-operator hs-var">:|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771122"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
+</span><a href="#local-6989586621679609507"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int -&gt; Deck
 forall a. Seq a -&gt; a -&gt; Seq a
 </span><span class="hs-operator hs-var">:|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771125"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-71"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Empty</span></span><span class="hs-special">,</span><span> </span><span class="hs-identifier">_</span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609510"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-71"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
+</span><span class="hs-identifier hs-var">Empty</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P2"><span class="hs-identifier hs-var">P2</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771127"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-72"></span><span>          </span><span class="hs-special">(</span><span class="hs-identifier">_</span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Empty</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
+</span><a href="#local-6989586621679609512"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-72"></span><span>          </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck
+</span><span class="hs-identifier">_</span></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
+</span><span class="hs-identifier hs-var">Empty</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-73"></span><span>      </span><span class="hs-keyword">where</span><span>
-</span><span id="line-74"></span><span>        </span><span id="local-6989586621679771116"><span class="annot"><span class="annottext">seen' :: HashSet GameState
-</span><a href="#local-6989586621679771116"><span class="hs-identifier hs-var hs-var">seen'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GameState -&gt; HashSet GameState -&gt; HashSet GameState
+</span><span id="line-74"></span><span>        </span><span id="local-6989586621679609501"><span class="annot"><span class="annottext">seen' :: HashSet GameState
+</span><a href="#local-6989586621679609501"><span class="hs-identifier hs-var hs-var">seen'</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GameState -&gt; HashSet GameState -&gt; HashSet GameState
 forall a. (Eq a, Hashable a) =&gt; a -&gt; HashSet a -&gt; HashSet a
 </span><span class="hs-identifier hs-var">HS.insert</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Deck -&gt; Deck -&gt; GameState
 </span><a href="AOC.Challenge.Day22.html#GS"><span class="hs-identifier hs-var">GS</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771128"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771127"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">HashSet GameState
-</span><a href="#local-6989586621679771129"><span class="hs-identifier hs-var">seen</span></a></span><span>
+</span><a href="#local-6989586621679609513"><span class="hs-identifier hs-var">xs0</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609512"><span class="hs-identifier hs-var">ys0</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">HashSet GameState
+</span><a href="#local-6989586621679609514"><span class="hs-identifier hs-var">seen</span></a></span><span>
 </span><span id="line-75"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#playGameWith"><span class="hs-pragma hs-type">playGameWith</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-76"></span><span>
 </span><span id="line-77"></span><span class="annot"><a href="AOC.Challenge.Day22.html#game1"><span class="hs-identifier hs-type">game1</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Player"><span class="hs-identifier hs-type">Player</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span>
@@ -272,7 +281,9 @@ forall a. (Eq a, Hashable a) =&gt; a -&gt; HashSet a -&gt; HashSet a
 -&gt; Deck
 -&gt; (Player, Deck)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-identifier">_</span><span> </span><span class="hs-identifier">_</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Player
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="annot"><span class="annottext">NEDeck
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">NEDeck
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Maybe Player
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-79"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#game1"><span class="hs-pragma hs-type">game1</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
@@ -288,41 +299,41 @@ forall a. Maybe a
 -&gt; Deck
 -&gt; (Player, Deck)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679771110"><span class="annot"><span class="annottext">x :: Int
-</span><a href="#local-6989586621679771110"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;||</span></span><span> </span><span id="local-6989586621679771109"><span class="annot"><span class="annottext">xs :: Deck
-</span><a href="#local-6989586621679771109"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679771108"><span class="annot"><span class="annottext">y :: Int
-</span><a href="#local-6989586621679771108"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;||</span></span><span> </span><span id="local-6989586621679771107"><span class="annot"><span class="annottext">ys :: Deck
-</span><a href="#local-6989586621679771107"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-83"></span><span>    </span><span id="local-6989586621679771106"><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771106"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; Maybe Deck
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679609495"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609495"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;||</span></span><span> </span><span id="local-6989586621679609494"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609494"><span class="hs-identifier hs-var">xs</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679609493"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609493"><span class="hs-identifier hs-var">y</span></a></span></span><span> </span><span class="annot"><span class="hs-operator hs-type">:&lt;||</span></span><span> </span><span id="local-6989586621679609492"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609492"><span class="hs-identifier hs-var">ys</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-83"></span><span>    </span><span id="local-6989586621679609491"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609491"><span class="hs-identifier hs-var">xs'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; Maybe Deck
 forall a. Int -&gt; Seq a -&gt; Maybe (Seq a)
 </span><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-var">takeExactly</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771110"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771109"><span class="hs-identifier hs-var">xs</span></a></span><span>
-</span><span id="line-84"></span><span>    </span><span id="local-6989586621679771104"><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771104"><span class="hs-identifier hs-var">ys'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; Maybe Deck
+</span><a href="#local-6989586621679609495"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609494"><span class="hs-identifier hs-var">xs</span></a></span><span>
+</span><span id="line-84"></span><span>    </span><span id="local-6989586621679609489"><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609489"><span class="hs-identifier hs-var">ys'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Deck -&gt; Maybe Deck
 forall a. Int -&gt; Seq a -&gt; Maybe (Seq a)
 </span><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-var">takeExactly</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771108"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771107"><span class="hs-identifier hs-var">ys</span></a></span><span>
-</span><span id="line-85"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679771103"><span class="annot"><span class="annottext">xMax :: Int
-</span><a href="#local-6989586621679771103"><span class="hs-identifier hs-var hs-var">xMax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int
+</span><a href="#local-6989586621679609493"><span class="hs-identifier hs-var">y</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609492"><span class="hs-identifier hs-var">ys</span></a></span><span>
+</span><span id="line-85"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679609488"><span class="annot"><span class="annottext">xMax :: Int
+</span><a href="#local-6989586621679609488"><span class="hs-identifier hs-var hs-var">xMax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int
 forall (t :: * -&gt; *) a. (Foldable t, Ord a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">maximum</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771106"><span class="hs-identifier hs-var">xs'</span></a></span><span>
-</span><span id="line-86"></span><span>        </span><span id="local-6989586621679771101"><span class="annot"><span class="annottext">yMax :: Int
-</span><a href="#local-6989586621679771101"><span class="hs-identifier hs-var hs-var">yMax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int
+</span><a href="#local-6989586621679609491"><span class="hs-identifier hs-var">xs'</span></a></span><span>
+</span><span id="line-86"></span><span>        </span><span id="local-6989586621679609486"><span class="annot"><span class="annottext">yMax :: Int
+</span><a href="#local-6989586621679609486"><span class="hs-identifier hs-var hs-var">yMax</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Int
 forall (t :: * -&gt; *) a. (Foldable t, Ord a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">maximum</span></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771104"><span class="hs-identifier hs-var">ys'</span></a></span><span>
+</span><a href="#local-6989586621679609489"><span class="hs-identifier hs-var">ys'</span></a></span><span>
 </span><span id="line-87"></span><span>        </span><span class="hs-comment">-- P1 has unbeatable card</span><span>
 </span><span id="line-88"></span><span>    </span><span class="annot"><span class="annottext">Player -&gt; Maybe Player
 forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
 </span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771103"><span class="hs-identifier hs-var">xMax</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679609488"><span class="hs-identifier hs-var">xMax</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771101"><span class="hs-identifier hs-var">yMax</span></a></span><span>
+</span><a href="#local-6989586621679609486"><span class="hs-identifier hs-var">yMax</span></a></span><span>
 </span><span id="line-89"></span><span>      </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Player
 </span><a href="AOC.Challenge.Day22.html#P1"><span class="hs-identifier hs-var">P1</span></a></span><span>
 </span><span id="line-90"></span><span>      </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">(Player, Deck) -&gt; Player
@@ -331,8 +342,8 @@ forall a b. (a, b) -&gt; a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Deck -&gt; Deck -&gt; (Player, Deck)
 </span><a href="AOC.Challenge.Day22.html#game2"><span class="hs-identifier hs-var">game2</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771106"><span class="hs-identifier hs-var">xs'</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
-</span><a href="#local-6989586621679771104"><span class="hs-identifier hs-var">ys'</span></a></span><span>
+</span><a href="#local-6989586621679609491"><span class="hs-identifier hs-var">xs'</span></a></span><span> </span><span class="annot"><span class="annottext">Deck
+</span><a href="#local-6989586621679609489"><span class="hs-identifier hs-var">ys'</span></a></span><span>
 </span><span id="line-91"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#game2"><span class="hs-pragma hs-type">game2</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-92"></span><span>
 </span><span id="line-93"></span><span class="annot"><a href="AOC.Challenge.Day22.html#day22a"><span class="hs-identifier hs-type">day22a</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><a href="AOC.Solver.html#%3A~%3E"><span class="hs-operator hs-type">:~&gt;</span></a></span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span>
@@ -340,7 +351,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="AOC.Challenge.Day22.html#day22a"><span class="hs-identifier hs-var hs-var">day22a</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
-</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
+</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type">MkSol</span></a></span><span>
 </span><span id="line-95"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Deck, Deck)
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Deck, Deck) -&gt; String -&gt; Maybe (Deck, Deck)
 forall e s a. (Ord e, Stream s) =&gt; Parsec e s a -&gt; s -&gt; Maybe a
@@ -375,7 +386,7 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="AOC.Challenge.Day22.html#day22b"><span class="hs-identifier hs-var hs-var">day22b</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MkSol :: forall a b.
 (String -&gt; Maybe a)
 -&gt; ((?dyno::DynoMap) =&gt; a -&gt; Maybe b) -&gt; (b -&gt; String) -&gt; a :~&gt; b
-</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type hs-type">MkSol</span></a></span><span>
+</span><a href="AOC.Solver.html#MkSol"><span class="hs-identifier hs-type">MkSol</span></a></span><span>
 </span><span id="line-102"></span><span>    </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">sParse :: String -&gt; Maybe (Deck, Deck)
 </span><a href="AOC.Solver.html#sParse"><span class="hs-identifier hs-var">sParse</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parsec Void String (Deck, Deck) -&gt; String -&gt; Maybe (Deck, Deck)
 forall e s a. (Ord e, Stream s) =&gt; Parsec e s a -&gt; s -&gt; Maybe a
@@ -405,25 +416,25 @@ forall a b c. (a -&gt; b -&gt; c) -&gt; (a, b) -&gt; c
 </span><a href="AOC.Challenge.Day22.html#game2"><span class="hs-identifier hs-var">game2</span></a></span><span>
 </span><span id="line-105"></span><span>    </span><span class="hs-special">}</span><span>
 </span><span id="line-106"></span><span>
-</span><span id="line-107"></span><span id="local-6989586621679771252"><span class="annot"><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-type">takeExactly</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><a href="#local-6989586621679771252"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><a href="#local-6989586621679771252"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-108"></span><span id="takeExactly"><span class="annot"><span class="annottext">takeExactly :: Int -&gt; Seq a -&gt; Maybe (Seq a)
-</span><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-var hs-var">takeExactly</span></a></span></span><span> </span><span id="local-6989586621679771091"><span class="annot"><span class="annottext">n :: Int
-</span><a href="#local-6989586621679771091"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679771090"><span class="annot"><span class="annottext">xs :: Seq a
-</span><a href="#local-6989586621679771090"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Seq a -&gt; Seq a
+</span><span id="line-107"></span><span id="local-6989586621679609737"><span class="annot"><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-type">takeExactly</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><a href="#local-6989586621679609737"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Seq</span></span><span> </span><span class="annot"><a href="#local-6989586621679609737"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-108"></span><span id="takeExactly"><span class="annot"><span class="annottext">takeExactly :: forall a. Int -&gt; Seq a -&gt; Maybe (Seq a)
+</span><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-identifier hs-var hs-var">takeExactly</span></a></span></span><span> </span><span id="local-6989586621679609471"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679609471"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679609470"><span class="annot"><span class="annottext">Seq a
+</span><a href="#local-6989586621679609470"><span class="hs-identifier hs-var">xs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Seq a -&gt; Seq a
 forall a. Int -&gt; Seq a -&gt; Seq a
 </span><span class="hs-identifier hs-var">Seq.take</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771091"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Seq a
-</span><a href="#local-6989586621679771090"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Seq a -&gt; Maybe () -&gt; Maybe (Seq a)
+</span><a href="#local-6989586621679609471"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">Seq a
+</span><a href="#local-6989586621679609470"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Seq a -&gt; Maybe () -&gt; Maybe (Seq a)
 forall (f :: * -&gt; *) a b. Functor f =&gt; a -&gt; f b -&gt; f a
 </span><span class="hs-operator hs-var">&lt;$</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Maybe ()
 forall (f :: * -&gt; *). Alternative f =&gt; Bool -&gt; f ()
 </span><span class="hs-identifier hs-var">guard</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Seq a -&gt; Int
 forall a. Seq a -&gt; Int
 </span><span class="hs-identifier hs-var">Seq.length</span></span><span> </span><span class="annot"><span class="annottext">Seq a
-</span><a href="#local-6989586621679771090"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+</span><a href="#local-6989586621679609470"><span class="hs-identifier hs-var">xs</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
 forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679771091"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679609471"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-109"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#takeExactly"><span class="hs-pragma hs-type">takeExactly</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-110"></span><span>
 </span><span id="line-111"></span><span class="annot"><a href="AOC.Challenge.Day22.html#gameParser"><span class="hs-identifier hs-type">gameParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">P.Parsec</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Void</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="AOC.Challenge.Day22.html#Deck"><span class="hs-identifier hs-type">Deck</span></a></span><span class="hs-special">)</span><span>
@@ -433,17 +444,18 @@ forall a. Ord a =&gt; a -&gt; a -&gt; Bool
 -&gt; ParsecT Void String Identity (Deck -&gt; (Deck, Deck))
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Deck
-</span><a href="#local-6989586621679771086"><span class="hs-identifier hs-var">deckParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Deck -&gt; (Deck, Deck))
+</span><a href="#local-6989586621679609466"><span class="hs-identifier hs-var">deckParser</span></a></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity (Deck -&gt; (Deck, Deck))
 -&gt; ParsecT Void String Identity Deck
 -&gt; Parsec Void String (Deck, Deck)
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Deck
-</span><a href="#local-6989586621679771086"><span class="hs-identifier hs-var">deckParser</span></a></span><span>
+</span><a href="#local-6989586621679609466"><span class="hs-identifier hs-var">deckParser</span></a></span><span>
 </span><span id="line-113"></span><span>  </span><span class="hs-keyword">where</span><span>
-</span><span id="line-114"></span><span>    </span><span id="local-6989586621679771086"><span class="annot"><span class="annottext">deckParser :: ParsecT Void String Identity Deck
-</span><a href="#local-6989586621679771086"><span class="hs-identifier hs-var hs-var">deckParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-114"></span><span>    </span><span id="local-6989586621679609466"><span class="annot"><span class="annottext">deckParser :: ParsecT Void String Identity Deck
+</span><a href="#local-6989586621679609466"><span class="hs-identifier hs-var hs-var">deckParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-115"></span><span>      </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="hs-string">&quot;Player &quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><span class="hs-string">&quot;Player &quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity Int
 -&gt; ParsecT Void String Identity Int
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
@@ -455,7 +467,8 @@ m a
 -&gt; ParsecT Void String Identity String
 -&gt; ParsecT Void String Identity Int
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
-</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="hs-string">&quot;:&quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Int
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity String
+</span><span class="hs-string">&quot;:&quot;</span></span><span> </span><span class="annot"><span class="annottext">ParsecT Void String Identity Int
 -&gt; ParsecT Void String Identity Char
 -&gt; ParsecT Void String Identity Int
 forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
