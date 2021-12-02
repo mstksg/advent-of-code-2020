@@ -165,21 +165,20 @@ indices into the existing ones.
 ```
 >> Day 14a
 benchmarking...
-time                 164.4 μs   (163.7 μs .. 165.3 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 160.4 μs   (158.9 μs .. 162.0 μs)
-std dev              5.716 μs   (4.989 μs .. 6.870 μs)
-variance introduced by outliers: 33% (moderately inflated)
+time                 158.7 μs   (158.0 μs .. 159.4 μs)
+                     0.999 R²   (0.997 R² .. 1.000 R²)
+mean                 157.9 μs   (157.6 μs .. 158.6 μs)
+std dev              1.293 μs   (845.8 ns .. 2.372 μs)
 
 * parsing and formatting times excluded
 
 >> Day 14b
 benchmarking...
-time                 29.89 ms   (26.80 ms .. 33.08 ms)
-                     0.959 R²   (0.885 R² .. 0.995 R²)
-mean                 30.44 ms   (29.25 ms .. 32.87 ms)
-std dev              3.399 ms   (1.949 ms .. 5.879 ms)
-variance introduced by outliers: 45% (moderately inflated)
+time                 25.76 ms   (24.66 ms .. 27.04 ms)
+                     0.990 R²   (0.979 R² .. 0.998 R²)
+mean                 25.49 ms   (25.02 ms .. 26.27 ms)
+std dev              1.358 ms   (982.2 μs .. 1.914 ms)
+variance introduced by outliers: 20% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

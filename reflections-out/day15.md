@@ -156,21 +156,21 @@ part2 = looper 30000000
 ```
 >> Day 15a
 benchmarking...
-time                 2.770 μs   (2.721 μs .. 2.819 μs)
-                     0.993 R²   (0.987 R² .. 0.997 R²)
-mean                 2.804 μs   (2.731 μs .. 2.980 μs)
-std dev              410.5 ns   (218.1 ns .. 710.5 ns)
-variance introduced by outliers: 94% (severely inflated)
+time                 2.523 μs   (2.390 μs .. 2.614 μs)
+                     0.986 R²   (0.986 R² .. 0.989 R²)
+mean                 2.320 μs   (2.266 μs .. 2.409 μs)
+std dev              203.6 ns   (138.6 ns .. 256.9 ns)
+variance introduced by outliers: 85% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 15b
 benchmarking...
-time                 227.2 ms   (221.4 ms .. 232.6 ms)
-                     1.000 R²   (0.999 R² .. 1.000 R²)
-mean                 231.2 ms   (228.0 ms .. 239.5 ms)
-std dev              6.796 ms   (587.6 μs .. 9.527 ms)
-variance introduced by outliers: 14% (moderately inflated)
+time                 291.7 ms   (281.8 ms .. 304.4 ms)
+                     0.999 R²   (0.999 R² .. 1.000 R²)
+mean                 302.0 ms   (296.4 ms .. 312.7 ms)
+std dev              9.904 ms   (3.637 ms .. 13.04 ms)
+variance introduced by outliers: 16% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

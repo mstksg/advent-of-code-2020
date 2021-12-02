@@ -286,21 +286,21 @@ generateAll rules = hylo generateAlg (rules IM.!) 0
 ```
 >> Day 19a
 benchmarking...
-time                 4.597 ms   (4.283 ms .. 4.936 ms)
-                     0.970 R²   (0.949 R² .. 0.989 R²)
-mean                 5.142 ms   (4.951 ms .. 5.500 ms)
-std dev              766.3 μs   (401.8 μs .. 1.260 ms)
-variance introduced by outliers: 79% (severely inflated)
+time                 4.273 ms   (4.202 ms .. 4.507 ms)
+                     0.990 R²   (0.965 R² .. 1.000 R²)
+mean                 4.244 ms   (4.200 ms .. 4.390 ms)
+std dev              220.8 μs   (54.67 μs .. 480.5 μs)
+variance introduced by outliers: 30% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 19b
 benchmarking...
-time                 31.11 ms   (27.26 ms .. 35.16 ms)
-                     0.966 R²   (0.933 R² .. 0.998 R²)
-mean                 30.22 ms   (29.51 ms .. 31.33 ms)
-std dev              1.980 ms   (991.8 μs .. 3.197 ms)
-variance introduced by outliers: 22% (moderately inflated)
+time                 27.13 ms   (26.34 ms .. 28.22 ms)
+                     0.994 R²   (0.987 R² .. 1.000 R²)
+mean                 26.20 ms   (25.94 ms .. 26.80 ms)
+std dev              908.6 μs   (525.5 μs .. 1.450 ms)
+variance introduced by outliers: 10% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

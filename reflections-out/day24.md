@@ -160,18 +160,18 @@ part2 paths = S.size (iterate step pts !!! 100)
 ```
 >> Day 24a
 benchmarking...
-time                 2.462 ms   (2.350 ms .. 2.544 ms)
-                     0.982 R²   (0.946 R² .. 0.996 R²)
-mean                 2.613 ms   (2.506 ms .. 2.986 ms)
-std dev              570.8 μs   (179.2 μs .. 1.248 ms)
-variance introduced by outliers: 92% (severely inflated)
+time                 2.597 ms   (2.551 ms .. 2.639 ms)
+                     0.996 R²   (0.993 R² .. 0.998 R²)
+mean                 2.579 ms   (2.545 ms .. 2.614 ms)
+std dev              111.4 μs   (82.30 μs .. 141.5 μs)
+variance introduced by outliers: 28% (moderately inflated)
 
 >> Day 24b
 benchmarking...
-time                 276.7 ms   (264.5 ms .. 284.2 ms)
-                     0.999 R²   (0.998 R² .. 1.000 R²)
-mean                 277.7 ms   (275.0 ms .. 280.3 ms)
-std dev              3.348 ms   (1.951 ms .. 4.853 ms)
+time                 272.1 ms   (247.2 ms .. 296.5 ms)
+                     0.996 R²   (0.996 R² .. 1.000 R²)
+mean                 273.7 ms   (264.8 ms .. 286.5 ms)
+std dev              13.87 ms   (1.266 ms .. 18.02 ms)
 variance introduced by outliers: 16% (moderately inflated)
 ```
 

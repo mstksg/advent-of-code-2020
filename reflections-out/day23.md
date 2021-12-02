@@ -231,21 +231,21 @@ and representation breakthroughs to tackle :)
 ```
 >> Day 23a
 benchmarking...
-time                 5.849 μs   (5.613 μs .. 6.030 μs)
-                     0.993 R²   (0.986 R² .. 0.999 R²)
-mean                 5.909 μs   (5.768 μs .. 5.962 μs)
-std dev              282.9 ns   (114.6 ns .. 466.2 ns)
-variance introduced by outliers: 60% (severely inflated)
+time                 4.469 μs   (4.420 μs .. 4.544 μs)
+                     0.997 R²   (0.993 R² .. 1.000 R²)
+mean                 4.452 μs   (4.424 μs .. 4.542 μs)
+std dev              181.5 ns   (39.87 ns .. 343.3 ns)
+variance introduced by outliers: 53% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 23b
 benchmarking...
-time                 165.2 ms   (164.6 ms .. 165.8 ms)
-                     1.000 R²   (1.000 R² .. 1.000 R²)
-mean                 165.9 ms   (165.4 ms .. 167.5 ms)
-std dev              1.329 ms   (161.6 μs .. 1.952 ms)
-variance introduced by outliers: 12% (moderately inflated)
+time                 194.3 ms   (190.4 ms .. 196.6 ms)
+                     1.000 R²   (0.999 R² .. 1.000 R²)
+mean                 195.4 ms   (194.3 ms .. 198.1 ms)
+std dev              2.172 ms   (125.3 μs .. 3.023 ms)
+variance introduced by outliers: 14% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

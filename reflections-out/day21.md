@@ -140,21 +140,21 @@ part2 info = do
 ```
 >> Day 21a
 benchmarking...
-time                 280.2 μs   (272.4 μs .. 285.6 μs)
-                     0.997 R²   (0.996 R² .. 0.998 R²)
-mean                 276.8 μs   (272.6 μs .. 279.7 μs)
-std dev              10.59 μs   (9.458 μs .. 12.38 μs)
-variance introduced by outliers: 34% (moderately inflated)
+time                 270.6 μs   (267.0 μs .. 277.0 μs)
+                     0.997 R²   (0.994 R² .. 0.999 R²)
+mean                 273.1 μs   (269.2 μs .. 283.4 μs)
+std dev              22.37 μs   (8.162 μs .. 40.92 μs)
+variance introduced by outliers: 71% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 21b
 benchmarking...
-time                 166.9 μs   (166.0 μs .. 167.9 μs)
-                     0.999 R²   (0.999 R² .. 1.000 R²)
-mean                 163.5 μs   (161.5 μs .. 165.5 μs)
-std dev              6.839 μs   (5.702 μs .. 9.109 μs)
-variance introduced by outliers: 41% (moderately inflated)
+time                 162.9 μs   (160.4 μs .. 165.9 μs)
+                     0.997 R²   (0.994 R² .. 1.000 R²)
+mean                 160.2 μs   (158.4 μs .. 165.3 μs)
+std dev              9.685 μs   (3.385 μs .. 17.84 μs)
+variance introduced by outliers: 59% (severely inflated)
 
 * parsing and formatting times excluded
 ```

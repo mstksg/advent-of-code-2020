@@ -174,21 +174,21 @@ don't need to :)
 ```
 >> Day 07a
 benchmarking...
-time                 1.703 ms   (1.676 ms .. 1.738 ms)
-                     0.997 R²   (0.995 R² .. 0.999 R²)
-mean                 1.685 ms   (1.667 ms .. 1.702 ms)
-std dev              67.82 μs   (57.66 μs .. 85.26 μs)
-variance introduced by outliers: 27% (moderately inflated)
+time                 2.423 ms   (2.265 ms .. 2.631 ms)
+                     0.980 R²   (0.967 R² .. 1.000 R²)
+mean                 2.271 ms   (2.245 ms .. 2.334 ms)
+std dev              136.8 μs   (48.17 μs .. 231.7 μs)
+variance introduced by outliers: 42% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 07b
 benchmarking...
-time                 14.68 μs   (14.26 μs .. 14.98 μs)
-                     0.996 R²   (0.994 R² .. 0.999 R²)
-mean                 14.71 μs   (14.48 μs .. 14.99 μs)
-std dev              889.5 ns   (579.7 ns .. 1.397 μs)
-variance introduced by outliers: 68% (severely inflated)
+time                 12.11 μs   (11.77 μs .. 12.51 μs)
+                     0.991 R²   (0.987 R² .. 0.995 R²)
+mean                 12.23 μs   (11.88 μs .. 12.69 μs)
+std dev              1.266 μs   (913.5 ns .. 1.695 μs)
+variance introduced by outliers: 87% (severely inflated)
 
 * parsing and formatting times excluded
 ```

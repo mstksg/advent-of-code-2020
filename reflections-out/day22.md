@@ -241,21 +241,21 @@ fantasy that immutability = slower, when in reality it's often an
 ```
 >> Day 22a
 benchmarking...
-time                 261.6 μs   (241.7 μs .. 281.1 μs)
-                     0.975 R²   (0.963 R² .. 0.990 R²)
-mean                 256.6 μs   (249.5 μs .. 262.9 μs)
-std dev              25.71 μs   (20.07 μs .. 33.93 μs)
-variance introduced by outliers: 78% (severely inflated)
+time                 230.6 μs   (228.1 μs .. 236.1 μs)
+                     0.998 R²   (0.993 R² .. 1.000 R²)
+mean                 228.9 μs   (227.4 μs .. 233.8 μs)
+std dev              7.584 μs   (798.7 ns .. 15.31 μs)
+variance introduced by outliers: 29% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 22b
 benchmarking...
-time                 2.445 ms   (2.351 ms .. 2.525 ms)
-                     0.985 R²   (0.974 R² .. 0.992 R²)
-mean                 2.368 ms   (2.292 ms .. 2.435 ms)
-std dev              223.2 μs   (195.5 μs .. 250.5 μs)
-variance introduced by outliers: 65% (severely inflated)
+time                 7.770 ms   (7.469 ms .. 8.183 ms)
+                     0.988 R²   (0.976 R² .. 0.999 R²)
+mean                 7.805 ms   (7.666 ms .. 7.963 ms)
+std dev              398.9 μs   (262.8 μs .. 568.5 μs)
+variance introduced by outliers: 25% (moderately inflated)
 
 * parsing and formatting times excluded
 ```

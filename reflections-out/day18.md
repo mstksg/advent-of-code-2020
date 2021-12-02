@@ -164,21 +164,21 @@ these things end up looking like under the hood :)
 ```
 >> Day 18a
 benchmarking...
-time                 2.628 ms   (2.442 ms .. 2.867 ms)
-                     0.968 R²   (0.952 R² .. 0.992 R²)
-mean                 2.573 ms   (2.485 ms .. 2.671 ms)
-std dev              315.6 μs   (188.3 μs .. 456.3 μs)
-variance introduced by outliers: 76% (severely inflated)
+time                 2.824 ms   (2.691 ms .. 3.014 ms)
+                     0.975 R²   (0.952 R² .. 0.998 R²)
+mean                 2.748 ms   (2.703 ms .. 2.844 ms)
+std dev              208.7 μs   (100.8 μs .. 383.4 μs)
+variance introduced by outliers: 53% (severely inflated)
 
 * parsing and formatting times excluded
 
 >> Day 18b
 benchmarking...
-time                 2.166 ms   (2.081 ms .. 2.247 ms)
-                     0.987 R²   (0.980 R² .. 0.993 R²)
-mean                 2.166 ms   (2.106 ms .. 2.224 ms)
-std dev              203.9 μs   (155.9 μs .. 269.6 μs)
-variance introduced by outliers: 65% (severely inflated)
+time                 2.270 ms   (2.143 ms .. 2.447 ms)
+                     0.974 R²   (0.958 R² .. 0.996 R²)
+mean                 2.231 ms   (2.180 ms .. 2.378 ms)
+std dev              236.7 μs   (129.2 μs .. 403.0 μs)
+variance introduced by outliers: 70% (severely inflated)
 
 * parsing and formatting times excluded
 ```

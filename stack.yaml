@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-16.23
+resolver: nightly-2021-11-28
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -38,31 +38,41 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- advent-of-code-api-0.2.7.0
-- megaparsec-8.0.0
-- grid-7.8.14
-- parser-combinators-1.2.1
-- mutable-0.2.2.0
-- finitary-2.0.0.0
-- typelits-witnesses-0.4.0.0
+# - barbies-2.0.2.0
+# - conduino-0.2.2.0
+# - constraints-extras-0.3.0.2
+# - direct-sqlite-2.3.26
+# - list-transformer-1.0.6
+# - megaparsec-8.0.0
+# - parser-combinators-1.2.1
+# - refined-0.6.1
+# - sqlite-simple-0.4.18.0
+# - typelits-witnesses-0.4.0.0
+# - vinyl-0.13.0
+# - witherable-0.3.5
+- advent-of-code-api-0.2.8.1
 - dependent-sum-0.7.1.0
-- conduino-0.2.2.0
-- list-transformer-1.0.6
-- constraints-extras-0.3.0.2
-- refined-0.6.1
-- barbies-2.0.2.0
-- sqlite-simple-0.4.18.0
-- direct-sqlite-2.3.26
-- these-skinny-0.7.4
-- vinyl-0.13.0
-- witherable-0.3.5
+- finitary-2.1.1.0
+- grid-7.8.15
+- haskell-names-0.9.9
 - monoidal-containers-0.6.0.1
-- github: mstksg/vec
-  commit: d2dedab44fa49b4ed903fac6b9189c4d62835e1b
-  subdirs:
-  - vec
-- github: mstksg/vector-sized
-  commit: f3757806e54afeaa243c87ffdcab881592470ddf
+- mutable-0.2.2.0
+- newtype-0.2.2.0
+- nonempty-containers-0.3.4.4
+- one-liner-instances-0.1.3.0
+# - refined-0.6.2
+- strict-tuple-0.1.4
+- these-skinny-0.7.4
+- traverse-with-class-1.0.1.1
+- typelits-witnesses-0.4.0.0
+- github: nikita-volkov/refined
+  commit: 240dd2b6fb5787cb6a079f4ab42674cb1ea7fd3b
+# - github: mstksg/vec
+#   commit: d2dedab44fa49b4ed903fac6b9189c4d62835e1b
+#   subdirs:
+#   - vec
+# - github: mstksg/vector-sized
+#   commit: f3757806e54afeaa243c87ffdcab881592470ddf
 
 allow-newer: true
 

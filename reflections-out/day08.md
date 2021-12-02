@@ -353,21 +353,21 @@ small thing actually shaves off a decent amount of time.
 ```
 >> Day 08a
 benchmarking...
-time                 8.055 μs   (7.625 μs .. 8.507 μs)
-                     0.988 R²   (0.978 R² .. 0.996 R²)
-mean                 8.153 μs   (7.856 μs .. 8.438 μs)
-std dev              848.3 ns   (634.4 ns .. 1.081 μs)
-variance introduced by outliers: 88% (severely inflated)
+time                 6.243 μs   (6.182 μs .. 6.346 μs)
+                     0.998 R²   (0.996 R² .. 1.000 R²)
+mean                 6.210 μs   (6.180 μs .. 6.325 μs)
+std dev              192.8 ns   (60.82 ns .. 390.0 ns)
+variance introduced by outliers: 38% (moderately inflated)
 
 * parsing and formatting times excluded
 
 >> Day 08b
 benchmarking...
-time                 2.550 ms   (2.475 ms .. 2.637 ms)
-                     0.991 R²   (0.987 R² .. 0.995 R²)
-mean                 2.541 ms   (2.504 ms .. 2.571 ms)
-std dev              125.0 μs   (101.9 μs .. 156.3 μs)
-variance introduced by outliers: 33% (moderately inflated)
+time                 2.473 ms   (2.298 ms .. 2.654 ms)
+                     0.967 R²   (0.953 R² .. 0.984 R²)
+mean                 2.485 ms   (2.401 ms .. 2.589 ms)
+std dev              298.9 μs   (248.6 μs .. 339.1 μs)
+variance introduced by outliers: 74% (severely inflated)
 
 * parsing and formatting times excluded
 ```

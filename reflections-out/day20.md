@@ -311,21 +311,20 @@ were much easier to think about.
 ```
 >> Day 20a
 benchmarking...
-time                 33.33 ms   (31.40 ms .. 35.37 ms)
-                     0.987 R²   (0.974 R² .. 0.998 R²)
-mean                 31.84 ms   (31.15 ms .. 32.72 ms)
-std dev              1.720 ms   (1.143 ms .. 2.525 ms)
-variance introduced by outliers: 17% (moderately inflated)
+time                 29.10 ms   (28.84 ms .. 29.92 ms)
+                     0.997 R²   (0.990 R² .. 1.000 R²)
+mean                 29.03 ms   (28.81 ms .. 29.63 ms)
+std dev              762.3 μs   (159.7 μs .. 1.370 ms)
 
 * parsing and formatting times excluded
 
 >> Day 20b
 benchmarking...
-time                 79.49 ms   (71.01 ms .. 88.15 ms)
-                     0.973 R²   (0.931 R² .. 0.997 R²)
-mean                 80.41 ms   (77.07 ms .. 84.98 ms)
-std dev              6.588 ms   (5.023 ms .. 8.934 ms)
-variance introduced by outliers: 28% (moderately inflated)
+time                 73.35 ms   (66.76 ms .. 90.08 ms)
+                     0.931 R²   (0.829 R² .. 1.000 R²)
+mean                 69.27 ms   (66.81 ms .. 78.84 ms)
+std dev              7.768 ms   (154.8 μs .. 13.53 ms)
+variance introduced by outliers: 35% (moderately inflated)
 
 * parsing and formatting times excluded
 ```
